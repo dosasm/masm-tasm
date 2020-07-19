@@ -1,8 +1,8 @@
 {
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM",
-	"publisher": "xsrokun",
-	"description": "汇编语言开发环境（调用dosbox和msdos player运行MASM、TASM工具）",
+	"publisher": "xsro",
+	"description": "汇编语言学习（调用dosbox和msdos player运行MASM、TASM工具实现汇编调试等操作）",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.47.0"
@@ -56,7 +56,7 @@
 			},
 			{
 				"command":"masm-tasm.debugASM",
-				"title":"调试当前程序(汇编+链接+运行)"
+				"title":"调试当前程序(汇编+链接+调试)"
 			}
 		],
 		"configuration" :{
@@ -125,5 +125,9 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/xsro/masm-tasm"
-	}
+	},
+	"bugs": {
+		"url": "https://github.com/xsro/masm-tasm/issues"
+	},
+	"license": "MIT"
 }
