@@ -1,0 +1,129 @@
+{
+	"name": "masm-tasm",
+	"displayName": "MASM/TASM",
+	"publisher": "xsrokun",
+	"description": "汇编语言开发环境（调用dosbox和msdos player运行MASM、TASM工具）",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.47.0"
+	},
+	"categories": [
+		"Testing"
+	],
+	"activationEvents": [
+		"onCommand:masm-tasm.helloWorld",
+		"workspaceContains:*.ASM"
+	],
+	
+	"main": "./out/extension.js",
+	"contributes": {
+		"languages": [{
+			"id": "assembly",
+			"extensions": [ ".asm", ".ASM" ],
+			"aliases": [ "x86 and x86_64 Assembly", "asm" ]
+		}],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+					"command": "masm-tasm.opendosbox",
+					"group": "0_MASM-TASM@1"
+				},
+				{
+					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+					"command": "masm-tasm.runASM",
+					"group": "0_MASM-TASM@2"
+				},
+				{
+					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+					"command": "masm-tasm.debugASM",
+					"group": "0_MASM-TASM@3"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "masm-tasm.helloWorld",
+				"title": "Hello World"
+			},
+			{
+				"command":"masm-tasm.opendosbox",
+				"title":"打开dosbox并配置环境(挂载)"
+			},
+			{
+				"command":"masm-tasm.runASM",
+				"title":"运行当前程序(汇编+链接+运行)"
+			},
+			{
+				"command":"masm-tasm.debugASM",
+				"title":"调试当前程序(汇编+链接+运行)"
+			}
+		],
+		"configuration" :{
+            "type": "object",
+            "title": "MASM-TASM 16bit",
+            "properties": {
+                "masmtasm.ASM.toolspath": {
+                    "type": "string",
+					"description": "你使用的汇编工具集地址如E:\\GitRepo\\masm-tasm\\tools"
+				},
+				"masmtasm.ASM.emulator": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "在除去td命令以外的情况，下使用msdos作为16位模拟器"
+				},
+				"masmtasm.ASM.MASMorTASM": {
+					"type": "string",
+					"default": "MASM",
+					"description":"使用MASM还是TASM作为汇编工具",
+					"enum": ["TASM", "MASM"],
+					"enumDescriptions": [
+					"使用MASM汇编工具集，包括masm.exe,link.exe,debug.exe...",
+					"使用TASM汇编工具集，包括tasm.exe,tlink.exe,td.exe..."
+ 			   ]
+				},
+				"masmtasm.dosbox.run": {
+					"type": "string",
+					"default": "pause then exit after run",
+					"description":"选择在dosbox中运行的方式",
+					"enum": ["keep(do nothing)", "exit after run","pause then exit after run"],
+					"enumDescriptions": [
+					"运行之后在dosbox窗口停留，可以输入exit，点击x，或者Ctrl+F9关闭程序",
+					"运行程序之后自动关闭",
+					"运行程序之后先停顿一下 输入任意字符后关闭窗口"
+ 			   ]
+                },
+				"masmtasm.dosbox.CustomResolution": {
+					"type": "string",
+					"default": "1024x640",
+                    "description": "自定义dosbox窗口大小，格式如1024x640"
+				}
+            }
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.47.0",
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"eslint": "^6.8.0",
+		"@typescript-eslint/parser": "^2.30.0",
+		"@typescript-eslint/eslint-plugin": "^2.30.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.2",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/xsro/masm-tasm"
+	}
+}
