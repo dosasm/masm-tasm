@@ -6,7 +6,7 @@
 
 `.ASM`汇编文件时，在编辑器界面右键会提供三个选项（用来实现打开dosbox，运行代码，调试代码三种操作）。
 
-![Open in Dosbox](https://github.com/xsro/masm-tasm/doc/pics/opendosbox.gif)
+![Open in Dosbox](https://github.com/xsro/masm-tasm/blob/dev/doc/pics/opendosbox.gif)
 
 ## Requirements and Extension Settings
 
@@ -14,7 +14,7 @@
 首先需要下载汇编工具集，下载地址：[gitee](https://gitee.com/chenliucx/VSC-ASMtasks/releases)
 下载完成之后将文件路径复制到设置中即可.
 
-![set the tool path](https://github.com/xsro/masm-tasm/doc/pics/settools.gif)
+![set the tool path](https://github.com/xsro/masm-tasm/blob/dev/doc/pics/settools.gif)
 
 ## Release Notes
 
