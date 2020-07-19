@@ -6,3 +6,4 @@ node_modules
 /tools/work/*.*
 !/tools/work/ASM.BAT
 !/tools/work/msdos.exe
+tools/dosbox/VSC-ExtUse.conf

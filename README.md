@@ -1,6 +1,6 @@
 # masm-tasm README
 
-这是一个插件本来是我fork[masm-code](https://github.com/Woodykaixa/masm-code),以及受益于[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)两个16位系统模拟软件的插件。感谢！目前仅仅支持调用dosbox相关的功能。
+这是一个插件本来是我fork[masm-code](https://github.com/Woodykaixa/masm-code),以及受益于[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)两个16位系统模拟软件的插件。感谢！目前仅仅支持调用dosbox相关的功能。目前还不完善，如果不是需要使用TASM或者msdos的话推荐使用`masm-code`。
 
 ## Features
 
@@ -16,7 +16,7 @@
 
 ![set the tool path](https://github.com/xsro/masm-tasm/blob/dev/doc/pics/settools.gif)
 
-## Release Notes
+<!-- ## Release Notes
 
 ### 1.0.0
 
@@ -28,4 +28,4 @@ Fixed issue #.
 
 ### 1.1.0
 
-Added features X, Y, and Z.
+Added features X, Y, and Z. -->
