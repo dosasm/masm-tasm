@@ -17,11 +17,6 @@
 	
 	"main": "./out/extension.js",
 	"contributes": {
-		"languages": [{
-			"id": "assembly",
-			"extensions": [ ".asm", ".ASM" ],
-			"aliases": [ "x86 and x86_64 Assembly", "asm" ]
-		}],
 		"menus": {
 			"editor/context": [
 				{

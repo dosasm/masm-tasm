@@ -1,20 +1,30 @@
 # masm-tasm README
 
-这是一个插件本来是我fork[masm-code](https://github.com/Woodykaixa/masm-code),以及受益于[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)两个16位系统模拟软件的插件。感谢！目前仅仅支持调用dosbox相关的功能。目前还不完善，如果不是需要使用TASM或者msdos的话推荐使用`masm-code`。
+这是一个插件是我fork[masm-code](https://github.com/Woodykaixa/masm-code)后在这个插件的基础上修改的,受益于[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)两个16位系统模拟软件的插件，实现了快速调用相关汇编组件来编译运行。十分感谢以上软件相关方！
 
-## Features
+目前仅仅支持调用dosbox和msdos相关的功能。只在windows10上测试了，显然目前还不完善。如果只是想要快速编译运行的话，这个插件还是很适合你的，如果不想用插件可以选择使用终端任务的方式，参考[github](https://github.com/xsro/VSC-ASMtasks)。如果想要更多得功能的话，还是推荐使用`masm-code`。
+
+## Features主要功能
 
 `.ASM`汇编文件时，在编辑器界面右键会提供三个选项（用来实现打开dosbox，运行代码，调试代码三种操作）。
 
 ![Open in Dosbox](https://github.com/xsro/masm-tasm/blob/dev/doc/pics/opendosbox.gif)
 
-## Requirements and Extension Settings
+- 打开dosbox并配置环境(挂载)：将当前编辑器的文件（注意保存）复制到工作文件夹，启动dosbox 挂载相关目录，添加汇编工具集到path。这样就可以在dosbox窗口运行相关工具
+- 运行当前程序(汇编+链接+运行)：
+- 调试当前程序(汇编+链接+调试)：
+
+## Requirements首先需要做的事情
 
 首先需要下载需要使用的16位环境模拟工具和汇编工具
 首先需要下载汇编工具集，下载地址：[gitee](https://gitee.com/chenliucx/VSC-ASMtasks/releases)
-下载完成之后将文件路径复制到设置中即可.
+下载完成之后将文件路径复制到设置中即可。
 
 ![set the tool path](https://github.com/xsro/masm-tasm/blob/dev/doc/pics/settools.gif)
+
+## Extension Settings拓展设置
+
+可以在设置中修改相关配置来决定dosbox窗口大小，使用TASM还是MASM，是否使用msdos
 
 <!-- ## Release Notes
 
