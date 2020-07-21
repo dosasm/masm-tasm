@@ -2,7 +2,7 @@
 
 这是一个插件是我fork[masm-code](https://github.com/Woodykaixa/masm-code)后在这个插件的基础上修改的,受益于[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)两个16位系统模拟软件的插件，实现了快速调用相关汇编组件来编译运行。十分感谢以上软件！
 
-目前仅仅支持调用dosbox和msdos相关的功能。应该目前只支持windows10，显然目前还不完善。如果只是想要快速编译运行的话，这个插件还是很适合你的，如果不想用插件可以选择使用终端任务的方式，参考[github](https://github.com/xsro/VSC-ASMtasks)。`masm-code`也很好，我还没有深度体验。
+这个插件在windows上开发的目前也就只支持windows系统。如果只是想要快速编译运行的话，这个插件还是很适合你的，如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)实现大部分功能。`masm-code`也很好，我还没有深度体验。
 
 ## Features主要功能
 

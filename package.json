@@ -62,11 +62,6 @@
                     "type": "string",
 					"description": "你使用的汇编工具集地址如E:\\GitRepo\\masm-tasm\\tools"
 				},
-				"masmtasm.ASM.emulator": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "在除去td命令以外的情况，下使用msdos作为16位模拟器"
-				},
 				"masmtasm.ASM.MASMorTASM": {
 					"type": "string",
 					"default": "MASM",
@@ -76,6 +71,16 @@
 					"使用MASM汇编工具集，包括masm.exe,link.exe,debug.exe...",
 					"使用TASM汇编工具集，包括tasm.exe,tlink.exe,td.exe..."
  			   ]
+				},
+				"masmtasm.emu.emulator": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "在除去td命令以外的情况，下使用msdos作为16位模拟器"
+				},
+				"masmtasm.emu.savefirst": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "在运行之前先保存文件,注意这会保存所有文件"
 				},
 				"masmtasm.dosbox.run": {
 					"type": "string",
