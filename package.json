@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
 	"description": "汇编语言学习（调用dosbox和msdos player运行MASM、TASM工具实现汇编调试等操作）",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
 	"engines": {
 		"vscode": "^1.47.0"
@@ -61,7 +61,7 @@
             "properties": {
                 "masmtasm.ASM.toolspath": {
                     "type": "string",
-					"description": "你使用的汇编工具集地址如E:\\GitRepo\\masm-tasm\\tools"
+					"description": "你使用的汇编工具集地址，不填将使用自带的工具，如E:\\GitRepo\\masm-tasm\\tools"
 				},
 				"masmtasm.ASM.MASMorTASM": {
 					"type": "string",
@@ -81,7 +81,7 @@
 					"enumDescriptions":[
 						"全部使用dosbox模拟16位系统环境",
 						"尽量使用msdos player在终端中模拟，td除外",
-						"汇编过程使用msdos，运行在dosbox中，提供diagnose"
+						"--还没有实现，请不要选择--汇编过程使用msdos，运行在dosbox中，提供diagnose"
 					]
 				},
 				"masmtasm.emu.savefirst": {

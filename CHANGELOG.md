@@ -2,17 +2,24 @@
 
 All notable changes to the "masm-tasm" extension will be documented in this file.
 
-## 0.0.1
+### 0.0.2
+
+使用batch来简化msdos的调用，将需要的工具和插件一起打包，（基本失去支持除了windows系统以外系统的可能）
+
+- [ ] 实现根据情况自动下载相关组件 废弃
+- [ ] 提供tasks来实现调试工作
+- [ ] 增加常见代码片段支持等
+- [ ] 增加问题匹配功能，*已经可以提供一个简单的匹配功能了*
+
+### 0.0.1
 
 初步完成一些对dosbox和msdos的简单调用还显得不是很完善
 
-## [Unreleased]
-
-TODO
-
 - [x] 实现在msdos之下运行调试MASM程序，运行TASM程序
 - [x] 实现Dosbox直线来进行相关功能调用
-- [ ] 实现根据情况自动下载相关组件
-- [ ] 提供tasks来实现调试工作
-- [ ] 增加常见代码片段支持等
-- [ ] 增加问题匹配功能，需要的话可以参考我的[github仓库](https://github.com/xsro/VSC-ASMtasks)
+
+### [Unreleased]
+
+---nothing---
+
+

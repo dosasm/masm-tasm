@@ -15,8 +15,9 @@ goto end
 :masm
     msdos ../masm/masm T.ASM>T.txt;
     if exist T.OBJ goto masmNext
-    echo 文件%4% 使用%2%汇编未通过,结果如下
-    FOR /F "skip=3 eol=   tokens=1* delims=(" %%i in (T.txt) do @echo   %4%(%%j
+    echo ASMfilefrom %4% with %2% failed
+    FOR /F "skip=3 eol=   tokens=1* delims=(" %%i in (T.txt) do @echo   %~pf4(%%j
+    goto end
     :masmNext
     echo MASM succuess.Start link
     msdos ../masm/link T.OBJ;
@@ -33,9 +34,10 @@ goto end
 :tasm
     msdos ../tasm/tasm /zi T.ASM>T.txt;
     if exist T.OBJ goto tasmNext
-    echo 文件%4% 使用%2%汇编未通过,结果如下
+    echo ASMfilefrom %4% with %2% failed
+    FOR /F "skip=3 tokens=1,2* delims=T(" %%i in (T.txt) do @if %%j==.ASM echo   %%i%~pf4(%%k
+    goto end
     ::TODO
-    FOR /F "skip=3 tokens=1* delims=T.ASM" %%i in (T.txt) do @echo   %%ithis.file%%j
     :tasmNext
     echo TASM success Start tlink
     msdos ../tasm/tlink /v/3 T.OBJ;
