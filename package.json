@@ -4,6 +4,7 @@
 	"publisher": "xsro",
 	"description": "汇编语言学习（调用dosbox和msdos player运行MASM、TASM工具实现汇编调试等操作）",
 	"version": "0.0.1",
+	"keywords":["dosbox","汇编","微机","tasm","masm"],
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -73,9 +74,15 @@
  			   ]
 				},
 				"masmtasm.emu.emulator": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "在除去td命令以外的情况，下使用msdos作为16位模拟器"
+                    "type": "string",
+                    "default": "dosbox",
+					"description": "选择使用的16位环境模拟器，dosbox位于dosbox文件夹下，msdos player位于work文件夹",
+					"enum":["dosbox","msdos player","mixed"],
+					"enumDescriptions":[
+						"全部使用dosbox模拟16位系统环境",
+						"尽量使用msdos player在终端中模拟，td除外",
+						"汇编过程使用msdos，运行在dosbox中，提供diagnose"
+					]
 				},
 				"masmtasm.emu.savefirst": {
                     "type": "boolean",
@@ -99,7 +106,38 @@
                     "description": "自定义dosbox窗口大小，格式如1024x640"
 				}
             }
-		}
+		},
+		"problemMatchers": [
+			{
+                "owner": "MASM",
+                "fileLocation":"autoDetect",
+                "pattern": [
+                  {
+					"regexp":"^\\s*(.*)\\((\\d+)\\):\\s+(error|warning)\\s+([A-Z]\\d+:\\s+.*)$",
+					"file":1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4,
+                    "loop": true
+                  }
+                ]
+			  },
+			  {
+                "owner": "TASM",
+                "fileLocation":"autoDetect",
+                "pattern": [
+                  {
+                    "regexp":"^\\s*\\*+(Error|Warning)\\*+\\s+(.*)\\((\\d+)\\)\\s+(.*)$",
+                    "line": 3,
+                    "severity": 1,
+					"message": 4,
+					"file":2,
+                    "loop": true
+                  }
+                ]
+              }
+
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
