@@ -2,17 +2,16 @@ import { FileSystem, Uri, workspace, window,extensions} from 'vscode';
 import { TextEncoder } from 'util';
 export class Config {
     private readonly _fs: FileSystem;
-    private _path: string=' ';
-    private toolspackin:boolean=true;
+    private _path: string;
     private _resolution: string | undefined;
-    public ASM:string
-    public LINK:string
-    public DEBUG:string
-    public MASMorTASM: string | undefined;
     public BOXrun: string|undefined;
     public DOSemu: string|undefined;
     public savefirst: boolean|undefined;
-    constructor() {
+    public MASMorTASM: string | undefined;
+        public ASM:string
+        public LINK:string
+        public DEBUG:string
+    constructor(extpath?:string) {
         this._fs = workspace.fs;
         this._resolution = workspace.getConfiguration('masmtasm.dosbox').get('CustomResolution');
         this.MASMorTASM= workspace.getConfiguration('masmtasm.ASM').get('MASMorTASM');
@@ -27,13 +26,13 @@ export class Config {
             }
             if (configtoolpath){
                 this._path=configtoolpath.toString().replace(/\\/g, '/');}
-                else if (this.toolspackin)
-                {
+                else if(extpath){
+                    this._path=extpath+'/tools'
                 }
                 else {
                 window.showInformationMessage('未设置汇编工具路径请在设置中添加相关设置');
                 throw new Error("no tools please add your tool in settings");
-            }
+                }
             if (this.MASMorTASM=='MASM'){
                 this.ASM='MASM T.ASM;'
                 this.LINK='LINK T.OBJ;'
@@ -43,7 +42,7 @@ export class Config {
                 this.ASM='TASM /zi T.ASM'
                 this.LINK='TLINK /v/3 T.OBJ;'
                 this.DEBUG='if exist c:\\tasm\\TDC2.TD copy c:\\tasm\\TDC2.TD TDCONFIG.TD \nTD T.EXE'
-            }
+                }
     }
     public writeConfig(autoExec: string,bothtool:boolean) {
         let configUri:Uri = Uri.parse('file:///' + this._path + '/dosbox/VSC-ExtUse.conf');
