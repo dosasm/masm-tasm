@@ -48,15 +48,15 @@ export class runcode{
     openDOSBox(more:string,bothtools:boolean,conf?:Config) {
         if(!conf){conf=this.update()}
         this._terminal=this.crtTerminal(true,conf.path);
-            const filename = vscode.window.activeTextEditor?.document.fileName;
-            this._terminal.sendText('del work\\T.* && copy "'+filename+'" work\\T.ASM');
+        //this._terminal.show()
+            let filename = vscode.window.activeTextEditor?.document.fileName;
+            this._terminal.sendText('  del work\\T.* && copy "'+filename+'" work\\T.ASM');
             this._masmChannel.appendLine('清除原来的文件T.*并将当前编辑文件复制到'+'work/T.ASM');
         conf.writeConfig(more,bothtools);
         let command ='start/min/wait "" "dosbox/dosbox.exe" -conf "dosbox/VSC-ExtUse.conf" ';
         this._masmChannel.appendLine(command);
         this._terminal.sendText(command);
         this._masmChannel.appendLine('已打开dosbox，并配置相关环境');
-        if(more){this._terminal.sendText(more)}
     }
     private PlayerASM(mode:string,conf:Config)
     {
@@ -78,6 +78,7 @@ export class runcode{
                 break;
             default: throw new Error("未指定emulator");  
         }
+        
     }
     Debug(){
         this._config=this.update()
