@@ -1,32 +1,50 @@
 # A solution to run 16-bit ASM code in windows
 
-这是一个插件本来是我fork"[masm-code](https://github.com/Woodykaixa/masm-code)"后在这个插件的基础上修改的,使用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，实现了快速调用相关汇编组件来编译运行以及调试功能。十分感谢以上软件！
+这是一个插件是我借鉴"[masm-code](https://github.com/Woodykaixa/masm-code)"后在这个插件的基础上修改的。专注于编译运行（原插件的一些其他特性被我省略了，因为我觉得插件商店有其他插件可以使用）。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务。
 
-**只适用于windows系统**。已将相关工具与插件打包在一起，无需手动安装。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务。
-
-- [关于TASM/MASM汇编工具以及相关软件](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md)
+1. 支持*TASM*和*MASM*:
+2. **编辑器右键菜单**：在汇编语言的编辑器添加了打开dosbox，运行，调试的三个选项
+3. **无需手动安装**：已将相关工具与插件打包在一起。也因此*只适用于windows*
+4. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
+十分感谢以上软件！
 
 ## Features主要功能
 
-当工作区有asm后缀的文件时插件会启动，当前编辑器为`.ASM`汇编文件时，在编辑器界面右键会提供三个选项（用来实现打开dosbox，运行代码，调试代码三种操作）。
+当工作区有`asm(asm)`后缀的文件时插件会启动，当前编辑器为汇编文件时，在编辑器界面右键会提供三个选项（用来实现打开dosbox，运行代码，调试代码三种操作）。
 
 1. 打开dosbox并配置环境(挂载)：将当前编辑器的文件（注意保存）复制到工作文件夹，启动dosbox 挂载相关目录，添加汇编工具集到path。这样就可以在dosbox窗口运行相关工具
 2. 运行当前程序(汇编+链接+运行)
 3. 调试当前程序(汇编+链接+调试)
 
+Note：如果设置中为使用msdos-player运行/调试结果在终端输出；如果使用dosbox，运行/调试结果在弹出的dosbox中输出
+
+### demo 使用MASM（via msdos-player）
+
+![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/dev/pics/demo_msdos_masm.gif)
+
+### demo 使用TASM(via dosbox)
+
+![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/dev/pics/demo_dosbox_tasm.gif)
+
+### demo 打开dosbox
+
 ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/dev/pics/opendosbox.gif)
 
 ## Extension Settings拓展设置
 
-可以在设置中修改相关配置来决定dosbox窗口大小，使用TASM还是MASM，是否使用msdos替代dosbox等选项。
+要实现上面的功能需要在拓展中进行设置。
 
-### 自定义汇编工具路径
+- 设置中可以修改使用dosbox还是msdos-player，使用MASM还是TASM
+- 可以调整dosbox窗口大小，dosbox运行程序之后进行上面操作（是否直接退出程序，还是等待字符）
+- 启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
+- 设置自定义工具路径[详见](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md#自定义汇编工具路径)
 
-将文件路径复制到设置中即可。
+### docs & Thanks & Licenses
 
-![set the tool path](https://github.com/xsro/masm-tasm/raw/dev/pics/settools.gif)
-
-需要使用的16位环境模拟工具和汇编工具可以参考：[github](https://github.com/xsro/VSC-ASMtasks/releases)
+- this ext is MIT license.
+  - thank for [masm-code](https://github.com/Woodykaixa/masm-code),
+  - thier [licences](https://github.com/xsro/masm-tasm/blob/master/doc/liscence.md),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](dosbox.com)
+- [关于TASM/MASM汇编工具以及相关软件](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md)
 
 <!-- ## Release Notes
 

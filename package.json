@@ -2,7 +2,7 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
-	"description": "汇编语言学习（调用dosbox和msdos player运行MASM、TASM工具实现汇编调试等操作）",
+	"description": "汇编语言学习环境（调用dosbox和msdos player运行MASM、TASM工具实现汇编运行调试等操作）",
 	"version": "0.0.3",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
 	"engines": {
