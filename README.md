@@ -19,15 +19,15 @@
 
 Note：如果设置中为使用msdos-player运行/调试结果在终端输出；如果使用dosbox，运行/调试结果在弹出的dosbox中输出
 
-### demo 使用MASM（via msdos-player）
+### demo1 使用MASM（via msdos-player）
 
 ![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)
 
-### demo 使用TASM(via dosbox)
+### demo2 使用TASM(via dosbox)
 
 ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
 
-### demo 打开dosbox
+### demo3 打开dosbox
 
 ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif)
 

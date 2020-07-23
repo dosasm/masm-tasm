@@ -65,11 +65,11 @@ export class runcode{
      * @param msg 输出信息
      * @param type masm还是tasm
      */
-    private ErrMsgProcess(msg:string,filename?:string,ASM?:string):number{
+    private ErrMsgProcess(info:string,filename?:string,ASM?:string):number{
         let fileuri=vscode.window.activeTextEditor?.document.uri
         let flag =0;
         let firstreg:RegExp=/(Fail|Succeed)! ASMfilefrom \s*.*\s* with (TASM|MASM)\r\n/
-        let r=firstreg.exec(msg)
+        let r=firstreg.exec(info)
         let counterror=0
         let countwarning=0
 
@@ -80,11 +80,11 @@ export class runcode{
             if(MASMorTASM=='TASM'){
                 let tasm=/\s*\*+(Error|Warning)\*+\s+(.*)\((\d+)\)\s+(.*)/g
                 let diagnostics: Diagnostic[] = [];
-                var oneinfo=tasm.exec(msg)
+                var oneinfo=tasm.exec(info)
                 while(oneinfo != null && oneinfo.length==5)
                 { 
                     let severity:number=0
-                    let message:string
+                    let msg:string=' '
                     let line:number
                     let ran
                     oneinfo.shift()//弹出全部内容
@@ -117,7 +117,7 @@ export class runcode{
                         }
                         diagnostics.push(diagnostic)
                     };
-                    oneinfo=tasm.exec(msg)
+                    oneinfo=tasm.exec(info)
                 }
                 if (fileuri){
                     this.tasmCollection.clear()
@@ -127,11 +127,11 @@ export class runcode{
             else if(MASMorTASM=='MASM'){
                 var masm=/\s*(.*)\((\d+)\):\s+(error|warning)\s+([A-Z]\d+:\s+.*)/g
                 let diagnostics: Diagnostic[] = [];
-                var oneinfo=masm.exec(msg)
+                var oneinfo=masm.exec(info)
                 while(oneinfo != null && oneinfo.length==5)
                 { 
                     let severity:number=0
-                    let message:string
+                    let msg:string=' '
                     let line:number
                     let ran
                     oneinfo.shift()//弹出全部内容
@@ -163,14 +163,14 @@ export class runcode{
                         }
                         diagnostics.push(diagnostic)
                     };
-                    oneinfo=masm.exec(msg)
+                    oneinfo=masm.exec(info)
                 }
                 if (fileuri){
                     this.masmCollection.set(fileuri,diagnostics)
                 }
             }
         }
-        console.log(msg)
+        console.log(info)
         return flag
     }
     /**

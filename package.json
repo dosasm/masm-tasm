@@ -3,8 +3,12 @@
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
 	"description": "汇编语言环境（使用dosbox和msdos player模拟16位系统环境，运行MASM、TASM工具实现汇编运行调试等操作）",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
+	"galleryBanner": {
+		"color": "#C80000",
+		"theme": "dark"
+	  },
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -75,15 +79,15 @@
 					"description": "选择使用的16位环境模拟器，dosbox位于dosbox文件夹下，msdos player位于work文件夹",
 					"enum":["dosbox","msdos player","auto"],
 					"enumDescriptions":[
-						"全部使用dosbox模拟16位系统环境",
+						"全部使用dosbox模拟16位系统环境,不支持问题输出",
 						"尽量使用msdos player在终端中模拟，td除外",
-						"使用msdos-player汇编链接，使用dosbox运行，调试时td用dosbox，debug用masm"
+						"自动选择（推荐）：使用msdos-player汇编链接，使用dosbox运行，TD调试时用dosbox，debug时用masm"
 					]
 				},
 				"masmtasm.emu.savefirst": {
                     "type": "boolean",
                     "default": true,
-                    "description": "在运行之前先保存文件,注意这会保存所有文件"
+                    "description": "在运行之前先保存文件,不保存的话，无法体现当前变更，注意这会保存所有文件"
 				},
 				"masmtasm.dosbox.run": {
 					"type": "string",
