@@ -44,10 +44,10 @@ export class Config {
                 this.DEBUG='if exist c:\\tasm\\TDC2.TD copy c:\\tasm\\TDC2.TD TDCONFIG.TD \nTD T.EXE'
                 }
     }
-    public writeConfig(autoExec: string,bothtool:boolean) {
+    public writeConfig(autoExec: string,bothtool?:boolean) {
         let configUri:Uri = Uri.parse('file:///' + this._path + '/dosbox/VSC-ExtUse.conf');
         let Pathadd=this.MASMorTASM
-        if (bothtool==true){Pathadd='tasm;c:\\masm'}
+        if (bothtool){Pathadd='tasm;c:\\masm'}
         const configContent = `[sdl]
 windowresolution=${this._resolution}
 output=opengl

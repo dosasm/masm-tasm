@@ -16,7 +16,8 @@ goto end
     msdos ../masm/masm T.ASM>T.txt;
     if exist T.OBJ goto masmNext
     echo Fail! ASMfilefrom %4 with %2%
-    FOR /F "skip=3 eol=   tokens=1* delims=(" %%i in (T.txt) do @echo   %~pf4(%%j
+    type T.txt
+    ::FOR /F "skip=3 eol=   tokens=1* delims=(" %%i in (T.txt) do @echo   %~pf4(%%j
     goto end
     :masmNext
     echo Succeed! ASMfilefrom %4
@@ -38,7 +39,8 @@ goto end
     msdos ../tasm/tasm /zi T.ASM>T.txt;
     if exist T.OBJ goto tasmNext
     echo Fail! ASMfilefrom %4 with %2%
-    FOR /F "skip=3 tokens=1,2* delims=T(" %%i in (T.txt) do @if %%j==.ASM echo   %%i%~pf4(%%k
+    type T.txt
+    ::FOR /F "skip=3 tokens=1,2* delims=T(" %%i in (T.txt) do @if %%j==.ASM echo   %%i%~pf4(%%k
     goto end
     ::TODO
     :tasmNext
