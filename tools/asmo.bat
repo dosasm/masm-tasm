@@ -15,12 +15,14 @@ goto end
 :masm
     msdos ../masm/masm T.ASM>T.txt;
     if exist T.OBJ goto masmNext
+    if "%3" == "asm" goto end
     echo ASMfilefrom %4% with %2% failed
     FOR /F "skip=3 eol=   tokens=1* delims=(" %%i in (T.txt) do @echo   %~pf4(%%j
     goto end
     :masmNext
     echo MASM succuess.Start link
     msdos ../masm/link T.OBJ;
+    if "%3" == "link" goto end
     if "%3" == "debug" goto masmDebug
     if "%3" == "run" goto masmRun
     :masmRun
@@ -34,6 +36,7 @@ goto end
 :tasm
     msdos ../tasm/tasm /zi T.ASM>T.txt;
     if exist T.OBJ goto tasmNext
+     if "%3" == "asm" goto end
     echo ASMfilefrom %4% with %2% failed
     FOR /F "skip=3 tokens=1,2* delims=T(" %%i in (T.txt) do @if %%j==.ASM echo   %%i%~pf4(%%k
     goto end
@@ -41,6 +44,7 @@ goto end
     :tasmNext
     echo TASM success Start tlink
     msdos ../tasm/tlink /v/3 T.OBJ;
+    if "%3" == "link" goto end
     if "%3" == "debug" goto tasmDebug
     if "%3" == "run" goto tasmRun
     :tasmRun

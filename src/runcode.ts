@@ -1,10 +1,12 @@
 import * as vscode from 'vscode'
 import {Config} from './configration'
+import {exec} from 'child_process'
 export class runcode{
     private readonly _masmChannel: vscode.OutputChannel;
     private _terminal: vscode.Terminal|null
     private _config:Config|null
     private extpath:string
+    private count:number=1
     constructor(content: vscode.ExtensionContext) {
         const path = content.globalStoragePath.replace(/\\/g, '/');
         this.extpath = content.extensionPath
@@ -29,47 +31,64 @@ export class runcode{
         }
         return this._config
     }
-    private crtTerminal(hide:boolean,cwdpath:string,delcp?:boolean,more?:string):vscode.Terminal {
+    private crtTerminal(hide:boolean,cwdpath:string):vscode.Terminal {
         this._config=this.update()
-        if (this._terminal === null ) {
+        if (this._terminal?.exitStatus || this._terminal ===null) {
             this._terminal = vscode.window.createTerminal({
                 cwd: cwdpath,
                 shellPath: "cmd.exe",
                 hideFromUser: hide,
             });
         }
-        // vscode.window.onDidCloseTerminal(t => {
-        //     if (t.exitStatus && t.exitStatus.code) {
-        //         vscode.window.showInformationMessage(`Exit code: ${t.exitStatus.code}`);
-        //     }
-        //   });
         return this._terminal
     }
+
+    /**
+     * 打开dosbox
+     * @param more需要额外写入配置文件 让dosbox运行的额外命令 ，如编译运行等相关操作
+     * @param bothtools 是否将两种工具都写入dosbox path变量中
+     * @param conf 配置文件类
+     */
     openDOSBox(more:string,bothtools:boolean,conf?:Config) {
         if(!conf){conf=this.update()}
-        this._terminal=this.crtTerminal(true,conf.path);
-        //this._terminal.show()
-            let filename = vscode.window.activeTextEditor?.document.fileName;
-            this._terminal.sendText('  del work\\T.* && copy "'+filename+'" work\\T.ASM');
-            this._masmChannel.appendLine('清除原来的文件T.*并将当前编辑文件复制到'+'work/T.ASM');
         conf.writeConfig(more,bothtools);
-        let command ='start/min/wait "" "dosbox/dosbox.exe" -conf "dosbox/VSC-ExtUse.conf" ';
-        this._masmChannel.appendLine(command);
-        this._terminal.sendText(command);
+        let filename = vscode.window.activeTextEditor?.document.fileName;
+        exec('  del work\\T.* && copy "'+filename+'" work\\T.ASM',{cwd:conf.path,shell:'cmd.exe'});
+        this._masmChannel.appendLine(filename+'已将该文件复制到'+conf.path+'work/T.ASM');
+        exec('start/min/wait "" "dosbox/dosbox.exe" -conf "dosbox/VSC-ExtUse.conf" ',{cwd:conf.path,shell:'cmd.exe'})
         this._masmChannel.appendLine('已打开dosbox，并配置相关环境');
     }
-    private PlayerASM(mode:string,conf:Config)
+
+    /**
+     * 使用msdos来实现相关操作
+     * @param mode 
+     * @param conf 
+     * @param runordebug true为运行，false为debug 
+     */
+    private PlayerASM(mode:string,conf:Config,runordebug:boolean)
     {
         const filename = vscode.window.activeTextEditor?.document.fileName;
-        let command=this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' '+mode+' "'+filename+'"'
-        this._terminal=this.crtTerminal(false,conf.path,false);
-        this._terminal.show()
-        this._terminal.sendText(command)
+        exec(this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' '+mode+' "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
+        (error, stdout, stderr) => {
+                this._terminal=this.crtTerminal(false,conf.path+'\\work')
+                this._terminal.show()
+                if (runordebug){this._terminal.sendText('msdos T.EXE')}
+                else{this._terminal.sendText('msdos -v5.0 ..\\masm\\debug T.exe')}
+                this._terminal.dispose
+            if (error) {
+              console.error(`执行的错误: ${error}`);
+              return;
+            }
+            console.log(`stdout: ${stdout}`);
+            console.error(`stderr: ${stderr}`);
+          })
+        
     }
     Run(){
         this._config=this.update()
+        this._masmChannel.appendLine('运行程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'中运行');
         switch(this._config.DOSemu){
-            case 'msdos player': this.PlayerASM('run',this._config);break;
+            case 'msdos player': this.PlayerASM('link',this._config,true);break;
             case 'dosbox':
                 let text=`${this._config.ASM} \nif exist T.obj ${this._config.LINK} \nif exist T.exe T.exe \n`+this._config.BOXrun
                 this.openDOSBox(text,false)
@@ -78,12 +97,11 @@ export class runcode{
                 break;
             default: throw new Error("未指定emulator");  
         }
-        
     }
     Debug(){
         this._config=this.update()
         if (this._config.DOSemu=='msdos player' && this._config.MASMorTASM=='MASM'){
-            this.PlayerASM('debug',this._config)
+            this.PlayerASM('link',this._config,false)
         }
         else{
             let text=`${this._config.ASM} \nif exist T.obj ${this._config.LINK} \nif exist T.exe `+this._config.DEBUG
