@@ -5,7 +5,8 @@
 1. 支持*TASM*和*MASM*:
 2. **编辑器右键菜单**：在汇编语言的编辑器添加了打开“dosbox，运行，调试”的三个选项
 3. **无需手动安装**：已将相关工具与插件打包在一起。也因此*只适用于windows*
-4. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
+4. 提供diagnose问题输出功能
+5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 十分感谢以上软件！
 
 ## Features主要功能

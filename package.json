@@ -2,8 +2,8 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
-	"description": "汇编语言学习环境（调用dosbox和msdos player运行MASM、TASM工具实现汇编运行调试等操作）",
-	"version": "0.0.4",
+	"description": "汇编语言环境（使用dosbox和msdos player模拟16位系统环境，运行MASM、TASM工具实现汇编运行调试等操作）",
+	"version": "0.0.5",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
 	"engines": {
 		"vscode": "^1.47.0"
@@ -12,7 +12,6 @@
 		"Programming Languages"
 	],
 	"activationEvents": [
-		"onCommand:masm-tasm.helloWorld",
 		"workspaceContains:*.ASM",
 		"workspaceContains:*.asm"
 	],
@@ -39,10 +38,6 @@
 			]
 		},
 		"commands": [
-			{
-				"command": "masm-tasm.helloWorld",
-				"title": "Hello World"
-			},
 			{
 				"command":"masm-tasm.opendosbox",
 				"title":"打开dosbox并配置环境(挂载)"
@@ -76,13 +71,13 @@
 				},
 				"masmtasm.emu.emulator": {
                     "type": "string",
-                    "default": "msdos player",
+                    "default": "auto",
 					"description": "选择使用的16位环境模拟器，dosbox位于dosbox文件夹下，msdos player位于work文件夹",
-					"enum":["dosbox","msdos player","mixed"],
+					"enum":["dosbox","msdos player","auto"],
 					"enumDescriptions":[
 						"全部使用dosbox模拟16位系统环境",
 						"尽量使用msdos player在终端中模拟，td除外",
-						"--还没有实现，请不要选择--汇编过程使用msdos，运行在dosbox中，提供diagnose"
+						"使用msdos-player汇编链接，使用dosbox运行，调试时td用dosbox，debug用masm"
 					]
 				},
 				"masmtasm.emu.savefirst": {
