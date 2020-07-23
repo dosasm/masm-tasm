@@ -20,7 +20,9 @@ goto end
     ::FOR /F "skip=3 eol=   tokens=1* delims=(" %%i in (T.txt) do @echo   %~pf4(%%j
     goto end
     :masmNext
-    echo Succeed! ASMfilefrom %4
+    FOR /F "skip=3 eol=   tokens=1* delims=(" %%i in (T.txt) do @echo warning: T.ASM(%%j
+    echo Succeed! ASMfilefrom %4 with %2%
+    
     if "%3" == "asm" goto end with %2%
     echo Start link
     msdos ../masm/link T.OBJ;
@@ -44,7 +46,9 @@ goto end
     goto end
     ::TODO
     :tasmNext
+    FOR /F "skip=3 tokens=1,2* delims=T(" %%i in (T.txt) do @if %%j==.ASM echo warnings: %%iT.ASM(%%k
     echo Succeed! ASMfilefrom %4 with %2%
+    type T.txt
     if "%3" == "asm" goto end
     echo Start link
     msdos ../tasm/tlink /v/3 T.OBJ;
