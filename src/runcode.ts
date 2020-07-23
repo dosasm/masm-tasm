@@ -70,19 +70,29 @@ export class runcode{
         const filename = vscode.window.activeTextEditor?.document.fileName;
         exec(this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' '+mode+' "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
         (error, stdout, stderr) => {
+            if (error) {
+                this._masmChannel.appendLine('错误')
+                this._masmChannel.append(stderr)
+              console.error(`执行的错误: ${error}`);
+              return;
+            }
+            let failinfo=stdout.substring(0,4)
+            if (failinfo=='Fail'){
+                let sqout=stdout.replace(filename+'(','line(')
+                this._masmChannel.show
+                this._masmChannel.append(sqout)}
+            else if(failinfo=='Succ'){
+                this._masmChannel.append(stdout)
                 this._terminal=this.crtTerminal(false,conf.path+'\\work')
                 this._terminal.show()
                 if (runordebug){this._terminal.sendText('msdos T.EXE')}
                 else{this._terminal.sendText('msdos -v5.0 ..\\masm\\debug T.exe')}
                 this._terminal.dispose
-            if (error) {
-              console.error(`执行的错误: ${error}`);
-              return;
-            }
+                }
             console.log(`stdout: ${stdout}`);
             console.error(`stderr: ${stderr}`);
-          })
-        
+          }
+        )  
     }
     Run(){
         this._config=this.update()
