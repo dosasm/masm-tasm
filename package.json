@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
 	"description": "汇编语言学习环境（调用dosbox和msdos player运行MASM、TASM工具实现汇编运行调试等操作）",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
 	"engines": {
 		"vscode": "^1.47.0"
@@ -76,7 +76,7 @@
 				},
 				"masmtasm.emu.emulator": {
                     "type": "string",
-                    "default": "dosbox",
+                    "default": "msdos player",
 					"description": "选择使用的16位环境模拟器，dosbox位于dosbox文件夹下，msdos player位于work文件夹",
 					"enum":["dosbox","msdos player","mixed"],
 					"enumDescriptions":[
