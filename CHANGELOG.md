@@ -32,7 +32,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 初步完成一些对dosbox和msdos的简单调用还显得不是很完善
 
 - [x] 实现在msdos之下运行调试MASM程序，运行TASM程序
-- [x] 实现Dosbox直线来进行相关功能调用
+- [x] 实现Dosbox来进行相关功能调用
 
 ### [Unreleased]
 

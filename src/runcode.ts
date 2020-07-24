@@ -77,23 +77,26 @@ export class runcode{
      */
     private PlayerASM(mode:string,conf:Config,runordebug:boolean,viaplayer:boolean)
     {
-        const filename = vscode.window.activeTextEditor?.document.fileName;
-        exec(this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' '+mode+' "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
+        const fileuri=vscode.window.activeTextEditor?.document.uri
+        
+        if(fileuri){
+            const filename = vscode.window.activeTextEditor?.document.fileName;
+            exec(this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' '+mode+' "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
         (error, stdout, stderr) => {
             if (error) {console.error(`执行的错误: ${error}`);return;}
             this._masmChannel.append(stdout)
             let info=stdout.substring(0,4)
             switch(info)
             {
-                case 'Fail'||'warn':this.landiag.ErrMsgProcess(stdout)
+                case 'Fail'||'warn':this.landiag.ErrMsgProcess(fileuri,stdout)
                 case 'Fail':
                     let Errmsgwindow=conf.MASMorTASM+'汇编出错,无法运行/调试'
-                    vscode.window.showInformationMessage(Errmsgwindow);
+                    vscode.window.showErrorMessage(Errmsgwindow);
                     break
                 case 'warn':
-                    let warningmsgwindow=conf.MASMorTASM+'成功汇编链接，但是汇编时产生了警告信息(warning)，可能无法运行/调试,是否继续运行'
-                    vscode.window.showInformationMessage(warningmsgwindow, '仍运行', '否').then(result => {
-                        if (result === '仍运行') {
+                    let warningmsgwindow=conf.MASMorTASM+'成功汇编链接生成EXE，但是汇编时产生了警告信息(warning)，可能无法运行/调试,是否继续操作'
+                    vscode.window.showInformationMessage(warningmsgwindow, '继续', '否').then(result => {
+                        if (result === '继续') {
                             this.afterlink(conf,viaplayer,runordebug)
                         } 
                     });
@@ -102,9 +105,7 @@ export class runcode{
                     this.afterlink(conf,viaplayer,runordebug)
                     break
             }
-             //console.log(`stdout: ${stdout}`);
-            // console.error(`stderr: ${stderr}`);
-          })
+          })}
     }
     /**打开dosbox,操作文件
      * @param more 在挂载和设置路径之后执行什么命令 

@@ -36,8 +36,12 @@
 - 汇编工具使用MASM还是TASM
 - 16位模拟器使用dosbox还是msdos-player
   - DOSBox更加完善
-  - msdos-player可以在cmd中运行，但对TD等图形化界面效果不好
-  - auto 根据情况选择：汇编链接使用msdos-player模拟，运行使用DOSBox，调试中MASM(debug)使用msdos-palyer在windows集成终端中显示，TASM(TD)在DOSBox中运行
+  - msdos-player可以在cmd中运行，但对TD等图形化界面的处理效果不好
+  - auto 根据情况选择：
+    - 汇编链接使用msdos-player模拟，更加安静
+    - 运行使用DOSBox，更加直观
+    - 调试中MASM(debug)使用msdos-palyer在windows集成终端中显示（更加美观一些）
+    - 调试中TASM(TD)在DOSBox中运行（目前只能这样）
 - 可以调整dosbox窗口大小，dosbox运行程序之后进行上面操作（是否直接退出程序，还是等待字符）
 - 启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
 - 设置自定义工具路径,详见:[自定义汇编工具路径](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md#自定义汇编工具路径)
