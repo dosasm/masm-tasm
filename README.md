@@ -1,4 +1,4 @@
-# A solution to run 16-bit ASM code in windows
+# <汇编语言环境>使用dosbox和msdos player模拟16位系统环境，运行MASM、TASM工具实现汇编运行调试等操作
 
 这是一个插件是我借鉴"[masm-code](https://github.com/Woodykaixa/masm-code)"后在这个插件的基础上修改的。专注于编译运行（原插件的一些其他特性被我省略了，这样可以与其他插件更好地合作）。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务。
 

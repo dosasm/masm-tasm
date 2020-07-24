@@ -1,19 +1,17 @@
 {
 	"name": "masm-tasm",
-	"displayName": "MASM/TASM",
+	"displayName": "MASM/TASM: Run and Debug",
 	"publisher": "xsro",
-	"description": "汇编语言环境（使用dosbox和msdos player模拟16位系统环境，运行MASM、TASM工具实现汇编运行调试等操作）",
-	"version": "0.0.6",
+	"description": "Run and Debug MASM/TASM code in DOS emulator with right click.",
+	"version": "0.0.7",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
-	"galleryBanner": {
-		"color": "#C80000",
-		"theme": "dark"
-	  },
+	"icon":"cat.png",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
 	"categories": [
-		"Programming Languages"
+		"Programming Languages",
+		"Other"
 	],
 	"activationEvents": [
 		"workspaceContains:*.ASM",
@@ -57,7 +55,7 @@
 		],
 		"configuration" :{
             "type": "object",
-            "title": "MASM-TASM 16bit",
+            "title": "MASM-TASM:run assembly in DOS emulator",
             "properties": {
                 "masmtasm.ASM.toolspath": {
                     "type": "string",
