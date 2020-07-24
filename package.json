@@ -2,18 +2,16 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM: Run and Debug",
 	"publisher": "xsro",
-	"description": "Run and Debug MASM/TASM code in DOS emulator",
-	"version": "0.0.5",
+	"description": "Run and Debug MASM/TASM code in DOS emulator with right click.",
+	"version": "0.0.7",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
-	"galleryBanner": {
-		"color": "#C80000",
-		"theme": "dark"
-	  },
+	"icon":"cat.png",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
 	"categories": [
-		"Programming Languages"
+		"Programming Languages",
+		"Other"
 	],
 	"activationEvents": [
 		"workspaceContains:*.ASM",
