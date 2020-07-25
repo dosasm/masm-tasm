@@ -2,7 +2,7 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM: Run and Debug",
 	"publisher": "xsro",
-	"description": "Run and Debug MASM/TASM code in DOS emulator with right click.",
+	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor. All tools packaged in the extension, Just install and right click!!",
 	"version": "0.0.7",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
 	"icon":"cat.png",
@@ -17,7 +17,6 @@
 		"workspaceContains:*.ASM",
 		"workspaceContains:*.asm"
 	],
-	
 	"main": "./out/extension.js",
 	"contributes": {
 		"menus": {
@@ -51,6 +50,10 @@
 			{
 				"command":"masm-tasm.debugASM",
 				"title":"调试当前程序(汇编+链接+调试)"
+			},
+			{
+				"command":"masm-tasm.cleanalldiagnose",
+				"title":"清除MASM/TASM的所有问题信息"
 			}
 		],
 		"configuration" :{
