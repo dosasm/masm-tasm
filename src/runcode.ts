@@ -8,6 +8,7 @@ export class runcode{
     private _config:Config|null
     private extpath:string
     private landiag:landiagnose
+    private filecontent:string=' '
     constructor(content: vscode.ExtensionContext) {
         const path = content.globalStoragePath.replace(/\\/g, '/');
         this.extpath = content.extensionPath
@@ -78,8 +79,12 @@ export class runcode{
     private PlayerASM(mode:string,conf:Config,runordebug:boolean,viaplayer:boolean)
     {
         const fileuri=vscode.window.activeTextEditor?.document.uri
-        
         if(fileuri){
+            vscode.workspace.fs.readFile(fileuri).then(
+                (text)=>{
+                    this.filecontent=text.toString()
+                    console.log(text)}
+            )
             const filename = vscode.window.activeTextEditor?.document.fileName;
             exec(this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' '+mode+' "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
         (error, stdout, stderr) => {
@@ -88,7 +93,7 @@ export class runcode{
             let info=stdout.substring(0,4)
             switch(info)
             {
-                case 'Fail'||'warn':this.landiag.ErrMsgProcess(fileuri,stdout)
+                case 'Fail'||'warn':this.landiag.ErrMsgProcess(this.filecontent,stdout,fileuri)
                 case 'Fail':
                     let Errmsgwindow=conf.MASMorTASM+'汇编出错,无法运行/调试'
                     vscode.window.showErrorMessage(Errmsgwindow);

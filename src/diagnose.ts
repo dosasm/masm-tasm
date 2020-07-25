@@ -10,40 +10,20 @@ export class landiagnose{
         this.masmCollection=languages.createDiagnosticCollection("MASM")
         this.tasmCollection=languages.createDiagnosticCollection("TASM")
     }
-    private rangeProvider(Uri:Uri,line_str:string):Range {
+    private rangeProvider(str:string,line_str:string):Range {
         let line=parseInt(line_str)
         let ran=new Range(new Position(line-1, 0),new Position(line-1, 10))
         let i:number=0
         let startindex=0
         let endindex=0
         let counteof:number=0
-        workspace.fs.readFile(Uri).then(
-            (text)=>{
-                for (i=0;i<text.length;i++){
-                    if (text[i]==0x0A){
-                        counteof++
-                    }
-                    if (counteof==line-1){
-                       break}
-                }
-                for (;i<text.length;i++){
-                    startindex++
-                    if(text[i]!=0x20 && text[i]!=0x09){
-                        break
-                    }
-                }
-                endindex=startindex
-                for (;i<text.length;i++){
-                    if(text[i]==0x3B || text[i]==0x0D || text[i]==0x0A){
-                        endindex++
-                        break
-                }}
-                console.log(text)
-                console.log(text.toString())
+                var strarr=str.split("\n")
+                var myline=strarr[line-1]
+                startindex=myline.search(/\w/)
+                endindex=myline.search(";")
+                if (endindex==-1) endindex=myline.length
                 ran=new Range(new Position(line-1, startindex),new Position(line-1, endindex))
-            }
-        )
-        return ran
+                return ran
     }
 //TODO:目前代码比较得简单粗暴，希望能过获取行字符位置，这样比较美观
     /**
@@ -51,16 +31,17 @@ export class landiagnose{
      * @param msg 输出信息
      * @param type masm还是tasm
      */
-    public ErrMsgProcess(fileuri:Uri,info:string,filename?:string,ASM?:string):number{
+    public ErrMsgProcess(text:string,info:string,fileuri:Uri,filename?:string,ASM?:string):number{
         let flag =0;
         let firstreg:RegExp=/(Fail|Succeed)! ASMfilefrom \s*.*\s* with (TASM|MASM)\r\n/
         let r=firstreg.exec(info)
+        console.log(text)
         if (r == null){
             console.error('脚本输出中无法获得汇编工具信息')}
         else{
             let MASMorTASM=r.pop()
             if(MASMorTASM=='TASM'){
-                let tasm=/\s*\*+(Error|Warning)\*+\s+(.*)\((\d+)\)\s+(.*)/g
+                let tasm=/\s*\*+(Error|Warning)\*+\s+(T.ASM)\((\d+)\)\s+(.*)/g
                 let diagnostics: Diagnostic[] = []
                 var oneinfo=tasm.exec(info)
                 this.tasmerror=0
@@ -91,7 +72,7 @@ export class landiagnose{
                     if(line_get) {
                         diagnostic= {
                         severity:severity,
-                        range:this.rangeProvider(fileuri,line_get),
+                        range:this.rangeProvider(text,line_get),
                         message: msg,
                         source: 'masm-tasm:TASM'
                         }
@@ -99,7 +80,7 @@ export class landiagnose{
                     };
                     oneinfo=tasm.exec(info)
                 }
-                if (fileuri){
+                if (text){
                     this.tasmCollection.set(fileuri,diagnostics)
                 }
             }
@@ -117,7 +98,7 @@ export class landiagnose{
                     diagnostic= {
                         severity:0,
                         message: "Out of memory",
-                        range:this.rangeProvider(fileuri,line)
+                        range:this.rangeProvider(text,line)
                     }
                     this.masmerror++
                     diagnostics.push(diagnostic)
@@ -150,7 +131,7 @@ export class landiagnose{
                     if(line_get) {
                         diagnostic= {
                         severity:severity,
-                        range:this.rangeProvider(fileuri,line_get),
+                        range:this.rangeProvider(text,line_get),
                         message: msg,
                         source: src
                         }
@@ -158,7 +139,7 @@ export class landiagnose{
                     };
                     oneinfo=masm.exec(info)
                 }
-                if (fileuri){
+                if (text){
                     this.masmCollection.set(fileuri,diagnostics)
                 }
             }
