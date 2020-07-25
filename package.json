@@ -15,7 +15,8 @@
 	],
 	"activationEvents": [
 		"workspaceContains:*.ASM",
-		"workspaceContains:*.asm"
+		"workspaceContains:*.asm",
+		"onCommand:masm-tasm.cleanalldiagnose"
 	],
 	
 	"main": "./out/extension.js",
@@ -51,6 +52,10 @@
 			{
 				"command":"masm-tasm.debugASM",
 				"title":"调试当前程序(汇编+链接+调试)"
+			},
+			{
+				"command":"masm-tasm.cleanalldiagnose",
+				"title":"清除MASM/TASM的所有问题信息"
 			}
 		],
 		"configuration" :{

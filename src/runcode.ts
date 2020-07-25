@@ -91,9 +91,9 @@ export class runcode{
             if (error) {console.error(`执行的错误: ${error}`);return;}
             this._masmChannel.append(stdout)
             let info=stdout.substring(0,4)
+            this.landiag.ErrMsgProcess(this.filecontent,stdout,fileuri)
             switch(info)
             {
-                case 'Fail'||'warn':this.landiag.ErrMsgProcess(this.filecontent,stdout,fileuri)
                 case 'Fail':
                     let Errmsgwindow=conf.MASMorTASM+'汇编出错,无法运行/调试'
                     vscode.window.showErrorMessage(Errmsgwindow);
@@ -159,5 +159,8 @@ export class runcode{
             let text=`${this._config.ASM} \nif exist T.obj ${this._config.LINK} \nif exist T.exe `+this._config.DEBUG
             this.openDOSBox(text,true)
         }   
+    }
+    public cleanalldiagnose(){
+        this.landiag.cleandiagnose('both')
     }
 }

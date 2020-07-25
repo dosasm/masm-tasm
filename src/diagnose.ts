@@ -146,4 +146,14 @@ export class landiagnose{
         }
         return flag
     }
+    public cleandiagnose(MASMorTASMorboth:string){
+        switch(MASMorTASMorboth){
+            case 'both':
+            case 'MASM':
+                this.masmCollection.clear()
+                if (MASMorTASMorboth=='MASM') break
+            case 'TASM':
+                this.tasmCollection.clear()
+        }
+    }
 }

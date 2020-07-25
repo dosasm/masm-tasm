@@ -28,14 +28,19 @@ export function activate(context: vscode.ExtensionContext) {
 	let debugASM = vscode.commands.registerTextEditorCommand('masm-tasm.debugASM', () => {
 		asm.Debug();
 	});
+	let cleanalldiagnose=vscode.commands.registerTextEditorCommand('masm-tasm.cleanalldiagnose', () => {
+		asm.cleanalldiagnose();
+	});
 	context.subscriptions.push(opendosbox);
 	context.subscriptions.push(runASM);
 	context.subscriptions.push(debugASM);
+	context.subscriptions.push(cleanalldiagnose);
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
 	if (asm) {
 		asm.deactivate();
+		asm.cleanalldiagnose();
 	}
 }
