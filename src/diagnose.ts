@@ -1,4 +1,4 @@
-import { languages,Diagnostic,window,Range,Position,DiagnosticCollection, Uri } from 'vscode'
+import { languages,Diagnostic,FileSystem,workspace,Range,Position,DiagnosticCollection, Uri } from 'vscode'
 export class landiagnose{
     private masmCollection:DiagnosticCollection
     private tasmCollection:DiagnosticCollection
@@ -13,6 +13,36 @@ export class landiagnose{
     private rangeProvider(Uri:Uri,line_str:string):Range {
         let line=parseInt(line_str)
         let ran=new Range(new Position(line-1, 0),new Position(line-1, 10))
+        let i:number=0
+        let startindex=0
+        let endindex=0
+        let counteof:number=0
+        workspace.fs.readFile(Uri).then(
+            (text)=>{
+                for (i=0;i<text.length;i++){
+                    if (text[i]==0x0A){
+                        counteof++
+                    }
+                    if (counteof==line-1){
+                       break}
+                }
+                for (;i<text.length;i++){
+                    startindex++
+                    if(text[i]!=0x20 && text[i]!=0x09){
+                        break
+                    }
+                }
+                endindex=startindex
+                for (;i<text.length;i++){
+                    if(text[i]==0x3B || text[i]==0x0D || text[i]==0x0A){
+                        endindex++
+                        break
+                }}
+                console.log(text)
+                console.log(text.toString())
+                ran=new Range(new Position(line-1, startindex),new Position(line-1, endindex))
+            }
+        )
         return ran
     }
 //TODO:目前代码比较得简单粗暴，希望能过获取行字符位置，这样比较美观
@@ -56,10 +86,6 @@ export class landiagnose{
                     oneinfo.shift();//弹出文件内容
                     let line_get=oneinfo.shift()
                     let msg_get=oneinfo.shift()
-                    if(line_get) {
-                        line=parseInt(line_get)
-                        ran=new Range(new Position(line-1, 0),new Position(line-1, 10))
-                    }
                     if(msg_get) msg=msg_get
                     let diagnostic: Diagnostic
                     if(line_get) {
@@ -79,6 +105,8 @@ export class landiagnose{
             }
             else if(MASMorTASM=='MASM'){
                 let diagnostics: Diagnostic[] = [];
+                this.masmerror=0
+                this.masmwarn=0
                 let masm=/\s*T.ASM\((\d+)\): (error|warning)\s+([A-Z]\d+):\s+(.*)/g
                 let masml=/\s*T.ASM\((\d+)\): Out of memory/g
                 let oneinfo=masml.exec(info)
@@ -91,13 +119,12 @@ export class landiagnose{
                         message: "Out of memory",
                         range:this.rangeProvider(fileuri,line)
                     }
+                    this.masmerror++
                     diagnostics.push(diagnostic)
                     oneinfo=masml.exec(info)
                 }   
                 }
                 oneinfo=masm.exec(info)
-                this.masmerror=0
-                this.masmwarn=0
                 while(oneinfo != null && oneinfo.length==5)
                 {
                     let severity:number=0
