@@ -1,7 +1,8 @@
-import { FileSystem, workspace, window,extensions} from 'vscode';
-
+import {  workspace, window} from 'vscode';
+/**
+ * 获取配置信息
+ */
 export class Config {
-
     private _path: string;
     public resolution: string | undefined;
     public BOXrun: string|undefined;

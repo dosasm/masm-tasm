@@ -24,7 +24,7 @@ export class landiagnose{
         ran=new Range(new Position(line-1, startindex),new Position(line-1, endindex))
         return ran
     }
-//TODO:目前代码比较得简单粗暴，希望能过获取行字符位置，这样比较美观
+//TODO:目前代码比较得简单粗暴
     /**
      * 错误匹配diagnose problemmatch，返回0无错误，返回1有警告信息，返回2有错误
      * @param msg 输出信息
@@ -49,8 +49,6 @@ export class landiagnose{
                 { 
                     let severity:number=0
                     let msg:string=' '
-                    let line:number
-                    let ran
                     oneinfo.shift()//弹出全部内容
                     switch(oneinfo.shift())
                     {
@@ -109,8 +107,6 @@ export class landiagnose{
                 {
                     let severity:number=0
                     let msg:string=' '
-                    let line:number
-                    let ran
                     oneinfo.shift()//弹出全部内容
                     let line_get=oneinfo.shift()
                     switch(oneinfo.shift())

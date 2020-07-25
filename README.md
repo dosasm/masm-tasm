@@ -1,13 +1,14 @@
-# 64位计算机下运行调试16位/32位汇编语言（安装即用）
+# 64位计算机下运行调试16位/32位汇编语言
 
 这是一个插件是我在"[masm-code](https://github.com/Woodykaixa/masm-code)"的基础上修改的。专注于编译运行环节（原插件的一些其他特性被我省略了，这样可以与其他插件更好地合作）。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务。
 
 1. 支持*TASM*和*MASM*
 2. **编辑器右键菜单**：在汇编语言的编辑器添加了打开“dosbox，运行，调试”的三个选项
-3. **无需手动安装**：已将相关工具与插件打包在一起。也因此*只适用于windows*
+3. **安装即用**：已将相关工具与插件打包在一起，无需额外配置，建议与TASM或者MASM的语法高亮插件配合使用。也因此*只适用于windows*
 4. 提供diagnose问题输出功能
 5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
-十分感谢以上软件！
+
+十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR
 
 ## Features主要功能
 

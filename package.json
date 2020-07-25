@@ -15,10 +15,8 @@
 	],
 	"activationEvents": [
 		"workspaceContains:*.ASM",
-		"workspaceContains:*.asm",
-		"onCommand:masm-tasm.cleanalldiagnose"
+		"workspaceContains:*.asm"
 	],
-	
 	"main": "./out/extension.js",
 	"contributes": {
 		"menus": {
