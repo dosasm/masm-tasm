@@ -8,7 +8,6 @@ export class DOSBox{
         this._OutChannel=Channel
     }
     private cleanandcopy(cleanpath:string,copyfilename:string){
-        // let filename = vscode.window.activeTextEditor?.document.fileName;
         exec('  del work\\T.* && copy "'+copyfilename+'" work\\T.ASM',{cwd:cleanpath,shell:'cmd.exe'});
         this._OutChannel.appendLine(copyfilename+'已将该文件复制到'+cleanpath+'work/T.ASM');
      }
