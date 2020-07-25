@@ -2,7 +2,7 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM: Run and Debug",
 	"publisher": "xsro",
-	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor. Dosbox packaged in the extension.",
+	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor. All tools packaged in the extension, Just install and right click!!",
 	"version": "0.0.7",
 	"keywords":["dosbox","汇编","微机","tasm","masm"],
 	"icon":"cat.png",

@@ -16,14 +16,13 @@ export class landiagnose{
         let i:number=0
         let startindex=0
         let endindex=0
-        let counteof:number=0
-                var strarr=str.split("\n")
-                var myline=strarr[line-1]
-                startindex=myline.search(/\w/)
-                endindex=myline.search(";")
-                if (endindex==-1) endindex=myline.length
-                ran=new Range(new Position(line-1, startindex),new Position(line-1, endindex))
-                return ran
+        let strarr=str.split("\n")
+        let myline=strarr[line-1]
+        startindex=myline.search(/\w/)
+        endindex=myline.search(";")
+        if (endindex==-1) endindex=myline.length
+        ran=new Range(new Position(line-1, startindex),new Position(line-1, endindex))
+        return ran
     }
 //TODO:目前代码比较得简单粗暴，希望能过获取行字符位置，这样比较美观
     /**

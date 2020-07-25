@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// });
 	asm = new runcode(context);
 	let opendosbox = vscode.commands.registerTextEditorCommand('masm-tasm.opendosbox', () => {
-		asm.openDOSBox(' ',true);
+		asm.Openemu();
 	});
 	let runASM = vscode.commands.registerTextEditorCommand('masm-tasm.runASM', () => {
 		asm.Run();
