@@ -2,18 +2,21 @@ import * as vscode from 'vscode'
 import {Config} from './configration'
 import {DOSBox} from './DOSBox'
 import { MSDOSplayer } from './MSDOS-player'
+import { landiagnose } from './diagnose';
 export class runcode{
     private readonly extOutChannel: vscode.OutputChannel;
     private readonly extpath:string
     private _config:Config|null
     private msdosplayer:MSDOSplayer
-    private dosbox: DOSBox;
+    private dosbox: DOSBox
+    private landiag:landiagnose
     constructor(content: vscode.ExtensionContext) {
         this.extpath = content.extensionPath
         this.extOutChannel = vscode.window.createOutputChannel('Masm-Tasm');
         this._config=null;
         this.msdosplayer=new MSDOSplayer(this.extOutChannel,this.extpath)
         this.dosbox=new DOSBox(this.extOutChannel)
+        this.landiag=new landiagnose()
     }
     Openemu(){
         this._config=this.update()
@@ -26,12 +29,12 @@ export class runcode{
         this._config=this.update()
         this.extOutChannel.appendLine('运行程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'模式下运行');
         switch(this._config.DOSemu){
-            case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true);break;
+            case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true,this.landiag);break;
             case 'dosbox':
                 let text=`${this._config.ASM} \nif exist T.OBJ ${this._config.LINK} \nif exist T.EXE T.EXE \n`+this._config.BOXrun
                 this.dosbox.openDOSBox(this._config,text,true,)
                 break;
-            case 'auto': this.msdosplayer.PlayerASM(this._config,true,false);break;
+            case 'auto': this.msdosplayer.PlayerASM(this._config,true,false,this.landiag);break;
             default: throw new Error("未指定emulator");  
         }
     }
@@ -41,13 +44,13 @@ export class runcode{
     Debug(){
         this._config=this.update()
         if (this._config.DOSemu=='msdos player' && this._config.MASMorTASM=='MASM'){
-            this.msdosplayer.PlayerASM(this._config,false,true)
+            this.msdosplayer.PlayerASM(this._config,false,true,this.landiag)
         }
         else if (this._config.DOSemu=='auto')
         {
             let inplayer:boolean=false
             if (this._config.MASMorTASM=='MASM') inplayer=true
-            this.msdosplayer.PlayerASM(this._config,false,inplayer)
+            this.msdosplayer.PlayerASM(this._config,false,inplayer,this.landiag)
         }
         else{
             let text=`${this._config.ASM} \nif exist T.OBJ ${this._config.LINK} \nif exist T.EXE `+this._config.DEBUG
@@ -55,7 +58,7 @@ export class runcode{
         }   
     }
     public cleanalldiagnose(){
-        this.msdosplayer.cleanalldiagnose
+        this.landiag.cleandiagnose('both')
     }
     deactivate() {
         this.extOutChannel.dispose();

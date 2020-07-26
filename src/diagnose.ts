@@ -1,4 +1,4 @@
-import { languages,Diagnostic,FileSystem,workspace,Range,Position,DiagnosticCollection, Uri } from 'vscode'
+import { languages,Diagnostic,FileSystem,workspace,Range,Position,DiagnosticCollection, Uri, DiagnosticRelatedInformation } from 'vscode'
 export class landiagnose{
     private masmCollection:DiagnosticCollection
     private tasmCollection:DiagnosticCollection
@@ -35,52 +35,63 @@ export class landiagnose{
         ran=new Range(new Position(line-1, startindex),new Position(line-1, endindex))
         return ran
     }
-    private TasmMacroDiag(msg:string,text:string):string{
-        let str:string=msg
-        let tasmmacro=/(\w*)\((\d+)\)\s+(.+)/
-        let r=tasmmacro.exec(msg)
-        if (r!=null && r.length==4){
-            let msg=r.pop()
-            let line_str=r.pop()
-            let name=r.pop()
-            if(name && line_str && msg){
-                if (this.tasmmacro.indexOf(name)==-1){
-                    this.tasmmacro.push(name)
-                    let realline:number|undefined
-                    let line=parseInt(line_str)
-                    let textarr=text.split("\n")
-                    let macro=/\s*(\w+)\s+(MACRO|macro)/
-                    let local=/local|LOCAL/
-                    let i:number
-                    for(i=0;i<textarr.length;i++){
-                        let myline=textarr[i]
-                        let macroreg=macro.exec(myline)
-                        if (macroreg!=null && macroreg[1]==name){
-                            if (local.exec(textarr[i+1])!=null){
-                                realline=i+2
-                            }
-                            else{
-                                realline=i+1
-                            }
-                            break    
-                        }
-                    }
-                    if(realline){
-                        line=line+realline
-                        let diagnostic: Diagnostic
-                        diagnostic= {
-                            severity:0,
-                            range:this.rangeProvider(text,line),
-                            message: msg,
-                            source: 'masm-tasm:TASM'
-                    }
-                    this.diagnostics.push(diagnostic)
+    /**
+     * 
+     * @param uri 文件的uri定位符
+     * @param text 文件的文本内容string
+     * @param macroname 需要寻找的宏名
+     * @param line_str 宏中错误的相对（宏）位置
+     * @param msg 错误信息
+     */
+    private TasmMacroRelated(uri:Uri,text:string,macroname:string,line_str:string,msg:string):DiagnosticRelatedInformation{
+        let related:DiagnosticRelatedInformation
+        let realline:number=-1
+        let line=parseInt(line_str)
+        let textarr=text.split("\n")
+        let macro=/\s*(\w+)\s+(MACRO|macro)/
+        let local=/local|LOCAL/
+        let i:number
+        for(i=0;i<textarr.length;i++){
+            let myline=textarr[i]
+            let macroreg=macro.exec(myline)
+            if (macroreg!=null && macroreg[1]==macroname){
+                if (local.exec(textarr[i+1])!=null){
+                    realline=i+2
                 }
+                else{
+                    realline=i+1
                 }
-            } 
+                break    
+            }
         }
-        return str
+        if(realline==-1){
+            console.error("找不到对应的宏名");
+        }
+        line=line+realline  
+        related={
+            location:{
+                range:this.rangeProvider(text,line),
+                uri: uri
+            },
+            message:msg
+        }
+        return related
     }
+private tasmdiagpush(severity:number,line:number,msg:string,text:string,related?:DiagnosticRelatedInformation){
+    let diagnostic:Diagnostic
+    let relatedinfo:DiagnosticRelatedInformation[]=[]
+        if(related) relatedinfo.push(related)
+        diagnostic= {
+            severity:severity,
+            range:this.rangeProvider(text,line),
+            message: msg,
+            source: 'TASM',
+            relatedInformation:relatedinfo
+        }
+        diagnostic.relatedInformation
+        this.diagnostics.push(diagnostic)
+}
+
 //TODO:目前代码比较得简单粗暴
     /**
      * 错误匹配diagnose problemmatch，返回0无错误，返回1有警告信息，返回2有错误
@@ -99,45 +110,68 @@ export class landiagnose{
             let MASMorTASM=r.pop()
             if(MASMorTASM=='TASM'){
                 this.diagnostics = [];
-                let tasm=/\s*\*+(Error|Warning)\*+\s+(T.ASM)\((\d+)\)\s+(.*)/g
-                var oneinfo=tasm.exec(info)
+                let tasm=/\s*\*+(Error|Warning)\*+\s+(T.ASM)\((\d+)\)\s+(.*)/
+                let tasm2=/\s*\*+(Error|Warning)\*+\s+(T.ASM)\((\d+)\) (.*)\((\d+)\)\s+(.*)/
+                let allmsg=info.split('\n')
+                let i=0
                 this.tasmerror=0
                 this.tasmwarn=0
-                while(oneinfo !== null && oneinfo.length==5)
-                { 
-                    let severity:number=0
-                    let msg:string=' '
-                    oneinfo.shift()//弹出全部内容
-                    switch(oneinfo.shift())
-                    {
-                        case 'Error':
-                            severity=0
-                            this.tasmerror++
-                            break;
-                        case 'Warning':
-                            severity=1
-                            this.tasmwarn++
-                            break;
-                    }
-                    oneinfo.shift();//弹出文件内容
-                    let line_get=oneinfo.shift()
-                    let msg_get=oneinfo.shift()
-                    if(msg_get) msg=msg_get
-                    let diagnostic: Diagnostic
-                    if(line_get) {
-                        diagnostic= {
-                        severity:severity,
-                        range:this.rangeProvider(text,line_get),
-                        message: this.TasmMacroDiag(msg,text),
-                        source: 'TASM'
+                for (i=1;i<allmsg.length;i++)
+                {
+                    let oneinfo=tasm2.exec(allmsg[i])
+                    if(oneinfo !== null ){
+                        let severity:number=0
+                        oneinfo.shift()//弹出全部信息
+                        switch(oneinfo.shift())
+                        {
+                            case 'Error':
+                                severity=0
+                                this.tasmerror++
+                                break;
+                            case 'Warning':
+                                severity=1
+                                this.tasmwarn++
+                                break;
                         }
-                        this.diagnostics.push(diagnostic)
-                    };
-                    oneinfo=tasm.exec(info)
+                        oneinfo.shift()//弹出文件名
+                        let line_get=oneinfo.shift()//错误所在行
+                        let macroname=oneinfo.shift()//宏名
+                        let macroline=oneinfo.shift()//错误所在宏的位置
+                        let msg=oneinfo.shift()//错误名称
+                        if( line_get && macroname && macroline && msg )
+                        {
+                            let related=this.TasmMacroRelated(fileuri,text,macroname,macroline,msg)
+                            let line=parseInt(line_get)
+                            this.tasmdiagpush(severity,line,msg,text,related)
+                            delete allmsg[i]
+                        }
+                    }
+                    oneinfo=tasm.exec(allmsg[i])
+                    if(oneinfo !== null && oneinfo.length==5)
+                    { 
+                        let severity:number=0
+                        oneinfo.shift()//弹出全部内容
+                        switch(oneinfo.shift())
+                        {
+                            case 'Error':
+                                severity=0
+                                this.tasmerror++
+                                break;
+                            case 'Warning':
+                                severity=1
+                                this.tasmwarn++
+                                break;
+                        }
+                        oneinfo.shift();//弹出文件内容
+                        let line_get=oneinfo.shift()
+                        let msg=oneinfo.shift()
+                        if(line_get && msg) {
+                            let line=parseInt(line_get)
+                            this.tasmdiagpush(severity,line,msg,text)
+                        }
+                    }
                 }
-                if (text){
-                    this.tasmCollection.set(fileuri,this.diagnostics)
-                }
+                 this.tasmCollection.set(fileuri,this.diagnostics)
             }
             else if(MASMorTASM=='MASM'){
                 this.diagnostics = [];

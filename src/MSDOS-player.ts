@@ -7,9 +7,7 @@ export class MSDOSplayer{
     private _terminal: Terminal|null
     private extpath:string
     private extOutChannel:OutputChannel
-    private landiag:landiagnose
     constructor(Channel:OutputChannel,extpath:string){
-        this.landiag=new landiagnose()
         this.extpath = extpath
         this.extOutChannel=Channel
         this._terminal=null
@@ -20,7 +18,7 @@ export class MSDOSplayer{
      * @param isrun 决定是运行还是调试，true为运行，false为debug 
      * @param viaplayer 决定在什么中运行/调试,true为在msdos-player中运行或调试，fasle为在dosbox中进行
      */
-    public PlayerASM(conf:Config,isrun:boolean,viaplayer:boolean)
+    public PlayerASM(conf:Config,isrun:boolean,viaplayer:boolean,diag:landiagnose)
     {
         const fileuri=window.activeTextEditor?.document.uri
         let filecontent:string
@@ -36,7 +34,7 @@ export class MSDOSplayer{
             if (error) {console.error(`执行的错误: ${error}`);return;}
             this.extOutChannel.append(stdout)
             let info=stdout.substring(0,4)
-            this.landiag.ErrMsgProcess(filecontent,stdout,fileuri)
+            diag.ErrMsgProcess(filecontent,stdout,fileuri)
             switch(info)
             {
                 case 'Fail':
@@ -56,9 +54,6 @@ export class MSDOSplayer{
                     break
             }
           })}
-    }
-    public cleanalldiagnose(){
-        this.landiag.cleandiagnose('both')
     }
     private outTerminal(run:boolean,conf:Config) {
         if (this._terminal?.exitStatus || this._terminal ===null) {

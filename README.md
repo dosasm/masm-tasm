@@ -1,6 +1,6 @@
 # 64位计算机下运行调试16位/32位汇编语言
 
-这是一个插件是我在"[masm-code](https://github.com/Woodykaixa/masm-code)"的基础上修改的。专注于编译运行环节（原插件的一些其他特性被我省略了，这样可以与其他插件更好地合作）。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务。
+这是一个插件是我在"[masm-code](https://github.com/Woodykaixa/masm-code)"的基础上修改的。专注于编译运行环节（原插件的一些其他特性被我省略了，这样可以与其他插件更好地合作）。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务。应该还是挺适合微机原理中学习汇编语言的。
 
 1. 同时支持调用*TASM*和*MASM*
 2. **编辑器右键菜单**：在汇编语言的编辑器添加了“打开dosbox，运行，调试”的三个选项
@@ -8,7 +8,7 @@
 4. 提供diagnose问题输出功能
 5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 
-十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR
+十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR,一起交流和完善
 
 ## Features主要功能
 
@@ -16,7 +16,9 @@
 
 1. 打开dosbox并配置环境(挂载)：将当前编辑器的文件（注意保存）复制到工作文件夹，启动dosbox 挂载相关目录，添加汇编工具集到path。这样就可以在dosbox窗口运行相关工具，包括：masm,tasm,link,tlink,td,debug
 2. 运行当前程序(汇编+链接+运行)：默认是生成exe，其他操作请使用选项一，手动完成
-3. 调试当前程序(汇编+链接+调试)：
+3. 调试当前程序(汇编+链接+调试)
+
+当使用2、3功能并且通过msdos或者auto模式运行调试代码的时候，如果出错会在问题面板中显示错误信息，如果想要清除可以在命令面板输入“清除MASM/TASM的所有问题信息”来实现
 
 ### Demo1 使用MASM（via msdos-player）
 
@@ -26,7 +28,7 @@
 
 ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
 
-### Demo3 打开dosbox，适合更多自定义操作
+### Demo3 打开dosbox，适合进行更多自定义操作
 
 ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif)
 
