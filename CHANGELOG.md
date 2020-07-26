@@ -14,11 +14,11 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] bug：每次一开始启动的时候需要点击两次,第一次不起作用
 - [ ] LSP和DAP支持（目前对我来说太难了）
 
-### 0.0.8
+### 0.0.8/0.0.9
 
 - [x] diagnose 精准显示（目前是从非空格行首显示到分号处（或行末尾），还需要完善）
 
-实现diagnose问题信息的相对精准地显示，提供一个命令，打开命令面板之后可以使用“清除MASM/TASM的所有问题信息”清除diagnose信息。
+实现diagnose问题信息的相对精准地显示，提供一个命令，打开命令面板之后可以使用“清除MASM/TASM的所有问题信息”清除diagnose信息。0.0.9整理了一下代码
 
 ### 0.0.5/0.0.6/0.0.7
 

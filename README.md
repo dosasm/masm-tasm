@@ -2,8 +2,8 @@
 
 这是一个插件是我在"[masm-code](https://github.com/Woodykaixa/masm-code)"的基础上修改的。专注于编译运行环节（原插件的一些其他特性被我省略了，这样可以与其他插件更好地合作）。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务。
 
-1. 支持*TASM*和*MASM*
-2. **编辑器右键菜单**：在汇编语言的编辑器添加了打开“dosbox，运行，调试”的三个选项
+1. 同时支持调用*TASM*和*MASM*
+2. **编辑器右键菜单**：在汇编语言的编辑器添加了“打开dosbox，运行，调试”的三个选项
 3. **安装即用**：已将相关工具与插件打包在一起，无需额外配置，建议与TASM或者MASM的语法高亮插件配合使用。也因此*只适用于windows*
 4. 提供diagnose问题输出功能
 5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
@@ -15,8 +15,8 @@
 当工作区有`ASM(asm)`后缀的文件时插件会启动，当前编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
 1. 打开dosbox并配置环境(挂载)：将当前编辑器的文件（注意保存）复制到工作文件夹，启动dosbox 挂载相关目录，添加汇编工具集到path。这样就可以在dosbox窗口运行相关工具，包括：masm,tasm,link,tlink,td,debug
-2. 运行当前程序(汇编+链接+运行)
-3. 调试当前程序(汇编+链接+调试)
+2. 运行当前程序(汇编+链接+运行)：默认是生成exe，其他操作请使用选项一，手动完成
+3. 调试当前程序(汇编+链接+调试)：
 
 ### Demo1 使用MASM（via msdos-player）
 
@@ -26,7 +26,7 @@
 
 ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
 
-### Demo3 打开dosbox
+### Demo3 打开dosbox，适合更多自定义操作
 
 ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif)
 
