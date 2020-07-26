@@ -18,7 +18,7 @@ export class DOSBox{
             this.writeBoxconfig(more,conf,bothtools);
             exec('start/min/wait "" "dosbox/dosbox.exe" -conf "dosbox/VSC-ExtUse.conf" ',{cwd:conf.path,shell:'cmd.exe'})
             if(bothtools)this.cleanandcopy(conf.path,filename)
-            this._OutChannel.appendLine("已打开DOSBox，并配置汇编环境")
+            this._OutChannel.appendLine("( ^ V ^ )已打开DOSBox，并配置汇编环境")
         }   
     }
     private cleanandcopy(cleanpath:string,copyfilename:string){

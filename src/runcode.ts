@@ -27,7 +27,7 @@ export class runcode{
      */
     Run(){
         this._config=this.update()
-        this.extOutChannel.appendLine('运行程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'模式下运行');
+        this.extOutChannel.appendLine('(^ v ^)运行程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'模式下运行');
         switch(this._config.DOSemu){
             case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true,this.landiag);break;
             case 'dosbox':
@@ -43,6 +43,7 @@ export class runcode{
      */
     Debug(){
         this._config=this.update()
+        this.extOutChannel.appendLine('(^ v ^)调试程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'模式下运行');
         if (this._config.DOSemu=='msdos player' && this._config.MASMorTASM=='MASM'){
             this.msdosplayer.PlayerASM(this._config,false,true,this.landiag)
         }
