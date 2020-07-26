@@ -8,7 +8,7 @@
 set "cdo=%CD%"
 cd "%1%\work"
 del T.*
-copy %4 T.asm>nul 
+copy %4 T.ASM>nul 
 if "%2" == "MASM" goto masm
 if "%2" == "TASM" goto tasm
 goto end
@@ -31,11 +31,11 @@ goto end
     if "%3" == "run" goto masmRun
     :masmRun
     echo run
-    msdos T.exe
+    msdos T.EXE
     goto end
     :masmDebug
     echo debug using debug.exe
-    msdos -v5.0 ../masm/debug T.exe
+    msdos -v5.0 ../masm/debug T.EXE
     goto end
 :tasm
     msdos ../tasm/tasm /zi T.ASM>T.txt;
@@ -57,11 +57,11 @@ goto end
     if "%3" == "run" goto tasmRun
     :tasmRun
     echo run
-    msdos T.exe
+    msdos T.EXE
     goto end
     :tasmDebug
     echo debug using td.exe
-    msdos -v5.0 ../tasm/td T.exe
+    msdos -v5.0 ../tasm/td T.EXE
     goto end
 :end
 cd "%cdo%"

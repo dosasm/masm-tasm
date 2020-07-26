@@ -1,39 +1,40 @@
 import * as vscode from 'vscode'
-import {exec} from 'child_process'
 import {Config} from './configration'
-import {landiagnose} from './diagnose'
 import {DOSBox} from './DOSBox'
+import { MSDOSplayer } from './MSDOS-player'
+import { landiagnose } from './diagnose';
 export class runcode{
     private readonly extOutChannel: vscode.OutputChannel;
-    private _terminal: vscode.Terminal|null
+    private readonly extpath:string
     private _config:Config|null
-    private extpath:string
+    private msdosplayer:MSDOSplayer
+    private dosbox: DOSBox
     private landiag:landiagnose
-    private filecontent:string=' '
     constructor(content: vscode.ExtensionContext) {
         this.extpath = content.extensionPath
-        this.landiag=new landiagnose()
         this.extOutChannel = vscode.window.createOutputChannel('Masm-Tasm');
-        this._terminal = null;
         this._config=null;
+        this.msdosplayer=new MSDOSplayer(this.extOutChannel,this.extpath)
+        this.dosbox=new DOSBox(this.extOutChannel)
+        this.landiag=new landiagnose()
     }
     Openemu(){
         this._config=this.update()
-        this.opendosbox(' ',true,this._config)
+        this.dosbox.openDOSBox(this._config,' ',true)
     }
     /**运行汇编代码的入口
      * 获取拓展的设置，并执行相应操作
      */
     Run(){
         this._config=this.update()
-        this.extOutChannel.appendLine('运行程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'模式下运行');
+        this.extOutChannel.appendLine('(^ v ^)运行程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'模式下运行');
         switch(this._config.DOSemu){
-            case 'msdos player': this.PlayerASM('link',this._config,true,true);break;
+            case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true,this.landiag);break;
             case 'dosbox':
-                let text=`${this._config.ASM} \nif exist T.obj ${this._config.LINK} \nif exist T.exe T.exe \n`+this._config.BOXrun
-                this.opendosbox(text,true,this._config)
+                let text=`${this._config.ASM} \nif exist T.OBJ ${this._config.LINK} \nif exist T.EXE T.EXE \n`+this._config.BOXrun
+                this.dosbox.openDOSBox(this._config,text,true,)
                 break;
-            case 'auto': this.PlayerASM('link',this._config,true,false);break;
+            case 'auto': this.msdosplayer.PlayerASM(this._config,true,false,this.landiag);break;
             default: throw new Error("未指定emulator");  
         }
     }
@@ -42,18 +43,19 @@ export class runcode{
      */
     Debug(){
         this._config=this.update()
+        this.extOutChannel.appendLine('(^ v ^)调试程序，使用'+this._config.MASMorTASM+' 在'+this._config.DOSemu+'模式下运行');
         if (this._config.DOSemu=='msdos player' && this._config.MASMorTASM=='MASM'){
-            this.PlayerASM('link',this._config,false,true)
+            this.msdosplayer.PlayerASM(this._config,false,true,this.landiag)
         }
         else if (this._config.DOSemu=='auto')
         {
             let inplayer:boolean=false
             if (this._config.MASMorTASM=='MASM') inplayer=true
-            this.PlayerASM('link',this._config,false,inplayer)
+            this.msdosplayer.PlayerASM(this._config,false,inplayer,this.landiag)
         }
         else{
-            let text=`${this._config.ASM} \nif exist T.obj ${this._config.LINK} \nif exist T.exe `+this._config.DEBUG
-            this.opendosbox(text,true,this._config)
+            let text=`${this._config.ASM} \nif exist T.OBJ ${this._config.LINK} \nif exist T.EXE `+this._config.DEBUG
+            this.dosbox.openDOSBox(this._config,text,true,)
         }   
     }
     public cleanalldiagnose(){
@@ -61,9 +63,6 @@ export class runcode{
     }
     deactivate() {
         this.extOutChannel.dispose();
-        if (this._terminal !== null) {
-            this._terminal.dispose();
-        }
     }
     /**更新设置，根据设置保存编辑器文件
      **/
@@ -73,85 +72,5 @@ export class runcode{
             vscode.workspace.saveAll()
         }
         return this._config
-    }
-    private opendosbox(more:string,bothtool:boolean,conf:Config){
-        let dosbox=new DOSBox(this.extOutChannel)
-        dosbox.openDOSBox(more,conf,bothtool)
-    }
-
-    /**
-     * 执行msdos需要的终端操作，打开终端并输出内容
-     * @param run 为true执行运行命令，为false执行调试任务
-     * @param conf 
-     */
-    private outTerminal(run:boolean,conf:Config) {
-        if (this._terminal?.exitStatus || this._terminal ===null) {
-            this._terminal = vscode.window.createTerminal({
-                cwd: conf.path+'\\work',
-                shellPath: "cmd.exe",
-                hideFromUser: false,
-            });
-        }
-        this._terminal.show()  
-        if (run){
-            this._terminal.sendText('msdos T.EXE')}
-        else{
-            this._terminal.sendText('msdos -v5.0 ..\\masm\\debug T.exe')}
-        this._terminal.dispose
-    }
-
-    private afterlink(conf:Config,viaplayer:boolean,runordebug:boolean){
-        if(viaplayer){
-            this.outTerminal(runordebug,conf)
-        }
-        else {
-            if (runordebug){
-            this.opendosbox('T.exe\n'+conf.BOXrun,false,conf)}
-            else{
-            this.opendosbox(conf.DEBUG,false,conf)}
-        }
-    }
-    /**
-     * 使用msdos来实现相关操作
-     * @param mode 为link表示调用batch脚本执行汇编、链接
-     * @param conf 
-     * @param runordebug true为运行，false为debug 
-     * @param viaplayer true为在msdos-player中运行或调试，fasle为在dosbox中进行
-     */
-    private PlayerASM(mode:string,conf:Config,runordebug:boolean,viaplayer:boolean)
-    {
-        const fileuri=vscode.window.activeTextEditor?.document.uri
-        if(fileuri){
-            vscode.workspace.fs.readFile(fileuri).then(
-                (text)=>{
-                    this.filecontent=text.toString()
-                    console.log(text)}
-            )
-            const filename = vscode.window.activeTextEditor?.document.fileName;
-            exec(this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' '+mode+' "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
-        (error, stdout, stderr) => {
-            if (error) {console.error(`执行的错误: ${error}`);return;}
-            this.extOutChannel.append(stdout)
-            let info=stdout.substring(0,4)
-            this.landiag.ErrMsgProcess(this.filecontent,stdout,fileuri)
-            switch(info)
-            {
-                case 'Fail':
-                    let Errmsgwindow=conf.MASMorTASM+'汇编出错,无法运行/调试'
-                    vscode.window.showErrorMessage(Errmsgwindow);
-                    break
-                case 'warn':
-                    let warningmsgwindow=conf.MASMorTASM+'成功汇编链接生成EXE，但是汇编时产生了警告信息(warning)，可能无法运行/调试,是否继续操作'
-                    vscode.window.showInformationMessage(warningmsgwindow, '继续', '否').then(result => {
-                        if (result === '继续') {
-                            this.afterlink(conf,viaplayer,runordebug)
-                        } 
-                    });
-                    break
-                case 'Succ': 
-                    this.afterlink(conf,viaplayer,runordebug)
-                    break
-            }
-          })}
     }
 }

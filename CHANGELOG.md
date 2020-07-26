@@ -2,11 +2,10 @@
 
 All notable changes to the "masm-tasm" extension will be documented in this file.
 
-## 近期目标
+## 目标
 
 - [ ] 搞一个好看的logo
 - [ ] 问题匹配功能完善
-  - [ ] TASM中宏语法的错误，将宏中错误的地方也显示出来
   - [ ] 在标注错误位置的时候，更加智能地显示
 - [ ] hover的简单实现
   - [ ] 主要中断的hover
@@ -14,9 +13,10 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] bug：每次一开始启动的时候需要点击两次,第一次不起作用
 - [ ] LSP和DAP支持（目前对我来说太难了）
 
-### 0.0.8
+### 0.0.8/0.0.9
 
-- [x] diagnose 精准显示（目前是从非空格行首显示到分号处（或行末尾），还需要完善）
+- [x] (0.0.8)diagnose 精准显示（目前是从非空格行首显示到分号处（或行末尾），还需要完善）
+- [x] (0.0.9)TASM中宏语法的错误，将宏中错误的地方也显示出来
 
 实现diagnose问题信息的相对精准地显示，提供一个命令，打开命令面板之后可以使用“清除MASM/TASM的所有问题信息”清除diagnose信息。
 
