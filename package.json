@@ -17,6 +17,7 @@
 		"onLanguage:asm",
 		"onLanguage:masm",
 		"onLanguage:tasm",
+		"onLanguage:assembly",
 		"workspaceContains:*.ASM",
 		"workspaceContains:*.asm"
 	],
