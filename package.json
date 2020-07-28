@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM: Run and Debug",
 	"publisher": "xsro",
 	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor. All tools packaged in the extension, Just install and right click!!",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"keywords":["dosbox","16位汇编","微机原理","tasm","masm"],
 	"icon":"cat.png",
 	"engines": {
@@ -170,7 +170,8 @@
 		"url": "https://github.com/xsro/masm-tasm"
 	},
 	"bugs": {
-		"url": "https://github.com/xsro/masm-tasm/issues"
+		"url": "https://github.com/xsro/masm-tasm/issues",
+		"email":"clcxsr@outlook.com"
 	},
 	"license": "MIT"
 }

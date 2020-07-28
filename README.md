@@ -8,7 +8,7 @@
 4. 提供diagnose**问题输出**功能
 5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 
-十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR,一起交流和完善。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)自定义VSCode任务
+十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR,也欢迎在评论区给出你的意见，大家一起交流和完善。如果不想用插件可以选择参考[github](https://github.com/xsro/VSC-ASMtasks)通过自定义VSCode任务的方式实现部分功能
 
 ## Features主要功能
 
@@ -40,7 +40,7 @@
 
 要实现Demo中的功能需要在拓展中进行设置，同时设置中还有一些选项，以提供更大的灵活性
 
-- 汇编工具使用MASM还是TASM
+- 汇编工具使用`MASM`还是`TASM`
 - 16位模拟器使用dosbox还是msdos-player
   - DOSBox更加完善
   - msdos-player可以在cmd中运行，但对TD等图形化界面的处理效果不好
