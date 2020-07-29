@@ -211,9 +211,9 @@ private tasmdiagpush(severity:number,line:number,msg:string,text:string,related?
                             this.masmwarn++
                             break
                     }
-                    let tag=oneinfo.shift()
+                    let msgcode_get=oneinfo.shift()
                     let msg_get=oneinfo.shift()
-                    if(msg_get) msg=msg_get
+                    if(msgcode_get && msg_get) msg=msgcode_get+' '+msg_get
                     let diagnostic: Diagnostic
                     if(line_get ) {
                         diagnostic= {

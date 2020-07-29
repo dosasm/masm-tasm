@@ -27,7 +27,7 @@ export class Config {
             if (configtoolpath){
                 this._path=configtoolpath.toString().replace(/\\/g, '/');}
                 else if(extpath){
-                    this._path=extpath+'/tools'
+                    this._path=extpath+'\\tools'
                 }
                 else {
                 window.showInformationMessage('未设置汇编工具路径请在设置中添加相关设置');
