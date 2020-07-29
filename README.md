@@ -14,11 +14,9 @@
 
 当目前编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
-1. 打开dosbox并配置环境(挂载)：VSCode当前文件复制为T.ASM，可以在打开的dosbox窗口进行汇编相关操作
+1. 打开dosbox并配置环境(挂载)：手动在打开的dosbox窗口进行[汇编相关操作](https://github.com/xsro/masm-tasm/raw/master/doc/在dosbox中手动操作.md)
 2. 运行当前程序(汇编+链接+运行)：默认是生成exe
 3. 调试当前程序(汇编+链接+调试)：使用masm则会调用debug调试，使用tasm会调用td调试
-
-插件工作时会将VSCode当前编辑器的文件（注意保存）复制到工作文件夹，启动dosbox 挂载相关目录，添加汇编工具集到path。这样就可以在dosbox窗口运行相关工具。此时d盘的T.ASM文件即为VSCode编辑器当前文件，你可以对他进行汇编、链接、运行、调试等操作。当使用2、3功能并且通过msdos或者auto模式运行调试代码的时候，如果出错会在问题面板中显示错误信息，如果想要清除可以在命令面板输入“清除MASM/TASM的所有问题信息”来实现。
 
 ### Demo1 使用MASM（via msdos-player）
 
@@ -35,6 +33,8 @@
 ### Demo4 错误信息输出及清除
 
 ![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif)
+
+插件工作时会将VSCode当前编辑器的文件（注意保存）复制到工作文件夹，启动dosbox 挂载相关目录，添加汇编工具集到path。这样就可以在dosbox窗口运行相关工具。此时d盘的T.ASM文件即为VSCode编辑器当前文件，你可以对他进行汇编、链接、运行、调试等操作。当使用2、3功能并且通过msdos或者auto模式运行调试代码的时候，如果出错会在问题面板中显示错误信息，如果想要清除可以在命令面板输入“清除MASM/TASM的所有问题信息”来实现。
 
 ## Extension Settings拓展设置
 
@@ -53,7 +53,7 @@
 - 启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
 - 设置自定义工具路径,详见:[自定义汇编工具路径](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md#自定义汇编工具路径)
 
-### Docs & Thanks & Licenses
+### :point_right:Docs & Thanks & Licenses
 
 - this ext is [MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
   - thank for [masm-code](https://github.com/Woodykaixa/masm-code),,[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](dosbox.com)
