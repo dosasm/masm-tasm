@@ -6,7 +6,7 @@
 2. 编辑器**右键菜单**：在汇编语言的编辑器添加了“打开dosbox，运行，调试”的三个选项
 3. **安装即用**：已将相关工具与插件打包在一起，无需额外配置，建议与TASM或者MASM的语法高亮插件配合使用。也因此*本插件只适用于windows*
 4. 提供diagnose**问题输出**功能
-5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
+5. 调用[dosbox](https://www.dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 
 十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。如果不想用插件可以选择参考[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)通过自定义VSCode任务的方式实现部分功能，如果需要测试用的代码可以到[tasm topic](https://github.com/topics/tasm)、[cltasm](https://gitee.com/chenliucx/CLTASM/tree/code/)中找。
 
@@ -14,7 +14,7 @@
 
 当目前编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
-1. 打开dosbox并配置环境(挂载)：手动在打开的dosbox窗口进行[汇编相关操作](https://github.com/xsro/masm-tasm/raw/master/doc/在dosbox中手动操作.md)
+1. 打开dosbox并配置环境(挂载)：手动在打开的dosbox窗口进行[汇编相关操作](https://github.com/xsro/masm-tasm/blob/master/doc/在dosbox中手动操作.md)
 2. 运行当前程序(汇编+链接+运行)：默认是生成exe
 3. 调试当前程序(汇编+链接+调试)：使用masm则会调用debug调试，使用tasm会调用td调试
 
@@ -56,9 +56,9 @@
 ### :point_right:Docs & Thanks & Licenses
 
 - this ext is [MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
-  - thank for [masm-code](https://github.com/Woodykaixa/masm-code),,[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](dosbox.com)
+  - thank for [masm-code](https://github.com/Woodykaixa/masm-code),,[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
   - their [info and licences](https://github.com/xsro/masm-tasm/blob/master/doc/liscence.md)
 - [关于TASM/MASM汇编工具以及相关软件](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md)
-- [一些相关资料](https://github.com/xsro/VSC-ASMtasks/wiki)
+- [一些相关资料:wiki](https://github.com/xsro/VSC-ASMtasks/wiki)
 
 Enjoy!:smile:
