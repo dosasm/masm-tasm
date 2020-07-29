@@ -8,9 +8,9 @@
 4. 提供diagnose**问题输出**功能
 5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 
-:clap:十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。如果不想用插件可以选择参考[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)通过自定义VSCode任务的方式实现部分功能，如果需要测试用的代码可以到[tasm topic](https://github.com/topics/tasm)、[cltasm](https://gitee.com/chenliucx/CLTASM/tree/code/)中找。
+十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。如果不想用插件可以选择参考[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)通过自定义VSCode任务的方式实现部分功能，如果需要测试用的代码可以到[tasm topic](https://github.com/topics/tasm)、[cltasm](https://gitee.com/chenliucx/CLTASM/tree/code/)中找。
 
-## Features主要功能
+## :clap:Features主要功能
 
 当目前编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
@@ -36,7 +36,7 @@
 
 插件工作时会将VSCode当前编辑器的文件（注意保存）复制到工作文件夹，启动dosbox 挂载相关目录，添加汇编工具集到path。这样就可以在dosbox窗口运行相关工具。此时d盘的T.ASM文件即为VSCode编辑器当前文件，你可以对他进行汇编、链接、运行、调试等操作。当使用2、3功能并且通过msdos或者auto模式运行调试代码的时候，如果出错会在问题面板中显示错误信息，如果想要清除可以在命令面板输入“清除MASM/TASM的所有问题信息”来实现。
 
-## Extension Settings拓展设置
+## :bulb:Extension Settings拓展设置
 
 要实现Demo中的功能需要在拓展中进行设置，同时设置中还有一些选项，以提供更大的灵活性
 
