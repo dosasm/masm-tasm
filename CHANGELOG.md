@@ -15,7 +15,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 
 ### 0.0.10
 
-增加对带空格路径的优化，完善文档以及readme
+增加对带空格路径的优化，完善文档以及readme，修复某一次修改引起的masm错误信息显示不全的问题
 
 ### 0.0.8/0.0.9
 

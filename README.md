@@ -8,7 +8,7 @@
 4. 提供diagnose**问题输出**功能
 5. 调用[dosbox](dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 
-十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。如果不想用插件可以选择参考[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)通过自定义VSCode任务的方式实现部分功能，如果需要测试用的代码可以到[tasm topic](https://github.com/topics/tasm)、[cltasm](https://gitee.com/chenliucx/CLTASM/tree/code/)中找.
+:clap:十分感谢以上提到的软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。如果不想用插件可以选择参考[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)通过自定义VSCode任务的方式实现部分功能，如果需要测试用的代码可以到[tasm topic](https://github.com/topics/tasm)、[cltasm](https://gitee.com/chenliucx/CLTASM/tree/code/)中找。
 
 ## Features主要功能
 
@@ -61,4 +61,4 @@
 - [关于TASM/MASM汇编工具以及相关软件](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md)
 - [一些相关资料](https://github.com/xsro/VSC-ASMtasks/wiki)
 
-Enjoy!
+Enjoy!:smile:
