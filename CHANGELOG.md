@@ -13,6 +13,10 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] bug：每次一开始启动的时候需要点击两次,第一次不起作用
 - [ ] LSP和DAP支持（目前对我来说太难了）
 
+### 0.0.10
+
+增加对带空格路径的优化，完善文档以及readme
+
 ### 0.0.8/0.0.9
 
 - [x] (0.0.8)diagnose 精准显示（目前是从非空格行首显示到分号处（或行末尾），还需要完善）
@@ -22,7 +26,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 
 ### 0.0.5/0.0.6/0.0.7
 
-增加一个auto模式，在汇编链接时调用mosdos，（比较安静）在运行时使用dosbox，在使用TASM TD调试时使用dosbox（msdos会显示异常），在使用masm debug的时候使用msdos，这样直接在终端中显示会比较舒服。（变动有点大，可能会不稳定，欢迎issue和PR呀,估计最近几个版本都是修bug了）
+增加一个auto模式，在汇编链接时调用msdos-player，（比较安静）在运行时使用dosbox，在使用TASM TD调试时使用dosbox（msdos会显示异常），在使用masm debug的时候使用msdos，这样直接在终端中显示会比较舒服。（变动有点大，可能会不稳定，欢迎issue和PR呀,估计最近几个版本都是修bug了）
 
 1. 0.0.6：修复检测错误不全的问题，应该没有大问题了
 2. 0.0.7: 修复dosbox中调用失灵的问题

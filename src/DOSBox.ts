@@ -35,8 +35,8 @@ export class DOSBox{
 windowresolution=${conf.resolution}
 output=opengl
 [autoexec]
-mount c ${conf.path}
-mount d ${conf.path}\\work
+mount c "${conf.path}"
+mount d "${conf.path}\\work"
 set PATH=c:\\${Pathadd}
 d:
 ${autoExec}`;

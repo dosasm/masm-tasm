@@ -29,7 +29,7 @@ export class MSDOSplayer{
                     console.log(text)}
             )
             const filename = window.activeTextEditor?.document.fileName;
-            exec(this.extpath+'\\tools\\asmo.bat "'+conf.path+'" '+conf.MASMorTASM+' link "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
+            exec('"'+this.extpath+'\\tools\\asmo.bat" "'+conf.path+'" '+conf.MASMorTASM+' link "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
         (error, stdout, stderr) => {
             if (error) {console.error(`执行的错误: ${error}`);return;}
             this.extOutChannel.append(stdout)
