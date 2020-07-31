@@ -13,6 +13,10 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] bug：每次一开始启动的时候需要点击两次,第一次不起作用
 - [ ] LSP和DAP支持（目前对我来说太难了）
 
+## 0.1.0 [2020/7/31]
+
+基本实现了与dos模拟器交互的主要功能了，渴求反馈哈
+
 ### 0.0.10/0.0.11
 
 增加对带空格路径的优化，完善文档以及readme，修复某一次修改引起的masm错误信息显示不全的问题.0.0.11修复了文档中显示dosbox链接的问题
