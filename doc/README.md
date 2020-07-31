@@ -40,7 +40,7 @@ The extension do not contribute languages features, You may need some extension 
 - `masmtasm.ASM.MASMorTASM` use `MASM` or `TASM`
 - `masmtasm.emu.emulator` use dosbox or msdos-player
   - `DOSBox` more stable
-  - `msdos-player`quiet, it runs in command prompt(CMD).  So it cannot support `TD.exe`
+  - `msdos-player`quiet, it runs in command prompt(CMD).  So it cannot support GUI like `TD.exe`
   - `auto` auto select
     1. use msdos-player to compile and link
     2. use DOSBox to run
@@ -52,8 +52,8 @@ The extension do not contribute languages features, You may need some extension 
 
 ### :point_right:Docs & Thanks & Licenses
 
-- this ext is [MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
-  - thank for [masm-code](https://github.com/Woodykaixa/masm-code),,[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
+- this extension is [MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
+  - thanks for [masm-code](https://github.com/Woodykaixa/masm-code),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
   - their [info and licences](https://github.com/xsro/masm-tasm/blob/master/doc/liscence.md)
 - [about the tools](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md)
 - [some infomation :wiki](https://github.com/xsro/VSC-ASMtasks/wiki)

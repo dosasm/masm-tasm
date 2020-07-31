@@ -15,7 +15,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 
 ## 0.1.0 [2020/7/31]
 
-基本实现了与dos模拟器交互的主要功能了，渴求反馈哈
+基本实现了与dos模拟器交互的主要功能了，应该文定路。渴求反馈哈
 
 ### 0.0.10/0.0.11
 
