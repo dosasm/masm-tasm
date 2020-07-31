@@ -26,7 +26,8 @@ export class MSDOSplayer{
             workspace.fs.readFile(fileuri).then(
                 (text)=>{
                     filecontent=text.toString()
-                    console.log(text)}
+                    //console.log(text)
+                }
             )
             const filename = window.activeTextEditor?.document.fileName;
             exec('"'+this.extpath+'\\tools\\asmo.bat" "'+conf.path+'" '+conf.MASMorTASM+' link "'+filename+'"',{cwd:conf.path,shell:'cmd.exe'},
