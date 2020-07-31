@@ -3,8 +3,8 @@
 This extension is modified from "[masm-code](https://github.com/Woodykaixa/masm-code)", focusing on the interaction with DOS emulator (DOSBox and msdos-player). It is helpful for you to study MASM, TASM and also the course <*principles& peripheral technology of microprocessor*>.
 
 - Support both **TASM and MASM**: you can choose MASM or TASM in the preference
-- **Editor Menu**: run and debug with right click
-- **Convenient**: related tools packaged in the extension. Just install and right click  (the extension *only support windows* currently)
+- **Editor Menu**: run and debug with right click on the VSCode editor panel
+- **Convenient**: related tools packaged in the extension. Just install and right click  (the extension *only supports windows* currently)
 - **Diagnose**: process the output of ASM tools and ouput them in VSCode
 - Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help.
 - Some interesting code your may need:[VSCtasks wiki](https://github.com/xsro/VSC-ASMtasks/wiki/dosbox),[cltasm](https://gitee.com/chenliucx/CLTASM/tree/code/)
@@ -44,10 +44,10 @@ The extension do not contribute languages features, You may need some extension 
   - `auto` auto select
     1. use msdos-player to compile and link
     2. use DOSBox to run
-    3. use msdos-palyer for MASM(debug)
+    3. use msdos-player for MASM(debug)
     4. use DOSBox for TASM(TD)
 - `masmtasm.dosbox.CustomResolution`: size(resolution) of the dosbox window,for example `1024x960`
-- `masmtasm.emu.savefirst`: boolean. whether save all file first before compile 
+- `masmtasm.emu.savefirst`: boolean. whether save all file first before compile
 - `masmtasm.ASM.toolspath` custom path of your ASM tools. [more info](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md#自定义汇编工具路径)
 
 ### :point_right:Docs & Thanks & Licenses
