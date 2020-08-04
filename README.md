@@ -46,7 +46,7 @@
 - 这个插件专注于汇编的编译运行调试环节，推荐结合汇编语法支持（高亮、代码片段等）的插件一起使用，如：[MASM](https://marketplace.visualstudio.com/items?itemName=bltg-team.masm)、[TASM](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)、[masm-code](https://marketplace.visualstudio.com/items?itemName=kaixa.masm-code)、[x86 and x86_64 Assembly](https://marketplace.visualstudio.com/items?itemName=13xforever.language-x86-64-assembly)等。
 - 一些有趣的汇编代码: [dosbox codes]](https://github.com/xsro/masm-tasm/wiki/dosbox)
 - 使用终端任务调用dosbox：[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)
-- 通过msdos或者auto模式运行调试代码的时候，如果出错会在问题面板中显示错误信息，如果想要清除可以在命令面板输入`清除MASM/TASM的所有问题信息`来实现。
+- 清除本插件输出的diagnose问题信息，可以在命令面板输入`清除MASM/TASM的所有问题信息`来实现
 
 ## Extension Settings拓展设置
 

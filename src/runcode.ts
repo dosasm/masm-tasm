@@ -69,13 +69,11 @@ export class runcode{
         const fileuri=vscode.window.activeTextEditor?.document.uri
         if(fileuri)
         {
-            this.extOutChannel.show()
             this._config=new Config(this.extpath)
             if (this._config.savefirst && vscode.window.activeTextEditor?.document.isDirty) {
             vscode.window.activeTextEditor?.document.save().then(()=>this.asmit(command,fileuri))  
             }
             else this.asmit(command,fileuri)
-            this.extOutChannel.hide()
         }
     }
     private asmit(command:string,fileuri:Uri){

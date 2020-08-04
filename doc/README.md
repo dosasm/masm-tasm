@@ -38,7 +38,7 @@ The extension do not contribute languages features, You may need some extension 
 ## :bulb:Extension Settings
 
 - `masmtasm.ASM.MASMorTASM` use `MASM` or `TASM`
-- `masmtasm.emu.emulator` use dosbox or msdos-player
+- `masmtasm.ASM.emulator` use dosbox or msdos-player
   - `DOSBox` more stable
   - `msdos-player`quiet, it runs in command prompt(CMD).  So it cannot support GUI like `TD.exe`
   - `auto` auto select
@@ -46,9 +46,9 @@ The extension do not contribute languages features, You may need some extension 
     2. use DOSBox to run
     3. use msdos-player for MASM(debug)
     4. use DOSBox for TASM(TD)
-- `masmtasm.dosbox.CustomResolution`: size(resolution) of the dosbox window,for example `1024x960`
-- `masmtasm.emu.savefirst`: boolean. whether save all file first before compile
+- `masmtasm.ASM.savefirst`: boolean. whether save all file first before compile
 - `masmtasm.ASM.toolspath` custom path of your ASM tools. [more info](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md#自定义汇编工具路径)
+- `masmtasm.dosbox.CustomResolution`: size(resolution) of the dosbox window,for example `1024x960`
 
 ### :point_right:Docs & Thanks & Licenses
 
