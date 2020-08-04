@@ -8,7 +8,7 @@
 
 ```bash
 sudo apt install dosbox #安装dosbox
-dosbox #打开dosbox，加入成功打开dosbox则安装成功，插件也能调用
+dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插件也能调用
 ```
 
 ## OSX

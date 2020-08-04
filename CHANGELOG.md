@@ -15,9 +15,9 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 
 ## 0.1.1
 
-- 注意本次跟新修改了一些配置选项
-- 简单实现了dosbox下的输出匹配
-- 增加上了对linux的支持
+- 注意本次更新修改了一些配置选项
+- 简单实现了dosbox下的输出问题匹配
+- 简单增加上了对linux的支持
 - 增加了对脚本的依赖
 
 ## 0.1.0 [2020/7/31]
