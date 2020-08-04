@@ -2,9 +2,9 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM: Run and Debug",
 	"publisher": "xsro",
-	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor for windows",
-	"version": "0.1.0",
-	"keywords":["dosbox","16位汇编","微机原理","tasm","masm"],
+	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor",
+	"version": "0.1.1-beta.2.0",
+	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
 	"icon":"cat.png",
 	"engines": {
 		"vscode": "^1.47.0"
@@ -12,6 +12,14 @@
 	"categories": [
 		"Programming Languages",
 		"Other"
+	],
+	"badges":[
+		{
+			"url": "https://github.com/xsro/masm-tasm/blob/master/pics/asm.png",
+			"href": "https://github.com/xsro/masm-tasm/wiki/dosbox",
+			"description": "interesting ASM code 一些有意思的汇编代码"
+		}
+
 	],
 	"activationEvents": [
 		"onLanguage:asm",
@@ -66,7 +74,7 @@
             "properties": {
                 "masmtasm.ASM.toolspath": {
                     "type": "string",
-					"description": "你使用的汇编工具集地址，不填将使用自带的工具，如E:\\GitRepo\\masm-tasm\\tools"
+					"description": "（不推荐使用且只作用于windows）你使用的汇编工具集地址，不填将使用自带的工具，如E:\\GitRepo\\masm-tasm\\tools"
 				},
 				"masmtasm.ASM.MASMorTASM": {
 					"type": "string",
@@ -78,21 +86,21 @@
 					"使用TASM汇编工具集，包括tasm.exe,tlink.exe,td.exe..."
  			   ]
 				},
-				"masmtasm.emu.emulator": {
+				"masmtasm.ASM.emulator": {
                     "type": "string",
                     "default": "auto",
 					"description": "选择使用的16位环境模拟器，dosbox位于dosbox文件夹下，msdos player位于work文件夹",
 					"enum":["dosbox","msdos player","auto"],
 					"enumDescriptions":[
-						"全部使用dosbox模拟16位系统环境,不支持问题输出",
+						"全部使用dosbox模拟16位系统环境,不支持问题输出（linux下所有选项都将视为选择了这个选项）",
 						"尽量使用msdos player在终端中模拟，td除外",
 						"自动选择（推荐）：使用msdos-player汇编链接，使用dosbox运行，TD调试时用dosbox，debug时用masm"
 					]
 				},
-				"masmtasm.emu.savefirst": {
+				"masmtasm.ASM.savefirst": {
                     "type": "boolean",
                     "default": true,
-                    "description": "在运行之前先保存文件,不保存的话，无法体现当前变更，注意这会保存所有文件"
+                    "description": "在运行之前先保存文件,不保存的话，无法体现当前变更"
 				},
 				"masmtasm.dosbox.run": {
 					"type": "string",

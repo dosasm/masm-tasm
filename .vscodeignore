@@ -11,4 +11,9 @@ vsc-extension-quickstart.md
 doc
 pics
 LICENSE
-tools\work\T*.*
+tools\work\*
+!tools\work\ignore.txt
+tools\masm\edit.*
+tools\dosbox\dosbox-0.74.conf
+tools\dosbox\VSC-ExtUse.conf
+tools\masm\README.DOC

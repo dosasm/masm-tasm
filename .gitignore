@@ -4,6 +4,5 @@ node_modules
 *.vsix
 # 汇编留下的临时文件
 /tools/work/*.*
-!/tools/work/ASM.BAT
-!/tools/work/msdos.exe
+!/tools/work/ignore.txt
 tools/dosbox/VSC-ExtUse.conf
