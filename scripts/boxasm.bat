@@ -29,7 +29,7 @@ if "%2"=="debug" goto TASMdebug
 debug T.EXE
 exit
 :TASMdebug
-copy c:\tasm\TDC2.TD TDCONFIG.TD
+if exist c:\tasm\TDC2.TD copy c:\tasm\TDC2.TD TDCONFIG.TD
 TD T.EXE
 exit
 :run
