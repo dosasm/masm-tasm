@@ -1,11 +1,11 @@
 {
 	"name": "masm-tasm",
-	"displayName": "MASM/TASM: Run and Debug",
+	"displayName": "MASM/TASM: via DOSBox",
 	"publisher": "xsro",
-	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor",
+	"description": "Run and Debug MASM/TASM code in DOSBox with right click in the editor of assembly codes",
 	"version": "0.1.2-alpha",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
-	"icon":"cat.png",
+	"icon":"logo_sumlike.jpg",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
