@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM: Run and Debug",
 	"publisher": "xsro",
 	"description": "Run and Debug MASM/TASM code in DOS emulator with right click in the editor",
-	"version": "0.1.1",
+	"version": "0.1.2-alpha",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
 	"icon":"cat.png",
 	"engines": {
@@ -77,7 +77,7 @@
 				},
 				"masmtasm.ASM.MASMorTASM": {
 					"type": "string",
-					"default": "MASM",
+					"default": "TASM",
 					"description":"使用MASM还是TASM作为汇编工具",
 					"enum": ["TASM", "MASM"],
 					"enumDescriptions": [
