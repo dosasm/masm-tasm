@@ -62,7 +62,7 @@ export class MSDOSplayer{
                 hideFromUser: false,
             });
         }
-        this._terminal.show()  
+        this._terminal.show()
         if (run){
             this._terminal.sendText('..\\player\\msdos T.EXE')}
         else{

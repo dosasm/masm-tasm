@@ -37,9 +37,9 @@ export class landiagnose{
         }
         if(MASMorTASM=='TASM') flag=this.tasmdiagnose(text,info,fileuri,ASM)
         else if(MASMorTASM=='MASM') flag=this.masmdiagnose(text,info,fileuri,ASM)
-        this._OutChannel.appendLine('收集到'+this.asmerror.toString()+'条错误，'+this.asmwarn+'条警告信息');
-        //this.channaloutput(info)
-        console.log(info)
+        if (flag!=2)this._OutChannel.show()
+        this._OutChannel.appendLine('收集到'+this.asmerror.toString()+'条错误，'+this.asmwarn+'条警告信息,详细输出如下');
+        this.channaloutput(info)
         return flag
     }
     /**
@@ -47,7 +47,8 @@ export class landiagnose{
      * @param info 错误信息
      */
     private channaloutput(info:string){
-        this._OutChannel.append(info.replace('\r\n\r\n','\r\n'))
+        let outinfo=info.replace(/\r\n\r\n/g,'\r\n').replace(/\n\n/g,'\n')
+        this._OutChannel.append('  '+outinfo.replace(/\n/g,'\n  '))
     }
         /**
      * 根据行数生成range信息，vscode中的位置信息为0base
