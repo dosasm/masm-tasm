@@ -14,7 +14,7 @@ LICENSE
 scripts/work/*
 !scripts/work/ignore.txt
 tools/dosbox/dosbox-0.74.conf
-tools/dosbox/VSC-ExtUse.conf
+scripts/VSC-ExtUse.conf
 tools/masm/README.DOC
 tools/masm/edit.*
 tools/masm/EDIT.*
