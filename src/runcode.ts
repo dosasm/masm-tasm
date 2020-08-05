@@ -20,7 +20,7 @@ export class runcode{
         this.landiag=new landiagnose(this.extOutChannel)
     }
     private Openemu(fileuri:Uri){
-        this.extOutChannel.appendLine('MASM/TASM>>打开DOSBox:　'+fileuri.fsPath);
+        this.extOutChannel.appendLine('\nMASM/TASM>>打开DOSBox:　'+fileuri.fsPath);
         this.dosbox.openDOSBox(this._config,undefined,fileuri,)
     }
     /**运行汇编代码的入口

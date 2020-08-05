@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM: via DOSBox",
 	"publisher": "xsro",
 	"description": "Run and Debug MASM/TASM code in DOSBox with right click in the editor of assembly codes",
-	"version": "0.1.2-alpha.1.1",
+	"version": "0.1.2-alpha.1.2",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
 	"icon":"logo_sumlike.jpg",
 	"engines": {

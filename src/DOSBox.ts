@@ -28,8 +28,10 @@ export class DOSBox{
         }
         else{
             let linuxcommand='dosbox -conf "'+conf.dosboxconfuri.fsPath+'" '
-            if(fileuri) linuxcommand='rm [Tt]*.*";cp "'+fileuri.fsPath+'" T.ASM;'+linuxcommand
+            if(fileuri) linuxcommand='rm -f [Tt]*.*;cp "'+fileuri.fsPath+'" T.ASM;'+linuxcommand
+            console.log(linuxcommand+boxcommand)
             execSync(linuxcommand+boxcommand,{cwd:conf.workpath})
+            
         }
         if(diag) this.BOXdiag(conf,diag)
     }
