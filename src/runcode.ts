@@ -6,16 +6,16 @@ import { landiagnose } from './diagnose';
 import { Uri } from 'vscode';
 export class runcode{
     private readonly extOutChannel: vscode.OutputChannel;
-    private readonly extpath:string
+    private readonly exturi:Uri
     private _config:Config
     private msdosplayer:MSDOSplayer
     private dosbox: DOSBox
     private landiag:landiagnose
     constructor(content: vscode.ExtensionContext) {
-        this.extpath = content.extensionPath
+        this.exturi = content.extensionUri
         this.extOutChannel = vscode.window.createOutputChannel('Masm-Tasm');
-        this._config=new  Config(this.extpath);
-        this.msdosplayer=new MSDOSplayer(this.extOutChannel,this.extpath)
+        this._config=new  Config(this.exturi);
+        this.msdosplayer=new MSDOSplayer(this.extOutChannel)
         this.dosbox=new DOSBox(this.extOutChannel,this._config)
         this.landiag=new landiagnose(this.extOutChannel)
     }
@@ -31,7 +31,7 @@ export class runcode{
         switch(this._config.DOSemu){
             case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true,this.landiag,fileuri);break;
             case 'dosbox':
-                let text='c:\\dosbox\\boxasm.bat '+this._config.MASMorTASM+' run '+this._config.boxrunbat
+                let text='x:\\boxasm.bat '+this._config.MASMorTASM+' run '+this._config.boxrunbat
                 this.dosbox.openDOSBox(this._config,text,fileuri,this.landiag)
                 break;
             case 'auto': this.msdosplayer.PlayerASM(this._config,true,false,this.landiag,fileuri);break;
@@ -53,7 +53,7 @@ export class runcode{
             this.msdosplayer.PlayerASM(this._config,false,inplayer,this.landiag,fileuri)
         }
         else{
-            let text='c:\\dosbox\\boxasm.bat '+this._config.MASMorTASM+' debug'
+            let text='x:\\boxasm.bat '+this._config.MASMorTASM+' debug'
             this.dosbox.openDOSBox(this._config,text,fileuri,this.landiag)
         }
     }
@@ -69,7 +69,7 @@ export class runcode{
         const fileuri=vscode.window.activeTextEditor?.document.uri
         if(fileuri)
         {
-            this._config=new Config(this.extpath)
+            this._config=new Config(this.exturi)
             if (this._config.savefirst && vscode.window.activeTextEditor?.document.isDirty) {
             vscode.window.activeTextEditor?.document.save().then(()=>this.asmit(command,fileuri))  
             }

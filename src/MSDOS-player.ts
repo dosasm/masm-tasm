@@ -5,10 +5,8 @@ import { DOSBox } from './DOSBox'
 import { landiagnose } from './diagnose'
 export class MSDOSplayer{
     private _terminal: Terminal|null
-    private extpath:string
     private extOutChannel:OutputChannel
-    constructor(Channel:OutputChannel,extpath:string){
-        this.extpath = extpath
+    constructor(Channel:OutputChannel){
         this.extOutChannel=Channel
         this._terminal=null
     }
@@ -28,7 +26,8 @@ export class MSDOSplayer{
                 }
             )
             const filename = fileuri.fsPath
-            let command='"'+this.extpath+'\\tools\\player\\asmo.bat" "'+conf.path+'" '+conf.MASMorTASM+' "'+filename+'"'
+            let command='"'+conf.msbatpath+'" "'+conf.path+'" '+conf.MASMorTASM+' "'+filename+'" "'+conf.workpath+'"'
+            console.log(command)
             exec(command,{cwd:conf.path,shell:'cmd.exe'},(error, stdout, stderr) => 
             {
                 if (error) {console.error(`执行的错误: ${error}`);}
