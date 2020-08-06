@@ -131,8 +131,8 @@ private tasmdiagpush(severity:number,line:number,msg:string,text:string,related?
 
     private tasmdiagnose(text:string,info:string,fileuri:Uri,ASM?:string):number{
         this.diagnostics = [];
-        let tasm=/\s*\*+(Error|Warning)\*+\s+(T.ASM)\((\d+)\)\s+(.*)/
-        let tasm2=/\s*\*+(Error|Warning)\*+\s+(T.ASM)\((\d+)\) (.*)\((\d+)\)\s+(.*)/
+        let tasm=/\s*\*+(Error|Warning|Fatal)\*+\s+(T.ASM)\((\d+)\)\s+(.*)/
+        let tasm2=/\s*\*+(Error|Warning|Fatal)\*+\s+(T.ASM)\((\d+)\) (.*)\((\d+)\)\s+(.*)/
         let allmsg=info.split('\n')
         let i=0
         for (i=1;i<allmsg.length;i++)
@@ -143,7 +143,7 @@ private tasmdiagpush(severity:number,line:number,msg:string,text:string,related?
                 oneinfo.shift()//弹出全部信息
                 switch(oneinfo.shift())
                 {
-                    case 'Error':
+                    case 'Error'||'Fatal':
                         severity=0
                         this.asmerror++
                         break;

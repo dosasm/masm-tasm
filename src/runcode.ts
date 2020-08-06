@@ -6,32 +6,32 @@ import { landiagnose } from './diagnose';
 import { Uri } from 'vscode';
 export class runcode{
     private readonly extOutChannel: vscode.OutputChannel;
-    private readonly extpath:string
+    private readonly exturi:Uri
     private _config:Config
     private msdosplayer:MSDOSplayer
     private dosbox: DOSBox
     private landiag:landiagnose
     constructor(content: vscode.ExtensionContext) {
-        this.extpath = content.extensionPath
+        this.exturi = content.extensionUri
         this.extOutChannel = vscode.window.createOutputChannel('Masm-Tasm');
-        this._config=new  Config(this.extpath);
-        this.msdosplayer=new MSDOSplayer(this.extOutChannel,this.extpath)
-        this.dosbox=new DOSBox(this.extOutChannel,this._config)
+        this._config=new  Config(this.exturi);
+        this.msdosplayer=new MSDOSplayer()
+        this.dosbox=new DOSBox()
         this.landiag=new landiagnose(this.extOutChannel)
     }
     private Openemu(fileuri:Uri){
-        this.extOutChannel.appendLine('MASM/TASM>>打开DOSBox');
+        this.extOutChannel.appendLine('\nMASM/TASM>>打开DOSBox:　'+fileuri.fsPath);
         this.dosbox.openDOSBox(this._config,undefined,fileuri,)
     }
     /**运行汇编代码的入口
      * 获取拓展的设置，并执行相应操作
      */
     private Run(fileuri:Uri){
-        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>运行');
+        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>运行:　'+fileuri.fsPath);
         switch(this._config.DOSemu){
             case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true,this.landiag,fileuri);break;
             case 'dosbox':
-                let text='c:\\dosbox\\boxasm.bat '+this._config.MASMorTASM+' run '+this._config.boxrunbat
+                let text='x:\\boxasm.bat '+this._config.MASMorTASM+' run '+this._config.boxrunbat
                 this.dosbox.openDOSBox(this._config,text,fileuri,this.landiag)
                 break;
             case 'auto': this.msdosplayer.PlayerASM(this._config,true,false,this.landiag,fileuri);break;
@@ -42,7 +42,7 @@ export class runcode{
      * 获取拓展的设置并执行相应操作
      */
     private Debug(fileuri:Uri){
-        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>调试');
+        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>调试:　'+fileuri.fsPath);
         if (this._config.DOSemu=='msdos player' && this._config.MASMorTASM=='MASM'){
             this.msdosplayer.PlayerASM(this._config,false,true,this.landiag,fileuri)
         }
@@ -53,7 +53,7 @@ export class runcode{
             this.msdosplayer.PlayerASM(this._config,false,inplayer,this.landiag,fileuri)
         }
         else{
-            let text='c:\\dosbox\\boxasm.bat '+this._config.MASMorTASM+' debug'
+            let text='x:\\boxasm.bat '+this._config.MASMorTASM+' debug'
             this.dosbox.openDOSBox(this._config,text,fileuri,this.landiag)
         }
     }
@@ -66,10 +66,11 @@ export class runcode{
     /**更新设置，根据设置保存编辑器文件
      **/
     public runcode(command:string){
+        let exturi=this.exturi
+        vscode.workspace.onDidChangeConfiguration((event) =>{this._config=new Config(exturi)},this._config)
         const fileuri=vscode.window.activeTextEditor?.document.uri
         if(fileuri)
         {
-            this._config=new Config(this.extpath)
             if (this._config.savefirst && vscode.window.activeTextEditor?.document.isDirty) {
             vscode.window.activeTextEditor?.document.save().then(()=>this.asmit(command,fileuri))  
             }

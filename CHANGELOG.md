@@ -13,6 +13,13 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] bug：每次一开始启动的时候需要点击两次,第一次不起作用
 - [ ] LSP和DAP支持（目前对我来说太难了）
 
+## 0.1.2
+
+- 注意0.1.1以后在设置中有少许调整
+- 将脚本部分与工具分离，使得可以更加方便地自定义工具集
+- 更加快速反应用户变更
+- 美化输出面板的展示
+
 ## 0.1.1
 
 - 注意本次更新修改了一些配置选项

@@ -1,12 +1,10 @@
-import { Uri,FileSystem, OutputChannel,workspace, window} from 'vscode'
-import { TextEncoder } from 'util'
+import { Uri,workspace, window} from 'vscode'
+
 import { Config } from './configration'
-import {exec,execSync} from 'child_process'
+import { execSync} from 'child_process'
 import { landiagnose } from './diagnose'
 export class DOSBox{
-    static writefile: any
-    constructor(Channel:OutputChannel,conf:Config){
-        this.writeBoxconfig(conf,undefined,true)
+    constructor(){
     }
     /**打开dosbox,操作文件
      * @param fileuri 
@@ -21,26 +19,27 @@ export class DOSBox{
             boxcommand='-c "'+boxparam+'"'
         }
         if(process.platform=='win32'){
-            let wincommand='start/min/wait "" "dosbox/dosbox.exe" -conf "dosbox/VSC-ExtUse.conf" '
-            if(fileuri) wincommand='del/Q work\\T*.* & copy "'+fileuri.fsPath+'" work\\T.ASM & '+wincommand
-            execSync(wincommand+boxcommand,{cwd:conf.path,shell:'cmd.exe'})
+            let wincommand='start/min/wait "" "'+conf.path+'/dosbox/dosbox.exe" -conf "'+conf.dosboxconfuri.fsPath+'" '
+            if(fileuri) wincommand='del/Q T*.* & copy "'+fileuri.fsPath+'" "T.ASM" & '+wincommand
+            execSync(wincommand+boxcommand,{cwd:conf.workpath,shell:'cmd.exe'})
             console.log(wincommand+boxcommand)
         }
         else{
-            let linuxcommand='dosbox -conf "dosbox/VSC-ExtUse.conf" '
-            if(fileuri) linuxcommand='rm work/t*.* work/T*.* ; cp "'+fileuri.fsPath+'" work/T.ASM;'+linuxcommand
-            execSync(linuxcommand+boxcommand,{cwd:conf.path})
+            let linuxcommand='dosbox -conf "'+conf.dosboxconfuri.fsPath+'" '
+            if(fileuri) linuxcommand='rm -f [Tt]*.*;cp "'+fileuri.fsPath+'" T.ASM;'+linuxcommand
+            console.log(linuxcommand+boxcommand)
+            execSync(linuxcommand+boxcommand,{cwd:conf.workpath})
+            
         }
         if(diag) this.BOXdiag(conf,diag)
     }
     private BOXdiag(conf:Config,diag:landiagnose):string{
         let info:string=' ',content
-        let infouri=Uri.joinPath(conf.toolsUri, './work/T.TXT');
         let turi=window.activeTextEditor?.document.uri
         let texturi:Uri
         if (turi) {
             texturi=turi
-            workspace.fs.readFile(infouri).then(
+            workspace.fs.readFile(conf.workloguri).then(
             (text)=>{
                 info=text.toString()
                 workspace.fs.readFile(texturi).then(
@@ -53,31 +52,11 @@ export class DOSBox{
                     }
                 )
             },
-            ()=>{console.log(infouri,'readfailed')}
+            ()=>{console.error('read dosbox mode T.txt FAILED')}
         )}
         return info
     }
-    private writeBoxconfig(conf:Config,autoExec?: string,bothtool?:boolean)
-    {
-        let configUri=Uri.joinPath(conf.toolsUri,'./dosbox/VSC-ExtUse.conf');
-        let workpath=Uri.joinPath(conf.toolsUri,'./work/');
-        let Pathadd=' '
-        if (bothtool) Pathadd='set PATH=c:\\tasm;c:\\masm'
-        let configContent = `[sdl]
-windowresolution=${conf.resolution}
-output=opengl
-[autoexec]
-mount c "${conf.path}"
-mount d "${workpath.fsPath}"
-d:
-${Pathadd}`;
-        if (autoExec) configContent=configContent+'\n'+autoExec
-        this.writefile(configUri,configContent)
-    }
-    public writefile(Uri:Uri,Content:string){
-        let fs: FileSystem = workspace.fs
-        fs.writeFile(Uri, new TextEncoder().encode(Content))
-    }
+    
     
 }
 
