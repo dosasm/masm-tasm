@@ -1,12 +1,10 @@
-import { Uri,FileSystem, OutputChannel,workspace, window} from 'vscode'
-import { TextEncoder } from 'util'
+import { Uri,workspace, window} from 'vscode'
+
 import { Config } from './configration'
-import {exec,execSync} from 'child_process'
+import { execSync} from 'child_process'
 import { landiagnose } from './diagnose'
 export class DOSBox{
-    static writefile: any
-    constructor(Channel:OutputChannel,conf:Config){
-        this.writeBoxconfig(conf,undefined,true)
+    constructor(){
     }
     /**打开dosbox,操作文件
      * @param fileuri 
@@ -58,27 +56,7 @@ export class DOSBox{
         )}
         return info
     }
-    private writeBoxconfig(conf:Config,autoExec?: string,bothtool?:boolean)
-    {
-        let configUri=conf.dosboxconfuri
-        let Pathadd=' '
-        if (bothtool) Pathadd='set PATH=c:\\tasm;c:\\masm'
-        let configContent = `[sdl]
-windowresolution=${conf.resolution}
-output=opengl
-[autoexec]
-mount c "${conf.path}"
-mount d "${conf.workpath}"
-mount x "${conf.batchpath}"
-d:
-${Pathadd}`;
-        if (autoExec) configContent=configContent+'\n'+autoExec
-        this.writefile(configUri,configContent)
-    }
-    public writefile(Uri:Uri,Content:string){
-        let fs: FileSystem = workspace.fs
-        fs.writeFile(Uri, new TextEncoder().encode(Content))
-    }
+    
     
 }
 

@@ -1,13 +1,11 @@
-import { OutputChannel,workspace, window, Terminal,Uri} from 'vscode'
+import { workspace, window, Terminal,Uri} from 'vscode'
 import { Config } from './configration';
 import { exec } from 'child_process'
 import { DOSBox } from './DOSBox'
 import { landiagnose } from './diagnose'
 export class MSDOSplayer{
     private _terminal: Terminal|null
-    private extOutChannel:OutputChannel
-    constructor(Channel:OutputChannel){
-        this.extOutChannel=Channel
+    constructor(){
         this._terminal=null
     }
     /**
@@ -50,7 +48,7 @@ export class MSDOSplayer{
                         this.afterlink(conf,viaplayer,isrun)
                         break
                 }
-                DOSBox.writefile(Uri.joinPath(conf.toolsUri,'./work/T.TXT'),stdout)
+                Config.writefile(Uri.joinPath(conf.toolsUri,'./work/T.TXT'),stdout)
             })}
     }
     private outTerminal(run:boolean,conf:Config) {
@@ -81,7 +79,7 @@ export class MSDOSplayer{
             this.outTerminal(runordebug,conf)
         }
         else {
-            let dosbox=new  DOSBox(this.extOutChannel,conf)
+            let dosbox=new  DOSBox()
             if (runordebug){
             dosbox.openDOSBox(conf,'T.EXE\n'+conf.boxruncmd)}
             else{

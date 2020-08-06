@@ -15,8 +15,8 @@ export class runcode{
         this.exturi = content.extensionUri
         this.extOutChannel = vscode.window.createOutputChannel('Masm-Tasm');
         this._config=new  Config(this.exturi);
-        this.msdosplayer=new MSDOSplayer(this.extOutChannel)
-        this.dosbox=new DOSBox(this.extOutChannel,this._config)
+        this.msdosplayer=new MSDOSplayer()
+        this.dosbox=new DOSBox()
         this.landiag=new landiagnose(this.extOutChannel)
     }
     private Openemu(fileuri:Uri){
@@ -66,10 +66,11 @@ export class runcode{
     /**更新设置，根据设置保存编辑器文件
      **/
     public runcode(command:string){
+        let exturi=this.exturi
+        vscode.workspace.onDidChangeConfiguration((event) =>{this._config=new Config(exturi)},this._config)
         const fileuri=vscode.window.activeTextEditor?.document.uri
         if(fileuri)
         {
-            this._config=new Config(this.exturi)
             if (this._config.savefirst && vscode.window.activeTextEditor?.document.isDirty) {
             vscode.window.activeTextEditor?.document.save().then(()=>this.asmit(command,fileuri))  
             }
