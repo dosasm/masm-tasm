@@ -3,9 +3,9 @@
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
 	"description": "Run and Debug MASM/TASM code in DOSBox with right click in the editor of assembly codes",
-	"version": "0.1.2-beta.2",
+	"version": "0.1.2",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
-	"icon":"logo_sumlike.jpg",
+	"icon":"dosboxasm.png",
 	"engines": {
 		"vscode": "^1.47.0"
 	},
@@ -115,7 +115,7 @@
 				"masmtasm.dosbox.CustomResolution": {
 					"type": "string",
 					"default": "1024x640",
-                    "description": "自定义dosbox窗口大小，格式如1024x640，不设置则为默认大小"
+                    "description": "自定义dosbox窗口大小，格式如1024x640，不设置则为DOSBox默认大小"
 				}
             }
 		},

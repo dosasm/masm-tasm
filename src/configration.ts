@@ -45,6 +45,9 @@ export class Config {
         let path=Uri.joinPath(this._exturi,'./scripts/playerasm.bat').fsPath
         return path
     }
+    /**
+     * 返回string格式的工具集地址
+     */
     public get path(): string{
         let path=this.toolsUri.fsPath
         return path
@@ -88,11 +91,11 @@ export class Config {
         if (process.platform!='win32')   dosemu='dosbox'//在linux下无法使用msdos只使用dosbox
         return dosemu
     }
-    private writeBoxconfig(conf:Config,autoExec?: string,bothtool?:boolean)
+    private writeBoxconfig(conf:Config,autoExec?: string)
     {
         let configUri=conf.dosboxconfuri
         let Pathadd=' '
-        if (bothtool) Pathadd='set PATH=c:\\tasm;c:\\masm'
+        Pathadd='set PATH=c:\\tasm;c:\\masm'
         let configContent = `[sdl]
 windowresolution=${conf.resolution}
 output=opengl

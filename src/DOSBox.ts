@@ -7,10 +7,10 @@ export class DOSBox{
     constructor(){
     }
     /**打开dosbox,操作文件
-     * @param fileuri 
      * @param conf 配置文件
      * @param more 需要执行的额外命令
-     * @param cleancopy 为true将MASM和TASM都挂载到path中，并删除T.*复制相应文件到此处
+     * @param fileuri 清理工作文件夹，复制该文件到工作文件夹，假如没有那么就不处理
+     * @param diag 如果有则诊断输出信息
      */
     public openDOSBox(conf:Config,more?:string,fileuri?:Uri,diag?:landiagnose) {
         let boxcommand=' '

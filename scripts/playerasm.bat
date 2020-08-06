@@ -8,8 +8,8 @@
 set "cdo=%CD%">nul
 ::echo ASMfile:%~f3
 set path=%~f1\player\;%~f1\masm\;%~f1\tasm\
-cd "%4%"
-if not exist work mkdir work
+cd %~f4
+%~d4
 del T*.*
 copy %3 T.ASM>nul
 if "%2" == "MASM" goto masm

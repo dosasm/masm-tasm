@@ -52,18 +52,23 @@ export class MSDOSplayer{
             })}
     }
     private outTerminal(run:boolean,conf:Config) {
+        let myenv=process.env
+        let myenvPATH=myenv.PATH+';'+conf.path+'\\player;'+conf.path+'\\tasm;'+conf.path+'\\masm;'
         if (this._terminal?.exitStatus || this._terminal ===null) {
             this._terminal = window.createTerminal({
-                cwd: conf.path+'\\work',
+                cwd: conf.workpath,
+                env: {
+                    "PATH":myenvPATH
+                },
                 shellPath: "cmd.exe",
                 hideFromUser: false,
             });
         }
         this._terminal.show()
         if (run){
-            this._terminal.sendText('..\\player\\msdos T.EXE')}
+            this._terminal.sendText('msdos T.EXE')}
         else{
-            this._terminal.sendText('..\\player\\msdos -v5.0 ..\\masm\\debug T.EXE')}
+            this._terminal.sendText('msdos -v5.0 debug T.EXE')}
         this._terminal.dispose
     }
 
@@ -79,11 +84,11 @@ export class MSDOSplayer{
             this.outTerminal(runordebug,conf)
         }
         else {
-            let dosbox=new  DOSBox()
+            let box=new DOSBox()
             if (runordebug){
-            dosbox.openDOSBox(conf,'T.EXE\n'+conf.boxruncmd)}
+                box.openDOSBox(conf,'T.EXE\n'+conf.boxruncmd)}
             else{
-            dosbox.openDOSBox(conf,debug)}
+                box.openDOSBox(conf,debug)}
         }
     }
 }
