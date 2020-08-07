@@ -13,6 +13,8 @@ export class MSDOSplayer{
      * @param conf 获取拓展的设置
      * @param isrun 决定是运行还是调试，true为运行，false为debug 
      * @param viaplayer 决定在什么中运行/调试,true为在msdos-player中运行或调试，fasle为在dosbox中进行
+     * @param diag 处理输出信息的类
+     * @param fileuri 需要处理的文件的Uri
      */
     public PlayerASM(conf:Config,isrun:boolean,viaplayer:boolean,diag:landiagnose,fileuri:Uri)
     {

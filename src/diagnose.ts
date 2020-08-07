@@ -19,6 +19,7 @@ export class landiagnose{
      * @param info 输出的错误信息
      * @param fileuri 源代码文件的位置uri定位
      */
+    //这个函数可能需要简化 需要适应更多不同的masm或tasm输出信息，需要使用一种方式来输出链接时产生的信息
     public ErrMsgProcess(text:string,info:string,fileuri:Uri,ASM?:string):number{
         let firstreg:RegExp=/(Fail|Succeed)! ASMfilefrom \s*.*\s* with (TASM|MASM)\r\n/
         let flag =2
@@ -73,7 +74,6 @@ export class landiagnose{
         return ran
     }
      /**
-     * 
      * @param uri 文件的uri定位符
      * @param text 文件的文本内容string
      * @param macroname 需要寻找的宏名
