@@ -20,14 +20,14 @@ export class runcode{
         this.landiag=new landiagnose(this.extOutChannel)
     }
     private Openemu(fileuri:Uri){
-        this.extOutChannel.appendLine('\nMASM/TASM>>打开DOSBox:　'+fileuri.fsPath);
+        this.extOutChannel.appendLine('\nMASM/TASM>>Open DOSBox: '+fileuri.fsPath);
         this.dosbox.openDOSBox(this._config,undefined,fileuri,)
     }
     /**运行汇编代码的入口
      * 获取拓展的设置，并执行相应操作
      */
     private Run(fileuri:Uri){
-        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>运行:　'+fileuri.fsPath);
+        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>Run: '+fileuri.fsPath);
         switch(this._config.DOSemu){
             case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true,this.landiag,fileuri);break;
             case 'dosbox':
@@ -42,7 +42,7 @@ export class runcode{
      * 获取拓展的设置并执行相应操作
      */
     private Debug(fileuri:Uri){
-        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>调试:　'+fileuri.fsPath);
+        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>Debug: '+fileuri.fsPath);
         if (this._config.DOSemu=='msdos player' && this._config.MASMorTASM=='MASM'){
             this.msdosplayer.PlayerASM(this._config,false,true,this.landiag,fileuri)
         }

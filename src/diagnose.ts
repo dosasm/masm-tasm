@@ -1,4 +1,4 @@
-import { languages,Diagnostic,Range,Position,DiagnosticCollection, Uri, DiagnosticRelatedInformation, OutputChannel } from 'vscode'
+import { languages,Diagnostic,Range,Position,DiagnosticCollection, Uri, DiagnosticRelatedInformation, OutputChannel,env } from 'vscode'
 export class landiagnose{
     private masmCollection:DiagnosticCollection
     private tasmCollection:DiagnosticCollection
@@ -39,7 +39,10 @@ export class landiagnose{
         if(MASMorTASM=='TASM') flag=this.tasmdiagnose(text,info,fileuri,ASM)
         else if(MASMorTASM=='MASM') flag=this.masmdiagnose(text,info,fileuri,ASM)
         if (flag!=2)this._OutChannel.show()
-        this._OutChannel.appendLine('收集到'+this.asmerror.toString()+'条错误，'+this.asmwarn+'条警告信息,详细输出如下');
+        let collectmessage:string
+        if(env.language=='zh-cn') collectmessage='收集到'+this.asmerror.toString()+'条错误，'+this.asmwarn+'条警告信息,详细输出如下';
+        else collectmessage=this.asmerror.toString()+' Error,'+this.asmwarn+' Warning, collected. The following is the output of assembler and linker';
+        this._OutChannel.appendLine(collectmessage)
         this.channaloutput(info)
         return flag
     }

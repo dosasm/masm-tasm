@@ -13,7 +13,7 @@
 MASM T.ASM;·    汇编生成.obj文件
 LINK T.OBJ;     链接生成.exe文件
 T.EXE           运行
-DEBUG T.EXE
+DEBUG T.EXE     调试
 ```
 
 ## TASM操作示例

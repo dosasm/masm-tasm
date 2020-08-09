@@ -7,15 +7,15 @@ This extension is modified from "[masm-code](https://github.com/Woodykaixa/masm-
 - **Convenient**: related tools packaged in the extension. Just install and right click (recommand to use this ext in windows otherwise you should install dosbox first)
 - **Diagnose**: process the output of ASM tools and ouput them in VSCode
 - Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help.
-- Some interesting code your may need:[VSCtasks wiki](https://github.com/xsro/VSC-ASMtasks/wiki/dosbox),[cltasm](https://gitee.com/chenliucx/CLTASM/tree/code/)
+- Some interesting code your may need:[VSCtasks wiki](https://github.com/xsro/VSC-ASMtasks/wiki/dosbox)
 
 ## :clap:Features
 
 when your are editing `.asm(.ASM)` files ,you can right click at the editor panel,then you will see several choices listed below:
 
-1. "open dosbox": Open the dosbox. Mount tools at disk C and current file at disk D as `T.asm`. You can use command l like like `tasm T.asm` .[more info](https://github.com/xsro/masm-tasm/blob/master/doc/在dosbox中手动操作.md)
-2. "run ASM code": Compile and Run the program
-3. "debug ASM code": Compile and Debug the program
+1. "Open dosbox": Open the dosbox. Mount tools at disk C and current file at disk D as `T.asm`. You can use command l like `tasm T.asm` .[more info](https://github.com/xsro/masm-tasm/blob/master/doc/ASM_commands.md)
+2. "Run ASM code": Compile and Run the program
+3. "Debug ASM code": Compile and Debug the program
 
 ### Demo 1: using MASM（via msdos-player）
 
@@ -26,6 +26,8 @@ when your are editing `.asm(.ASM)` files ,you can right click at the editor pane
 ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
 
 ### Demo 3: Open dosbox and type the command you need
+
+your file will be copied as `D:\T.ASM` in DOSBox. (The extension will copy your file to work space and mount the space as disk D)
 
 ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif)
 
@@ -54,8 +56,8 @@ The extension do not contribute languages features, You may need some extension 
 
 - this extension is [MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
   - thanks for [masm-code](https://github.com/Woodykaixa/masm-code),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
-  - their [info and licences](https://github.com/xsro/masm-tasm/blob/master/doc/liscence.md)
-- [about the tools](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md)
+  - their [info and licences](https://github.com/xsro/masm-tasm/blob/master/doc/license_and_info.md)
+- [about the tools](https://github.com/xsro/masm-tasm/blob/master/doc/Toolspath.md)
 - [some infomation :wiki](https://github.com/xsro/masm-tasm/wiki)
 
 Enjoy!:smile:

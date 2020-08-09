@@ -1,24 +1,21 @@
 # Change Log
 
-All notable changes to the "masm-tasm" extension will be documented in this file.欢迎[issue](https://github.com/xsro/masm-tasm/issues)以及PR
+All notable changes to the "masm-tasm" extension will be documented in this file.Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR
 
 ## 目标
 
-- [ ] 搞一个好看的logo
+- [ ] 搞一个好看的logo和名字
 - [ ] 问题匹配功能完善
-  - [ ] 在标注错误位置的时候，更加智能地显示
-- [ ] hover的简单实现
-  - [ ] 主要中断的hover
-- [ ] 提供tasks来实现调试工作
-- [ ] bug：每次一开始启动的时候需要点击两次,第一次不起作用
+- [ ] hover的简单实现:如中断的简单信息
 - [ ] LSP和DAP支持（目前对我来说太难了）
 
-## 0.1.2
+## 0.1.2/0.1.3
 
 - 注意0.1.1以后在设置中有少许调整
 - 将脚本部分与工具分离，使得可以更加方便地自定义工具集
 - 更加快速反应用户变更
 - 美化输出面板的展示
+- （0.1.3）简单实现本地化
 
 ## 0.1.1
 

@@ -6,11 +6,10 @@
 
 1. 同时支持调用**TASM**和**MASM**: 可以在设置（首选项）中修改使用MASM还是TASM工具集
 2. 提供编辑器**右键菜单**：在汇编语言的编辑器添加了“打开dosbox，运行，调试”的三个选项
-3. **安装即用**：已将相关工具与插件打包在一起，无需配置或安装其他东西
-4. 提供diagnose**问题输出**功能：假如汇编未通过，会标明错误信息与位置，可以在命令面板输入`清除MASM/TASM的所有问题信息`清除本插件输出的diagnose问题信息
-5. 调用[dosbox](https://www.dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
+3. 提供diagnose**问题输出**功能：假如汇编未通过，会标明错误信息与位置，可以在命令面板输入`清除MASM/TASM的所有问题信息`清除本插件输出的diagnose问题信息
+4. 调用[dosbox](https://www.dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 
-十分感谢以上软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。
+非常感谢以上软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。
 
 ## 安装使用
 
@@ -33,7 +32,9 @@
 
 ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
 
-### Demo 3: 打开dosbox，适合进行自定义操作，如生成.com程序文件等
+### Demo 3: 打开dosbox
+
+适合进行自定义操作，如生成.com程序文件等。插件将当前工作的文件复制到工作文件夹并挂载到dosbox，也就是说DOSBox中d盘的`T.ASM`即为编辑器文件的副本
 
 ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif)
 
@@ -63,7 +64,7 @@
 - 调整dosbox窗口大小
 - 规定dosbox运行程序之后进行什么操作（是否直接退出程序，还是等待）
 - 启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
-- 设置自定义汇编工具路径,详见:[自定义汇编工具路径](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径#自定义汇编工具路径)
+- 设置自定义汇编工具路径,详见:[自定义汇编工具路径](https://github.com/xsro/masm-tasm/blob/master/doc/Toolspath.md#自定义汇编工具路径)
 
 ### 文档 & 感谢 & 许可
 

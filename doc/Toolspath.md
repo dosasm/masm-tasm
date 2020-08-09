@@ -52,6 +52,6 @@ VSCode文档中关于插件安装路径的说明[VSCode-doc](https://code.visual
 
 ```json
 {
-   "masmtasm.ASM.toolspath": "E:\\tools"`
+   "masmtasm.ASM.toolspath": "E:\\tools"
 }
 ```
