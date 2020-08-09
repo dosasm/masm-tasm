@@ -15,13 +15,13 @@
 ## 安装使用
 
 - windows 无需其他操作，相关软件已打包在插件之中
-- linux 请先安装dosbox [详情](https://github.com/xsro/masm-tasm/blob/master/doc/非windows下使用.md#linux)
+- linux 请先安装dosbox [详情](https://github.com/xsro/masm-tasm/blob/master/doc/Get_start.md#linux)
 
 ## Features主要功能
 
 当编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
-1. 打开dosbox并配置环境(挂载)：打开DOSBox，然后就可以手动在打开的DOSBox窗口进行[汇编相关操作](https://github.com/xsro/masm-tasm/blob/master/doc/在dosbox中手动操作.md)
+1. 打开dosbox并配置环境(挂载)：打开DOSBox，然后就可以手动在打开的DOSBox窗口进行[汇编相关操作](https://github.com/xsro/masm-tasm/blob/master/doc/ASM_commands.md)
 2. 运行当前程序(汇编+链接+运行)：生成exe程序并运行
 3. 调试当前程序(汇编+链接+调试)：生成exe程序并调试，使用MASM则会调用debug调试，使用TASM会调用td调试
 
@@ -70,7 +70,6 @@
 - 这个插件是[MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
 - 感谢[masm-code](https://github.com/Woodykaixa/masm-code),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
   - 他们的[相关信息](https://github.com/xsro/masm-tasm/blob/master/doc/license_and_info.md)
-- [关于TASM/MASM汇编工具以及相关软件](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md)
 - [一些相关资料:wiki](https://github.com/xsro/VSC-ASMtasks/wiki)
 
 Enjoy!:smile:

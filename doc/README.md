@@ -13,9 +13,9 @@ This extension is modified from "[masm-code](https://github.com/Woodykaixa/masm-
 
 when your are editing `.asm(.ASM)` files ,you can right click at the editor panel,then you will see several choices listed below:
 
-1. "打开dosbox并配置环境(挂载)": Open the dosbox. Mount tools at disk C and current file at disk D as `T.asm`. You can use command l like like `tasm T.asm` .[more info](https://github.com/xsro/masm-tasm/blob/master/doc/在dosbox中手动操作.md)
-2. "运行当前程序(汇编+链接+运行)": Compile and Run the program
-3. "调试当前程序(汇编+链接+调试)": Compile and Debug the program
+1. "open dosbox": Open the dosbox. Mount tools at disk C and current file at disk D as `T.asm`. You can use command l like like `tasm T.asm` .[more info](https://github.com/xsro/masm-tasm/blob/master/doc/在dosbox中手动操作.md)
+2. "run ASM code": Compile and Run the program
+3. "debug ASM code": Compile and Debug the program
 
 ### Demo 1: using MASM（via msdos-player）
 

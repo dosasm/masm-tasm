@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
 	"description": "Run and Debug MASM/TASM code in DOSBox with right click in the editor of assembly codes",
-	"version": "0.1.2",
+	"version": "0.1.3-alpha",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
 	"icon":"dosboxasm.png",
 	"engines": {
@@ -17,7 +17,7 @@
 		{
 			"url": "https://github.com/xsro/masm-tasm/raw/master/pics/asm.png",
 			"href": "https://github.com/xsro/masm-tasm/wiki/dosbox",
-			"description": "interesting ASM code 一些有意思的汇编代码"
+			"description": "%dosasm.badges.code%"
 		}
 	],
 	"activationEvents": [
@@ -52,19 +52,19 @@
 		"commands": [
 			{
 				"command":"masm-tasm.opendosbox",
-				"title":"打开dosbox并配置环境(挂载)"
+				"title":"%dosasm.editor.openEmu%"
 			},
 			{
 				"command":"masm-tasm.runASM",
-				"title":"运行当前程序(汇编+链接+运行)"
+				"title":"%dosasm.editor.runAsm%"
 			},
 			{
 				"command":"masm-tasm.debugASM",
-				"title":"调试当前程序(汇编+链接+调试)"
+				"title":"%dosasm.editor.debugAsm%"
 			},
 			{
 				"command":"masm-tasm.cleanalldiagnose",
-				"title":"清除MASM/TASM的所有问题信息"
+				"title":"%dosasm.command.cleanalldianose%"
 			}
 		],
 		"configuration" :{
@@ -73,49 +73,49 @@
             "properties": {
                 "masmtasm.ASM.toolspath": {
 					"type": "string",
-					"markdownDescription": "自定义汇编工具集地址，不填视为使用插件自带的工具,详见[doc](https://github.com/xsro/masm-tasm/blob/master/doc/关于汇编工具路径.md#自定义汇编工具路径)"
+					"markdownDescription": "%dosasm.config.toolspath.mddescription%"
 				},
 				"masmtasm.ASM.MASMorTASM": {
 					"type": "string",
 					"default": "TASM",
-					"description":"使用MASM还是TASM作为汇编工具",
+					"description":"%dosasm.config.masmortasm.description%",
 					"enum": ["TASM", "MASM"],
 					"enumDescriptions": [
-					"使用MASM汇编工具集，包括masm.exe,link.exe,debug.exe...",
-					"使用TASM汇编工具集，包括tasm.exe,tlink.exe,td.exe..."
+					"%dosasm.config.masmortasm.enum1%",
+					"%dosasm.config.masmortasm.enum2%"
  			   ]
 				},
 				"masmtasm.ASM.emulator": {
                     "type": "string",
                     "default": "auto",
-					"description": "选择使用的16位环境模拟器,linux无论选择哪个都等同于选择dosbox",
+					"description": "%dosasm.config.emulator.description%",
 					"enum":["dosbox","msdos player","auto"],
 					"enumDescriptions":[
-						"全部使用dosbox模拟16位系统环境",
-						"尽量使用msdos player模拟，td时使用dosbox",
-						"自动选择（推荐）：使用MSDOS-player汇编链接，使用dosbox运行，TD调试时用dosbox，debug调试时用MSDOS player"
+						"%dosasm.config.emulator.dosbox%",
+						"%dosasm.config.emulator.player%",
+						"%dosasm.config.emulator.auto%"
 					]
 				},
 				"masmtasm.ASM.savefirst": {
                     "type": "boolean",
                     "default": true,
-                    "description": "在运行之前先保存文件,不保存的话，无法体现当前变更"
+                    "description": "%dosasm.config.savefirst%"
 				},
 				"masmtasm.dosbox.run": {
 					"type": "string",
 					"default": "pause then exit after run",
-					"description":"选择在dosbox中运行的方式",
+					"description":"%dosasm.config.boxrun.description%",
 					"enum": ["keep(do nothing)", "exit after run","pause then exit after run"],
 					"enumDescriptions": [
-					"运行之后在dosbox窗口停留，可以输入exit，点击x，或者Ctrl+F9关闭程序",
-					"运行程序之后自动关闭",
-					"运行程序之后先停顿一下 输入任意字符后关闭窗口"
+						"%dosasm.config.boxrun.enum1%",
+						"%dosasm.config.boxrun.enum2%",
+						"%dosasm.config.boxrun.enum3%"	
  			   ]
                 },
 				"masmtasm.dosbox.CustomResolution": {
 					"type": "string",
 					"default": "1024x640",
-                    "description": "自定义dosbox窗口大小，格式如1024x640，不设置则为DOSBox默认大小"
+                    "description": "%dosasm.config.dosbox.resolution%"
 				}
             }
 		},
