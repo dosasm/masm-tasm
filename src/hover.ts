@@ -482,7 +482,7 @@ function findLabel(name:string): Label | undefined {
 class TasmHoverProvider implements vscode.HoverProvider {
 	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output = [];
-		let line = document.getText(new vscode.Range(position.line, 0, position.line, position.character));
+		let line = document.getText(new vscode.Range(position.line, 0, position.line, position.character)).toLowerCase();
 		let quotes = null;
 		let comment = null;
 		if (line) {
@@ -492,7 +492,7 @@ class TasmHoverProvider implements vscode.HoverProvider {
 		if(quotes === null && comment === null){
 			let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
 			if(range){
-				let word = document.getText(range);
+				let word = document.getText(range).toLowerCase();
 				let proc = findProc(word),keyword = GetKeyword(word),macro = findMacro(word),label=findLabel(word);
 				if(isNumberStr(word)){
 					output.push({
@@ -824,7 +824,7 @@ async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<nu
 				continue;
 			}
 			let filedata : string = fstream.readFileSync(fileName,'utf8');
-			
+			filedata=filedata.toLowerCase()
 			let doc = filedata.split('\n');
 			let name = '/' + fileName;
 			while(name.includes('\\')){
@@ -1238,7 +1238,7 @@ const autoScanDoc = async (change : vscode.TextDocumentChangeEvent) => {
 	if(vscode.window.activeTextEditor === undefined){
 		return;
 	}
-	let doc : string = await fstream.readFileSync(vscode.window.activeTextEditor.document.uri.fsPath,'utf8');
+	let doc : string = await fstream.readFileSync(vscode.window.activeTextEditor.document.uri.fsPath,'utf8').toLowerCase();
 	let fin : string[] = doc.split('\n');
 	sacnDoc(fin);
 };
