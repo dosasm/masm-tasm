@@ -18,3 +18,7 @@ scripts/VSC-ExtUse.conf
 tools/masm/README.DOC
 tools/masm/edit.*
 tools/masm/EDIT.*
+gulpfile.js
+node_modules
+i18n
+Themes
