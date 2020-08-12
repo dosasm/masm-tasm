@@ -416,7 +416,7 @@ function isNumberStr(str:string) : boolean{
 		&& !str.startsWith('8') && !str.startsWith('9')){
 			return false;
 	}
-	let sub : number = (str.endsWith('h') || str.endsWith('b') || str.endsWith('d'))?1:0;
+	let sub : number = (str.endsWith('h') || str.endsWith('b') || str.endsWith('q') || str.endsWith('d'))?1:0;
 	for (let i = 1; i < str.length - sub; i++) {
 		const char = str[i];
 		if(possibleNumbers.indexOf(char,0) <= -1) {
@@ -426,17 +426,20 @@ function isNumberStr(str:string) : boolean{
 	return true;
 }
 function getNumMsg(word:string) {
-	let base : number = word.endsWith('h')? 16 : word.endsWith('b')? 2 : 10;
+	let base : number = word.endsWith('h')? 16 : word.endsWith('q')? 8 : word.endsWith('b')? 2 :  10;
 	var value : number = Number.parseInt(word,base);
-	var s = "(" + (base===16?"Hexadecimal":base===10?"Decimal":"Binary") + " Number) " + word + ":\n";
+	var s = "(" + (base===16?"Hexadecimal":base===8?"Octal":base===10?"Decimal":"Binary") + " Number) " + word + ":\n";
 	if(base !== 10){
-		s += "\tDecimal: " + value.toString(10) + "\n";
+		s += " DEC: " + value.toString(10) + "D\n";
 	}
 	if(base !== 16){
-		s += "\tHexa: " + value.toString(16) + "h\n";
+		s += " HEX: " + value.toString(16) + "H\n";
+	}
+	if(base !== 8){
+		s += " OCT: " + value.toString(8) + "Q\n";
 	}
 	if(base !== 2){
-		s += "\tBinary: " + value.toString(2) + "b\n";
+		s += " BIN: " + value.toString(2) + "B\n";
 	}
 	return s;
 }
@@ -482,7 +485,7 @@ function findLabel(name:string): Label | undefined {
 class TasmHoverProvider implements vscode.HoverProvider {
 	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output = [];
-		let line = document.getText(new vscode.Range(position.line, 0, position.line, position.character)).toLowerCase();
+		let line = document.getText(new vscode.Range(position.line, 0, position.line, position.character));
 		let quotes = null;
 		let comment = null;
 		if (line) {
@@ -824,7 +827,7 @@ async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<nu
 				continue;
 			}
 			let filedata : string = fstream.readFileSync(fileName,'utf8');
-			filedata=filedata.toLowerCase()
+			filedata=filedata
 			let doc = filedata.split('\n');
 			let name = '/' + fileName;
 			while(name.includes('\\')){
@@ -1238,7 +1241,7 @@ const autoScanDoc = async (change : vscode.TextDocumentChangeEvent) => {
 	if(vscode.window.activeTextEditor === undefined){
 		return;
 	}
-	let doc : string = await fstream.readFileSync(vscode.window.activeTextEditor.document.uri.fsPath,'utf8').toLowerCase();
+	let doc : string = await fstream.readFileSync(vscode.window.activeTextEditor.document.uri.fsPath,'utf8');
 	let fin : string[] = doc.split('\n');
 	sacnDoc(fin);
 };
