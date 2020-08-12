@@ -4,6 +4,8 @@ import {DOSBox} from './DOSBox'
 import { MSDOSplayer } from './MSDOS-player'
 import { landiagnose } from './diagnose';
 import { Uri } from 'vscode';
+import * as nls from 'vscode-nls';
+const localize =  nls.loadMessageBundle();
 export class runcode{
     private readonly extOutChannel: vscode.OutputChannel;
     private readonly exturi:Uri
@@ -20,14 +22,16 @@ export class runcode{
         this.landiag=new landiagnose(this.extOutChannel)
     }
     private Openemu(fileuri:Uri){
-        this.extOutChannel.appendLine('\nMASM/TASM>>Open DOSBox: '+fileuri.fsPath);
+        let openemumsg=localize("openemu.msg","\nMASM/TASM>>Open DOSBox:{0}",fileuri.fsPath)
+        this.extOutChannel.appendLine(openemumsg);
         this.dosbox.openDOSBox(this._config,undefined,fileuri,)
     }
     /**运行汇编代码的入口
      * 获取拓展的设置，并执行相应操作
      */
     private Run(fileuri:Uri){
-        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>Run: '+fileuri.fsPath);
+        let runmsg=localize("run.msg","\n{0}({1})>>Run:{2}",this._config.MASMorTASM,this._config.DOSemu,fileuri.fsPath)
+        this.extOutChannel.appendLine(runmsg);
         switch(this._config.DOSemu){
             case 'msdos player': this.msdosplayer.PlayerASM(this._config,true,true,this.landiag,fileuri);break;
             case 'dosbox':
@@ -42,7 +46,8 @@ export class runcode{
      * 获取拓展的设置并执行相应操作
      */
     private Debug(fileuri:Uri){
-        this.extOutChannel.appendLine('\n'+this._config.MASMorTASM+'('+this._config.DOSemu+')>>Debug: '+fileuri.fsPath);
+        let debugmsg=localize("debug.msg","\n{0}({1})>>Debug:{2}",this._config.MASMorTASM,this._config.DOSemu,fileuri.fsPath)
+        this.extOutChannel.appendLine(debugmsg);
         if (this._config.DOSemu=='msdos player' && this._config.MASMorTASM=='MASM'){
             this.msdosplayer.PlayerASM(this._config,false,true,this.landiag,fileuri)
         }

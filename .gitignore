@@ -6,3 +6,6 @@ node_modules
 /scripts/work/*.*
 !/scripts/work/ignore.txt
 scripts/VSC-ExtUse.conf
+
+# 这是将会由gulp创建的语言文件
+*nls.*.json

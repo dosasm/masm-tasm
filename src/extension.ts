@@ -1,6 +1,8 @@
-import * as vscode from 'vscode';
-import {runcode} from './runcode';
-import  {hoveractivate} from "./hover";
+import * as vscode from 'vscode'
+import {runcode} from './runcode'
+import  {hoveractivate} from "./hover"
+import * as nls from 'vscode-nls'
+const localize = nls.config({ locale:"pseudo",messageFormat: nls.MessageFormat.file })();
 let asm:runcode
 export function activate(context: vscode.ExtensionContext) {
 	hoveractivate(context)
