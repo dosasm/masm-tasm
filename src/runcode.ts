@@ -2,10 +2,10 @@ import * as vscode from 'vscode'
 import {Config} from './configration'
 import {DOSBox} from './DOSBox'
 import { MSDOSplayer } from './MSDOS-player'
-import { landiagnose } from './diagnose';
 import { Uri } from 'vscode';
 import * as nls from 'vscode-nls';
-const localize =  nls.loadMessageBundle();
+const localize =  nls.loadMessageBundle()
+import { landiagnose } from './diagnose';
 export class runcode{
     private readonly extOutChannel: vscode.OutputChannel;
     private readonly exturi:Uri

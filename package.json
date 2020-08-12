@@ -24,9 +24,7 @@
 		"onLanguage:asm",
 		"onLanguage:masm",
 		"onLanguage:tasm",
-		"onLanguage:assembly",
-		"workspaceContains:*.ASM",
-		"workspaceContains:*.asm"
+		"onLanguage:assembly"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -209,7 +207,7 @@
 		"vscode-nls-dev": "^3.2.6"
 	},
 	"dependencies": {
-		"vscode-nls": "^3.2.5"
+		"vscode-nls": "^4.1.2"
 	},
 	"repository": {
 		"type": "git",

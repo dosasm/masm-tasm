@@ -3,6 +3,8 @@ import { Config } from './configration';
 import { exec } from 'child_process'
 import { DOSBox } from './DOSBox'
 import { landiagnose } from './diagnose'
+import * as nls from 'vscode-nls';
+const localize =  nls.loadMessageBundle()
 export class MSDOSplayer{
     private _terminal: Terminal|null
     constructor(){
@@ -30,18 +32,20 @@ export class MSDOSplayer{
             console.log(command)
             exec(command,{cwd:conf.path,shell:'cmd.exe'},(error, stdout, stderr) => 
             {
-                if (error) {console.error(`执行的错误: ${error}`);}
-                let code=diag.ErrMsgProcess(filecontent,stdout,fileuri,conf.MASMorTASM)//处理错误信息
+                if (error) {console.error(`exec playerasm.bat: ${error}`);}
+                let code=diag.ErrMsgProcess(filecontent,stdout,fileuri,conf.MASMorTASM)
                 switch(code)
                 {
                     case 0:
-                        let Errmsgwindow=conf.MASMorTASM+'汇编出错,无法运行/调试'
+                        let Errmsgwindow=localize("msdos.error","{0} Error,Can't generate .exe file",conf.MASMorTASM)
                         window.showErrorMessage(Errmsgwindow);
                         break
                     case 1:
-                        let warningmsgwindow=conf.MASMorTASM+'成功汇编链接生成EXE，但是汇编时产生了警告信息(warning)，可能无法运行/调试,是否继续操作'
-                        window.showInformationMessage(warningmsgwindow, '继续', '否').then(result => {
-                            if (result === '继续') {
+                        let warningmsgwindow=localize("msdos.warn","{0} Warning,successfully generate .exe file,but assembler has some warning message",conf.MASMorTASM);
+                        let Go_on=localize("msdos.continue","continue")
+                        let Stop=localize("msdos.stop","stop")
+                        window.showInformationMessage(warningmsgwindow, Go_on, Stop).then(result => {
+                            if (result === Go_on) {
                                 this.afterlink(conf,viaplayer,isrun)
                             } 
                         });
