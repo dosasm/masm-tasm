@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-import  {hoveractivate} from "./hover"
+import  {hoveractivate} from "./language/hover"
 import * as nls from 'vscode-nls'
 
 const localize = nls.config({ messageFormat: nls.MessageFormat.both })();
