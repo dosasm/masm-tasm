@@ -1251,14 +1251,15 @@ const autoScanDoc3 = async (change : vscode.TextEditor | undefined) => {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function hoveractivate(context: vscode.ExtensionContext) {
-	vscode.workspace.onDidChangeTextDocument(e => autoScanDoc(e));
-	vscode.workspace.onDidOpenTextDocument(e => autoScanDoc2(e));
-	vscode.workspace.onDidSaveTextDocument(e => autoScanDoc2(e));
-	vscode.window.onDidChangeActiveTextEditor(e => autoScanDoc3(e));
-	context.subscriptions.push(vscode.languages.registerHoverProvider('assembly',new TasmHoverProvider()));
-	//context.subscriptions.push(vscode.languages.registerCompletionItemProvider('assembly',new AsmCompiltor(),',','+','\n','-','.'));
+	if(vscode.workspace.getConfiguration('masmtasm.language').get('hover'))context.subscriptions.push(vscode.languages.registerHoverProvider('assembly',new TasmHoverProvider()));
+	if(vscode.workspace.getConfiguration('masmtasm.language').get('CompletionItem')){
+		vscode.workspace.onDidChangeTextDocument(e => autoScanDoc(e));
+		vscode.workspace.onDidOpenTextDocument(e => autoScanDoc2(e));
+		vscode.workspace.onDidSaveTextDocument(e => autoScanDoc2(e));
+		vscode.window.onDidChangeActiveTextEditor(e => autoScanDoc3(e));
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('assembly',new AsmCompiltor(),',','+','\n','-','.'));
 }
-
+}
 
 // this method is called when your extension is deactivated
 export function deactivate() {}

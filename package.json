@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM via DOSBox",
 	"publisher": "xsro",
 	"description": "Run and Debug MASM/TASM code in DOSBox with right click in the editor of assembly codes",
-	"version": "0.1.4-lang.1.2",
+	"version": "0.1.4",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
 	"icon":"dosboxasm.png",
 	"engines": {
@@ -106,7 +106,7 @@
 				},
 				"masmtasm.ASM.emulator": {
                     "type": "string",
-                    "default": "auto",
+                    "default": "dosbox",
 					"description": "%dosasm.config.emulator.description%",
 					"enum":["dosbox","msdos player","auto"],
 					"enumDescriptions":[
@@ -119,6 +119,16 @@
                     "type": "boolean",
                     "default": true,
                     "description": "%dosasm.config.savefirst%"
+				},
+				"masmtasm.language.hover":{
+					"type":"boolean",
+					"default":true,
+					"description": "hover for test，need restart to apply changes"
+				},
+				"masmtasm.language.CompletionItem":{
+					"type":"boolean",
+					"default":false,
+					"description": "autocomplet for test,need restart to apply changes"
 				},
 				"masmtasm.dosbox.run": {
 					"type": "string",

@@ -9,7 +9,14 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] hover的简单实现:如中断的简单信息
 - [ ] LSP和DAP支持（目前对我来说太难了）
 
-## 0.1.2/0.1.3
+### 0.1.4
+
+- 使用[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)来实现对汇编语法的支持
+- hover等功能还有待完善，可以在设置中关闭
+- 一些i18n支持（en和zh-cn)
+- 由于我在同学的电脑上使用auto模式会出现问题 我决定暂时使用`dosbox`模式作为默认模式，这个bug目前还不知道怎么解决，但是感觉多数电脑不会出现这种情况，可以用`auto`或者`msdos`模式的可以在设置中修改
+
+### 0.1.2/0.1.3
 
 - 注意0.1.1以后在设置中有少许调整
 - 将脚本部分与工具分离，使得可以更加方便地自定义工具集
@@ -17,7 +24,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - 美化输出面板的展示
 - （0.1.3）简单实现本地化
 
-## 0.1.1
+### 0.1.1
 
 - 注意本次更新修改了一些配置选项
 - 简单实现了dosbox下的输出问题匹配

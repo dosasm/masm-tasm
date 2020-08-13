@@ -11,10 +11,10 @@ This extension is modified from "[masm-code](https://github.com/Woodykaixa/masm-
 - Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help.
 - Some interesting code your may need:[masm-tasm wiki](https://github.com/xsro/masm-tasm/wiki/dosbox)
 
-Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) and the extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086). This extension now support assembly language using codes from  it.
+Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086). This extension now support assembly language using codes from  it.
 Also, this extension may also work with extensions like: [MASM](https://marketplace.visualstudio.com/items?itemName=bltg-team.masm)、[masm-code](https://marketplace.visualstudio.com/items?itemName=kaixa.masm-code)、[x86 and x86_64 Assembly](https://marketplace.visualstudio.com/items?itemName=13xforever.language-x86-64-assembly)
 
-## :clap:Features
+## Features
 
 when your are editing `.asm(.ASM)` files ,you can right click at the editor panel,then you will see several choices listed below:
 
@@ -40,7 +40,7 @@ your file will be copied as `D:\T.ASM` in DOSBox. (The extension will copy your 
 
 ![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif)
 
-## :point_right:Docs & Thanks & Licenses
+## Docs & Thanks & Licenses
 
 - this extension is [MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
   - thanks for [masm-code](https://github.com/Woodykaixa/masm-code),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
