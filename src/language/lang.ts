@@ -171,7 +171,7 @@ const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	new KeywordDef("cs","Code segement address",KeywordType.Register,"cs",0),
 	new KeywordDef("ss","Stack segement address",KeywordType.Register,"ss",0),
 	new KeywordDef("ds","Data segement address",KeywordType.Register,"ds",0),
-	new KeywordDef("es","",KeywordType.Register,"es",0),
+	new KeywordDef("es","Extra segement address",KeywordType.Register,"es",0),
 	//Saved
 	new KeywordDef("DATASEG","Start of the data segment",KeywordType.SavedWord,"DATASEG",0),
 	new KeywordDef("IDEAL","",KeywordType.SavedWord,"IDEAL",0),

@@ -6,7 +6,7 @@ import {runcode} from './runcode'
 import  {hoveractivate} from "./language/lang"
 let asm:runcode
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "masm-tasm" is now active!');
+	console.log(localize("active.hello",'Congratulations, your extension "masm-tasm" is now active!'));
 	asm = new runcode(context);
 	hoveractivate(context)
 	let opendosbox = vscode.commands.registerTextEditorCommand('masm-tasm.opendosbox', () => {
