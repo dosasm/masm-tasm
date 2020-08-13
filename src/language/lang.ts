@@ -2,7 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as fstream from 'fs';
-
+import * as nls from 'vscode-nls'
+const localize =  nls.loadMessageBundle()
 class Info {
 	des : string;
 	name :string;
@@ -67,27 +68,27 @@ class Info {
 function getType(type : KeywordType) : string {
 	switch (type) {
 			case KeywordType.Instruction:
-			return "(Command)";
+			return localize("keykind.Command","(Command)");
 			case KeywordType.MemoryAllocation:
-			return "(Memory)";
+			return localize("keykind.Memory","(Memory)");
 			case KeywordType.PreCompileCommand:
-			return "(Instruction)";
+			return localize("keykind.Instruction","(Instruction)");
 			case KeywordType.Register:
-			return "(Register)";
+			return localize("keykind.Register","(Register)");
 			case KeywordType.SavedWord:
-			return "(Saved)";
+			return localize("keykind.Saved","(Saved)");
 			case KeywordType.Size:
-			return "(Size)";
+			return localize("keykind.Size","(Size)");
 			case KeywordType.Label:
-			return "(Label)";
+			return localize("keykind.Label","(Label)");
 			case KeywordType.Macro:
-			return "(Macro)";
+			return localize("keykind.Macro","(Macro)");
 			case KeywordType.Method:
-			return "(Procedure)";
+			return localize("keykind.Procedure","(Procedure)");
 			case KeywordType.Structure:
-			return "(Structure)";
+			return localize("keykind.Structure","(Structure)");
 			case KeywordType.Variable:
-			return "(Variable)";
+			return localize("keykind.Variable","(Variable)");
 	}
 	return "(Unknown)";
 }
@@ -195,7 +196,7 @@ const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	new KeywordDef("STACK","Sets the size of the stack",KeywordType.SavedWord,"STACK [constant]",1,AllowKinds.Constants),
 	//Basics
 	new KeywordDef("mov", "Moves value from adress/constant/register to a register or adress."),
-	new KeywordDef("int", "Interrupt call",KeywordType.Instruction,"int [interruptIndex]",1,AllowKinds.Constants),
+	new KeywordDef("int", "Interrupt call see [list]( http://www.ablmcc.edu.hk/~scy/CIT/8086_bios_and_dos_interrupts.htm#int16h_00h)",KeywordType.Instruction,"int [interruptIndex]",1,AllowKinds.Constants),
 	new KeywordDef("into", "Trap into overflow flag",KeywordType.Instruction,"into",1,AllowKinds.Constants),
 	new KeywordDef("nop", "Do nothing",KeywordType.Instruction,"nop",0),
 	new KeywordDef("hlt", "Enters halt mode",KeywordType.Instruction,"hlt",0),
@@ -428,19 +429,11 @@ function isNumberStr(str:string) : boolean{
 function getNumMsg(word:string) {
 	let base : number = word.endsWith('h')? 16 : word.endsWith('q')? 8 : word.endsWith('b')? 2 :  10;
 	var value : number = Number.parseInt(word,base);
-	var s = "(" + (base===16?"Hexadecimal":base===8?"Octal":base===10?"Decimal":"Binary") + " Number) " + word + ":\n";
-	if(base !== 10){
-		s += " DEC: " + value.toString(10) + "D\n";
-	}
-	if(base !== 16){
-		s += " HEX: " + value.toString(16) + "H\n";
-	}
-	if(base !== 8){
-		s += " OCT: " + value.toString(8) + "Q\n";
-	}
-	if(base !== 2){
-		s += " BIN: " + value.toString(2) + "B\n";
-	}
+	var s = "(" + (base===16?"Hexadecimal":base===8?"Octal":base===10?"Decimal":"Binary") + " Number) " + word + ":\n\n";
+		s += " `DEC`: " + value.toString(10) + "D\n\n";
+		s += " `HEX`: " + value.toString(16) + "H\n\n";
+		s += " `OCT`: " + value.toString(8) + "Q\n\n";
+		s += " `BIN`: " + value.toString(2) + "B\n\n";
 	return s;
 }
 function findProc(name:string) : Procedure | undefined{
@@ -484,7 +477,7 @@ function findLabel(name:string): Label | undefined {
 //Hover provider
 class TasmHoverProvider implements vscode.HoverProvider {
 	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-		let output = [];
+		let output:vscode.MarkdownString=new vscode.MarkdownString()
 		let line = document.getText(new vscode.Range(position.line, 0, position.line, position.character));
 		let quotes = null;
 		let comment = null;
@@ -498,71 +491,27 @@ class TasmHoverProvider implements vscode.HoverProvider {
 				let word = document.getText(range).toLowerCase();
 				let proc = findProc(word),keyword = GetKeyword(word),macro = findMacro(word),label=findLabel(word);
 				if(isNumberStr(word)){
-					output.push({
-						language: "assembly",
-						value: getNumMsg(word)
-					}
-					);
+					output.appendMarkdown(getNumMsg(word));
 				}else if(proc !== undefined){
-					output.push(
-						{
-							language: "assembly",
-							value: "(Procedure) " + proc.name
-						},
-						{
-							language: "plainText",
-							value: proc.description.des
-						},
-						{
-							language: "assembly",
-							value: proc.description.paramsString()
-						},{
-							language:"assembly",
-							value: proc.description.outputs()
-						});
+					output.appendCodeblock("assembly","(Procedure) " + proc.name)
+						output.appendMarkdown( proc.description.des)
+						output.appendCodeblock("assembly", proc.description.paramsString())
+						output.appendCodeblock("assembly", proc.description.outputs())
 				}else if(macro !== undefined) {
 					if(macro.short){
-						output.push(
-							{
-								language: "assembly",
-								value: "(Macro) " + macro.name + " => " + macro.des.des
-							}
-						);
+						output.appendCodeblock("assembly","(Macro) " + macro.name + " => " + macro.des.des)
 					}else{
-						output.push(
-							{
-								language: "assembly",
-								value: "(Macro) " + macro.name
-							},
-							{
-								language:"plainText",
-								value: macro.des.des
-							},
-							{
-								language: "assembly",
-								value: macro.des.paramsStringMac()
-							},{
-								language: "assembly",
-								value: macro.des.outputs()
-							}
-						);
+						output.appendCodeblock("assembly","(Macro) " + macro.name)
+						output.appendText(macro.des.des)
+						output.appendCodeblock("assembly",macro.des.paramsStringMac())
+						output.appendCodeblock("assembly",macro.des.outputs()	)					
 					}
 				}else if(keyword !== undefined){
-					output.push({
-						language: "assembly",
-						value: getType(keyword.type) + " " + keyword.name
-					},{
-						language: "plainText",
-						value: keyword.def
-					},{
-						language:"assembly",
-						value:"Syntax: " + keyword.data
-					});
+					let md=getType(keyword.type)+" **"+keyword.name+"**\n\n"+keyword.def
+					output.appendMarkdown(md)
+					output.appendCodeblock("Syntax: " + keyword.data)
 				}else if(label !== undefined){
-					output.push({
-						language: 'assembly',
-						value: '(Label) ' + label.name + " => " + label.value
-					});
+					output.appendCodeblock('assembly','(Label) ' + label.name + " => " + label.value)
 				}
 			}
 		}
@@ -1260,10 +1209,10 @@ const autoScanDoc3 = async (change : vscode.TextEditor | undefined) => {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function hoveractivate(context: vscode.ExtensionContext) {
-	//vscode.workspace.onDidChangeTextDocument(e => autoScanDoc(e));
-	//vscode.workspace.onDidOpenTextDocument(e => autoScanDoc2(e));
-	//vscode.workspace.onDidSaveTextDocument(e => autoScanDoc2(e));
-	//vscode.window.onDidChangeActiveTextEditor(e => autoScanDoc3(e));
+	vscode.workspace.onDidChangeTextDocument(e => autoScanDoc(e));
+	vscode.workspace.onDidOpenTextDocument(e => autoScanDoc2(e));
+	vscode.workspace.onDidSaveTextDocument(e => autoScanDoc2(e));
+	vscode.window.onDidChangeActiveTextEditor(e => autoScanDoc3(e));
 	context.subscriptions.push(vscode.languages.registerHoverProvider('assembly',new TasmHoverProvider()));
 	//context.subscriptions.push(vscode.languages.registerCompletionItemProvider('assembly',new AsmCompiltor(),',','+','\n','-','.'));
 }
