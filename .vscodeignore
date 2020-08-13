@@ -1,16 +1,23 @@
+# ignore vscode settings
 .vscode/**
+# ignore test
 .vscode-test/**
 out/test/**
+# ignore source
 src/**
+#ignore dev files
 .gitignore
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
 **/*.ts
+gulpfile.js
+# doc pic license
 doc/
 pics/
 LICENSE
+# ignore tools and files of ext
 scripts/work/*
 !scripts/work/ignore.txt
 tools/dosbox/dosbox-0.74.conf
@@ -18,3 +25,6 @@ scripts/VSC-ExtUse.conf
 tools/masm/README.DOC
 tools/masm/edit.*
 tools/masm/EDIT.*
+# ignore i18n
+i18n
+Themes

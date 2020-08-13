@@ -1,0 +1,141 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Assembly (TASM)",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.assembly",
+				"match": "\\b((?i)(hlt|nop|xadd|xchg|cmpxchg|ror|rol|rcl|rcr|into|iret|loopne|loopnz|enter|leave|shrd|shld|fwait|wait|xlat|les|xchg|rep|mod|movs|lea|str|req|push|call|mov|ret|pop|int|loop|loope|loopz|lea|add|sub|mul|neg|div|idiv|imul|pusha|popa|inc|dec|jmp|jle|jge|jg|jl|jle|jc|jnc|ja|jna|jz|jnz|je|jne|js|jns|jp|jnp|jo|jno|cmp|and|or|xor|not|ja|jb|jae|jbe|jcxz|in|out|shl|shr))\\b"
+			},
+			{
+				"name":"keyword.control.flags.assmebly",
+				"match": "\\b((?i)(lahf|sahf|pushf|pushfw|pushfd|popf|popfd|popfw|std|cld|sti|cli|stc|clc|cmc))\\b"
+			},
+			{
+				"name":"keyword.math2.assembly",
+				"match": "\\b((?i)(daa|das|aaa|aas|aad|aam))\\b"
+			},
+			{
+				"name":"keyword.string.assembly",
+				"match": "\\b((?i)(ins|insb|insw|insd|outs|outsb|outsd|outw|cmps|cmpsb|cmpsw|cmpsd|lods|lobsb|lobsw|lodsd|scas|scasb|scasb|scasw|repnz|repz|stos|movs|movsb|movsw|movsd))\\b"
+			},
+			{
+				"name":"keyword.legacy.assembly",
+				"match": "\\b((?i)(c|req|abs|wrt))\\b"
+			},
+			{
+				"name":"keyword.control.assembly",
+				"match": "\\b((?i)(dt|db|dw|dd|dq|real4|real8|df))\\b"
+			},
+			{
+				"name":"keyword.control.less.assembly",
+				"match": "\\b((?i)(byte|word|qword|dword|tbyte))\\b"
+			},
+			{
+				"name":"keyword.size.assembly",
+				"match": "\\b((?i)(small|large|medium|flat|stdcall|tiny|huge|compact))\\b"
+			},
+			{	
+				"name": "keyword.valued.assembly",
+				"match": "\\b((?i)(CODESEG|DATASEG|IDEAL|MODEL|STACK|width|length|ge|le|this|times|far|near)\\b|@d)ata"
+			},
+			{
+				"name":"keyword.less.preCompiled.assembly",
+				"match": "\\b((?i)(local|label|proc|endp|struct|struc|ends|end|include|offset|equ|dup|ptr|if|while|macro|endm|invoke|seg))\\b"
+			},
+			{
+				"name":"keyword.less.conditional.assembly",
+				"match": "\\b((?i)(abs|if|else|endif|ife|ifb|ifnb|ifdef|ifndef|ifdif|ifndif|if1|if2|irp|for|rept))\\b"
+			},
+			{
+				"name":"variable.register.assembly",
+				"match": "\\b((?i)(ax|bx|cx|dx|sp|bp|di|si|bl|bh|cl|ch|al|ah|dl|dh))\\b"
+			},
+			{
+				"name":"variable.register.segement.assembly",
+				"match": "\\b((?i)(ds|es|ss|cs|fs|gs))\\b"
+			},
+			{
+				"name":"variable.register.64.assembly",
+				"match": "\\b((?i)(rax|rbx|rcx|rdx|rsp|rbp|rdi|rsi))\\b"
+			},
+			{
+				"name":"variable.register.float.assembly",
+				"match": "\\b((?i)(st1|st0|st2|st3|st4|st5|st6|st7|st))\\b"
+			},
+			{
+				"name":"variable.register.debug.assembly",
+				"match": "\\b((?i)(db1|db0|db2|db3|db6|db7))\\b"
+			},
+			{
+				"name":"variable.register.test.assembly",
+				"match": "\\b((?i)(tr6|tr7))\\b"
+			},
+			{
+				"name":"variable.register.32.assembly",
+				"match": "\\b((?i)(eax|ebx|ecx|edx|esp|ebp|edi|esi))\\b"
+			}
+		]
+		},
+		"strings": {
+			"patterns":
+			[
+				{
+					"name": "string.quoted.double.assembly",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.assembly",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name":"string.quoted.single",
+					"begin": "'",
+					"end": "'",
+					"patterns": [
+						{
+							"name": "constant.character.escape.assembly",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name":"comment.line",
+					"begin": ";",
+					"end": "\n",
+					"patterns": [
+						{
+							"name": "constant.character.escape.assembly",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name":"constant.numeric",
+					"begin": "0|1|2|3|4|5|6|7|8|9",
+					"end": "h|d|b|\\b",
+					"patterns": [
+						{
+							"name": "constant.numberic",
+							"match": "\\\\."
+						}
+					]
+				}
+			]
+		}
+		
+	},
+		
+	"scopeName": "source.asm"
+}

@@ -1,4 +1,6 @@
 import { languages,Diagnostic,Range,Position,DiagnosticCollection, Uri, DiagnosticRelatedInformation, OutputChannel,env } from 'vscode'
+import * as nls from "vscode-nls"
+const localize =  nls.loadMessageBundle()
 export class landiagnose{
     private masmCollection:DiagnosticCollection
     private tasmCollection:DiagnosticCollection
@@ -39,9 +41,7 @@ export class landiagnose{
         if(MASMorTASM=='TASM') flag=this.tasmdiagnose(text,info,fileuri,ASM)
         else if(MASMorTASM=='MASM') flag=this.masmdiagnose(text,info,fileuri,ASM)
         if (flag!=2)this._OutChannel.show()
-        let collectmessage:string
-        if(env.language=='zh-cn') collectmessage='收集到'+this.asmerror.toString()+'条错误，'+this.asmwarn+'条警告信息,详细输出如下';
-        else collectmessage=this.asmerror.toString()+' Error,'+this.asmwarn+' Warning, collected. The following is the output of assembler and linker';
+        let collectmessage:string=localize("diag.msg","{0} Error,{1}  Warning, collected. The following is the output of assembler and linker'",this.asmerror.toString(),this.asmwarn)
         this._OutChannel.appendLine(collectmessage)
         this.channaloutput(info)
         return flag
