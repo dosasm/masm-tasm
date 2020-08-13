@@ -13,7 +13,7 @@
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.assembly",
-				"match": "\\b((?i)(hlt|nop|xadd|xchg|cmpxchg|ror|rol|rcl|rcr|into|iret|loopne|loopnz|enter|leave|shrd|shld|fwait|wait|xlat|les|xchg|rep|mod|movs|lea|str|req|push|call|mov|ret|pop|int|loop|loope|loopz|lea|add|sub|mul|neg|div|idiv|imul|pusha|popa|inc|dec|jmp|jle|jge|ge|jl|jc|jnc|jz|jnz|je|jne|cmp|and|or|xor|not|ja|jb|jae|jbe|jcxz|in|out|shl|shr))\\b"
+				"match": "\\b((?i)(hlt|nop|xadd|xchg|cmpxchg|ror|rol|rcl|rcr|into|iret|loopne|loopnz|enter|leave|shrd|shld|fwait|wait|xlat|les|xchg|rep|mod|movs|lea|str|req|push|call|mov|ret|pop|int|loop|loope|loopz|lea|add|sub|mul|neg|div|idiv|imul|pusha|popa|inc|dec|jmp|jle|jge|jg|jl|jle|jc|jnc|ja|jna|jz|jnz|je|jne|js|jns|jp|jnp|jo|jno|cmp|and|or|xor|not|ja|jb|jae|jbe|jcxz|in|out|shl|shr))\\b"
 			},
 			{
 				"name":"keyword.control.flags.assmebly",
@@ -49,7 +49,7 @@
 			},
 			{
 				"name":"keyword.less.preCompiled.assembly",
-				"match": "\\b((?i)(local|label|proc|endp|struct|struc|ends|end|include|offset|equ|dup|ptr|if|while|macro|endm|invoke))\\b"
+				"match": "\\b((?i)(local|label|proc|endp|struct|struc|ends|end|include|offset|equ|dup|ptr|if|while|macro|endm|invoke|seg))\\b"
 			},
 			{
 				"name":"keyword.less.conditional.assembly",

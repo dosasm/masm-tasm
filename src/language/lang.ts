@@ -47,22 +47,6 @@ class Info {
 		}
 		return h;
 	}
-
-	/**
-	 * AsMarkedText
-	 */
-	public AsMarkedText(asMacro : boolean = false) {
-		return [{
-			language: "plainText",
-			value: this.des
-		},{
-			language: "assembly",
-			value: asMacro?(this.name +" " + this.paramsStringMac()):(this.paramsString)
-		},{
-			language:"assembly",
-			value:this.output.length > 0?("Output:\n" + this.outputs()):""
-		}];
-	}
 }
 
 function getType(type : KeywordType) : string {
@@ -196,7 +180,7 @@ const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	new KeywordDef("STACK","Sets the size of the stack",KeywordType.SavedWord,"STACK [constant]",1,AllowKinds.Constants),
 	//Basics
 	new KeywordDef("mov", "Moves value from adress/constant/register to a register or adress."),
-	new KeywordDef("int", "Interrupt call see [list]( http://www.ablmcc.edu.hk/~scy/CIT/8086_bios_and_dos_interrupts.htm#int16h_00h)",KeywordType.Instruction,"int [interruptIndex]",1,AllowKinds.Constants),
+	new KeywordDef("int", "Interrupt call see [list]( https://github.com/xsro/masm-tasm/wiki/interrupt_en)",KeywordType.Instruction,"int [interruptIndex]",1,AllowKinds.Constants),
 	new KeywordDef("into", "Trap into overflow flag",KeywordType.Instruction,"into",1,AllowKinds.Constants),
 	new KeywordDef("nop", "Do nothing",KeywordType.Instruction,"nop",0),
 	new KeywordDef("hlt", "Enters halt mode",KeywordType.Instruction,"hlt",0),
@@ -844,7 +828,7 @@ async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<nu
 			await sacnDoc(doc,false);
 		}
 	}
-	//console.log(structs);
+	console.log(structs);
 	
 	return new Promise(resolve => {
 		setTimeout(() => {
