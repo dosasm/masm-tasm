@@ -3,12 +3,12 @@ import * as nls from 'vscode-nls'
 
 const localize = nls.config({ messageFormat: nls.MessageFormat.both })();
 import {runcode} from './runcode'
-import  {hoveractivate} from "./language/hover"
+import  {provider} from "./language/provider"
 let asm:runcode
 export function activate(context: vscode.ExtensionContext) {
 	console.log(localize("active.hello",'Congratulations, your extension "masm-tasm" is now active!'));
 	asm = new runcode(context);
-	hoveractivate(context)
+	provider(context)
 	let opendosbox = vscode.commands.registerTextEditorCommand('masm-tasm.opendosbox', () => {
 		asm.runcode('opendosbox');
 	});

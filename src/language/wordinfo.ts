@@ -3,100 +3,61 @@ import * as fstream from 'fs';
 import * as nls from 'vscode-nls'
 const localize =  nls.loadMessageBundle()
 
-const labels : Label[] = [];
-const procs: Procedure[] = [];
-const structs: string[] = [];
-const macros : Macro[] = [];
-function findProc(name:string) : Procedure | undefined{
-	for (const proc of procs) {
-		if(proc.symbol === name){
-			return proc;
-		}
-	}
-	return;
+enum symboltype{
+	macro,procedure,label,struct
 }
-function findmacro(name:string) : Macro | undefined{
-	for (const macro of macros) {
-		if(macro.symbol === name){
-			return macro;
+class TasmSymbol{
+	type:number
+	name:string
+	location:vscode.Location|undefined
+	constructor(type:number,name:string,RangeorPosition:vscode.Range|vscode.Position){
+		let uri=vscode.window.activeTextEditor?.document.uri
+		this.type=type
+		this.name=name
+		if(uri) this.location=new vscode.Location(uri,RangeorPosition)
+	}
+	public markdown():vscode.MarkdownString{
+		let md=new vscode.MarkdownString()
+		let typestr:string=" "
+		switch(this.type){
+			case symboltype.label:typestr=localize("keykind.Label","label"); break;
+			case symboltype.procedure:typestr=localize("keykind.Procedure","procedure"); break;
+			case symboltype.struct:typestr=localize("keykind.Structure","Structure"); break;
+			case symboltype.macro:typestr=localize("keykind.Macro","macro"); break;
 		}
-	}
-	return;
-}
-function findLabel(name:string) : Label | undefined{
-	for (const label of labels) {
-		if(label.symbol === name){
-			return label;
-		}
-	}
-	return;
-}
-
-class Procedure {
-	symbol : string;
-	body : string;
-	description:string|undefined;
-	range: vscode.Range;
-	constructor(name : string,body:string,range:vscode.Range,description?:string){
-		this.symbol = name;
-		this.body=body;
-		this.range=range
-		this.description = description;
-	}
-	//display markdown information for this procedure
-	markdownmsg():vscode.MarkdownString{
-		let md=new vscode.MarkdownString
-		md.appendMarkdown("**"+this.symbol+"**")
-		if(this.description) md.appendText(this.description)
+		md.appendMarkdown('**'+typestr+"** "+this.name)
 		return md
-
 	}
 }
+enum linetype{other,macro,endm,segment,ends,proc,endp}
+function readline(line:string){
+	// let regmacro=/
+	// let regendm
+	// let regproc
+	// let regendp=/
 
-class Macro {
-	symbol:string
-	param:string[]|undefined
-	description:string|undefined
-	body:string
-	range:vscode.Range
-	constructor(name:string,body:string,range:vscode.Range,des:string,param?:string[])
-	{
-		this.param=param
-		this.symbol = name;
-		this.body=body;
-		this.range=range
-		this.description = des
-	}
-	//display markdown information for this macro
-	markdownmsg():vscode.MarkdownString{
-		let md=new vscode.MarkdownString
-		let paramstr:string
-		if (this.param) {
-			this.param.forEach(
-				(item,index)=>{
-					paramstr+=item+" "
-				}
-			)
+}
+export function findSymbol (word:string):TasmSymbol|undefined{
+	for(let sym of symbols){
+		if(sym.name===word){
+			return sym
 		}
-		md.appendMarkdown("**"+this.symbol+"**: ")
-		if(this.description) md.appendText(this.description)
-		return md
-	
-}}
-
-class Label {
-	symbol:string
-	range: vscode.Range
-	constructor(name:string,range:vscode.Range) {
-		this.symbol=name
-		this.range=range
 	}
+	return
 }
+const symbols:TasmSymbol[]=[]
 async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<number> {
 	// scan the document for necessary information
+	let labelreg=/^\s*(\w+)\s*:/
 	document.forEach(
 		(item,index,array)=>{
-
+			let a=labelreg.exec(item)
+			if(a){
+				let name:string=a[1]
+				let idx:number=a.index
+				let one:TasmSymbol=new TasmSymbol(symboltype.label,name,new vscode.Position(index,idx))
+				symbols.push(one)	
+			}
 		},
 	)
 		return new Promise(resolve => {
@@ -132,11 +93,14 @@ function doucmentToStringArray(str:vscode.TextDocument) : string[] {
 	}
 	return array;
 }
+export function scanDoc(){
+	vscode.workspace.onDidChangeTextDocument(e => autoScanDoc(e));
+	vscode.workspace.onDidOpenTextDocument(e => autoScanDoc2(e));
+	vscode.workspace.onDidSaveTextDocument(e => autoScanDoc2(e));
+	vscode.window.onDidChangeActiveTextEditor(e => autoScanDoc3(e));
+}
 const possibleNumbers : string[] = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-/**
- * whether the string is valid number 
- * @param str 
- */
+
 export function isNumberStr(str:string) : boolean{
 	if(!str.startsWith('0') && !str.startsWith('1') && !str.startsWith('2') && !str.startsWith('3')
 		&& !str.startsWith('4') && !str.startsWith('5') && !str.startsWith('6') && !str.startsWith('7')
