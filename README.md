@@ -1,18 +1,18 @@
-# run and debug TASM and MASM via dosbox(and msdos-player)
+# Dos assembly (MASM/TASM) via DOSBox(and msdos-player)
 
 [中文](https://github.com/xsro/masm-tasm/blob/master/doc/README_zh.md)
 
-This extension is modified from "[masm-code](https://github.com/Woodykaixa/masm-code)", focusing on the interaction with DOS emulator (DOSBox and msdos-player). It is helpful for you to study MASM, TASM and also the course <*principles& peripheral technology of microprocessor*>.
+Language support for DOS assembly,very likely for you to study MASM, TASM and also the course <*principles& peripheral technology of microprocessor*>.()
 
 - Support both **TASM and MASM**: you can choose MASM or TASM in the preference
 - **Editor Menu**: run and debug with right click on the VSCode editor panel
 - **Convenient**: related tools packaged in the extension. Just install and right click (recommand to use this ext in windows otherwise you should install dosbox first)
-- **Diagnose**: process the output of ASM tools and ouput them in VSCode
+- **Diagnose**: process the output of ASM tools and ouput them in **VSCode
+- **Hover**:show information of where the curser is 
 - Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help.
 - Some interesting code your may need:[masm-tasm wiki](https://github.com/xsro/masm-tasm/wiki/dosbox)
 
-Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086). This extension now support assembly language using codes from  it.
-Also, this extension may also work with extensions like: [MASM](https://marketplace.visualstudio.com/items?itemName=bltg-team.masm)、[masm-code](https://marketplace.visualstudio.com/items?itemName=kaixa.masm-code)、[x86 and x86_64 Assembly](https://marketplace.visualstudio.com/items?itemName=13xforever.language-x86-64-assembly)
+Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) 's extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086) and [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code). This extension now contribute an assembly language.
 
 ## Features
 

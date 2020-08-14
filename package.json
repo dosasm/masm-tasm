@@ -1,8 +1,8 @@
 {
 	"name": "masm-tasm",
-	"displayName": "MASM/TASM via DOSBox",
+	"displayName": "MASM/TASM",
 	"publisher": "xsro",
-	"description": "Run and Debug MASM/TASM code in DOSBox with right click in the editor of assembly codes",
+	"description": "DOS汇编语言开发环境，安装即用，可自定义，支持TASM/MASM",
 	"version": "0.1.4",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
 	"icon":"dosboxasm.png",

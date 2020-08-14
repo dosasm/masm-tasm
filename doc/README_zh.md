@@ -5,21 +5,21 @@
 1. 同时支持调用**TASM**和**MASM**: 可以在设置（首选项）中修改使用MASM还是TASM工具集
 2. 提供编辑器**右键菜单**：在汇编语言的编辑器添加了“打开dosbox，运行，调试”的三个选项
 3. 提供diagnose**问题输出**功能：假如汇编未通过，会标明错误信息与位置，可以在命令面板输入`清除MASM/TASM的所有问题信息`清除本插件输出的diagnose问题信息
-4. 调用[dosbox](https://www.dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
-5. 通过 [Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)的代码来实现语法支持
+4. 提供悬浮提示，跳转定义
+5. 调用[dosbox](https://www.dosbox.com)和[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)模拟16位系统环境，运行相关组件
 
-非常感谢以上软件！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。
+非常感谢[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)的[Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)和[Woodykaixa](https://github.com/Woodykaixa)的 [masm-code](https://github.com/Woodykaixa/masm-code)！插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)以及PR，大家一起交流和完善。
 
 ## 安装使用
 
 - windows 无需其他操作，相关软件已打包在插件之中
-- linux 请先安装dosbox [详情](https://github.com/xsro/masm-tasm/blob/master/doc/Get_start.md#linux)
+- linux 请先安装dosbox [详情](doc/Get_start.md#linux)
 
 ## Features主要功能
 
 当编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
-1. 打开dosbox并配置环境(挂载)：打开DOSBox，然后就可以手动在打开的DOSBox窗口进行[汇编相关操作](https://github.com/xsro/masm-tasm/blob/master/doc/ASM_commands.md)
+1. 打开dosbox并配置环境(挂载)：打开DOSBox，然后就可以手动在打开的DOSBox窗口进行[汇编相关操作](doc/ASM_commands.md)
 2. 运行当前程序(汇编+链接+运行)：生成exe程序并运行
 3. 调试当前程序(汇编+链接+调试)：生成exe程序并调试，使用MASM则会调用debug调试，使用TASM会调用td调试
 
@@ -43,7 +43,6 @@
 
 ## Some Tips 一些相关信息
 
-- 这个插件专注于汇编的编译运行调试环节，推荐结合汇编语法支持（高亮、代码片段等）的插件一起使用，如：[MASM](https://marketplace.visualstudio.com/items?itemName=bltg-team.masm)、[TASM](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)、[masm-code](https://marketplace.visualstudio.com/items?itemName=kaixa.masm-code)、[x86 and x86_64 Assembly](https://marketplace.visualstudio.com/items?itemName=13xforever.language-x86-64-assembly)等。
 - 一些有趣的汇编代码: [dosbox codes](https://github.com/xsro/masm-tasm/wiki/dosbox#写代码)
 - 使用终端任务调用dosbox：[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)
 
@@ -63,13 +62,13 @@
 - 调整dosbox窗口大小
 - 规定dosbox运行程序之后进行什么操作（是否直接退出程序，还是等待）
 - 启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
-- 设置自定义汇编工具路径,详见:[自定义汇编工具路径](https://github.com/xsro/masm-tasm/blob/master/doc/Toolspath.md#自定义汇编工具路径)
+- 设置自定义汇编工具路径,详见:[自定义汇编工具路径](doc/Toolspath.md#自定义汇编工具路径)
 
 ### 文档 & 感谢 & 许可
 
-- 这个插件是[MIT license](https://github.com/xsro/masm-tasm/blob/master/LICENSE).
+- 这个插件是[MIT license](LICENSE).
 - 感谢[masm-code](https://github.com/Woodykaixa/masm-code),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
-  - 他们的[相关信息](https://github.com/xsro/masm-tasm/blob/master/doc/license_and_info.md)
+  - 他们的[相关信息](doc/license_and_info.md)
 - [一些相关资料:wiki](https://github.com/xsro/VSC-ASMtasks/wiki)
 
 Enjoy!:smile:
