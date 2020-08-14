@@ -3,7 +3,7 @@ import * as nls from 'vscode-nls'
 
 const localize = nls.config({ messageFormat: nls.MessageFormat.both })();
 import {runcode} from './runcode'
-import  {hoveractivate} from "./language/lang"
+import  {hoveractivate} from "./language/hover"
 let asm:runcode
 export function activate(context: vscode.ExtensionContext) {
 	console.log(localize("active.hello",'Congratulations, your extension "masm-tasm" is now active!'));
