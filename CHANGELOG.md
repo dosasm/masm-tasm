@@ -8,6 +8,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] 问题匹配功能完善
 - [ ] hover的简单实现:如中断的简单信息
 - [ ] LSP和DAP支持（目前对我来说太难了）
+- [ ] 根据具体的AH值显示跳转到不同的信息
 
 ### 0.1.4
 

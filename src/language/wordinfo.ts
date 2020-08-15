@@ -4,7 +4,7 @@ import * as nls from 'vscode-nls'
 const localize =  nls.loadMessageBundle()
 
 enum symboltype{
-	macro,procedure,label,struct
+	macro,procedure,struct,label,asmvar
 }
 class TasmSymbol{
 	type:number
@@ -21,6 +21,7 @@ class TasmSymbol{
 		let typestr:string=" "
 		switch(this.type){
 			case symboltype.label:typestr=localize("keykind.Label","label"); break;
+			case symboltype.asmvar:typestr=localize("keykind.Variable","variable"); break;
 			case symboltype.procedure:typestr=localize("keykind.Procedure","procedure"); break;
 			case symboltype.struct:typestr=localize("keykind.Structure","Structure"); break;
 			case symboltype.macro:typestr=localize("keykind.Macro","macro"); break;
@@ -30,13 +31,7 @@ class TasmSymbol{
 	}
 }
 enum linetype{other,macro,endm,segment,ends,proc,endp}
-function readline(line:string){
-	// let regmacro=/
-	// let regendm
-	// let regproc
-	// let regendp=/
 
-}
 export function findSymbol (word:string):TasmSymbol|undefined{
 	for(let sym of symbols){
 		if(sym.name===word){
@@ -46,6 +41,15 @@ export function findSymbol (word:string):TasmSymbol|undefined{
 	return
 }
 const symbols:TasmSymbol[]=[]
+function scanline(line:string){
+	let str=line.toLowerCase()
+	if (str.includes("macro")) return linetype.macro
+	if (str.includes("endm")) return linetype.endm
+	if (str.includes("segment")) return linetype.segment
+	if (str.includes("ends")) return linetype.ends
+	if (str.includes("proc")) return linetype.proc
+	if (str.includes("endp")) return linetype.endp
+}
 async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<number> {
 	// scan the document for necessary information
 	let labelreg=/^\s*(\w+)\s*:/
@@ -54,8 +58,15 @@ async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<nu
 			let a=labelreg.exec(item)
 			if(a){
 				let name:string=a[1]
-				let idx:number=a.index
+				let idx:number=item.indexOf(a[1])
 				let one:TasmSymbol=new TasmSymbol(symboltype.label,name,new vscode.Position(index,idx))
+				symbols.push(one)	
+			}
+			let b=item.match (/\s*(\w+)\s*[db|DB|dw|DW|dd|DD|df|DF|dq|DQ|dt|DT]/)
+			if(b){
+				let name:string=b[1]
+				let idx:number=item.indexOf(b[1])
+				let one:TasmSymbol=new TasmSymbol(symboltype.asmvar,name,new vscode.Position(index,idx))
 				symbols.push(one)	
 			}
 		},
