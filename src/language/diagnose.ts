@@ -164,7 +164,7 @@ private tasmdiagpush(severity:number,line:number,msg:string,text:string,related?
                 {
                     let related=this.TasmMacroRelated(fileuri,text,macroname,macroline,msg)
                     let line=parseInt(line_get)
-                    this.tasmdiagpush(severity,line,msg,text,related)
+                    this.tasmdiagpush(severity,line,msg+" (in macro \""+macroname+"\" "+line_get+")",text,related)
                     delete allmsg[i]
                 }
             }

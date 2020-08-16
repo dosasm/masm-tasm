@@ -22,7 +22,6 @@ export class DOSBox{
             let wincommand='start/min/wait "" "'+conf.path+'/dosbox/dosbox.exe" -conf "'+conf.dosboxconfuri.fsPath+'" '
             if(doc) wincommand='del/Q T*.* & copy "'+doc.fileName+'" "T.ASM" & '+wincommand
             execSync(wincommand+boxcommand,{cwd:conf.workpath,shell:'cmd.exe'})
-            console.log(wincommand+boxcommand)
         }
         else{
             let linuxcommand='dosbox -conf "'+conf.dosboxconfuri.fsPath+'" '
@@ -31,19 +30,17 @@ export class DOSBox{
             execSync(linuxcommand+boxcommand,{cwd:conf.workpath})
             
         }
-        if(diag) this.BOXdiag(conf,diag)
+        if(diag && doc) this.BOXdiag(conf,diag,doc)
     }
-    private BOXdiag(conf:Config,diag:landiagnose):string{
+    private BOXdiag(conf:Config,diag:landiagnose,doc:TextDocument):string{
         let info:string=' ',content:string
-        let turi=window.activeTextEditor?.document.uri
-        let document=window.activeTextEditor?.document
-        let texturi:Uri
+        let document=doc
         if (document) {
             content=document.getText()
             workspace.fs.readFile(conf.workloguri).then(
             (text)=>{
                 info=text.toString()
-                if(diag.ErrMsgProcess(content,info,texturi,conf.MASMorTASM)==0){
+                if(diag.ErrMsgProcess(content,info,doc.uri,conf.MASMorTASM)==0){
                     let Errmsgwindow=conf.MASMorTASM+'汇编出错,无法运行/调试'
                     window.showErrorMessage(Errmsgwindow);
                 }},
