@@ -1,20 +1,39 @@
 import * as vscode from 'vscode';
-import * as fstream from 'fs';
 import * as nls from 'vscode-nls'
 const localize =  nls.loadMessageBundle()
-
+const symbols:TasmSymbol[]=[]
+let _document:vscode.TextDocument
+let docsymbol:vscode.DocumentSymbol[]=[]
 enum symboltype{
-	macro,procedure,struct,label,asmvar
+	other,
+	macro,
+	procedure,
+	struct,
+	label,
+	asmvar,
+	segment
+}
+function SymbolVSCfy(a:symboltype){
+	let output=vscode.SymbolKind.Null
+	switch(a){
+		case symboltype.macro:output=vscode.SymbolKind.Module;break;
+		case symboltype.segment:output=vscode.SymbolKind.Class;break;
+		case symboltype.procedure:output=vscode.SymbolKind.Function;break;
+		case symboltype.struct:output=vscode.SymbolKind.Struct;break;
+		case symboltype.label:output=vscode.SymbolKind.Key;break;
+		case symboltype.asmvar:output=vscode.SymbolKind.Variable;break;
+	}
+	return output
 }
 class TasmSymbol{
 	type:number
 	name:string
 	location:vscode.Location|undefined
-	constructor(type:number,name:string,RangeorPosition:vscode.Range|vscode.Position){
-		let uri=vscode.window.activeTextEditor?.document.uri
+	belong:string|undefined
+	constructor(type:number,name:string,RangeorPosition:vscode.Range|vscode.Position,belong?:string){
 		this.type=type
 		this.name=name
-		if(uri) this.location=new vscode.Location(uri,RangeorPosition)
+		if(_document) this.location=new vscode.Location(_document.uri,RangeorPosition)
 	}
 	public markdown():vscode.MarkdownString{
 		let md=new vscode.MarkdownString()
@@ -25,12 +44,13 @@ class TasmSymbol{
 			case symboltype.procedure:typestr=localize("keykind.Procedure","procedure"); break;
 			case symboltype.struct:typestr=localize("keykind.Structure","Structure"); break;
 			case symboltype.macro:typestr=localize("keykind.Macro","macro"); break;
+			case symboltype.macro:typestr=localize("keykind.Segment","segment"); break;
 		}
 		md.appendMarkdown('**'+typestr+"** "+this.name)
 		return md
 	}
 }
-enum linetype{other,macro,endm,segment,ends,proc,endp}
+enum linetype{other,macro,endm,segment,ends,struct,proc,endp}//暂时先不支持struct因为可能会与ends（segment）冲突
 
 export function findSymbol (word:string):TasmSymbol|undefined{
 	for(let sym of symbols){
@@ -40,76 +60,141 @@ export function findSymbol (word:string):TasmSymbol|undefined{
 	}
 	return
 }
-const symbols:TasmSymbol[]=[]
-function scanline(line:string){
-	let str=line.toLowerCase()
-	if (str.includes("macro")) return linetype.macro
-	if (str.includes("endm")) return linetype.endm
-	if (str.includes("segment")) return linetype.segment
-	if (str.includes("ends")) return linetype.ends
-	if (str.includes("proc")) return linetype.proc
-	if (str.includes("endp")) return linetype.endp
+class Asmline{
+	type:linetype
+	name:string|undefined
+	line:number
+	index:number
+	constructor(type:linetype,line:number,index:number,name?:string)
+	{
+		this.type=type
+		this.line=line
+		this.index=index
+		this.name=name
+	}
+	public selectrange(){
+		if(this.name) return new vscode.Range(this.line,this.index,this.line,this.index+this.name?.length)
+	}
 }
-async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<number> {
+function scanline(item:string,line:number):Asmline|null{
+	let r: RegExpMatchArray | null=null
+	let asmline:Asmline|null=null
+	r=item.match(/(\w+)\s+(\w+)\s/)
+		if(r) {
+			let type1:linetype|undefined
+			switch (r[2].toUpperCase()){
+				case 'MACRO':type1=linetype.macro;break;
+				case 'SEGMENT':type1=linetype.segment;break;
+				case 'PROC':type1=linetype.proc;break;
+				case 'ENDS':type1=linetype.ends;break;
+				case 'ENDP':type1=linetype.endp;break
+			}
+			if(type1) asmline= new Asmline(type1,line,item.indexOf(r[1]),r[1])
+		}
+	r=item.match(/(endm|ENDM)/)
+		if(r) asmline= new Asmline(linetype.endm,line,item.indexOf(r[1]))
+	return asmline
+}
+function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSymbol|undefined{
+	let r=item.match(/\s*(\w+)\s*:/)
+	let vscsymbol:vscode.DocumentSymbol
+	let name:string
+	let range:vscode.Range
+	let srange:vscode.Range
+	if(r){
+		name=r[1]
+		let start=item.indexOf(name)
+		let one:TasmSymbol=new TasmSymbol(symboltype.label,r[1],new vscode.Position(index,start),belong)
+		symbols.push(one)
+		range=new vscode.Range(index,0,start,item.length)
+		srange=new vscode.Range(index,start,index,index+r[1].length)
+		let kind=SymbolVSCfy(symboltype.label)
+		vscsymbol= new vscode.DocumentSymbol(name,item,kind,range,srange)
+		console.log(vscsymbol)
+	}
+	r=item.match (/\s*(\w+)\s*[dD][bBwWdDfFqQtT]/)
+	if(r){
+		name=r[1]
+		let start=item.indexOf(r[1])
+		let one:TasmSymbol=new TasmSymbol(symboltype.asmvar,r[1],new vscode.Position(index,start),belong)
+		symbols.push(one)
+		range=new vscode.Range(index,0,start,item.length)
+		srange=new vscode.Range(index,start,index,index+r[1].length)
+		return new vscode.DocumentSymbol(r[1],item,SymbolVSCfy(symboltype.label),range,srange)
+	}
+	return 
+}
+export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] {
+	_document=document
+	let doc=document.getText().split('\n')
 	// scan the document for necessary information
-	let labelreg=/^\s*(\w+)\s*:/
-	document.forEach(
-		(item,index,array)=>{
-			let a=labelreg.exec(item)
-			if(a){
-				let name:string=a[1]
-				let idx:number=item.indexOf(a[1])
-				let one:TasmSymbol=new TasmSymbol(symboltype.label,name,new vscode.Position(index,idx))
-				symbols.push(one)	
+	let docsymbol:vscode.DocumentSymbol[]=[]
+	let asmline:Asmline[]=[]
+	doc.forEach(
+		(item,index)=>{
+			let line=scanline(item,index)
+			if(line!==null) asmline.push(line)
+		}
+	)	
+	let skip:boolean,i:number
+	asmline.forEach(
+		(line,index,array)=>{
+			//是否为宏指令
+			if(line.type===linetype.macro){
+				let line_endm:Asmline|undefined
+				//寻赵宏指令结束的位置
+				for (i=index;i<asmline.length;i++){
+					if(array[i].type===linetype.endm){
+						line_endm=array[i]
+						break
+					}
+				}
+				//找到宏指令结束标志
+				if(line.name && line_endm?.line){
+					let macrorange=new vscode.Range(line.line,line.index,line_endm?.line,line_endm?.index)
+					symbols.push(new TasmSymbol(symboltype.macro,line.name,macrorange))
+					let varlabel:vscode.DocumentSymbol[]=[]
+					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Macro)," ",SymbolVSCfy(symboltype.macro),macrorange,new vscode.Range(line.line,line.index,line.line,line.index+line.name.length))
+					symbol1.children=varlabel
+					docsymbol.push(symbol1)
+				}
 			}
-			let b=item.match (/\s*(\w+)\s*[db|DB|dw|DW|dd|DD|df|DF|dq|DQ|dt|DT]/)
-			if(b){
-				let name:string=b[1]
-				let idx:number=item.indexOf(b[1])
-				let one:TasmSymbol=new TasmSymbol(symboltype.asmvar,name,new vscode.Position(index,idx))
-				symbols.push(one)	
+			if(line.type===linetype.segment){
+				let line_ends:Asmline|undefined
+				//寻赵段结束的位置
+				for (i=index;i<asmline.length;i++){
+					if(array[i].type===linetype.ends && array[i].name===line.name){
+						line_ends=array[i]
+						break
+					}
+				}
+				//找到逻辑段结束标志
+				if(line.name && line_ends?.line){
+					let range=new vscode.Range(line.line,line.index,line_ends?.line,line_ends?.index)
+					symbols.push(new TasmSymbol(symboltype.segment,line.name,range))
+					let varlabel:vscode.DocumentSymbol[]=[]
+					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Segment)," ",SymbolVSCfy(symboltype.segment),range,new vscode.Range(line.line,line.index,line.line,line.index+line.name.length))
+					symbol1.children=varlabel
+					docsymbol.push(symbol1)
+				}
 			}
-		},
+		}
 	)
-		return new Promise(resolve => {
-			setTimeout(() => {
-				resolve(2);
-			},10);
-		});
+		docsymbol.forEach(
+			(item)=>{
+				// if(item.kind==SymbolVSCfy(symboltype.macro)){
+				// 	let symbol3:vscode.DocumentSymbol|undefined
+				// 	for (i=item.range.start.line;i<=item.range.end.line;i++){
+				// 		symbol3=getvarlabel(doc[i],i)
+				// 		if(symbol3)item.children.push(symbol3)
+				// 	}
+				// }
+				item.children.push(new vscode.DocumentSymbol("fk","fake",1,new vscode.Range(1,1,1,1),new vscode.Range(1,1,1,1)))
+			}
+		)
+		return docsymbol
 	}
-const autoScanDoc = async (change : vscode.TextDocumentChangeEvent) => {
-	if(vscode.window.activeTextEditor === undefined){
-		return;
-	}
-	let doc : string = await fstream.readFileSync(vscode.window.activeTextEditor.document.uri.fsPath,'utf8');
-	let fin : string[] = doc.split('\n');
-	sacnDoc(fin);
-};
-const autoScanDoc2 = async (change : vscode.TextDocument) => {
-	let fin = doucmentToStringArray(change);
-	sacnDoc(fin);
-};
-const autoScanDoc3 = async (change : vscode.TextEditor | undefined) => {
-	if(change === undefined){
-		return;
-	}
-	let fin = doucmentToStringArray(change.document);
-	sacnDoc(fin);
-};
-function doucmentToStringArray(str:vscode.TextDocument) : string[] {
-	let array : string[] = [];
-	for (let i = 0; i < str.lineCount; i++) {
-		const line = str.lineAt(i);
-		array.push(line.text);
-	}
-	return array;
-}
-export function scanDoc(){
-	vscode.workspace.onDidChangeTextDocument(e => autoScanDoc(e));
-	vscode.workspace.onDidOpenTextDocument(e => autoScanDoc2(e));
-	vscode.workspace.onDidSaveTextDocument(e => autoScanDoc2(e));
-	vscode.window.onDidChangeActiveTextEditor(e => autoScanDoc3(e));
-}
+
 const possibleNumbers : string[] = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
 export function isNumberStr(str:string) : boolean{
@@ -235,7 +320,7 @@ class KeywordDef {
     }
 }
 enum KeywordType {
-	MacroLabel,File,Instruction, Register, PreCompileCommand,MemoryAllocation,SavedWord,Size,Variable,Method,Structure,Macro,Label
+	MacroLabel,File,Instruction, Register, PreCompileCommand,MemoryAllocation,SavedWord,Size,Variable,Method,Structure,Macro,Label,Segment
 }
 const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	//Sizes
@@ -544,6 +629,8 @@ export function getType(type : KeywordType) : string {
 			return localize("keykind.Structure","(Structure)");
 			case KeywordType.Variable:
 			return localize("keykind.Variable","(Variable)");
+			case KeywordType.Segment:
+			return localize("keykind.Segment","(Segment)");
 	}
 	return "(Unknown)";
 }

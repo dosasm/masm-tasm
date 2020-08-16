@@ -43,10 +43,18 @@ class TasmDefProvider implements vscode.DefinitionProvider{
 		return output;
 	}
 }
+class Tasmsymbolprovider implements vscode.DocumentSymbolProvider{
+	provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken){
+		let docsymbol:vscode.DocumentSymbol[]=[]
+		console.log(document,document.getText())
+		docsymbol=info.sacnDoc(document)
+		return docsymbol
+	}
 
+}
 export function provider(context: vscode.ExtensionContext) {
-	info.scanDoc()
 	if(vscode.workspace.getConfiguration('masmtasm.language').get('hover'))context.subscriptions.push(vscode.languages.registerHoverProvider('assembly',new TasmHoverProvider()));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider("assembly",new TasmDefProvider()));
+	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly",new Tasmsymbolprovider()))
 }
 

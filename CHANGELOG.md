@@ -10,6 +10,18 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] LSP和DAP支持（目前对我来说太难了）
 - [ ] 根据具体的AH值显示跳转到不同的信息
 
+### 0.1.5
+
+汇编语言支持的symbol大概有以下几种，但是vscode的[SymbolKind](https://code.visualstudio.com/api/references/vscode-api#SymbolKind)却与它们不对应，我决定做以下对应
+
+|assembly symbol|vscode symbol|
+|---|---|
+|macro 宏|class|
+|segment段|module|
+|variable变量|variable|
+|label 标号|key|
+|procedure子程序|function|
+
 ### 0.1.4
 
 - 使用[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)来实现对汇编语法的支持
