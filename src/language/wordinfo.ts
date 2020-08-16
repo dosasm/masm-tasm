@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls'
 const localize =  nls.loadMessageBundle()
-const symbols:TasmSymbol[]=[]
+let symbols:TasmSymbol[]=[]
 let _document:vscode.TextDocument
 let docsymbol:vscode.DocumentSymbol[]=[]
-enum symboltype{
+enum symboltype {
 	other,
 	macro,
 	procedure,
 	struct,
 	label,
-	asmvar,
+	variable,
 	segment
 }
 function SymbolVSCfy(a:symboltype){
@@ -21,7 +21,7 @@ function SymbolVSCfy(a:symboltype){
 		case symboltype.procedure:output=vscode.SymbolKind.Function;break;
 		case symboltype.struct:output=vscode.SymbolKind.Struct;break;
 		case symboltype.label:output=vscode.SymbolKind.Key;break;
-		case symboltype.asmvar:output=vscode.SymbolKind.Variable;break;
+		case symboltype.variable:output=vscode.SymbolKind.Variable;break;
 	}
 	return output
 }
@@ -40,11 +40,11 @@ class TasmSymbol{
 		let typestr:string=" "
 		switch(this.type){
 			case symboltype.label:typestr=localize("keykind.Label","label"); break;
-			case symboltype.asmvar:typestr=localize("keykind.Variable","variable"); break;
+			case symboltype.variable:typestr=localize("keykind.Variable","variable"); break;
 			case symboltype.procedure:typestr=localize("keykind.Procedure","procedure"); break;
 			case symboltype.struct:typestr=localize("keykind.Structure","Structure"); break;
 			case symboltype.macro:typestr=localize("keykind.Macro","macro"); break;
-			case symboltype.macro:typestr=localize("keykind.Segment","segment"); break;
+			case symboltype.segment:typestr=localize("keykind.Segment","segment"); break;
 		}
 		md.appendMarkdown('**'+typestr+"** "+this.name)
 		return md
@@ -96,37 +96,39 @@ function scanline(item:string,line:number):Asmline|null{
 	return asmline
 }
 function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSymbol|undefined{
-	let r=item.match(/\s*(\w+)\s*:/)
-	let vscsymbol:vscode.DocumentSymbol
+	let vscsymbol:vscode.DocumentSymbol|undefined
 	let name:string
+	let kind:vscode.SymbolKind
 	let range:vscode.Range
 	let srange:vscode.Range
+	let r=item.match(/(\w+)\s*:([^;:]*)/)
 	if(r){
 		name=r[1]
 		let start=item.indexOf(name)
 		let one:TasmSymbol=new TasmSymbol(symboltype.label,r[1],new vscode.Position(index,start),belong)
 		symbols.push(one)
-		range=new vscode.Range(index,0,start,item.length)
-		srange=new vscode.Range(index,start,index,index+r[1].length)
-		let kind=SymbolVSCfy(symboltype.label)
-		vscsymbol= new vscode.DocumentSymbol(name,item,kind,range,srange)
-		console.log(vscsymbol)
+		range=new vscode.Range(index,0,index,item.length)
+		srange=new vscode.Range(index,start,index,start+name.length)
+		kind=SymbolVSCfy(symboltype.label)
+		vscsymbol= new vscode.DocumentSymbol(name,r[2],kind,range,srange)
+		//console.log(vscsymbol)
 	}
-	r=item.match (/\s*(\w+)\s*[dD][bBwWdDfFqQtT]/)
+	r=item.match (/\s*(\w+)\s+[dD][bBwWdDfFqQtT]\s+/)
 	if(r){
 		name=r[1]
 		let start=item.indexOf(r[1])
-		let one:TasmSymbol=new TasmSymbol(symboltype.asmvar,r[1],new vscode.Position(index,start),belong)
+		let one:TasmSymbol=new TasmSymbol(symboltype.variable,r[1],new vscode.Position(index,start),belong)
 		symbols.push(one)
-		range=new vscode.Range(index,0,start,item.length)
-		srange=new vscode.Range(index,start,index,index+r[1].length)
-		return new vscode.DocumentSymbol(r[1],item,SymbolVSCfy(symboltype.label),range,srange)
+		kind=SymbolVSCfy(symboltype.variable)
+		range=new vscode.Range(index,0,index,item.length)
+		srange=new vscode.Range(index,start,index,start+r[1].length)
+		vscsymbol= new vscode.DocumentSymbol(name,item,kind,range,srange)
+		console.log(vscsymbol)
 	}
-	return 
+	return vscsymbol
 }
 export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] {
-	_document=document
-	let doc=document.getText().split('\n')
+	_document=document;symbols=[];let doc=document.getText().split('\n')
 	// scan the document for necessary information
 	let docsymbol:vscode.DocumentSymbol[]=[]
 	let asmline:Asmline[]=[]
@@ -135,7 +137,8 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 			let line=scanline(item,index)
 			if(line!==null) asmline.push(line)
 		}
-	)	
+	)
+	console.log(asmline)
 	let skip:boolean,i:number
 	asmline.forEach(
 		(line,index,array)=>{
@@ -153,16 +156,29 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 				if(line.name && line_endm?.line){
 					let macrorange=new vscode.Range(line.line,line.index,line_endm?.line,line_endm?.index)
 					symbols.push(new TasmSymbol(symboltype.macro,line.name,macrorange))
-					let varlabel:vscode.DocumentSymbol[]=[]
 					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Macro)," ",SymbolVSCfy(symboltype.macro),macrorange,new vscode.Range(line.line,line.index,line.line,line.index+line.name.length))
-					symbol1.children=varlabel
 					docsymbol.push(symbol1)
 				}
 			}
-			if(line.type===linetype.segment){
+			else if(line.type===linetype.segment){
 				let line_ends:Asmline|undefined
-				//寻赵段结束的位置
+				let proc:Asmline|undefined//正在寻找的子程序信息
+				let procschild:vscode.DocumentSymbol[]=[]
+				//寻找段结束的位置,并收集子程序的信息
 				for (i=index;i<asmline.length;i++){
+					//寻找子程序
+					if(array[i].type===linetype.proc){
+						proc=array[i]
+					}
+					if(array[i].type===linetype.endp && proc?.name ===array[i].name){
+						let _name=array[i].name
+						if(proc?.name && _name){
+							let range:vscode.Range=new vscode.Range(proc?.line,proc?.index,array[i].line,array[i].index+_name.length)
+							let srange:vscode.Range=new vscode.Range(proc.line,proc.index,proc?.line,proc?.index+proc?.name?.length)
+							procschild.push(new vscode.DocumentSymbol(proc?.name,doc[proc?.line],SymbolVSCfy(symboltype.procedure),range,srange))
+						} 
+					}
+					//寻找段结束语句
 					if(array[i].type===linetype.ends && array[i].name===line.name){
 						line_ends=array[i]
 						break
@@ -172,26 +188,42 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 				if(line.name && line_ends?.line){
 					let range=new vscode.Range(line.line,line.index,line_ends?.line,line_ends?.index)
 					symbols.push(new TasmSymbol(symboltype.segment,line.name,range))
-					let varlabel:vscode.DocumentSymbol[]=[]
 					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Segment)," ",SymbolVSCfy(symboltype.segment),range,new vscode.Range(line.line,line.index,line.line,line.index+line.name.length))
-					symbol1.children=varlabel
+					symbol1.children=procschild
 					docsymbol.push(symbol1)
 				}
 			}
 		}
 	)
-		docsymbol.forEach(
-			(item)=>{
-				// if(item.kind==SymbolVSCfy(symboltype.macro)){
-				// 	let symbol3:vscode.DocumentSymbol|undefined
-				// 	for (i=item.range.start.line;i<=item.range.end.line;i++){
-				// 		symbol3=getvarlabel(doc[i],i)
-				// 		if(symbol3)item.children.push(symbol3)
-				// 	}
-				// }
-				item.children.push(new vscode.DocumentSymbol("fk","fake",1,new vscode.Range(1,1,1,1),new vscode.Range(1,1,1,1)))
+	docsymbol.forEach(
+		(item)=>{
+			//将宏指令范围内的变量和标号添加到宏
+			if(item.kind==SymbolVSCfy(symboltype.macro)){
+				let symbol3:vscode.DocumentSymbol|undefined
+				for (i=item.range.start.line;i<=item.range.end.line;i++){
+					symbol3=getvarlabel(doc[i],i)
+					if(symbol3)item.children.push(symbol3)
+				}
 			}
-		)
+			//将变量，标号添加到逻辑段和子程序
+			else if(item.kind==SymbolVSCfy(symboltype.segment)){
+				let symbol2:vscode.DocumentSymbol|undefined
+				item.children.forEach(
+					(item2,index,array)=>{
+						for (i=item2.range.start.line;i<=item2.range.end.line;i++){
+							let symbol3=getvarlabel(doc[i],i)
+							doc[i]=" "
+							if(symbol3)item2.children.push(symbol3)
+						}
+					},
+				)
+				for (i=item.range.start.line+1;i<item.range.end.line;i++){
+					symbol2=getvarlabel(doc[i],i)
+					if(symbol2)item.children.push(symbol2)
+				}
+			}
+		}
+	)
 		return docsymbol
 	}
 

@@ -2,7 +2,7 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
-	"description": "DOS汇编语言开发环境，安装即用，可自定义，支持TASM/MASM",
+	"description": "DOS汇编语言开发环境，自带DOSBox安装即用，支持TASM/MASM工具",
 	"version": "0.1.4",
 	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
 	"icon":"dosboxasm.png",
@@ -32,9 +32,7 @@
 			{
 				"id": "assembly",
 				"aliases": [
-					"Assembly (TASM)",
-					"assembly",
-					"TASM"
+					"assembly(DOS)"
 				],
 				"extensions": [
 					".asm"
@@ -52,17 +50,17 @@
 		"menus": {
 			"editor/context": [
 				{
-					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+					"when": "resourceLangId == assembly && editorFocus",
 					"command": "masm-tasm.opendosbox",
 					"group": "0_MASM-TASM@1"
 				},
 				{
-					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+					"when": "resourceLangId == assembly && editorFocus",
 					"command": "masm-tasm.runASM",
 					"group": "0_MASM-TASM@2"
 				},
 				{
-					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+					"when": "resourceLangId == assembly && editorFocus",
 					"command": "masm-tasm.debugASM",
 					"group": "0_MASM-TASM@3"
 				}
@@ -120,15 +118,10 @@
                     "default": true,
                     "description": "%dosasm.config.savefirst%"
 				},
-				"masmtasm.language.hover":{
+				"masmtasm.language.programmaticFeatures":{
 					"type":"boolean",
 					"default":true,
-					"description": "hover for test，need restart to apply changes"
-				},
-				"masmtasm.language.CompletionItem":{
-					"type":"boolean",
-					"default":false,
-					"description": "autocomplet for test,need restart to apply changes"
+					"description": "experimental programmatic features like hover,outline,jump to definition. You can close them by choosing false"
 				},
 				"masmtasm.dosbox.run": {
 					"type": "string",

@@ -53,7 +53,7 @@ class Tasmsymbolprovider implements vscode.DocumentSymbolProvider{
 
 }
 export function provider(context: vscode.ExtensionContext) {
-	if(vscode.workspace.getConfiguration('masmtasm.language').get('hover'))context.subscriptions.push(vscode.languages.registerHoverProvider('assembly',new TasmHoverProvider()));
+	context.subscriptions.push(vscode.languages.registerHoverProvider('assembly',new TasmHoverProvider()));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider("assembly",new TasmDefProvider()));
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly",new Tasmsymbolprovider()))
 }
