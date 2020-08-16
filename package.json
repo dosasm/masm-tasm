@@ -40,6 +40,12 @@
 				"configuration": "./language-configuration.json"
 			}
 		],
+		"snippets": [
+			{
+				"language": "assembly",
+				"path": "./snippets.json"
+			}
+		],
 		"grammars": [
 			{
 				"language": "assembly",
