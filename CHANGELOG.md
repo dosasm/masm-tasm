@@ -12,15 +12,19 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 
 ### 0.1.5
 
+- [x] DOS 汇编基本的语法支持
+- [x] vscode 界面的大纲视图的简单实现
+
 汇编语言支持的symbol大概有以下几种，但是vscode的[SymbolKind](https://code.visualstudio.com/api/references/vscode-api#SymbolKind)却与它们不对应，我决定做以下对应
 
 |assembly symbol|vscode symbol|
 |---|---|
-|macro 宏|class|
-|segment段|module|
-|variable变量|variable|
-|label 标号|key|
-|procedure子程序|function|
+|macro|Module|
+|segment|Class|
+|procedure|Function|
+|struct|Struct|
+|label|Key|
+|variable|Variable|
 
 ### 0.1.4
 
