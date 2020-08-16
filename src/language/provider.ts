@@ -46,7 +46,6 @@ class TasmDefProvider implements vscode.DefinitionProvider{
 class Tasmsymbolprovider implements vscode.DocumentSymbolProvider{
 	provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken){
 		let docsymbol:vscode.DocumentSymbol[]=[]
-		console.log(document,document.getText())
 		docsymbol=info.sacnDoc(document)
 		return docsymbol
 	}

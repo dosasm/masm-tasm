@@ -111,7 +111,6 @@ function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSym
 		srange=new vscode.Range(index,start,index,start+name.length)
 		kind=SymbolVSCfy(symboltype.label)
 		vscsymbol= new vscode.DocumentSymbol(name,r[2],kind,range,srange)
-		//console.log(vscsymbol)
 	}
 	r=item.match (/\s*(\w+)\s+[dD][bBwWdDfFqQtT]\s+/)
 	if(r){
@@ -123,7 +122,6 @@ function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSym
 		range=new vscode.Range(index,0,index,item.length)
 		srange=new vscode.Range(index,start,index,start+r[1].length)
 		vscsymbol= new vscode.DocumentSymbol(name,item,kind,range,srange)
-		console.log(vscsymbol)
 	}
 	return vscsymbol
 }
@@ -138,7 +136,6 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 			if(line!==null) asmline.push(line)
 		}
 	)
-	console.log(asmline)
 	let skip:boolean,i:number
 	asmline.forEach(
 		(line,index,array)=>{

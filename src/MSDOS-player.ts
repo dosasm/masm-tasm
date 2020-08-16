@@ -24,7 +24,6 @@ export class MSDOSplayer{
         filecontent=doc.getText()
         const filename = doc.fileName
         let command='"'+conf.msbatpath+'" "'+conf.path+'" '+conf.MASMorTASM+' "'+filename+'" "'+conf.workpath+'"'
-        console.log(command)
         exec(command,{cwd:conf.path,shell:'cmd.exe'},(error, stdout, stderr) => 
         {
             if (error) {console.error(`exec playerasm.bat: ${error}`);}

@@ -26,7 +26,6 @@ export class DOSBox{
         else{
             let linuxcommand='dosbox -conf "'+conf.dosboxconfuri.fsPath+'" '
             if(doc) linuxcommand='rm -f [Tt]*.*;cp "'+doc.fileName+'" T.ASM;'+linuxcommand
-            console.log(linuxcommand+boxcommand)
             execSync(linuxcommand+boxcommand,{cwd:conf.workpath})
             
         }

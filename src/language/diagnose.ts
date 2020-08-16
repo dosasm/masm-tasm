@@ -27,7 +27,6 @@ export class landiagnose{
         let flag =2
         this.asmerror=0
         this.asmwarn=0
-        //console.log(text,info)
         let MASMorTASM:string|undefined
         if (ASM) MASMorTASM=ASM
         else{
