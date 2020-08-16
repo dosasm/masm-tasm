@@ -8,6 +8,23 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] 问题匹配功能完善
 - [ ] hover的简单实现:如中断的简单信息
 - [ ] LSP和DAP支持（目前对我来说太难了）
+- [ ] 根据具体的AH值显示跳转到不同的信息
+
+### 0.1.5
+
+- [x] DOS 汇编基本的语法支持
+- [x] vscode 界面的大纲视图的简单实现
+
+汇编语言支持的symbol大概有以下几种，但是vscode的[SymbolKind](https://code.visualstudio.com/api/references/vscode-api#SymbolKind)却与它们不对应，我决定做以下对应
+
+|assembly symbol|vscode symbol|
+|---|---|
+|macro|Module|
+|segment|Class|
+|procedure|Function|
+|struct|Struct|
+|label|Key|
+|variable|Variable|
 
 ### 0.1.4
 

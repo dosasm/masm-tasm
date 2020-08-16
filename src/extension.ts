@@ -8,7 +8,8 @@ let asm:runcode
 export function activate(context: vscode.ExtensionContext) {
 	console.log(localize("active.hello",'Congratulations, your extension "masm-tasm" is now active!'));
 	asm = new runcode(context);
-	provider(context)
+	let programmaticFeatures=vscode.workspace.getConfiguration("masmtasm.language").get("programmaticFeatures")
+	if(programmaticFeatures) provider(context)
 	let opendosbox = vscode.commands.registerTextEditorCommand('masm-tasm.opendosbox', () => {
 		asm.runcode('opendosbox');
 	});
@@ -21,10 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let cleanalldiagnose=vscode.commands.registerTextEditorCommand('masm-tasm.cleanalldiagnose', () => {
 		asm.cleanalldiagnose();
 	});
-	context.subscriptions.push(opendosbox);
-	context.subscriptions.push(runASM);
-	context.subscriptions.push(debugASM);
-	context.subscriptions.push(cleanalldiagnose);
+	context.subscriptions.push(opendosbox,runASM,debugASM,cleanalldiagnose);
 }
 
 // this method is called when your extension is deactivated

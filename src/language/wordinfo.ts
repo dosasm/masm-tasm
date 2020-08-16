@@ -1,42 +1,57 @@
 import * as vscode from 'vscode';
-import * as fstream from 'fs';
 import * as nls from 'vscode-nls'
 const localize =  nls.loadMessageBundle()
-
-enum symboltype{
-	macro,procedure,label,struct
+let symbols:TasmSymbol[]=[]
+let _document:vscode.TextDocument
+let docsymbol:vscode.DocumentSymbol[]=[]
+enum symboltype {
+	other,
+	macro,
+	procedure,
+	struct,
+	label,
+	variable,
+	segment
+}
+function SymbolVSCfy(a:symboltype){
+	let output=vscode.SymbolKind.Null
+	switch(a){
+		case symboltype.macro:output=vscode.SymbolKind.Module;break;
+		case symboltype.segment:output=vscode.SymbolKind.Class;break;
+		case symboltype.procedure:output=vscode.SymbolKind.Function;break;
+		case symboltype.struct:output=vscode.SymbolKind.Struct;break;
+		case symboltype.label:output=vscode.SymbolKind.Key;break;
+		case symboltype.variable:output=vscode.SymbolKind.Variable;break;
+	}
+	return output
 }
 class TasmSymbol{
 	type:number
 	name:string
 	location:vscode.Location|undefined
-	constructor(type:number,name:string,RangeorPosition:vscode.Range|vscode.Position){
-		let uri=vscode.window.activeTextEditor?.document.uri
+	belong:string|undefined
+	constructor(type:number,name:string,RangeorPosition:vscode.Range|vscode.Position,belong?:string){
 		this.type=type
 		this.name=name
-		if(uri) this.location=new vscode.Location(uri,RangeorPosition)
+		if(_document) this.location=new vscode.Location(_document.uri,RangeorPosition)
 	}
 	public markdown():vscode.MarkdownString{
 		let md=new vscode.MarkdownString()
 		let typestr:string=" "
 		switch(this.type){
 			case symboltype.label:typestr=localize("keykind.Label","label"); break;
+			case symboltype.variable:typestr=localize("keykind.Variable","variable"); break;
 			case symboltype.procedure:typestr=localize("keykind.Procedure","procedure"); break;
 			case symboltype.struct:typestr=localize("keykind.Structure","Structure"); break;
 			case symboltype.macro:typestr=localize("keykind.Macro","macro"); break;
+			case symboltype.segment:typestr=localize("keykind.Segment","segment"); break;
 		}
 		md.appendMarkdown('**'+typestr+"** "+this.name)
 		return md
 	}
 }
-enum linetype{other,macro,endm,segment,ends,proc,endp}
-function readline(line:string){
-	// let regmacro=/
-	// let regendm
-	// let regproc
-	// let regendp=/
+enum linetype{other,macro,endm,segment,ends,struct,proc,endp}//暂时先不支持struct因为可能会与ends（segment）冲突
 
-}
 export function findSymbol (word:string):TasmSymbol|undefined{
 	for(let sym of symbols){
 		if(sym.name===word){
@@ -45,60 +60,170 @@ export function findSymbol (word:string):TasmSymbol|undefined{
 	}
 	return
 }
-const symbols:TasmSymbol[]=[]
-async function sacnDoc(document:string[],alsoVars : boolean = true) : Promise<number> {
-	// scan the document for necessary information
-	let labelreg=/^\s*(\w+)\s*:/
-	document.forEach(
-		(item,index,array)=>{
-			let a=labelreg.exec(item)
-			if(a){
-				let name:string=a[1]
-				let idx:number=a.index
-				let one:TasmSymbol=new TasmSymbol(symboltype.label,name,new vscode.Position(index,idx))
-				symbols.push(one)	
+class Asmline{
+	type:linetype
+	name:string|undefined
+	line:number
+	index:number
+	constructor(type:linetype,line:number,index:number,name?:string)
+	{
+		this.type=type
+		this.line=line
+		this.index=index
+		this.name=name
+	}
+	public selectrange(){
+		if(this.name) return new vscode.Range(this.line,this.index,this.line,this.index+this.name?.length)
+	}
+}
+function scanline(item:string,line:number):Asmline|null{
+	let r: RegExpMatchArray | null=null
+	let asmline:Asmline|null=null
+	r=item.match(/(\w+)\s+(\w+)\s/)
+		if(r) {
+			let type1:linetype|undefined
+			switch (r[2].toUpperCase()){
+				case 'MACRO':type1=linetype.macro;break;
+				case 'SEGMENT':type1=linetype.segment;break;
+				case 'PROC':type1=linetype.proc;break;
+				case 'ENDS':type1=linetype.ends;break;
+				case 'ENDP':type1=linetype.endp;break
 			}
-		},
+			if(type1) asmline= new Asmline(type1,line,item.indexOf(r[1]),r[1])
+		}
+	r=item.match(/(endm|ENDM)/)
+		if(r) asmline= new Asmline(linetype.endm,line,item.indexOf(r[1]))
+	return asmline
+}
+function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSymbol|undefined{
+	let vscsymbol:vscode.DocumentSymbol|undefined
+	let name:string
+	let kind:vscode.SymbolKind
+	let range:vscode.Range
+	let srange:vscode.Range
+	let r=item.match(/(\w+)\s*:([^;:]*)/)
+	if(r){
+		name=r[1]
+		let start=item.indexOf(name)
+		let one:TasmSymbol=new TasmSymbol(symboltype.label,r[1],new vscode.Position(index,start),belong)
+		symbols.push(one)
+		range=new vscode.Range(index,0,index,item.length)
+		srange=new vscode.Range(index,start,index,start+name.length)
+		kind=SymbolVSCfy(symboltype.label)
+		vscsymbol= new vscode.DocumentSymbol(name,r[2],kind,range,srange)
+	}
+	r=item.match (/\s*(\w+)\s+[dD][bBwWdDfFqQtT]\s+/)
+	if(r){
+		name=r[1]
+		let start=item.indexOf(r[1])
+		let one:TasmSymbol=new TasmSymbol(symboltype.variable,r[1],new vscode.Position(index,start),belong)
+		symbols.push(one)
+		kind=SymbolVSCfy(symboltype.variable)
+		range=new vscode.Range(index,0,index,item.length)
+		srange=new vscode.Range(index,start,index,start+r[1].length)
+		vscsymbol= new vscode.DocumentSymbol(name,item,kind,range,srange)
+	}
+	return vscsymbol
+}
+export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] {
+	_document=document;symbols=[];let doc=document.getText().split('\n')
+	// scan the document for necessary information
+	let docsymbol:vscode.DocumentSymbol[]=[]
+	let asmline:Asmline[]=[]
+	doc.forEach(
+		(item,index)=>{
+			let line=scanline(item,index)
+			if(line!==null) asmline.push(line)
+		}
 	)
-		return new Promise(resolve => {
-			setTimeout(() => {
-				resolve(2);
-			},10);
-		});
+	let skip:boolean,i:number
+	asmline.forEach(
+		(line,index,array)=>{
+			//是否为宏指令
+			if(line.type===linetype.macro){
+				let line_endm:Asmline|undefined
+				//寻赵宏指令结束的位置
+				for (i=index;i<asmline.length;i++){
+					if(array[i].type===linetype.endm){
+						line_endm=array[i]
+						break
+					}
+				}
+				//找到宏指令结束标志
+				if(line.name && line_endm?.line){
+					let macrorange=new vscode.Range(line.line,line.index,line_endm?.line,line_endm?.index)
+					symbols.push(new TasmSymbol(symboltype.macro,line.name,macrorange))
+					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Macro)," ",SymbolVSCfy(symboltype.macro),macrorange,new vscode.Range(line.line,line.index,line.line,line.index+line.name.length))
+					docsymbol.push(symbol1)
+				}
+			}
+			else if(line.type===linetype.segment){
+				let line_ends:Asmline|undefined
+				let proc:Asmline|undefined//正在寻找的子程序信息
+				let procschild:vscode.DocumentSymbol[]=[]
+				//寻找段结束的位置,并收集子程序的信息
+				for (i=index;i<asmline.length;i++){
+					//寻找子程序
+					if(array[i].type===linetype.proc){
+						proc=array[i]
+					}
+					if(array[i].type===linetype.endp && proc?.name ===array[i].name){
+						let _name=array[i].name
+						if(proc?.name && _name){
+							let range:vscode.Range=new vscode.Range(proc?.line,proc?.index,array[i].line,array[i].index+_name.length)
+							let srange:vscode.Range=new vscode.Range(proc.line,proc.index,proc?.line,proc?.index+proc?.name?.length)
+							procschild.push(new vscode.DocumentSymbol(proc?.name,doc[proc?.line],SymbolVSCfy(symboltype.procedure),range,srange))
+						} 
+					}
+					//寻找段结束语句
+					if(array[i].type===linetype.ends && array[i].name===line.name){
+						line_ends=array[i]
+						break
+					}
+				}
+				//找到逻辑段结束标志
+				if(line.name && line_ends?.line){
+					let range=new vscode.Range(line.line,line.index,line_ends?.line,line_ends?.index)
+					symbols.push(new TasmSymbol(symboltype.segment,line.name,range))
+					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Segment)," ",SymbolVSCfy(symboltype.segment),range,new vscode.Range(line.line,line.index,line.line,line.index+line.name.length))
+					symbol1.children=procschild
+					docsymbol.push(symbol1)
+				}
+			}
+		}
+	)
+	docsymbol.forEach(
+		(item)=>{
+			//将宏指令范围内的变量和标号添加到宏
+			if(item.kind==SymbolVSCfy(symboltype.macro)){
+				let symbol3:vscode.DocumentSymbol|undefined
+				for (i=item.range.start.line;i<=item.range.end.line;i++){
+					symbol3=getvarlabel(doc[i],i)
+					if(symbol3)item.children.push(symbol3)
+				}
+			}
+			//将变量，标号添加到逻辑段和子程序
+			else if(item.kind==SymbolVSCfy(symboltype.segment)){
+				let symbol2:vscode.DocumentSymbol|undefined
+				item.children.forEach(
+					(item2,index,array)=>{
+						for (i=item2.range.start.line;i<=item2.range.end.line;i++){
+							let symbol3=getvarlabel(doc[i],i)
+							doc[i]=" "
+							if(symbol3)item2.children.push(symbol3)
+						}
+					},
+				)
+				for (i=item.range.start.line+1;i<item.range.end.line;i++){
+					symbol2=getvarlabel(doc[i],i)
+					if(symbol2)item.children.push(symbol2)
+				}
+			}
+		}
+	)
+		return docsymbol
 	}
-const autoScanDoc = async (change : vscode.TextDocumentChangeEvent) => {
-	if(vscode.window.activeTextEditor === undefined){
-		return;
-	}
-	let doc : string = await fstream.readFileSync(vscode.window.activeTextEditor.document.uri.fsPath,'utf8');
-	let fin : string[] = doc.split('\n');
-	sacnDoc(fin);
-};
-const autoScanDoc2 = async (change : vscode.TextDocument) => {
-	let fin = doucmentToStringArray(change);
-	sacnDoc(fin);
-};
-const autoScanDoc3 = async (change : vscode.TextEditor | undefined) => {
-	if(change === undefined){
-		return;
-	}
-	let fin = doucmentToStringArray(change.document);
-	sacnDoc(fin);
-};
-function doucmentToStringArray(str:vscode.TextDocument) : string[] {
-	let array : string[] = [];
-	for (let i = 0; i < str.lineCount; i++) {
-		const line = str.lineAt(i);
-		array.push(line.text);
-	}
-	return array;
-}
-export function scanDoc(){
-	vscode.workspace.onDidChangeTextDocument(e => autoScanDoc(e));
-	vscode.workspace.onDidOpenTextDocument(e => autoScanDoc2(e));
-	vscode.workspace.onDidSaveTextDocument(e => autoScanDoc2(e));
-	vscode.window.onDidChangeActiveTextEditor(e => autoScanDoc3(e));
-}
+
 const possibleNumbers : string[] = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
 export function isNumberStr(str:string) : boolean{
@@ -224,7 +349,7 @@ class KeywordDef {
     }
 }
 enum KeywordType {
-	MacroLabel,File,Instruction, Register, PreCompileCommand,MemoryAllocation,SavedWord,Size,Variable,Method,Structure,Macro,Label
+	MacroLabel,File,Instruction, Register, PreCompileCommand,MemoryAllocation,SavedWord,Size,Variable,Method,Structure,Macro,Label,Segment
 }
 const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	//Sizes
@@ -533,6 +658,8 @@ export function getType(type : KeywordType) : string {
 			return localize("keykind.Structure","(Structure)");
 			case KeywordType.Variable:
 			return localize("keykind.Variable","(Variable)");
+			case KeywordType.Segment:
+			return localize("keykind.Segment","(Segment)");
 	}
 	return "(Unknown)";
 }

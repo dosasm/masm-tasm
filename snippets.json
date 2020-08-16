@@ -1,0 +1,57 @@
+{
+    "Macro":{
+        "prefix":"macro",
+        "body":[
+            "${1:name} MACRO ${2:params}",
+            "\t$0",
+            "ENDM"
+        ]
+    },
+    "Procedure":{
+        "prefix":"proc",
+        "body":[
+            ";${2:description}",
+            "${1:name} PROC",
+            "\t$0",
+            "${1:name} ENDP"
+        ]
+    },
+    "Segment":{
+        "prefix":"segment",
+        "body":[
+            ";${2:description}",
+            "${1:name} SEGMENT USE16",
+            "\t$0",
+            "${1:name} ENDS"
+        ]
+    },
+    "DOS print Char":{
+        "prefix":"cprint",
+        "body":[
+            "MOV DL, '${1:char}'",
+            "MOV AH, 2H",
+            "INT 21H"
+        ],
+        "description":"Prints a charcters"
+    },
+    "helloworld":{
+        "prefix":"helloword",
+        "body":[
+            ".386",
+            "DATA SEGMENT USE16",
+            "${1:MESG DB 'Hello word','$'}",
+            "DATA ENDS",
+            "CODE SEGMENT USE16",
+            "\tASSUME CS:CODE,DS:DATA",
+            "BEG:",
+            "\tMOV AX,DATA",
+            "\tMOV DS,AX",
+			"${2:\tMOV AH,9\n\tMOV DX, OFFSET MESG\n\tINT 21H}",
+			"\tMOV AH,4CH",
+			"\tINT 21H;back to dos",
+            "CODE ENDS",
+            "END BEG"
+        ],
+        "description":"HELLO WORD assembly sample"
+    }
+}

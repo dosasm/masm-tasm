@@ -1,8 +1,8 @@
-import { workspace, window, Terminal,Uri} from 'vscode'
+import { workspace, window, Terminal,Uri, TextDocument} from 'vscode'
 import { Config } from './configration';
 import { exec } from 'child_process'
 import { DOSBox } from './DOSBox'
-import { landiagnose } from './diagnose'
+import { landiagnose } from './language/diagnose'
 import * as nls from 'vscode-nls';
 const localize =  nls.loadMessageBundle()
 export class MSDOSplayer{
@@ -18,44 +18,38 @@ export class MSDOSplayer{
      * @param diag 处理输出信息的类
      * @param fileuri 需要处理的文件的Uri
      */
-    public PlayerASM(conf:Config,isrun:boolean,viaplayer:boolean,diag:landiagnose,fileuri:Uri)
+    public PlayerASM(conf:Config,isrun:boolean,viaplayer:boolean,diag:landiagnose,doc:TextDocument)
     {
         let filecontent:string
-        if(fileuri){
-            workspace.fs.readFile(fileuri).then(
-                (text)=>{
-                    filecontent=text.toString()
-                }
-            )
-            const filename = fileuri.fsPath
-            let command='"'+conf.msbatpath+'" "'+conf.path+'" '+conf.MASMorTASM+' "'+filename+'" "'+conf.workpath+'"'
-            console.log(command)
-            exec(command,{cwd:conf.path,shell:'cmd.exe'},(error, stdout, stderr) => 
+        filecontent=doc.getText()
+        const filename = doc.fileName
+        let command='"'+conf.msbatpath+'" "'+conf.path+'" '+conf.MASMorTASM+' "'+filename+'" "'+conf.workpath+'"'
+        exec(command,{cwd:conf.path,shell:'cmd.exe'},(error, stdout, stderr) => 
+        {
+            if (error) {console.error(`exec playerasm.bat: ${error}`);}
+            let code=diag.ErrMsgProcess(filecontent,stdout,doc.uri,conf.MASMorTASM)
+            switch(code)
             {
-                if (error) {console.error(`exec playerasm.bat: ${error}`);}
-                let code=diag.ErrMsgProcess(filecontent,stdout,fileuri,conf.MASMorTASM)
-                switch(code)
-                {
-                    case 0:
-                        let Errmsgwindow=localize("msdos.error","{0} Error,Can't generate .exe file",conf.MASMorTASM)
-                        window.showErrorMessage(Errmsgwindow);
-                        break
-                    case 1:
-                        let warningmsgwindow=localize("msdos.warn","{0} Warning,successfully generate .exe file,but assembler has some warning message",conf.MASMorTASM);
-                        let Go_on=localize("msdos.continue","continue")
-                        let Stop=localize("msdos.stop","stop")
-                        window.showInformationMessage(warningmsgwindow, Go_on, Stop).then(result => {
-                            if (result === Go_on) {
-                                this.afterlink(conf,viaplayer,isrun)
-                            } 
-                        });
-                        break
-                    case 2:
-                        this.afterlink(conf,viaplayer,isrun)
-                        break
-                }
-                Config.writefile(Uri.joinPath(conf.toolsUri,'./work/T.TXT'),stdout)
-            })}
+                case 0:
+                    let Errmsgwindow=localize("msdos.error","{0} Error,Can't generate .exe file",conf.MASMorTASM)
+                    window.showErrorMessage(Errmsgwindow);
+                    break
+                case 1:
+                    let warningmsgwindow=localize("msdos.warn","{0} Warning,successfully generate .exe file,but assembler has some warning message",conf.MASMorTASM);
+                    let Go_on=localize("msdos.continue","continue")
+                    let Stop=localize("msdos.stop","stop")
+                    window.showInformationMessage(warningmsgwindow, Go_on, Stop).then(result => {
+                        if (result === Go_on) {
+                            this.afterlink(conf,viaplayer,isrun)
+                        } 
+                    });
+                    break
+                case 2:
+                    this.afterlink(conf,viaplayer,isrun)
+                    break
+            }
+            Config.writefile(Uri.joinPath(conf.toolsUri,'./work/T.TXT'),stdout)
+            })
     }
     private outTerminal(run:boolean,conf:Config) {
         let myenv=process.env
