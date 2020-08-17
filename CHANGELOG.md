@@ -10,7 +10,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [ ] LSP和DAP支持（目前对我来说太难了）
 - [ ] 根据具体的AH值显示跳转到不同的信息
 
-### 0.1.5
+### 0.2.0
 
 - [x] DOS 汇编基本的语法支持
 - [x] vscode 界面的大纲视图的简单实现

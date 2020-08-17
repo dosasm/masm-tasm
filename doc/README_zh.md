@@ -1,6 +1,6 @@
-# 16位/32位汇编语言开发环境
+# 16位/32位汇编语言开发工具
 
-在学习《微型计算机原理与接口技术》的**汇编语言**部分时，苦于没有比较顺手的编程环境，我在"[masm-code](https://github.com/Woodykaixa/masm-code)"的基础上写了这个插件，实现了在VSCode中对DOSBox等汇编工具的快速调用。本插件主要功能特性如下：
+:raising_hand:在学习《微型计算机原理与接口技术》的**汇编语言**部分时，苦于没有比较顺手的编程环境，此插件实现了在VSCode中对DOSBox等汇编工具的快速调用。主要功能特性如下：
 
 1. 同时支持调用**TASM**和**MASM**: 可以在设置（首选项）中修改使用MASM还是TASM工具集
 2. 提供编辑器**右键菜单**：在汇编语言的编辑器添加了“打开dosbox，运行，调试”的三个选项
@@ -15,7 +15,7 @@
 - windows 无需其他操作，相关软件已打包在插件之中
 - linux 请先安装dosbox [详情](doc/Get_start.md#linux)
 
-## Features主要功能
+## :wave:Features主要功能
 
 当编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
@@ -25,28 +25,28 @@
 
 ### Demo 1: 使用MASM（via msdos-player）
 
-![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)
+![demo msdos-player masm](../pics/demo_msdos_masm_zh.gif)
 
 ### Demo 2: 使用TASM(via dosbox)
 
-![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
+![demo dosbox tasm](../pics/demo_dosbox_tasm_zh.gif)
 
 ### Demo 3: 打开dosbox
 
 适合进行自定义操作，如生成.com程序文件等。插件将当前工作的文件复制到工作文件夹并挂载到dosbox，也就是说DOSBox中d盘的`T.ASM`即为编辑器文件的副本
 
-![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif)
+![Open in Dosbox](../pics/opendosbox_zh.gif)
 
 ### Demo 4: 错误信息输出及清除
 
-![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif)
+![diagnose](../pics/demo_diagnose_tasm_zh.gif)
 
 ## Some Tips 一些相关信息
 
 - 一些有趣的汇编代码: [dosbox codes](https://github.com/xsro/masm-tasm/wiki/dosbox#写代码)
 - 使用终端任务调用dosbox：[VSC-ASMtasks](https://github.com/xsro/VSC-ASMtasks)
 
-## Extension Settings拓展设置
+## :point_right:Extension Settings拓展设置
 
 要实现Demo中的功能有时会需要在拓展中进行设置，同时设置(首选项）中还有一些其他选项，以提供更大的灵活性。
 
@@ -64,7 +64,7 @@
 - 启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
 - 设置自定义汇编工具路径,详见:[自定义汇编工具路径](doc/Toolspath.md#自定义汇编工具路径)
 
-### 文档 & 感谢 & 许可
+### :clap:文档 & 感谢 & 许可
 
 - 这个插件是[MIT license](LICENSE).
 - 感谢[masm-code](https://github.com/Woodykaixa/masm-code),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)

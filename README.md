@@ -1,6 +1,6 @@
 # DOS assembly (MASM/TASM) via DOSBox(and msdos-player)
 
-[中文](https://github.com/xsro/masm-tasm/blob/master/doc/README_zh.md)
+[中文](https://github.com/xsro/masm-tasm/blob/master/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/master/README.md)
 
 Language support for DOS assembly,suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
 
@@ -60,6 +60,17 @@ for more,please see the `preference->settings`
 
 The assembler MASM and TASM can only run in 16-bit environment. So the extension use DOSBox and MSDOS-player to emulate the 16-bit environment.
 the extension has built in tools for windows. But if you need to use assembler or emulator of different version. You can oragnize your tools follow the structure bellow and add the you folder's path to  `masmtasm.ASM.toolspath`
+
+### About use of DOSBox
+
+The extension will mount some folder to DOSBox 's disk. Please don't modify them. There are:
+
+|in DOSBox|real path in the computor|
+|---|---|
+|C:|the path of tools folder|
+|D:|the path of the work space|
+|X:|the path of some scripts for the extension to use|
+
 
 - tools:your tools folder name, you can add the path of it to settings `masmtasm.ASM.toolspath`
   1. `TASM`: TASM tools including `tasm.exe`,`tlink.exe`,`td.exe`
