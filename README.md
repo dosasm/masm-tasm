@@ -61,6 +61,14 @@ for more,please see the `preference->settings`
 The assembler MASM and TASM can only run in 16-bit environment. So the extension use DOSBox and MSDOS-player to emulate the 16-bit environment.
 the extension has built in tools for windows. But if you need to use assembler or emulator of different version. You can oragnize your tools follow the structure bellow and add the you folder's path to  `masmtasm.ASM.toolspath`
 
+- tools:your tools folder name, you can add the path of it to settings `masmtasm.ASM.toolspath`
+  1. `TASM`: TASM tools including `tasm.exe`,`tlink.exe`,`td.exe`
+  2. `MASM`: MASM tools including `masm.exe`,`link.exe`,`debug.exe`
+  3. `dosbox`: dosbox.exe and related files
+  4. `player`: msdos.exe
+
+Linux and other OS user do not need folder dosbox and player. Instead, we should make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox"))
+
 ### About use of DOSBox
 
 The extension will mount some folder to DOSBox 's disk. Please don't modify them. There are:
@@ -70,15 +78,6 @@ The extension will mount some folder to DOSBox 's disk. Please don't modify them
 |C:|the path of tools folder|
 |D:|the path of the work space|
 |X:|the path of some scripts for the extension to use|
-
-
-- tools:your tools folder name, you can add the path of it to settings `masmtasm.ASM.toolspath`
-  1. `TASM`: TASM tools including `tasm.exe`,`tlink.exe`,`td.exe`
-  2. `MASM`: MASM tools including `masm.exe`,`link.exe`,`debug.exe`
-  3. `dosbox`: dosbox.exe and related files
-  4. `player`: msdos.exe
-
-Linux and other OS user do not need folder dosbox and player. Instead, we should make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox"))
 
 ## Docs & Thanks & Licenses
 
