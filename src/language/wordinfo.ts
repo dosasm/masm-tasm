@@ -331,6 +331,7 @@ class KeywordDef {
 	data: string;
 	type : KeywordType;
 	allowType : AllowKinds;
+	alias:string[]|undefined
 /**
  * 注册关键字相关的信息
  * @param name string关键字名称
@@ -338,10 +339,11 @@ class KeywordDef {
  * @param type keywordType类型
  * @param data syntax等提示信息
  * @param count 操作数个数
- * @param allow 是否允许使用
+ * @param allow 允许接的操作数类型
  */
-    constructor(name : string, def : string,type: KeywordType = KeywordType.Instruction,data? : string,count : number = 2,allow? : AllowKinds){
-		this.name=name;
+    constructor(name : string, def : string,type: KeywordType = KeywordType.Instruction,data? : string,count : number = 2,allow? : AllowKinds,alias?:string[]){
+		this.name=name
+		this.alias=alias
 		if(data !== undefined){
 			this.data = data;
 		}else{
@@ -353,11 +355,25 @@ class KeywordDef {
 		}else{
 			this.allowType = allow;
 		}
-		 console.log('"keyword.'+name+'":"'+def+'",')
-		this.opCount = count;
-		this.type = type;
-        this.def = def;//localize("\"keyword."+name,def);
-    }
+		this.opCount = count
+		this.type = type
+        this.def = def
+	}
+	public markdown():vscode.MarkdownString{
+		let md=new vscode.MarkdownString(getType(this.type)+" **"+this.name+"**\n\n")
+		md.appendMarkdown(this.def+"\n\n")
+		if(this.alias) {
+			let msg=localize("keyword.alias","alias: ")
+			let i:number
+			for(i=0;i<this.alias.length-1;i++){
+				msg+="`"+this.alias[i]+"`,"
+			}
+			msg+="`"+this.alias[i]+"`"
+			md.appendMarkdown(msg)
+		}
+		md.appendCodeblock("Syntax: " + this.data)
+		return md
+	}
 }
 
 const KEYWORD_DICONTARY : Array<KeywordDef>= [
@@ -539,22 +555,30 @@ const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	new KeywordDef("pusha",  localize("keyword.pusha","pushes all register to the stack"),KeywordType.Instruction,"pusha",0),
 	new KeywordDef("popa",   localize("keyword.popa","pops all register to from the stack stack"),KeywordType.Instruction,"popa",0),
 	//Code Navigation
-	new KeywordDef("jmp",    localize("keyword.jmp","jump to a part in the code"),KeywordType.Instruction,"jmp [label]",1,AllowKinds.Label),
-	new KeywordDef("jcxz",   localize("keyword.jcxz","jump if cx is 0"),KeywordType.Instruction,"jcxz [label]",1,AllowKinds.Label),
-	new KeywordDef("je",     localize("keyword.je","jump if the numbers are equals"),KeywordType.Instruction,"je [label]",1,AllowKinds.Label),
-	new KeywordDef("jne",    localize("keyword.jne","jump if the operands are not equals"),KeywordType.Instruction,"jne [label]",1,AllowKinds.Label),
-	new KeywordDef("jc",     localize("keyword.jc","jump if carry flag on"),KeywordType.Instruction,"jc [label]",1,AllowKinds.Label),
-	new KeywordDef("jnc",    localize("keyword.jnc","jump if carry flag off"),KeywordType.Instruction,"jnc [label]",1,AllowKinds.Label),
-	new KeywordDef("jz",     localize("keyword.jz","jump if zero flag on"),KeywordType.Instruction,"jz [label]",1,AllowKinds.Label),
-	new KeywordDef("jnz",    localize("keyword.jnz","jump if zero flag off"),KeywordType.Instruction,"jnz [label]",1,AllowKinds.Label),
-	new KeywordDef("ja",     localize("keyword.ja","jump if greater (Unsinged)"),KeywordType.Instruction,"ja [label]",1,AllowKinds.Label),
-	new KeywordDef("jae",    localize("keyword.jae","jump if greater or equals (Unsigned)"),KeywordType.Instruction,"jae [label]",1,AllowKinds.Label),
-	new KeywordDef("jb",     localize("keyword.jb","jump if less (Unsinged)"),KeywordType.Instruction,"jb [label]",1,AllowKinds.Label),
-	new KeywordDef("jbe",    localize("keyword.jbe","jump if less or equals (Unsigned)"),KeywordType.Instruction,"jbe [label]",1,AllowKinds.Label),
-	new KeywordDef("jb",     localize("keyword.jb","jump if greater (Singed)"),KeywordType.Instruction,"jg [label]",1,AllowKinds.Label),
-	new KeywordDef("jbe",    localize("keyword.jbe","jump if greater or equals (Signed)"),KeywordType.Instruction,"jge [label]",1,AllowKinds.Label),
-	new KeywordDef("jl",     localize("keyword.jl","jump if less (Singed)"),KeywordType.Instruction,"jl [label]",1,AllowKinds.Label),
-	new KeywordDef("jle",    localize("keyword.jle","jump if less or equals (Signed)"),KeywordType.Instruction,"jle [label]",1,AllowKinds.Label),
+	new KeywordDef("jmp" , localize("keyword.jmp" ,"jump to a part in the code")          ,KeywordType.Instruction,"jmp [label]" ,1,AllowKinds.Label),
+	
+	new KeywordDef("jz"  , localize("keyword.jz"  ,"jump if zero flag on\n\njump if equal")                ,KeywordType.Instruction,"jz [label]"  ,1,AllowKinds.Label ,["je"]) ,
+	new KeywordDef("jnz" , localize("keyword.jnz" ,"jump if zero flag off\n\njump if not equal")               ,KeywordType.Instruction,"jnz [label]" ,1,AllowKinds.Label ,['jne']),
+	new KeywordDef("js"  , localize("keyword.js"  ,"jump if sign flag on")                ,KeywordType.Instruction,"js [label]"  ,1,AllowKinds.Label),
+	new KeywordDef("jns" , localize("keyword.jns" ,"jump if sign flag off")               ,KeywordType.Instruction,"jns [label]" ,1,AllowKinds.Label),
+	new KeywordDef("jp"  , localize("keyword.jp"  ,"jump if parity flag on")              ,KeywordType.Instruction,"jp [label]"  ,1,AllowKinds.Label,['jpe']),
+	new KeywordDef("jnp" , localize("keyword.jnp" ,"jump if parity flag off")             ,KeywordType.Instruction,"jnp [label]" ,1,AllowKinds.Label,['jpo']),
+	new KeywordDef("jo"  , localize("keyword.jo"  ,"jump if Overflow flag on")            ,KeywordType.Instruction,"jo [label]"  ,1,AllowKinds.Label),
+	new KeywordDef("jno" , localize("keyword.jno" ,"jump if Overflow flag off")           ,KeywordType.Instruction,"jno [label]" ,1,AllowKinds.Label),
+	
+	new KeywordDef("ja"  , localize("keyword.ja"  ,"jump if greater (Unsinged)")          ,KeywordType.Instruction,"ja [label]"  ,1,AllowKinds.Label,['jnbe']),
+	new KeywordDef("jna" , localize("keyword.jna","jump if less or equal(Unsinged)")     ,KeywordType.Instruction,"ja [label]"  ,1,AllowKinds.Label,['jbe']),
+	new KeywordDef("jc"  , localize("keyword.jc"  ,"jump if less (Unsinged)\n\njump if carry flag on")               ,KeywordType.Instruction,"jc [label]"  ,1,AllowKinds.Label ,['jb'   ,'jnae']),
+	new KeywordDef("jnc" , localize("keyword.jnc" ,"jump if greater or equals(Unsigned)\n\njump if carry flag off")              ,KeywordType.Instruction,"jnc [label]" ,1,AllowKinds.Label ,['jnb'  ,'jae']) ,
+	
+	new KeywordDef("jg"  , localize("keyword.jg"  ,"jump if greater (Singed)")            ,KeywordType.Instruction,"jg [label]"  ,1,AllowKinds.Label),
+	new KeywordDef("jge" , localize("keyword.jge" ,"jump if greater or equals (Signed)")  ,KeywordType.Instruction,"jge [label]" ,1,AllowKinds.Label),
+	new KeywordDef("jl"  , localize("keyword.jl"  ,"jump if less (Singed)")               ,KeywordType.Instruction,"jl [label]"  ,1,AllowKinds.Label),
+	new KeywordDef("jle" , localize("keyword.jle" ,"jump if less or equals (Signed)")     ,KeywordType.Instruction,"jle [label]" ,1,AllowKinds.Label),
+
+	new KeywordDef("jcxz", localize("keyword.jcxz","jump if cx is 0")                     ,KeywordType.Instruction,"jcxz [label]",1,AllowKinds.Label),
+	new KeywordDef("jecxz", localize("keyword.jecxz","jump if ecx is 0")                     ,KeywordType.Instruction,"jcxz [label]",1,AllowKinds.Label),
+	
 	//Procs
 	new KeywordDef("call",   localize("keyword.call","Calls a procedure"),KeywordType.Instruction,"call [procName]",1),
 	new KeywordDef("far",    localize("keyword.far","Turns the procedure into a far procedure"),KeywordType.SavedWord,"[procName] far",0),
@@ -627,20 +651,22 @@ const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	new KeywordDef("c",      localize("keyword.c","(Not supported)"),KeywordType.Instruction,"c",0),
 	new KeywordDef("wrt",    localize("keyword.wrt","(Not supported)"),KeywordType.Instruction,"wrt",0),
 	//Repeating
-	new KeywordDef("loop",   localize("keyword.loop","Jumps to a label if cx is not 0 and deceases it as well"),KeywordType.Instruction,"loop [label]",1,AllowKinds.Label),
-	new KeywordDef("loope",  localize("keyword.loope"," "),KeywordType.Instruction,"loope [label]",1,AllowKinds.Label),
-	new KeywordDef("loopz",  localize("keyword.loopz"," "),KeywordType.Instruction,"loopz [label]",1,AllowKinds.Label),
-	new KeywordDef("loopne", localize("keyword.loopne"," "),KeywordType.Instruction,"loopne [label]",1,AllowKinds.Label),
-	new KeywordDef("loopnz", localize("keyword.loopnz"," "),KeywordType.Instruction,"loopnz [label]",1,AllowKinds.Label)
+	new KeywordDef("loop",   localize("keyword.loop","- decrease `CX`\n\n- Jumps to a label if cx is not 0"),KeywordType.Instruction,"loop [label]",1,AllowKinds.Label),
+	new KeywordDef("loopz",  localize("keyword.loope","- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** Zero flag is 1"),KeywordType.Instruction,"loope [label]",1,AllowKinds.Label,['loope']),
+	new KeywordDef("loopnz",  localize("keyword.loopz","- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** zero flag is not 1"),KeywordType.Instruction,"loopz [label]",1,AllowKinds.Label,['loopne']),
 ];
 export function GetKeyword(word : string) : KeywordDef | undefined{
     for (let i = 0; i < KEYWORD_DICONTARY.length; i++) {
         const keyword = KEYWORD_DICONTARY[i];
         if(keyword.name === word){
             return keyword;
-        }
-    }
-    return;
+		}
+		if(keyword.alias){
+		for (let i = 0; i < keyword.alias.length; i++) {
+			const alia = keyword.alias[i];
+			if(alia === word) return keyword
+		}}
+} return;
 }
 
 export function getType(type : KeywordType) : string {

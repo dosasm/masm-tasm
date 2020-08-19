@@ -17,11 +17,7 @@ class TasmHoverProvider implements vscode.HoverProvider {
 				if(tasmsymbol){
 					output=tasmsymbol.markdown()
 				}
-				else if(keyword !== undefined){
-				let md=info.getType(keyword.type)+" **"+keyword.name+"**\n\n"+keyword.def
-				output.appendMarkdown(md)
-				output.appendCodeblock("Syntax: " + keyword.data)
-				}
+				else if(keyword !== undefined) output=keyword.markdown()
 				//else if(label !== undefined){
 				// 	output.appendCodeblock('assembly','(Label) ' + label.name + " => " + label.value)
 				// }
