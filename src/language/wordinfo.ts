@@ -321,6 +321,9 @@ export function getcharMsg(char:string) {
 enum AllowKinds {
 	Memory, Variables, Constants, All, Size, None, Inst, Macro, Label, Interrupt
 }
+enum KeywordType {
+	MacroLabel,File,Instruction, Register, PreCompileCommand,MemoryAllocation,SavedWord,Size,Variable,Method,Structure,Macro,Label,Segment
+}
 class KeywordDef {
 	opCount: number;
     name : string;
@@ -328,7 +331,15 @@ class KeywordDef {
 	data: string;
 	type : KeywordType;
 	allowType : AllowKinds;
-
+/**
+ * 注册关键字相关的信息
+ * @param name string关键字名称
+ * @param def string定义 描述
+ * @param type keywordType类型
+ * @param data syntax等提示信息
+ * @param count 操作数个数
+ * @param allow 是否允许使用
+ */
     constructor(name : string, def : string,type: KeywordType = KeywordType.Instruction,data? : string,count : number = 2,allow? : AllowKinds){
 		this.def = def;
 		if(data !== undefined){
@@ -342,15 +353,13 @@ class KeywordDef {
 		}else{
 			this.allowType = allow;
 		}
-
+		// console.log('"info.'+name+'":"'+def+'"')
 		this.opCount = count;
 		this.type = type;
         this.name = name;
     }
 }
-enum KeywordType {
-	MacroLabel,File,Instruction, Register, PreCompileCommand,MemoryAllocation,SavedWord,Size,Variable,Method,Structure,Macro,Label,Segment
-}
+
 const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	//Sizes
 	new KeywordDef("small","128KB",KeywordType.Size,"small",0),
