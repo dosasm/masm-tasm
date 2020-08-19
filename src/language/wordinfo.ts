@@ -79,7 +79,7 @@ class Asmline{
 function scanline(item:string,line:number):Asmline|null{
 	let r: RegExpMatchArray | null=null
 	let asmline:Asmline|null=null
-	r=item.match(/(\w+)\s+(\w+)\s/)
+	r=item.match(/^\s*(\w+)\s+(\w+)\s/)
 		if(r) {
 			let type1:linetype|undefined
 			switch (r[2].toUpperCase()){
@@ -101,7 +101,7 @@ function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSym
 	let kind:vscode.SymbolKind
 	let range:vscode.Range
 	let srange:vscode.Range
-	let r=item.match(/(\w+)\s*:([^;:]*)/)
+	let r=item.match(/^\s*(\w+)\s*:([^;:]*)/)
 	if(r){
 		name=r[1]
 		let start=item.indexOf(name)
@@ -112,7 +112,7 @@ function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSym
 		kind=SymbolVSCfy(symboltype.label)
 		vscsymbol= new vscode.DocumentSymbol(name,r[2],kind,range,srange)
 	}
-	r=item.match (/\s*(\w+)\s+[dD][bBwWdDfFqQtT]\s+/)
+	r=item.match (/^\s*(\w+)\s+[dD][bBwWdDfFqQtT]\s+/)
 	if(r){
 		name=r[1]
 		let start=item.indexOf(r[1])
