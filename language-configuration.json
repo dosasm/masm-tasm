@@ -17,13 +17,13 @@
     "surroundingPairs": [
         ["[", "]"],
         ["\"", "\""],
-        ["'", "'"]
+        ["'", "'"],
     ],
     "wordPattern": "('(.*?)')|(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\:\\;\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)|(\\;.+$)",
     "folding": {
         "markers": {
-            "start": "proc|struct",
-            "end": "endp|ends"
+            "start": "^\\s*\\w+\\s+proc|struct|PROC|STRUCT|SEGMENT|MACRO|macro",
+            "end": "^\\s*\\w*\\s*endp|ends|ENDP|ENDS|ENDM|endm"
         }
     },
     "indentationRules": {
