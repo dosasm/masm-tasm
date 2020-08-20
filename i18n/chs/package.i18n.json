@@ -17,5 +17,6 @@
 	"dosasm.config.boxrun.enum1":"运行之后在dosbox窗口停留，可以输入exit，点击x，或者Ctrl+F9关闭程序",
 	"dosasm.config.boxrun.enum2":"运行程序之后自动关闭",
 	"dosasm.config.boxrun.enum3":"运行程序之后先停顿一下 输入任意字符后关闭窗口",
-	"dosasm.config.dosbox.resolution":"自定义dosbox窗口大小，格式如1024x640，不设置则为DOSBox默认大小"
+	"dosasm.config.dosbox.resolution":"自定义dosbox窗口大小，格式如1024x640，不设置则为DOSBox默认大小",
+	"dosasm.command.dosboxhere":"打开DOSBox将当前文件所在目录挂载到E盘，并配置相关环境"
 }

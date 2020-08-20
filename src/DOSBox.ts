@@ -31,6 +31,19 @@ export class DOSBox{
         }
         if(diag && doc) this.BOXdiag(conf,diag,doc)
     }
+    public BoxOpenCurrentFolder(conf:Config,doc:TextDocument){
+        let folderpath:string=Uri.joinPath(doc.uri,'../').fsPath
+        let Ecmd:string='-noautoexec -c "mount e \\\"'+folderpath+'\\\"" -c "mount c \\\"'+conf.path+'\\\"" -c "set PATH=%%PATH%%;c:\masm;c:\\tasm"-c "e:"'
+        if(process.platform=='win32'){
+            let wincommand='start/min/wait "" "'+conf.path+'/dosbox/dosbox.exe" -conf "'+conf.dosboxconfuri.fsPath+'" '
+            execSync(wincommand+Ecmd,{cwd:conf.workpath,shell:'cmd.exe'})
+        }
+        else{
+            let linuxcommand='dosbox -conf "'+conf.dosboxconfuri.fsPath+'" '
+            execSync(linuxcommand+Ecmd,{cwd:conf.workpath})
+        }
+        
+    }
     private BOXdiag(conf:Config,diag:landiagnose,doc:TextDocument):string{
         let info:string=' ',content:string
         let document=doc

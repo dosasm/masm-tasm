@@ -24,7 +24,8 @@
 		"onLanguage:asm",
 		"onLanguage:masm",
 		"onLanguage:tasm",
-		"onLanguage:assembly"
+		"onLanguage:assembly",
+		"onCommand:dosboxhere"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -88,6 +89,10 @@
 			{
 				"command":"masm-tasm.cleanalldiagnose",
 				"title":"%dosasm.command.cleanalldianose%"
+			},
+			{
+				"command":"masm-tasm.dosboxhere",
+				"title":"%dosasm.command.dosboxhere%"
 			}
 		],
 		"configuration" :{
