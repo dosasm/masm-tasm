@@ -79,7 +79,7 @@ class Asmline{
 function scanline(item:string,line:number):Asmline|null{
 	let r: RegExpMatchArray | null=null
 	let asmline:Asmline|null=null
-	r=item.match(/^\s*(\w+)\s+(\w+)\s/)
+	r=item.match(/^\s*(\w+)\s+(\w+)\s*/)
 		if(r) {
 			let type1:linetype|undefined
 			switch (r[2].toUpperCase()){
@@ -126,7 +126,8 @@ function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSym
 	return vscsymbol
 }
 export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] {
-	_document=document;symbols=[];let doc=document.getText().split('\n')
+	_document=document;symbols=[];let doc=document.getText().split("\n")
+	console.log(doc,document.getText())
 	// scan the document for necessary information
 	let docsymbol:vscode.DocumentSymbol[]=[]
 	let asmline:Asmline[]=[]
@@ -167,12 +168,14 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 					if(array[i].type===linetype.proc){
 						proc=array[i]
 					}
+					//找到子程序结束标志
 					if(array[i].type===linetype.endp && proc?.name ===array[i].name){
 						let _name=array[i].name
 						if(proc?.name && _name){
 							let range:vscode.Range=new vscode.Range(proc?.line,proc?.index,array[i].line,array[i].index+_name.length)
 							let srange:vscode.Range=new vscode.Range(proc.line,proc.index,proc?.line,proc?.index+proc?.name?.length)
 							procschild.push(new vscode.DocumentSymbol(proc?.name,doc[proc?.line],SymbolVSCfy(symboltype.procedure),range,srange))
+							symbols.push(new TasmSymbol(symboltype.procedure,_name,range))
 						} 
 					}
 					//寻找段结束语句
@@ -192,6 +195,7 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 			}
 		}
 	)
+	//寻找变量，标号信息
 	docsymbol.forEach(
 		(item)=>{
 			//将宏指令范围内的变量和标号添加到宏
@@ -652,8 +656,8 @@ const KEYWORD_DICONTARY : Array<KeywordDef>= [
 	new KeywordDef("wrt",    localize("keyword.wrt","(Not supported)"),KeywordType.Instruction,"wrt",0),
 	//Repeating
 	new KeywordDef("loop",   localize("keyword.loop","- decrease `CX`\n\n- Jumps to a label if cx is not 0"),KeywordType.Instruction,"loop [label]",1,AllowKinds.Label),
-	new KeywordDef("loopz",  localize("keyword.loope","- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** Zero flag is 1"),KeywordType.Instruction,"loope [label]",1,AllowKinds.Label,['loope']),
-	new KeywordDef("loopnz",  localize("keyword.loopz","- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** zero flag is not 1"),KeywordType.Instruction,"loopz [label]",1,AllowKinds.Label,['loopne']),
+	new KeywordDef("loopz",  localize("keyword.loopz","- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** Zero flag is 1"),KeywordType.Instruction,"loope [label]",1,AllowKinds.Label,['loope']),
+	new KeywordDef("loopnz",  localize("keyword.loopnz","- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** zero flag is not 1"),KeywordType.Instruction,"loopz [label]",1,AllowKinds.Label,['loopne']),
 ];
 export function GetKeyword(word : string) : KeywordDef | undefined{
     for (let i = 0; i < KEYWORD_DICONTARY.length; i++) {
