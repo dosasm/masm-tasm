@@ -50,8 +50,6 @@ class TasmSymbol{
 		return md
 	}
 }
-enum linetype{other,macro,endm,segment,ends,struct,proc,endp}//暂时先不支持struct因为可能会与ends（segment）冲突
-
 export function findSymbol (word:string):TasmSymbol|undefined{
 	for(let sym of symbols){
 		if(sym.name===word){
@@ -60,28 +58,60 @@ export function findSymbol (word:string):TasmSymbol|undefined{
 	}
 	return
 }
+enum linetype {
+	other, macro, endm, segment, ends, struct, proc, endp, label, variable,
+	end,onlycomment,labelB,variableB
+} 
+//暂时先不支持struct因为可能会与ends（segment）冲突
 class Asmline{
-	type:linetype
-	name:string|undefined
+	type:linetype=linetype.other
 	line:number
-	index:number
-	constructor(type:linetype,line:number,index:number,name?:string)
+	str:string
+	name:string|undefined
+	index:number=1
+	comment:string|undefined
+	commentIndex:number|undefined
+	operator:string|undefined
+	operand:string|undefined
+	constructor(str:string,line:number)
 	{
-		this.type=type
 		this.line=line
-		this.index=index
-		this.name=name
+		this.str=str
+		let main=this.getcomment(str.split(""))//split mainbody and comment
+		if(main===null){
+			if(this.comment) this.type=linetype.onlycomment
+		}
+		else{
+			if(this.getsymbol1(main)===false)//get symbols of macros,segments,procedures
+			{this.getvarlabel(main)}//get symbols of labels,variables
+		}
 	}
-	public selectrange(){
-		if(this.name) return new vscode.Range(this.line,this.index,this.line,this.index+this.name?.length)
+	private getcomment(arr:string[]):string|null{
+		let i:number,quoted:boolean=false,index:number|undefined
+		let main:string|null=null
+		for (i=0;i<arr.length;i++){
+			if(arr[i]==="'"){
+				if(quoted) quoted=false
+				else quoted=true
+			}
+			if(arr[i]==";" && quoted === false ) {
+				index=i
+				break}
+		}
+		if(index){
+			this.comment=arr.slice(index).join("")
+			this.commentIndex=index
+		}
+		main=arr.slice(0,index).join("").trim()
+		if(main.length===0) main=null
+		return main
 	}
-}
-function scanline(item:string,line:number):Asmline|null{
-	let r: RegExpMatchArray | null=null
-	let asmline:Asmline|null=null
-	r=item.match(/^\s*(\w+)\s+(\w+)\s*/)
+	private getsymbol1(str:string):boolean{
+		let r: RegExpMatchArray | null=null,name:string|undefined
+		let flag:boolean=false
+		r=str.match(/^\s*(\w+)\s+(\w+)\s*/)
+		let type1:linetype|undefined
 		if(r) {
-			let type1:linetype|undefined
 			switch (r[2].toUpperCase()){
 				case 'MACRO':type1=linetype.macro;break;
 				case 'SEGMENT':type1=linetype.segment;break;
@@ -89,55 +119,96 @@ function scanline(item:string,line:number):Asmline|null{
 				case 'ENDS':type1=linetype.ends;break;
 				case 'ENDP':type1=linetype.endp;break
 			}
-			if(type1) asmline= new Asmline(type1,line,item.indexOf(r[1]),r[1])
+			if(type1)name=r[1]
+			if(r[1].toLowerCase()==='end'){
+				type1=linetype.end
+				name=r[2]
+			}
 		}
-	r=item.match(/(endm|ENDM)/)
-		if(r) asmline= new Asmline(linetype.endm,line,item.indexOf(r[1]))
-	return asmline
-}
-function getvarlabel(item:string,index:number,belong?:string):vscode.DocumentSymbol|undefined{
-	let vscsymbol:vscode.DocumentSymbol|undefined
-	let name:string
-	let kind:vscode.SymbolKind
-	let range:vscode.Range
-	let srange:vscode.Range
-	let r=item.match(/^\s*(\w+)\s*:([^;:]*)/)
-	if(r){
-		name=r[1]
-		let start=item.indexOf(name)
-		let one:TasmSymbol=new TasmSymbol(symboltype.label,r[1],new vscode.Position(index,start),belong)
-		symbols.push(one)
-		range=new vscode.Range(index,0,index,item.length)
-		srange=new vscode.Range(index,start,index,start+name.length)
-		kind=SymbolVSCfy(symboltype.label)
-		vscsymbol= new vscode.DocumentSymbol(name,r[2],kind,range,srange)
+		//match the end of macro
+		else if (r=str.match(/(endm|ENDM)/)) {
+			type1=linetype.endm
+			name=r[1]
+		}
+		//match the simplified segment definition
+		else if(r=str.match(/^\s*\.([a-zA-Z_@?$]\w+)\s*$/)) {
+			type1=linetype.segment
+			name=r[1]
+		}
+		if(type1 && name){
+			this.type=type1
+			this.index=str.indexOf(name)
+			this.name=name
+			flag=true
+		}
+		return flag
 	}
-	r=item.match (/^\s*(\w+)\s+([dD][bBwWdDfFqQtT]|=|EQU|equ)\s+/)
-	if(r){
-		name=r[1]
-		let start=item.indexOf(r[1])
-		let one:TasmSymbol=new TasmSymbol(symboltype.variable,r[1],new vscode.Position(index,start),belong)
-		symbols.push(one)
-		kind=SymbolVSCfy(symboltype.variable)
-		range=new vscode.Range(index,0,index,item.length)
-		srange=new vscode.Range(index,start,index,start+r[1].length)
-		vscsymbol= new vscode.DocumentSymbol(name,item,kind,range,srange)
+	private getvarlabel(item:string){
+		let r=item.match(/^\s*(\w+\s*:|)\s*(\w+)\s+(.*)$/)
+		let name:string|undefined
+		if(r){
+			name=r[1]
+			if(name.length===0)this.type=linetype.labelB
+			else{
+				this.name=name.slice(0,name.length-1).trim()
+				this.type=linetype.label
+			}
+			let start=item.indexOf(r[1])
+			let one:TasmSymbol=new TasmSymbol(symboltype.label,r[1],new vscode.Position(this.line,start))
+			symbols.push(one)
+		}
+		r=item.match (/^\s*(\w+\s+|)([dD][bBwWdDfFqQtT]|=|EQU|equ)\s+(.*)$/)
+		if(r){
+			name=r[1].trim()
+			if(name.length===0) this.type=linetype.variableB
+			else {
+				this.type=linetype.variable
+				this.name=name
+			}
+			this.operator=r[2]
+			this.operand=r[3]
+			let start=item.indexOf(r[1])
+			let one:TasmSymbol=new TasmSymbol(symboltype.variable,r[1],new vscode.Position(this.line,start))
+			symbols.push(one)
+		}
 	}
-	return vscsymbol
+	public varlabelsymbol():vscode.DocumentSymbol|undefined{
+		let vscsymbol:vscode.DocumentSymbol|undefined
+		let name=this.name
+		if(name && (this.type===linetype.variable || this.type===linetype.label) ){
+			let kind:vscode.SymbolKind,range:vscode.Range,srange:vscode.Range
+			range=new vscode.Range(this.line,0,this.line,this.str.length)
+			let start=this.str.indexOf(name)
+			srange=new vscode.Range(this.line,start,this.line,start+name.length)
+			if(this.type===linetype.label){
+				kind=SymbolVSCfy(symboltype.label)
+				vscsymbol= new vscode.DocumentSymbol(name," ",kind,range,srange)
+			}
+			else if(this.type===linetype.variable){
+				kind=SymbolVSCfy(symboltype.variable)
+				vscsymbol= new vscode.DocumentSymbol(name," ",kind,range,srange)
+			}
+		}
+		
+		return vscsymbol
+	}
+	public selectrange(){
+		if(this.name && this.index) return new vscode.Range(this.line,this.index,this.line,this.index+this.name?.length)
+	}
 }
+
 export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] {
 	_document=document;symbols=[];let doc=document.getText().split("\n")
-	console.log(doc,document.getText())
 	// scan the document for necessary information
 	let docsymbol:vscode.DocumentSymbol[]=[]
 	let asmline:Asmline[]=[]
 	doc.forEach(
 		(item,index)=>{
-			let line=scanline(item,index)
-			if(line!==null) asmline.push(line)
+			asmline.push(new Asmline(item,index))
 		}
 	)
-	let skip:boolean,i:number
+	console.log(asmline)
+	let i:number
 	asmline.forEach(
 		(line,index,array)=>{
 			//是否为宏指令
@@ -159,17 +230,17 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 				}
 			}
 			else if(line.type===linetype.segment){
-				let line_ends:Asmline|undefined
-				let proc:Asmline|undefined//正在寻找的子程序信息
+				let line_ends:Asmline|undefined//the line information of the endline of the segment
+				let proc:Asmline|undefined//the procedure finding
 				let procschild:vscode.DocumentSymbol[]=[]
-				//寻找段结束的位置,并收集子程序的信息
+				//finding the end of segment line.name and collecting information of procedure 
 				for (i=index;i<asmline.length;i++){
-					//寻找子程序
+					//find proc
 					if(array[i].type===linetype.proc){
 						proc=array[i]
 					}
-					//找到子程序结束标志
-					if(array[i].type===linetype.endp && proc?.name ===array[i].name){
+					//finding the end of proc
+					if(array[i].type===linetype.endp && proc?.name ===array[i].name ){
 						let _name=array[i].name
 						if(proc?.name && _name){
 							let range:vscode.Range=new vscode.Range(proc?.line,proc?.index,array[i].line,array[i].index+_name.length)
@@ -178,17 +249,22 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 							symbols.push(new TasmSymbol(symboltype.procedure,_name,range))
 						} 
 					}
-					//寻找段结束语句
+					//finding the end of segment
 					if(array[i].type===linetype.ends && array[i].name===line.name){
 						line_ends=array[i]
 						break
 					}
+					//if finding another start of segment, also view as end of the finding segment
+					if(array[i+1].type===linetype.segment || array[i+1].type===linetype.end){
+						line_ends=array[i]
+						break
+					}
 				}
-				//找到逻辑段结束标志
+				//finded the end of segment
 				if(line.name && line_ends?.line){
 					let range=new vscode.Range(line.line,line.index,line_ends?.line,line_ends?.index)
 					symbols.push(new TasmSymbol(symboltype.segment,line.name,range))
-					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Segment)," ",SymbolVSCfy(symboltype.segment),range,new vscode.Range(line.line,line.index,line.line,line.index+line.name.length))
+					let symbol1=new vscode.DocumentSymbol(line.name+": "+getType(KeywordType.Segment)," ",SymbolVSCfy(symboltype.segment),range,new vscode.Range(line.line,line.line,line.line,line.line+line.name.length))
 					symbol1.children=procschild
 					docsymbol.push(symbol1)
 				}
@@ -202,7 +278,7 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 			if(item.kind==SymbolVSCfy(symboltype.macro)){
 				let symbol3:vscode.DocumentSymbol|undefined
 				for (i=item.range.start.line;i<=item.range.end.line;i++){
-					symbol3=getvarlabel(doc[i],i)
+					symbol3=asmline[i].varlabelsymbol()
 					if(symbol3)item.children.push(symbol3)
 				}
 			}
@@ -212,14 +288,13 @@ export function sacnDoc(document:vscode.TextDocument) : vscode.DocumentSymbol[] 
 				item.children.forEach(
 					(item2,index,array)=>{
 						for (i=item2.range.start.line;i<=item2.range.end.line;i++){
-							let symbol3=getvarlabel(doc[i],i)
-							doc[i]=" "
+							let symbol3=asmline[i].varlabelsymbol()
 							if(symbol3)item2.children.push(symbol3)
 						}
 					},
 				)
 				for (i=item.range.start.line+1;i<item.range.end.line;i++){
-					symbol2=getvarlabel(doc[i],i)
+					symbol2=asmline[i].varlabelsymbol()
 					if(symbol2)item.children.push(symbol2)
 				}
 			}
