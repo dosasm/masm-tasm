@@ -145,7 +145,8 @@ private tasmdiagpush(severity:number,line:number,msg:string,text:string,related?
                 oneinfo.shift()//弹出全部信息
                 switch(oneinfo.shift())
                 {
-                    case 'Error'||'Fatal':
+                    case 'Error':
+                    case 'Fatal':
                         severity=0
                         this.asmerror++
                         break;
@@ -175,6 +176,7 @@ private tasmdiagpush(severity:number,line:number,msg:string,text:string,related?
                 switch(oneinfo.shift())
                 {
                     case 'Error':
+                    case 'Fatal':
                         severity=0
                         this.asmerror++
                         break;

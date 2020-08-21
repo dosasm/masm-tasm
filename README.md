@@ -21,13 +21,13 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 2. "Run ASM code": Compile and Run the program
 3. "Debug ASM code": Compile and Debug the program
 
-### Demo 1: using MASM（via msdos-player）
-
-![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)
-
-### Demo 2: using TASM(via dosbox)
+### Demo 1: using TASM(via dosbox, default mode)
 
 ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
+
+### Demo 2: using MASM（via msdos-player）
+
+![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)
 
 ### Demo 3: Open dosbox and type the command you need
 
