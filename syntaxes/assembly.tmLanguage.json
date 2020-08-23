@@ -13,7 +13,7 @@
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.assembly",
-				"match": "\\b((?i)(hlt|nop|xadd|xchg|cmpxchg|ror|rol|rcl|rcr|into|iret|loopne|loopnz|enter|leave|shrd|shld|fwait|wait|xlat|les|xchg|rep|mod|movs|lea|str|req|push|call|mov|ret|pop|int|loop|loope|loopz|lea|add|sub|mul|neg|div|idiv|imul|pusha|popa|inc|dec|jmp|jle|jge|jg|jl|jle|jc|jnc|ja|jna|jz|jnz|je|jne|js|jns|jp|jnp|jo|jno|cmp|and|or|xor|not|ja|jb|jae|jbe|jcxz|in|out|shl|shr))\\b"
+				"match": "\\b((?i)(hlt|nop|xadd|xchg|cmpxchg|sal|ror|rol|rcl|rcr|into|iret|loopne|loopnz|enter|leave|shrd|shld|fwait|wait|xlat|les|xchg|rep|mod|movs|lea|str|req|push|call|mov|ret|pop|int|loop|loope|loopz|lea|add|sub|mul|neg|div|idiv|imul|pusha|popa|inc|dec|jmp|jle|jge|jg|jl|jle|jc|jnc|ja|jna|jz|jnz|je|jne|js|jns|jp|jnp|jo|jno|cmp|and|or|xor|not|ja|jb|jae|jbe|jcxz|in|out|shl|shr))\\b"
 			},
 			{
 				"name":"keyword.control.flags.assmebly",
@@ -48,8 +48,8 @@
 				"match": "\\b((?i)(CODESEG|DATASEG|IDEAL|MODEL|STACK|width|length|ge|le|this|times|far|near)\\b|@d)ata"
 			},
 			{
-				"name":"keyword.segment.name",
-				"match": "\\b((?i)(segment|ends))\\b"
+				"name":"keyword.segment.assmebly",
+				"match": "\\b((?i)(segment|ends|assume))\\b"
 			},
 			{
 				"name":"keyword.less.preCompiled.assembly",

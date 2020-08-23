@@ -2,7 +2,7 @@
 
 [中文](https://github.com/xsro/masm-tasm/blob/master/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/master/README.md)
 
-Language support for DOS assembly,suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
+Language support for DOS assembly,maybe suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
 
 - Offer *grammar*,basic *outline* view and *hover* support for DOS assembly language
 - Support both **TASM and MASM** assembler tools: choose MASM or TASM in the preference
@@ -67,7 +67,12 @@ the extension has built in tools for windows. But if you need to use assembler o
   3. `dosbox`: dosbox.exe and related files
   4. `player`: msdos.exe
 
-Linux and other OS user do not need folder dosbox and player. Instead, we should make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox"))
+Linux and other OS user do not need folder dosbox and player. Instead, we should make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox")). Use command like
+
+```sh
+sudo apt install dosbox  #install dosbox
+dosbox #if successfully opened the dosbox, this means the extension can work 
+```
 
 ### About use of DOSBox
 

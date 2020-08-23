@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls'
 const localize = nls.loadMessageBundle()
 let symbols: TasmSymbol[] = []//record symbols in the doc in a simple way
-let _document: vscode.TextDocument//record the processing document
+let _documentText: string | undefined//record the processing document
+let _docUri: vscode.Uri | undefined
 let asmline: Asmline[] = []//split and analyse the document
 let docsymbol: vscode.DocumentSymbol[] = []//record symbols in the doc in a VSCode way
 
@@ -18,7 +19,6 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 					case linetype.macro: skip = true; break
 					case linetype.endm: skip = false; break
 					case linetype.label:
-					case linetype.labelB:
 						if (skip === false) {
 							//TODO：优化匹配方式，对于变量应该考虑多种复杂的表达式如：查找var不能找到nvar
 							if (def?.type === symboltype.variable && item.operand?.includes(word)) {
@@ -33,7 +33,7 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
-							if (r) output.push(new vscode.Location(_document.uri, r))
+							if (r) output.push(new vscode.Location(doc.uri, r))
 						}
 						else {
 
@@ -45,45 +45,45 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 	}
 	return output
 }
-export function codeformatting(document: vscode.TextDocument, options: vscode.FormattingOptions):vscode.TextEdit[] {
-	let formator:vscode.TextEdit[] =[],
-	namesize:number=0,optsize:number=0,oprsize:number=0,str:string|undefined=undefined,
-	r:vscode.Range,Endline: string = '\r\n'
+export function codeformatting(document: vscode.TextDocument, options: vscode.FormattingOptions): vscode.TextEdit[] {
+	let formator: vscode.TextEdit[] = [],
+		namesize: number = 0, optsize: number = 0, oprsize: number = 0, str: string | undefined = undefined,
+		r: vscode.Range, Endline: string = '\r\n'
 	if (document.eol === vscode.EndOfLine.LF) Endline = '\n'
 	//scan the asmlines for information
 	asmline.forEach(
-		(item)=>{
-			if(item.name) namesize=item.name.length>optsize?item.name.length:namesize
-			if(item.operator) optsize=item.operator.length>optsize?item.operator.length:optsize
-			if(item.operand) optsize=item.operand.length>optsize?item.operand.length:optsize
-			console.log(optsize)
+		(item) => {
+			if (item.name) namesize = item.name.length > namesize ? item.name.length : namesize
+			if (item.operator) optsize = item.operator.length > optsize ? item.operator.length : optsize
+			if (item.operand) oprsize = item.operand.length > oprsize ? item.operand.length : oprsize
+			//console.log(item.operator,optsize)
 		}
 	)
 	asmline.forEach(
-		(item)=>{
-			if(item.operator){
-				str="\t"
-				let length:number=0
-				if(item.name?.length) length=item.name.length
-				for(let i=0;i<namesize-length;i++) str+=" "//标签变量名前补充空格
-				if(item.type===linetype.label && item.name) str+=item.name+":"
-				else if(item.type===linetype.variable && item.name) str+=item.name+" "
-				else str+=" "
-				if(item.name?.length) length=item.operator.length
-				else length=0
-				str+=item.operator
+		(item) => {
+			if (item.type === linetype.label || item.type === linetype.variable) {
+				str = "\t"
+				let length: number = 0
+				if (item.name?.length) length = item.name.length
+				if (item.type === linetype.label && item.name) str += item.name + ":"
+				else if (item.type === linetype.variable && item.name) str += item.name + " "
+				else str += " "
+				for (let i = 0; i < namesize - length; i++) str += " "//标签变量名前补充空格
 
-				for(let i=0;i<optsize-length;i++) str+=" "//操作码后补充空格
-				str+=" "+item.operand
-				if(item.comment)str+=item.comment
+				str += item.operator
+				// if(item.name?.length) length=item.operator.length
+				// else length=0
+				//for(let i=0;i<optsize-length;i++) str+=" "//操作码后补充空格
+				str += "\t" + item.operand
+				if (item.comment) str += "\t" + item.comment
 			}
-			else{
-				str=item.str.replace(/\s+/," ")
+			else {
+				str = item.str.replace(/\s+/, " ")
 			}
-			if(str && str!==item.str){
-				r=new vscode.Range(item.line,0,item.line,item.str.length)
-				formator.push(vscode.TextEdit.replace(document.validateRange(r),str))
-			} 
+			if (str && str !== item.str) {
+				r = new vscode.Range(item.line, 0, item.line, item.str.length)
+				formator.push(vscode.TextEdit.replace(document.validateRange(r), str))
+			}
 		}
 	)
 
@@ -120,7 +120,7 @@ class TasmSymbol {
 	constructor(type: number, name: string, RangeorPosition: vscode.Range | vscode.Position) {
 		this.type = type
 		this.name = name
-		if (_document) this.location = new vscode.Location(_document.uri, RangeorPosition)
+		if (_docUri) this.location = new vscode.Location(_docUri, RangeorPosition)
 	}
 	public markdown(): vscode.MarkdownString {
 		let md = new vscode.MarkdownString()
@@ -231,34 +231,32 @@ class Asmline {
 		return flag
 	}
 	private getvarlabel(item: string) {
-		let r = item.match(/^\s*(\w+\s*:|)\s*(\w+)\s+(.*)$/)
+		let r = item.match(/^\s*(\w+\s*:|)\s*(\w+|)(\s+.*|)$/)
 		let name: string | undefined
 		if (r) {
 			name = r[1]
-			if (name.length === 0) this.type = linetype.labelB
-			else {
+			this.type = linetype.label
+			if (name.length !== 0) {
 				this.name = name.slice(0, name.length - 1).trim()
-				this.type = linetype.label
 				let start = item.indexOf(r[1])
 				let one: TasmSymbol = new TasmSymbol(symboltype.label, this.name, new vscode.Position(this.line, start))
 				symbols.push(one)
 			}
 			this.operator = r[2]
-			this.operand = r[3]
+			this.operand = r[3].trim()
 		}
-		r = item.match(/^\s*(\w+\s+|)([dD][bBwWdDfFqQtT]|=|EQU|equ)\s+(.*)$/)
+		r = item.match(/^\s*(\w+\s+|)([dD][bBwWdDfFqQtT]|=|EQU|equ)(\s+.*)$/)
 		if (r) {
 			name = r[1].trim()
-			if (name.length === 0) this.type = linetype.variableB
-			else {
-				this.type = linetype.variable
+			this.type = linetype.variable
+			if (name.length !== 0) {
 				this.name = name
 				let start = item.indexOf(r[1])
 				let one: TasmSymbol = new TasmSymbol(symboltype.variable, name, new vscode.Position(this.line, start))
 				symbols.push(one)
 			}
 			this.operator = r[2]
-			this.operand = r[3]
+			this.operand = r[3].trim()
 		}
 	}
 	public varlabelsymbol(): vscode.DocumentSymbol | undefined {
@@ -287,10 +285,11 @@ class Asmline {
 }
 
 function sacnDoc(document: vscode.TextDocument) {
-	_document = document; symbols = []; asmline = []
+	_documentText = document.getText(); _docUri = document.uri
+	symbols = []; asmline = []
 	let splitor: string = '\r\n'
 	if (document.eol === vscode.EndOfLine.LF) splitor = '\n'
-	let doc = document.getText().split(splitor)
+	let doc = _documentText.split(splitor)
 	// scan the document for necessary information
 	let docsymbol: vscode.DocumentSymbol[] = []
 	doc.forEach(
@@ -300,10 +299,9 @@ function sacnDoc(document: vscode.TextDocument) {
 	)
 	console.log(asmline)
 }
-export function getVscSymbols(doc?: vscode.TextDocument): vscode.DocumentSymbol[] {
-	docsymbol = []
-	if (doc && doc !== _document) sacnDoc(doc)
+function symboltree() {
 	let i: number
+	//寻找段，宏指令信息
 	asmline.forEach(
 		(line, index, array) => {
 			//是否为宏指令
@@ -395,6 +393,14 @@ export function getVscSymbols(doc?: vscode.TextDocument): vscode.DocumentSymbol[
 			}
 		}
 	)
+
+}
+export function scanDocumnt(doc?: vscode.TextDocument): vscode.DocumentSymbol[] {
+	docsymbol = []
+	if (doc && (doc.getText() !== _documentText || doc.uri !== _docUri)) {
+		sacnDoc(doc)
+		symboltree()
+	}
 	return docsymbol
 }
 

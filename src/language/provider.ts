@@ -5,6 +5,7 @@ class AsmHoverProvider implements vscode.HoverProvider {
 	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output: vscode.MarkdownString = new vscode.MarkdownString()
 		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
+		info.scanDocumnt(document)//scan thdocumente 
 		if (range) {
 			let wordo = document.getText(range)
 			let word = wordo.toLowerCase()
@@ -31,6 +32,7 @@ class AsmDefProvider implements vscode.DefinitionProvider {
 	async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output: vscode.Location | undefined
 		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
+		info.scanDocumnt(document)//scan thdocumente 
 		if (range) {
 			let wordo = document.getText(range)
 			let tasmsymbol = info.findSymbol(wordo)
@@ -44,7 +46,7 @@ class AsmDefProvider implements vscode.DefinitionProvider {
 class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
 	provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken) {
 		let docsymbol: vscode.DocumentSymbol[] = []
-		docsymbol = info.getVscSymbols(document)
+		docsymbol = info.scanDocumnt(document)
 		return docsymbol
 	}
 
@@ -54,6 +56,7 @@ class AsmReferenceProvider implements vscode.ReferenceProvider {
 	provideReferences(document: vscode.TextDocument, position: vscode.Position, context: vscode.ReferenceContext, token: vscode.CancellationToken) {
 		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character))
 		let output: vscode.Location[] = []
+		info.scanDocumnt(document)//scan thdocumente 
 		if (range) {
 			let word = document.getText(range)
 			output = info.getrefer(word, document)
@@ -62,8 +65,8 @@ class AsmReferenceProvider implements vscode.ReferenceProvider {
 	}
 }
 class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
-	provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken):vscode.TextEdit[] {
-		info.getVscSymbols(document)//scan the document
+	provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.TextEdit[] {
+		info.scanDocumnt(document)//scan the document
 		return info.codeformatting(document, options)
 	}
 }
