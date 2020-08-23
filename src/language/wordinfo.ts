@@ -29,7 +29,7 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
-							if (def?.type === symboltype.procedure || def?.type === symboltype.label && item.operand === word) {
+							if ((def?.type === symboltype.procedure || def?.type === symboltype.label) && item.operand === word) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}

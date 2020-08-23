@@ -2,7 +2,7 @@
 
 [中文](https://github.com/xsro/masm-tasm/blob/master/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/master/README.md)
 
-Language support for DOS assembly,maybe suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
+Language support for DOS assembly,may be suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
 
 - Offer *grammar*,basic *outline* view and *hover* support for DOS assembly language
 - Support both **TASM and MASM** assembler tools: choose MASM or TASM in the preference
@@ -71,7 +71,7 @@ Linux and other OS user do not need folder dosbox and player. Instead, we should
 
 ```sh
 sudo apt install dosbox  #install dosbox
-dosbox #if successfully opened the dosbox, this means the extension can work 
+dosbox #if successfully opened the dosbox, it is largely possible for the extension to use dosbox
 ```
 
 ### About use of DOSBox

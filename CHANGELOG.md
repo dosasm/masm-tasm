@@ -1,8 +1,6 @@
 # Change Log
 
-All notable changes to the "masm-tasm" extension will be documented in this file. Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR
-
-## welcome any feedback
+## welcome any feedback [issue](https://github.com/xsro/masm-tasm/issues)
 
 ## 0.2.1
 
@@ -10,6 +8,7 @@ All notable changes to the "masm-tasm" extension will be documented in this file
 - [x] 优化diagnose对fatal类错误的匹配,优化大纲视图
 - [x] 提供代码格式化功能（需要完善并且现在的效果并不是很好）
 - [x] 提供查找引用功能（目前也并不完美）
+- [ ] webpack打包（nls部分总是失败）
 
 鉴于这些功能目前可能不完善，你可以在设置中关闭他们（关闭后需要手动重启）
 
