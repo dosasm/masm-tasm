@@ -14,28 +14,28 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 		output.push(def.location)
 		asmline.forEach(
 			(item, index) => {
-				switch(item.type){
-					case linetype.macro:skip=true;break
-					case linetype.endm:skip=false;break
+				switch (item.type) {
+					case linetype.macro: skip = true; break
+					case linetype.endm: skip = false; break
 					case linetype.label:
 					case linetype.labelB:
-						if(skip===false){
+						if (skip === false) {
 							//TODO：优化匹配方式，对于变量应该考虑多种复杂的表达式如：查找var不能找到nvar
-							if (def?.type===symboltype.variable && item.operand?.includes(word)) {
+							if (def?.type === symboltype.variable && item.operand?.includes(word)) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
-							if (def?.type===symboltype.macro && item.operator===word) {
+							if (def?.type === symboltype.macro && item.operator === word) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
-							if (def?.type===symboltype.procedure||def?.type===symboltype.label && item.operand===word) {
+							if (def?.type === symboltype.procedure || def?.type === symboltype.label && item.operand === word) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
-							if(r)output.push(new vscode.Location(_document.uri, r))
+							if (r) output.push(new vscode.Location(_document.uri, r))
 						}
-						else{
+						else {
 
 						}
 
@@ -44,6 +44,50 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 		)
 	}
 	return output
+}
+export function codeformatting(document: vscode.TextDocument, options: vscode.FormattingOptions):vscode.TextEdit[] {
+	let formator:vscode.TextEdit[] =[],
+	namesize:number=0,optsize:number=0,oprsize:number=0,str:string|undefined=undefined,
+	r:vscode.Range,Endline: string = '\r\n'
+	if (document.eol === vscode.EndOfLine.LF) Endline = '\n'
+	//scan the asmlines for information
+	asmline.forEach(
+		(item)=>{
+			if(item.name) namesize=item.name.length>optsize?item.name.length:namesize
+			if(item.operator) optsize=item.operator.length>optsize?item.operator.length:optsize
+			if(item.operand) optsize=item.operand.length>optsize?item.operand.length:optsize
+			console.log(optsize)
+		}
+	)
+	asmline.forEach(
+		(item)=>{
+			if(item.operator){
+				str="\t"
+				let length:number=0
+				if(item.name?.length) length=item.name.length
+				for(let i=0;i<namesize-length;i++) str+=" "//标签变量名前补充空格
+				if(item.type===linetype.label && item.name) str+=item.name+":"
+				else if(item.type===linetype.variable && item.name) str+=item.name+" "
+				else str+=" "
+				if(item.name?.length) length=item.operator.length
+				else length=0
+				str+=item.operator
+
+				for(let i=0;i<optsize-length;i++) str+=" "//操作码后补充空格
+				str+=" "+item.operand
+				if(item.comment)str+=item.comment
+			}
+			else{
+				str=item.str.replace(/\s+/," ")
+			}
+			if(str && str!==item.str){
+				r=new vscode.Range(item.line,0,item.line,item.str.length)
+				formator.push(vscode.TextEdit.replace(document.validateRange(r),str))
+			} 
+		}
+	)
+
+	return formator
 }
 
 //part I scan the document for information
@@ -243,9 +287,9 @@ class Asmline {
 }
 
 function sacnDoc(document: vscode.TextDocument) {
-	_document = document; symbols = [];asmline=[]
-	let splitor:string='\r\n'
-	if(document.eol===vscode.EndOfLine.LF) splitor='\n'
+	_document = document; symbols = []; asmline = []
+	let splitor: string = '\r\n'
+	if (document.eol === vscode.EndOfLine.LF) splitor = '\n'
 	let doc = document.getText().split(splitor)
 	// scan the document for necessary information
 	let docsymbol: vscode.DocumentSymbol[] = []
@@ -257,7 +301,7 @@ function sacnDoc(document: vscode.TextDocument) {
 	console.log(asmline)
 }
 export function getVscSymbols(doc?: vscode.TextDocument): vscode.DocumentSymbol[] {
-	docsymbol=[]
+	docsymbol = []
 	if (doc && doc !== _document) sacnDoc(doc)
 	let i: number
 	asmline.forEach(

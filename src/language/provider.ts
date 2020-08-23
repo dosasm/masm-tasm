@@ -63,7 +63,8 @@ class AsmReferenceProvider implements vscode.ReferenceProvider {
 }
 class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
 	provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken):vscode.TextEdit[] {
-		return []
+		info.getVscSymbols(document)//scan the document
+		return info.codeformatting(document, options)
 	}
 }
 export function provider(context: vscode.ExtensionContext) {
