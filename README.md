@@ -2,7 +2,7 @@
 
 [中文](https://github.com/xsro/masm-tasm/blob/master/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/master/README.md)
 
-Language support for DOS assembly,suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
+Language support for DOS assembly,may be suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
 
 - Offer *grammar*,basic *outline* view and *hover* support for DOS assembly language
 - Support both **TASM and MASM** assembler tools: choose MASM or TASM in the preference
@@ -21,13 +21,13 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 2. "Run ASM code": Compile and Run the program
 3. "Debug ASM code": Compile and Debug the program
 
-### Demo 1: using MASM（via msdos-player）
-
-![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)
-
-### Demo 2: using TASM(via dosbox)
+### Demo 1: using TASM(via dosbox, default mode)
 
 ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)
+
+### Demo 2: using MASM（via msdos-player）
+
+![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)
 
 ### Demo 3: Open dosbox and type the command you need
 
@@ -67,7 +67,12 @@ the extension has built in tools for windows. But if you need to use assembler o
   3. `dosbox`: dosbox.exe and related files
   4. `player`: msdos.exe
 
-Linux and other OS user do not need folder dosbox and player. Instead, we should make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox"))
+Linux and other OS user do not need folder dosbox and player. Instead, we should make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox")). Use command like
+
+```sh
+sudo apt install dosbox  #install dosbox
+dosbox #if successfully opened the dosbox, it is largely possible for the extension to use dosbox
+```
 
 ### About use of DOSBox
 

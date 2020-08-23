@@ -95,7 +95,6 @@ export class Config {
     {
         let configUri=conf.dosboxconfuri
         let Pathadd=' '
-        Pathadd='set PATH=c:\\tasm;c:\\masm'
         let configContent = `[sdl]
 windowresolution=${conf.resolution}
 output=opengl
@@ -104,7 +103,7 @@ mount c "${conf.path}"
 mount d "${conf.workpath}"
 mount x "${conf.batchpath}"
 d:
-${Pathadd}`;
+set PATH=%PATH%;c:\\tasm;c:\\masm`;
         if (autoExec) configContent=configContent+'\n'+autoExec
         this.writefile(configUri,configContent)
     }

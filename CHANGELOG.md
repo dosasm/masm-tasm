@@ -1,30 +1,36 @@
 # Change Log
 
-All notable changes to the "masm-tasm" extension will be documented in this file.Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR
+## welcome any feedback [issue](https://github.com/xsro/masm-tasm/issues)
 
-## 目标
+## 0.2.1
 
-- [ ] 搞一个好看的logo和名字
-- [ ] 问题匹配功能完善
-- [ ] hover的简单实现:如中断的简单信息
-- [ ] LSP和DAP支持（目前对我来说太难了）
-- [ ] 根据具体的AH值显示跳转到不同的信息
+- [x] `dosbox here`增加了一个命令以在当前文件所在目录下打开dosbox，来提供更加自由的操作，见demo
+- [x] 优化diagnose对fatal类错误的匹配,优化大纲视图
+- [x] 提供代码格式化功能（需要完善并且现在的效果并不是很好）
+- [x] 提供查找引用功能（目前也并不完美）
+- [ ] webpack打包（nls部分总是失败）
 
-### 0.2.0
+鉴于这些功能目前可能不完善，你可以在设置中关闭他们（关闭后需要手动重启）
+
+DEMO `dosbox here`示例: 代码来自[dpisdaniel/assembly-pacman](https://github.com/dpisdaniel/assembly-pacman)
+
+![demo pacman](https://github.com/xsro/masm-tasm/raw/next/pics/demo_pacman.gif)
+
+## 0.2.0
 
 - [x] DOS 汇编基本的语法支持
 - [x] vscode 界面的大纲视图的简单实现
 
 汇编语言支持的symbol大概有以下几种，但是vscode的[SymbolKind](https://code.visualstudio.com/api/references/vscode-api#SymbolKind)却与它们不对应，我决定做以下对应
 
-|assembly symbol|vscode symbol|
-|---|---|
-|macro|Module|
-|segment|Class|
-|procedure|Function|
-|struct|Struct|
-|label|Key|
-|variable|Variable|
+|assembly symbol|vscode symbol|汇编关键字|vscode关键字|
+|---|---|---|----|
+|macro|Module|宏|模块|
+|segment|Class|段|类|
+|procedure|Function|子程序|函数|
+|struct|Struct|结构体|结构体|
+|label|Key|标号|键|
+|variable|Variable|变量|变量|
 
 ### 0.1.4
 

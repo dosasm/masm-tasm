@@ -82,11 +82,13 @@ export class runcode{
             else this.asmit(command,document)
         }
     }
+    
     private asmit(command:string,doc:vscode.TextDocument){
         switch (command){
             case 'opendosbox':this.Openemu(doc);break
             case 'run':this.Run(doc);break
             case 'debug':this.Debug(doc);break
+            case 'here':this.dosbox.BoxOpenCurrentFolder(this._config,doc)
         }  
     }
 }

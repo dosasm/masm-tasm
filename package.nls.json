@@ -17,5 +17,6 @@
 	"dosasm.config.boxrun.enum1":"do nothing, manually input exit or click 'x' or press 'Ctrl+F9' to exit",
 	"dosasm.config.boxrun.enum2":"exit DOSBox automatically",
 	"dosasm.config.boxrun.enum3":"pause and then exit",
-	"dosasm.config.dosbox.resolution":"Set dosbox resolution like '1024x640'.If left empty, it means use the default resolution of DOSBox"
+	"dosasm.config.dosbox.resolution":"Set dosbox resolution like '1024x640'.If left empty, it means use the default resolution of DOSBox",
+	"dosasm.command.dosboxhere":"Dosbox here: Open DosBox, Mount the path of the editor files's folder as E:\\ and set the needed environment"
 }
