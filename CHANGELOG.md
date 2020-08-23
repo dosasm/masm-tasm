@@ -4,17 +4,20 @@
 
 ## 0.2.1
 
-- [x] `dosbox here`增加了一个命令以在当前文件所在目录下打开dosbox，来提供更加自由的操作，见demo
+- [x] 增加了一个命令`dosbox here`在当前文件所在目录下打开dosbox，来提供更加自由的操作，见demo
 - [x] 优化diagnose对fatal类错误的匹配,优化大纲视图
-- [x] 提供代码格式化功能（需要完善并且现在的效果并不是很好）
-- [x] 提供查找引用功能（目前也并不完美）
+- [x] 提供代码格式化功能（不太完善）
+- [x] 提供查找引用功能
 - [ ] webpack打包（nls部分总是失败）
 
 鉴于这些功能目前可能不完善，你可以在设置中关闭他们（关闭后需要手动重启）
 
-DEMO `dosbox here`示例: 代码来自[dpisdaniel/assembly-pacman](https://github.com/dpisdaniel/assembly-pacman)
+DEMO `dosbox here`:(代码来自[dpisdaniel/assembly-pacman](https://github.com/dpisdaniel/assembly-pacman))
 
-![demo pacman](https://github.com/xsro/masm-tasm/raw/next/pics/demo_pacman.gif)
+1. 打开命令面板，win下为`ctrl+shift+p`
+2. 在打开的dosbox窗口，输入汇编、链接、运行命令`tasm projf`,`tlink projf`,`projf`
+
+![demo pacman](https://github.com/xsro/masm-tasm/raw/master/pics/demo_pacman.gif)
 
 ## 0.2.0
 

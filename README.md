@@ -76,12 +76,13 @@ dosbox #if successfully opened the dosbox, it is largely possible for the extens
 
 ### About use of DOSBox
 
-The extension will mount some folder to DOSBox 's disk. Please don't modify them. There are:
+The extension will mount some folder to DOSBox 's disk. Please don't modify them. They are:
 
 |in DOSBox|real path in the computor|
 |---|---|
 |C:|the path of tools folder|
 |D:|the path of the work space|
+|E:|the path of the editor file's folder(when using command `dosbox here`)|
 |X:|the path of some scripts for the extension to use|
 
 ## Docs & Thanks & Licenses

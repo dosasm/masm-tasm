@@ -25,7 +25,7 @@
 		"onLanguage:masm",
 		"onLanguage:tasm",
 		"onLanguage:assembly",
-		"onCommand:dosboxhere"
+		"onCommand:masm-tasm.dosboxhere"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
