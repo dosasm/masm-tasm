@@ -2,9 +2,9 @@
 	"name": "masm-tasm",
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
-	"description": "DOS汇编语言开发环境和语法支持，安装即用,自带DOSBox.exe和TASM/MASM工具",
-	"version": "0.2.1-alpha.1",
-	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm"],
+	"description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
+	"version": "0.2.1",
+	"keywords":["dosbox","16位","汇编","微机原理","tasm","masm","8086"],
 	"icon":"dosboxasm.png",
 	"engines": {
 		"vscode": "^1.47.0"
@@ -132,7 +132,7 @@
 				"masmtasm.language.programmaticFeatures":{
 					"type":"boolean",
 					"default":true,
-					"description": "experimental programmatic features like hover,outline,jump to definition. You can close them by choosing false"
+					"description": "Experimental programmatic features like hover,outline,jump to definition/reference. Restart needed"
 				},
 				"masmtasm.dosbox.run": {
 					"type": "string",
