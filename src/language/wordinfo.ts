@@ -20,16 +20,16 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 					case linetype.endm: skip = false; break
 					case linetype.label:
 						if (skip === false) {
-							//TODO：优化匹配方式，对于变量应该考虑多种复杂的表达式如：查找var不能找到nvar
+							//TODO：优化匹配方式，对于变量应该考虑多种复杂的表达式如：查找var不能找到nvar，对注释信息进行对齐
 							if (def?.type === symboltype.variable && item.operand?.includes(word)) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
-							if (def?.type === symboltype.macro && item.operator === word) {
+							else if (def?.type === symboltype.macro && item.operator === word) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
-							if ((def?.type === symboltype.procedure || def?.type === symboltype.label) && item.operand === word) {
+							else if ((def?.type === symboltype.procedure || def?.type === symboltype.label) && item.operand === word) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
@@ -45,50 +45,63 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 	}
 	return output
 }
-export function codeformatting(document: vscode.TextDocument, options: vscode.FormattingOptions): vscode.TextEdit[] {
-	let formator: vscode.TextEdit[] = [],
-		namesize: number = 0, optsize: number = 0, oprsize: number = 0, str: string | undefined = undefined,
-		r: vscode.Range, Endline: string = '\r\n'
-	if (document.eol === vscode.EndOfLine.LF) Endline = '\n'
-	//scan the asmlines for information
-	asmline.forEach(
-		(item) => {
-			if (item.name) namesize = item.name.length > namesize ? item.name.length : namesize
-			if (item.operator) optsize = item.operator.length > optsize ? item.operator.length : optsize
-			if (item.operand) oprsize = item.operand.length > oprsize ? item.operand.length : oprsize
-			//console.log(item.operator,optsize)
+export function codeformatting(doc: vscode.TextDocument, options: vscode.FormattingOptions): vscode.TextEdit[] {
+	let formator: vscode.TextEdit[] = []
+	scanDocumnt(doc)
+	console.log(asmline)
+	if(docsymbol.length===0){
+		formator=formateline(0,asmline.length,doc,formator)
+	}
+		else docsymbol.forEach(
+		(item)=>{
+			formator=formateline(item.range.start.line,item.range.end.line,doc,formator)
 		}
 	)
-	asmline.forEach(
-		(item) => {
-			if (item.type === linetype.label || item.type === linetype.variable) {
-				str = "\t"
-				let length: number = 0
-				if (item.name?.length) length = item.name.length
-				if (item.type === linetype.label && item.name) str += item.name + ":"
-				else if (item.type === linetype.variable && item.name) str += item.name + " "
-				else str += " "
-				for (let i = 0; i < namesize - length; i++) str += " "//标签变量名前补充空格
-
-				str += item.operator
-				// if(item.name?.length) length=item.operator.length
-				// else length=0
-				//for(let i=0;i<optsize-length;i++) str+=" "//操作码后补充空格
-				str += "\t" + item.operand
-				if (item.comment) str += "\t" + item.comment
-			}
-			else {
-				str = item.str.replace(/\s+/, " ")
-			}
-			if (str && str !== item.str) {
-				r = new vscode.Range(item.line, 0, item.line, item.str.length)
-				formator.push(vscode.TextEdit.replace(document.validateRange(r), str))
-			}
-		}
-	)
-
 	return formator
 }
+function  formateline(beg:number,end:number,document: vscode.TextDocument,formator:vscode.TextEdit[]):vscode.TextEdit[]{
+	let namesize: number = 0, optsize: number = 0, oprsize: number = 0,
+	str: string | undefined = undefined,r: vscode.Range,i:number
+//scan the asmlines for information
+	for(i=beg;i<end;i++)
+	{	let item=asmline[i]
+		if (item.name) namesize = item.name.length > namesize ? item.name.length : namesize//find the maxlength of label name or variabel name
+		if (item.operator) optsize = item.operator.length > optsize ? item.operator.length : optsize//find the maxlength of operator 
+		if (item.operand) oprsize = item.operand.length > oprsize ? item.operand.length : oprsize//find the maxlength of operand
+	}
+	for(i=beg;i<end;i++)
+	{
+		let item=asmline[i]
+		if (item.type === linetype.label || item.type === linetype.variable) {
+			str = "\t"
+			let length: number = 0
+			if (item.name?.length) length = item.name.length
+			if (item.type === linetype.label && item.name) str += item.name + ":"
+			else if (item.type === linetype.variable && item.name) str += item.name + " "
+			else str += " "
+			for (let i = 0; i < namesize - length; i++) str += " "//标签变量名前补充空格
+			str += item.operator
+			if(item.operator?.length) length=item.operator.length
+			else length=0
+			for(let i=0;i<optsize-length;i++) str+=" "//操作码后补充空格
+			str += " "+ item.operand
+			if(item.operand?.length) length=item.operand.length
+			else length=0
+			for(let i=0;i<oprsize-length;i++) str+=" "//操作数后补充空格
+			if (item.comment) str += "\t" + item.comment
+		}
+		else {
+			str = item.str.replace(/\s+/, " ")
+			if(item.type===linetype.proc || item.type===linetype.endp) str="\t"+str
+		}
+		if (str && str !== item.str) {
+			r = new vscode.Range(item.line, 0, item.line, item.str.length)
+			formator.push(vscode.TextEdit.replace(document.validateRange(r), str))
+		}
+	}
+	return formator
+}
+
 
 //part I scan the document for information
 enum symboltype {
@@ -231,21 +244,8 @@ class Asmline {
 		return flag
 	}
 	private getvarlabel(item: string) {
-		let r = item.match(/^\s*(\w+\s*:|)\s*(\w+|)(\s+.*|)$/)
+		let r = item.match(/^\s*(\w+\s+|)([dD][bBwWdDfFqQtT]|=|EQU|equ)(\s+.*)$/)
 		let name: string | undefined
-		if (r) {
-			name = r[1]
-			this.type = linetype.label
-			if (name.length !== 0) {
-				this.name = name.slice(0, name.length - 1).trim()
-				let start = item.indexOf(r[1])
-				let one: TasmSymbol = new TasmSymbol(symboltype.label, this.name, new vscode.Position(this.line, start))
-				symbols.push(one)
-			}
-			this.operator = r[2]
-			this.operand = r[3].trim()
-		}
-		r = item.match(/^\s*(\w+\s+|)([dD][bBwWdDfFqQtT]|=|EQU|equ)(\s+.*)$/)
 		if (r) {
 			name = r[1].trim()
 			this.type = linetype.variable
@@ -258,6 +258,20 @@ class Asmline {
 			this.operator = r[2]
 			this.operand = r[3].trim()
 		}
+		else if (r= item.match(/^\s*(\w+\s*:|)\s*(\w+|)(\s+.*|)$/)) {
+			name = r[1]
+			this.type = linetype.label
+			if (name.length !== 0) {
+				this.name = name.slice(0, name.length - 1).trim()
+				let start = item.indexOf(r[1])
+				let one: TasmSymbol = new TasmSymbol(symboltype.label, this.name, new vscode.Position(this.line, start))
+				symbols.push(one)
+			}
+			this.operator = r[2]
+			this.operand = r[3].trim()
+		}
+
+		
 	}
 	public varlabelsymbol(): vscode.DocumentSymbol | undefined {
 		let vscsymbol: vscode.DocumentSymbol | undefined
@@ -297,9 +311,9 @@ function sacnDoc(document: vscode.TextDocument) {
 			asmline.push(new Asmline(item, index))
 		}
 	)
-	console.log(asmline)
 }
 function symboltree() {
+	docsymbol=[]
 	let i: number
 	//寻找段，宏指令信息
 	asmline.forEach(
@@ -396,7 +410,6 @@ function symboltree() {
 
 }
 export function scanDocumnt(doc?: vscode.TextDocument): vscode.DocumentSymbol[] {
-	docsymbol = []
 	if (doc && (doc.getText() !== _documentText || doc.uri !== _docUri)) {
 		sacnDoc(doc)
 		symboltree()

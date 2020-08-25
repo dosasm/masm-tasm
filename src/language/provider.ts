@@ -66,7 +66,6 @@ class AsmReferenceProvider implements vscode.ReferenceProvider {
 }
 class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
 	provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.TextEdit[] {
-		info.scanDocumnt(document)//scan the document
 		return info.codeformatting(document, options)
 	}
 }

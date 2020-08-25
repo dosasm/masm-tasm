@@ -6,6 +6,10 @@
     // symbols used as brackets
     "brackets": [
         ["[", "]"],
+        ["SEGMENT","ENDS"],
+        ["STRUCT","ENDS"],
+        ["MACRO","ENDM"],
+        ["PROC","ENDP"]
     ],
     // symbols that are auto closed when typing
     "autoClosingPairs": [
