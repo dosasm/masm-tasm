@@ -6,7 +6,7 @@ import {runcode} from './runcode'
 import  {provider} from "./language/provider"
 let asm:runcode
 export function activate(context: vscode.ExtensionContext) {
-	console.log(localize("active.hello",'Congratulations, your extension "masm-tasm" is now active!'));
+	console.log(localize("activate.hello",'Congratulations, your extension "masm-tasm" is now active!'));
 	asm = new runcode(context);
 	let programmaticFeatures=vscode.workspace.getConfiguration("masmtasm.language").get("programmaticFeatures")
 	if(programmaticFeatures) provider(context)
@@ -33,6 +33,6 @@ export function deactivate() {
 	if (asm) {
 		asm.deactivate();
 		asm.cleanalldiagnose();
-		console.log('extendion deactivate')
+		console.log('extension deactivate')
 	}
 }

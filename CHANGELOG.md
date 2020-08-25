@@ -1,12 +1,13 @@
 # Change Log
 
-## welcome any feedback [issue](https://github.com/xsro/masm-tasm/issues)
+## welcome feedback and contribution [issue](https://github.com/xsro/masm-tasm/issues)
 
-### 0.2.2
+### 0.2.2/0.2.3
 
 - 经过测试(win10下测试的)需要的vscode版本在March 2020 (version 1.44)以上
-- 优化代码格式化效果
+- 优化代码格式化效果（最好先试试效果喜不喜欢再使用哈）
 - 优化语言语法配置
+- 0.2.3优化大纲视图与格式化
 
 ### 0.2.1
 
