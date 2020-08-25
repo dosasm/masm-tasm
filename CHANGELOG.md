@@ -2,7 +2,13 @@
 
 ## welcome any feedback [issue](https://github.com/xsro/masm-tasm/issues)
 
-## 0.2.1
+### 0.2.2
+
+- 经过测试(win10下测试的)需要的vscode版本在March 2020 (version 1.44)以上
+- 优化代码格式化效果
+- 优化语言语法配置
+
+### 0.2.1
 
 - [x] 增加了一个命令`dosbox here`在当前文件所在目录下打开dosbox，来提供更加自由的操作，见demo
 - [x] 优化diagnose对fatal类错误的匹配,优化大纲视图
