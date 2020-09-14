@@ -21,7 +21,7 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 					case linetype.label:
 						if (skip === false) {
 							//TODO：优化匹配方式，对于变量应该考虑多种复杂的表达式如：查找var不能找到nvar，对注释信息进行对齐
-							if (def?.type === symboltype.variable && item.operand?.includes(word)) {
+							if (def?.type === symboltype.variable && item.operand?.match(new RegExp("\\b"+word+"\\b"))) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
