@@ -1,4 +1,4 @@
-out
+/out
 node_modules
 .vscode-test/
 *.vsix
@@ -9,4 +9,5 @@ scripts/VSC-ExtUse.conf
 
 # 这是将会由gulp创建的语言文件
 *.nls.*.json
+!/i18n/*/*.i18n.json
 
