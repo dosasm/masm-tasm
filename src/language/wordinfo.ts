@@ -21,7 +21,7 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 					case linetype.label:
 						if (skip === false) {
 							//TODO：优化匹配方式，对于变量应该考虑多种复杂的表达式如：查找var不能找到nvar，对注释信息进行对齐
-							if (def?.type === symboltype.variable && item.operand?.match(new RegExp("\\b"+word+"\\b"))) {
+							if (def?.type === symboltype.variable && item.operand?.match(new RegExp("\\b" + word + "\\b"))) {
 								let start = item.str.indexOf(word)
 								r = new vscode.Range(index, start, index, start + word.length)
 							}
@@ -70,7 +70,7 @@ function formateline(beg: number, end: number, document: vscode.TextDocument, fo
 		if (item.operand) oprsize = item.operand.length > oprsize ? item.operand.length : oprsize//find the maxlength of operand
 	}
 	for (i = beg; i < end; i++) {
-		str=undefined
+		str = undefined
 		let item = asmline[i]
 		if (item.type === linetype.label || item.type === linetype.variable) {
 			str = "\t"
@@ -83,24 +83,24 @@ function formateline(beg: number, end: number, document: vscode.TextDocument, fo
 			str += item.operator
 			if (item.operator?.length) length = item.operator.length
 			else length = 0
-			if(item.operand||item.comment){
+			if (item.operand || item.comment) {
 				for (let i = 0; i < optsize - length; i++) str += " "//操作码后补充空格
 				str += " " + item.operand
 			}
-			if (item.comment){
+			if (item.comment) {
 				if (item.operand?.length) length = item.operand.length
 				else length = 0
 				for (let i = 0; i < oprsize - length; i++) str += " "//操作数后补充空格
 				str += "\t" + item.comment
-			} 
+			}
 		}
-		else if(item.type===linetype.onlycomment){
+		else if (item.type === linetype.onlycomment) {
 			str = "\t" + item.comment
 		}
-		else if(item.main){
+		else if (item.main) {
 			str = item.main.replace(/\s+/, " ")
-			let length:number=namesize+1+optsize+1+oprsize-str.length
-			if (item.comment){
+			let length: number = namesize + 1 + optsize + 1 + oprsize - str.length
+			if (item.comment) {
 				for (let i = 0; i < length; i++) str += " "//后补充空格
 				str += "\t\t" + item.comment
 			}
@@ -181,7 +181,7 @@ class Asmline {
 	name: string | undefined
 	index: number = 1
 	comment: string | undefined
-	main:string|undefined
+	main: string | undefined
 	commentIndex: number | undefined
 	operator: string | undefined
 	operand: string | undefined
@@ -190,34 +190,34 @@ class Asmline {
 		this.line = line
 		this.str = str
 		let main = this.getcomment(str)//split mainbody and comment
-		if(main) {
+		if (main) {
 			if (this.getsymbol1(main) === false)//get symbols of macros,segments,procedures
 			{ this.getvarlabel(main) }//get symbols of labels,variables
 		}
-		else{
+		else {
 			if (this.comment) this.type = linetype.onlycomment
 		}
 	}
-	private getcomment(str:string): string | undefined {
-		let i: number, quoted: string|undefined = undefined, index: number | undefined=undefined
-		let main: string | null = null,comment:string|undefined=undefined
-		let arr=str.split("")
+	private getcomment(str: string): string | undefined {
+		let i: number, quoted: string | undefined = undefined, index: number | undefined = undefined
+		let main: string | null = null, comment: string | undefined = undefined
+		let arr = str.split("")
 		for (i = 0; i < arr.length; i++) {
-			if ((arr[i] === "'"||arr[i] === "\"")) {
-				if (quoted===arr[i]) quoted = undefined
-				else if(quoted===undefined) quoted =arr[i]
+			if ((arr[i] === "'" || arr[i] === "\"")) {
+				if (quoted === arr[i]) quoted = undefined
+				else if (quoted === undefined) quoted = arr[i]
 			}
 			if (arr[i] == ";" && quoted === undefined) {
 				break
 			}
 		}
-		if(i<arr.length){
-			comment=str.substring(i)
-			this.comment=comment?.trim()
+		if (i < arr.length) {
+			comment = str.substring(i)
+			this.comment = comment?.trim()
 		}
-		main=str.substring(0,i).trim()
-		if(main.length===0) this.main=undefined
-		else this.main=main
+		main = str.substring(0, i).trim()
+		if (main.length === 0) this.main = undefined
+		else this.main = main
 		return this.main
 	}
 	private getsymbol1(str: string): boolean {
@@ -310,7 +310,7 @@ class Asmline {
 	public selectrange() {
 		if (this.name && this.index) return new vscode.Range(this.line, this.index, this.line, this.index + this.name?.length)
 	}
-	public description(){
+	public description() {
 
 	}
 }
@@ -349,7 +349,7 @@ function symboltree() {
 				if (line.name && line_endm?.line) {
 					let macrorange = new vscode.Range(line.line, line.index, line_endm?.line, line_endm?.index)
 					symbols.push(new TasmSymbol(symboltype.macro, line.name, macrorange))
-					let symbol1 = new vscode.DocumentSymbol(line.name , getType(KeywordType.Macro), SymbolVSCfy(symboltype.macro), macrorange, new vscode.Range(line.line, line.index, line.line, line.index + line.name.length))
+					let symbol1 = new vscode.DocumentSymbol(line.name, getType(KeywordType.Macro), SymbolVSCfy(symboltype.macro), macrorange, new vscode.Range(line.line, line.index, line.line, line.index + line.name.length))
 					docsymbol.push(symbol1)
 				}
 			}
@@ -369,7 +369,7 @@ function symboltree() {
 						if (proc?.name && _name) {
 							let range: vscode.Range = new vscode.Range(proc?.line, proc?.index, array[i].line, array[i].index + _name.length)
 							let srange: vscode.Range = new vscode.Range(proc.line, proc.index, proc?.line, proc?.index + proc?.name?.length)
-							procschild.push(new vscode.DocumentSymbol(proc?.name,getType(KeywordType.Procedure), SymbolVSCfy(symboltype.procedure), range, srange))
+							procschild.push(new vscode.DocumentSymbol(proc?.name, getType(KeywordType.Procedure), SymbolVSCfy(symboltype.procedure), range, srange))
 							symbols.push(new TasmSymbol(symboltype.procedure, _name, range))
 						}
 					}
@@ -388,7 +388,7 @@ function symboltree() {
 				if (line.name && line_ends?.line) {
 					let range = new vscode.Range(line.line, line.index, line_ends?.line, line_ends?.index)
 					symbols.push(new TasmSymbol(symboltype.segment, line.name, range))
-					let symbol1 = new vscode.DocumentSymbol(line.name,getType(KeywordType.Segment),SymbolVSCfy(symboltype.segment), range, new vscode.Range(line.line, line.line, line.line, line.line + line.name.length))
+					let symbol1 = new vscode.DocumentSymbol(line.name, getType(KeywordType.Segment), SymbolVSCfy(symboltype.segment), range, new vscode.Range(line.line, line.line, line.line, line.line + line.name.length))
 					symbol1.children = procschild
 					docsymbol.push(symbol1)
 				}
@@ -419,7 +419,7 @@ function symboltree() {
 					},
 				)
 				for (i = item.range.start.line + 1; i < item.range.end.line; i++) {
-					if (asmline[i].treeUsed===false) symbol2 = asmline[i].varlabelsymbol()
+					if (asmline[i].treeUsed === false) symbol2 = asmline[i].varlabelsymbol()
 					if (symbol2) item.children.push(symbol2)
 				}
 			}
