@@ -174,7 +174,7 @@ enum linetype {
 	other, macro, endm, segment, ends, struct, proc, endp, label, variable,
 	end, onlycomment, labelB, variableB
 }
-//暂时先不支持struct因为可能会与ends（segment）冲突
+//TODO: add support for structure
 class Asmline {
 	type: linetype = linetype.other
 	line: number
@@ -436,24 +436,13 @@ export function scanDocumnt(doc?: vscode.TextDocument): vscode.DocumentSymbol[] 
 	return docsymbol
 }
 
-
+//---------------------------------------------------------------
 // part two offer imformation for keyword and number(char)
-const possibleNumbers: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
 
 export function isNumberStr(str: string): boolean {
-	if (!str.startsWith('0') && !str.startsWith('1') && !str.startsWith('2') && !str.startsWith('3')
-		&& !str.startsWith('4') && !str.startsWith('5') && !str.startsWith('6') && !str.startsWith('7')
-		&& !str.startsWith('8') && !str.startsWith('9')) {
-		return false;
-	}
-	let sub: number = (str.endsWith('h') || str.endsWith('b') || str.endsWith('q') || str.endsWith('d')) ? 1 : 0;
-	for (let i = 1; i < str.length - sub; i++) {
-		const char = str[i];
-		if (possibleNumbers.indexOf(char, 0) <= -1) {
-			return false;
-		}
-	}
-	return true;
+	let a = str.match(/([01]+B)|([0-7]+[Qq])|([0-9][0-9A-Fa-f]*[Hh])|([0-9]+[Dd]?)/)
+	if (a && a[0] === str) return true
+	return false
 }
 const asciiname: string[] = [
 	"NUL" + localize("ascii.NUL", "(NULL)"),

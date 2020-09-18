@@ -1,7 +1,7 @@
 import { workspace, window, Uri, FileSystem } from 'vscode';
 import { TextEncoder } from 'util'
 /**
- * 获取配置信息
+ * class for configurations
  */
 export class Config {
     private _toolspackaged: boolean = true//如果打包时没有包含汇编工具（tools）改为false
@@ -25,33 +25,52 @@ export class Config {
         this.toolsUri = this._toolsUri()
         this.writeBoxconfig(this)
     }
+    /**
+     * file path of scripts packaged inside
+     */
     public get batchpath(): string {
         let path = Uri.joinPath(this._exturi, './scripts').fsPath
         return path
     }
+    /**
+     * file path of DOSBox configuration file `VSC-ExtUse.conf`
+     */
     public get dosboxconfuri(): Uri {
         let uri = Uri.joinPath(this._exturi, './scripts/VSC-ExtUse.conf')
         return uri
     }
+    /**
+     * file path of the separated space for DOSBox to use
+     * which will be mounted as `D:` in dosbox
+     */
     public get workpath(): string {
         let path = Uri.joinPath(this._exturi, './scripts/work').fsPath
         return path
     }
+    /**
+     * file path of the compiler information in the dosbox mode
+     */
     public get workloguri(): Uri {
         let uri = Uri.joinPath(this._exturi, './scripts/work/T.TXT')
         return uri
     }
+    /**
+     * file path of the batch for msdos-player
+     */
     public get msbatpath() {
         let path = Uri.joinPath(this._exturi, './scripts/playerasm.bat').fsPath
         return path
     }
     /**
-     * 返回string格式的工具集地址
+     * folder path of the ASM toolset
      */
     public get path(): string {
         let path = this.toolsUri.fsPath
         return path
     }
+    /**
+     * the vscode Uri of the ASM toolset folder
+     */
     private _toolsUri(): Uri {
         let uri: Uri
         if (this._path) {
@@ -66,6 +85,9 @@ export class Config {
         }
         return uri
     }
+    /**
+     * the command need to run in DOSBox after run the ASM code
+     */
     public get boxruncmd(): string {
         let command: string = ' '
         switch (this._BOXrun) {
@@ -75,6 +97,9 @@ export class Config {
         }
         return command
     }
+    /**
+     * the param need to use with batch in DOSBox after run the ASM code
+     */
     public get boxrunbat(): string {
         let param: string = ' '
         switch (this._BOXrun) {
@@ -84,12 +109,20 @@ export class Config {
         }
         return param
     }
+    /**
+     * file path of the dosbox program which will be sent to terminal
+     */
     public get DOSemu(): string {
         let dosemu = ' '
         if (this._DOSemu) dosemu = this._DOSemu
         if (process.platform != 'win32') dosemu = 'dosbox'//在linux下无法使用msdos只使用dosbox
         return dosemu
     }
+    /**
+     * write the DOSBox configuration file
+     * @param conf 
+     * @param autoExec 
+     */
     private writeBoxconfig(conf: Config, autoExec?: string) {
         let configUri = conf.dosboxconfuri
         let Pathadd = ' '

@@ -3,6 +3,8 @@ import { Uri, workspace, window, TextDocument } from 'vscode'
 import { Config } from './configration'
 import { execSync } from 'child_process'
 import { landiagnose } from './language/diagnose'
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle()
 export class DOSBox {
     constructor() {
     }
@@ -53,7 +55,7 @@ export class DOSBox {
                 (text) => {
                     info = text.toString()
                     if (diag.ErrMsgProcess(content, info, doc.uri, conf.MASMorTASM) == 0) {
-                        let Errmsgwindow = conf.MASMorTASM + '汇编出错,无法运行/调试'
+                        let Errmsgwindow = localize("dosbox.errmsg", '{0} Failed to compile. See the output for more information', conf.MASMorTASM)
                         window.showErrorMessage(Errmsgwindow);
                     }
                 },

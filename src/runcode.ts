@@ -21,13 +21,18 @@ export class runcode {
         this.dosbox = new DOSBox()
         this.landiag = new landiagnose(this.extOutChannel)
     }
+    /**
+     * open the emulator(currently just the DOSBox)
+     * @param doc The vscode document to be copied to the workspace
+     */
     private Openemu(doc: vscode.TextDocument) {
         let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Open DOSBox:{0}", doc.fileName)
         this.extOutChannel.appendLine(openemumsg);
         this.dosbox.openDOSBox(this._config, undefined, doc)
     }
-    /**运行汇编代码的入口
-     * 获取拓展的设置，并执行相应操作
+    /**
+     * run the ASM code
+     * @param doc The vscode document to be compiled to run
      */
     private Run(doc: vscode.TextDocument) {
         let runmsg = localize("run.msg", "\n{0}({1})>>Run:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName)
@@ -42,8 +47,9 @@ export class runcode {
             default: throw new Error("未指定emulator");
         }
     }
-    /**调试程序
-     * 获取拓展的设置并执行相应操作
+    /**
+     * debug the ASM code
+     * @param doc The vscode document to be compiled and debug
      */
     private Debug(doc: vscode.TextDocument) {
         let debugmsg = localize("debug.msg", "\n{0}({1})>>Debug:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName)
@@ -64,13 +70,20 @@ export class runcode {
     public cleanalldiagnose() {
         this.landiag.cleandiagnose('both')
     }
-    deactivate() {
-        this.extOutChannel.dispose();
+    public deactivate() {
+        this.extOutChannel.dispose()
+        this.msdosplayer.deactivate()
     }
-    /**更新设置，根据设置保存编辑器文件
-     **/
+    /**Do the operation according to the input.
+     * "opendosbox": open DOSBOX at a separated space;
+     * "here": open dosbox at the vscode editor file's folder;
+     * "run": compile and run the ASM code ;
+     * "debug": compile and debug the ASM code;
+     * @param command "opendosbox" or "run" or "debug" or "here"
+     */
     public runcode(command: string) {
         let exturi = this.exturi
+        //update the configuration
         vscode.workspace.onDidChangeConfiguration((event) => { this._config = new Config(exturi) }, this._config)
         let document = vscode.window.activeTextEditor?.document
         if (document) {

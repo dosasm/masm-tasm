@@ -6,7 +6,7 @@ class AsmHoverProvider implements vscode.HoverProvider {
 	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output: vscode.MarkdownString = new vscode.MarkdownString()
 		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-		info.scanDocumnt(document)//scan the documente 
+		info.scanDocumnt(document)//scan the document
 		if (range) {
 			let wordo = document.getText(range)
 			let word = wordo.toLowerCase()
@@ -66,9 +66,9 @@ class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
 	}
 }
 export function provider(context: vscode.ExtensionContext) {
-	let uri=vscode.Uri.joinPath(context.extensionUri,"./scripts/keyword.json")
+	let uri = vscode.Uri.joinPath(context.extensionUri, "./scripts/keyword.json")
 	vscode.workspace.fs.readFile(uri).then(
-		(text)=>{
+		(text) => {
 			key.Dictionary(text.toString())
 		}
 	)

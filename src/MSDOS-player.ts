@@ -1,4 +1,4 @@
-import { workspace, window, Terminal, Uri, TextDocument } from 'vscode'
+import { window, Terminal, Uri, TextDocument } from 'vscode'
 import { Config } from './configration';
 import { exec } from 'child_process'
 import { DOSBox } from './DOSBox'
@@ -15,7 +15,7 @@ export class MSDOSplayer {
      * @param conf 获取拓展的设置
      * @param isrun 决定是运行还是调试，true为运行，false为debug 
      * @param viaplayer 决定在什么中运行/调试,true为在msdos-player中运行或调试，fasle为在dosbox中进行
-     * @param diag 处理输出信息的类
+     * @param diag 处理输出信息的类，如果有将使用diag.ErrMsgProcess处理错误信息
      * @param doc 需要处理的文件
      */
     public PlayerASM(conf: Config, isrun: boolean, viaplayer: boolean, diag: landiagnose, doc: TextDocument) {
@@ -68,7 +68,9 @@ export class MSDOSplayer {
         else {
             this._terminal.sendText('msdos -v5.0 debug T.EXE')
         }
-        this._terminal.dispose
+    }
+    public deactivate() {
+        if (this._terminal) this._terminal.dispose()
     }
 
     private afterlink(conf: Config, viaplayer: boolean, runordebug: boolean) {

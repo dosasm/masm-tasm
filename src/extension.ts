@@ -7,9 +7,11 @@ import { provider } from "./language/provider"
 let asm: runcode
 export function activate(context: vscode.ExtensionContext) {
 	console.log(localize("activate.hello", 'Congratulations, your extension "masm-tasm" is now active!'));
-	asm = new runcode(context);
+	//provide programmaic language features like hover,references,outline(symbol)
 	let programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language").get("programmaticFeatures")
 	if (programmaticFeatures) provider(context)
+	//run and debug the code in dosbox or msdos-player by TASM ot MASM
+	asm = new runcode(context);
 	let opendosbox = vscode.commands.registerTextEditorCommand('masm-tasm.opendosbox', () => {
 		asm.runcode('opendosbox');
 	});
@@ -33,6 +35,6 @@ export function deactivate() {
 	if (asm) {
 		asm.deactivate();
 		asm.cleanalldiagnose();
-		console.log('extension deactivate')
+		console.log('extension deactivated')
 	}
 }
