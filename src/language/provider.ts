@@ -1,28 +1,24 @@
 import * as vscode from 'vscode';
 import * as info from "./wordinfo";
+import * as key from "./keyword";
 
 class AsmHoverProvider implements vscode.HoverProvider {
 	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output: vscode.MarkdownString = new vscode.MarkdownString()
 		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-		info.scanDocumnt(document)//scan thdocumente 
+		info.scanDocumnt(document)//scan the documente 
 		if (range) {
 			let wordo = document.getText(range)
 			let word = wordo.toLowerCase()
-			let char = /'(.)'/.exec(word)
-			if (char) output.appendMarkdown(info.getcharMsg(char[1]));
-			let keyword = info.GetKeyword(word)
-			if (info.isNumberStr(word)) {
-				output.appendMarkdown(info.getNumMsg(word));
-			}
-			let tasmsymbol = info.findSymbol(wordo)
-			if (tasmsymbol) {
-				output = tasmsymbol.markdown()
-			}
-			else if (keyword !== undefined) output = keyword.markdown()
-			//else if(label !== undefined){
-			// 	output.appendCodeblock('assembly','(Label) ' + label.name + " => " + label.value)
-			// }
+
+			let char = /'(.)'/.exec(word)//the word is a charactor?
+			let keyword = key.GetKeyword(word)//the word is a keyword of assembly?
+			let tasmsymbol = info.findSymbol(wordo)//the word is a symbol?
+
+			if (info.isNumberStr(word)) output.appendMarkdown(info.getNumMsg(word));//the word is a number?
+			else if (char) output.appendMarkdown(info.getcharMsg(char[1]));
+			else if (tasmsymbol) output = tasmsymbol.markdown()
+			else if (keyword !== undefined) output = keyword
 		}
 		return new vscode.Hover(output);
 	}
@@ -70,6 +66,12 @@ class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
 	}
 }
 export function provider(context: vscode.ExtensionContext) {
+	let uri=vscode.Uri.joinPath(context.extensionUri,"./scripts/keyword.json")
+	vscode.workspace.fs.readFile(uri).then(
+		(text)=>{
+			key.Dictionary(text.toString())
+		}
+	)
 	context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider()));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider("assembly", new AsmDefProvider()));
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly", new Asmsymbolprovider()))
