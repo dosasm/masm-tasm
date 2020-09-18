@@ -44,5 +44,9 @@
     "ascii.RS": "(记录分离符)",
     "ascii.US": "(单元分隔符)",
     "ascii.space": "(空格)",
-    "ascii.DEL": "(删除)"
+    "ascii.DEL": "(删除)",
+    "num.hex":"十六进制数",
+    "num.oct":"八进制数",
+    "num.dec":"十进制数",
+    "num.bin":"二进制数"
 }

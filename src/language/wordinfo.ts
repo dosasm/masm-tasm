@@ -503,10 +503,10 @@ const asciiname: string[] = [
 export function getNumMsg(word: string) {
 	let base: number = word.endsWith('h') ? 16 : word.endsWith('q') ? 8 : word.endsWith('b') ? 2 : 10;
 	let value: number = Number.parseInt(word, base);
-	let hex="Hexadecimal  Number"
-	let oct="Octal  Number"
-	let dec="Decimal  Number"
-	let bin="Binary  Number"
+	let hex=localize("num.hex","Hexadecimal  Number")
+	let oct=localize("num.oct","Octal  Number")
+	let dec=localize("num.dec","Decimal  Number")
+	let bin=localize("num.bin","Binary  Number")
 	let s = "(" + (base === 16 ?  hex : base === 8 ? oct : base === 10 ? dec : bin ) + ") " + word + ":\n\n";
 	s += " `DEC`: " + value.toString(10) + "D\n\n";
 	s += " `HEX`: " + value.toString(16) + "H\n\n";
