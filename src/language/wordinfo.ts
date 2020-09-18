@@ -49,10 +49,11 @@ export function codeformatting(doc: vscode.TextDocument, options: vscode.Formatt
 	let formator: vscode.TextEdit[] = []
 	scanDocumnt(doc)
 	console.log(asmline)
-	if (docsymbol.length === 0) {
-		formator = formateline(0, asmline.length, doc, formator)
-	}
-	else docsymbol.forEach(
+	// if (docsymbol.length === 0) {
+	// 	formator = formateline(0, asmline.length, doc, formator)
+	// }
+	// else 
+	docsymbol.forEach(
 		(item) => {
 			formator = formateline(item.range.start.line, item.range.end.line, doc, formator)
 		}
@@ -512,8 +513,8 @@ const asciiname: string[] = [
 ]
 export function getNumMsg(word: string) {
 	let base: number = word.endsWith('h') ? 16 : word.endsWith('q') ? 8 : word.endsWith('b') ? 2 : 10;
-	var value: number = Number.parseInt(word, base);
-	var s = "(" + (base === 16 ? "Hexadecimal" : base === 8 ? "Octal" : base === 10 ? "Decimal" : "Binary") + " Number) " + word + ":\n\n";
+	let value: number = Number.parseInt(word, base);
+	let s = "(" + (base === 16 ? "Hexadecimal" : base === 8 ? "Octal" : base === 10 ? "Decimal" : "Binary") + " Number) " + word + ":\n\n";
 	s += " `DEC`: " + value.toString(10) + "D\n\n";
 	s += " `HEX`: " + value.toString(16) + "H\n\n";
 	s += " `OCT`: " + value.toString(8) + "Q\n\n";
