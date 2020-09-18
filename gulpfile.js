@@ -26,7 +26,7 @@ const languages = [{ folderName: 'chs', id: 'zh-cn' }];
 
 const cleanTask = function() {
 	return del(['out/**', 'package.nls.*.json', 'i18n-sample*.vsix']);
-}
+};
 
 const internalCompileTask = function() {
 	return doCompile(false);
@@ -63,7 +63,7 @@ const doCompile = function (buildNls) {
 	}
 
 	return r.pipe(gulp.dest(outDest));
-}
+};
 
 const vscePublishTask = function() {
 	return vsce.publish();
