@@ -440,7 +440,7 @@ export function scanDocumnt(doc?: vscode.TextDocument): vscode.DocumentSymbol[] 
 // part two offer imformation for keyword and number(char)
 
 export function isNumberStr(str: string): boolean {
-	let a = str.match(/([01]+B)|([0-7]+[Qq])|([0-9][0-9A-Fa-f]*[Hh])|([0-9]+[Dd]?)/)
+	let a = str.match(/([01]+B|[0-7]+[Qq]|[0-9][0-9A-Fa-f]*[Hh]|[0-9]+[Dd]?)/)
 	if (a && a[0] === str) return true
 	return false
 }
@@ -503,7 +503,11 @@ const asciiname: string[] = [
 export function getNumMsg(word: string) {
 	let base: number = word.endsWith('h') ? 16 : word.endsWith('q') ? 8 : word.endsWith('b') ? 2 : 10;
 	let value: number = Number.parseInt(word, base);
-	let s = "(" + (base === 16 ? "Hexadecimal" : base === 8 ? "Octal" : base === 10 ? "Decimal" : "Binary") + " Number) " + word + ":\n\n";
+	let hex="Hexadecimal  Number"
+	let oct="Octal  Number"
+	let dec="Decimal  Number"
+	let bin="Binary  Number"
+	let s = "(" + (base === 16 ?  hex : base === 8 ? oct : base === 10 ? dec : bin ) + ") " + word + ":\n\n";
 	s += " `DEC`: " + value.toString(10) + "D\n\n";
 	s += " `HEX`: " + value.toString(16) + "H\n\n";
 	s += " `OCT`: " + value.toString(8) + "Q\n\n";
