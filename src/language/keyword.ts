@@ -9,9 +9,9 @@ enum KeywordType {
 class ASMKEYWORD {
 	opCount: number;
 	name: string;
-	def: string;
+	description: string;
 	chs: string | undefined;
-	data: string;
+	synopsis: string;
 	type: KeywordType;
 	allowType: AllowKinds;
 	alias: string[] | undefined
@@ -28,9 +28,9 @@ class ASMKEYWORD {
 		this.name = name
 		this.alias = alias
 		if (data !== undefined) {
-			this.data = data;
+			this.synopsis = data;
 		} else {
-			this.data = name + " [operand], [operand]";
+			this.synopsis = name + " [operand], [operand]";
 		}
 
 		if (allow === undefined) {
@@ -40,12 +40,12 @@ class ASMKEYWORD {
 		}
 		this.opCount = count
 		this.type = type
-		this.def = def
+		this.description = def
 	}
 }
 function markdown(key: ASMKEYWORD): MarkdownString {
 	let md = new MarkdownString(getType(key.type) + " **" + key.name + "**\n\n")
-	let description = key.def
+	let description = key.description
 	if (env.language === "zh-cn" && key.chs) description = key.chs
 	md.appendMarkdown(description + "\n\n")
 	if (key.alias) {
@@ -57,14 +57,13 @@ function markdown(key: ASMKEYWORD): MarkdownString {
 		msg += "`" + key.alias[i] + "`"
 		md.appendMarkdown(msg)
 	}
-	md.appendCodeblock("Syntax: " + key.data)
+	md.appendCodeblock("Synopsis: " + key.synopsis,"assembly")
 	return md
 }
 let KEYWORD_DICONTARY: ASMKEYWORD[] = []
 export function Dictionary(str: string) {
 	let KeywordObj = JSON.parse(str)
-	if (KeywordObj) KEYWORD_DICONTARY = KeywordObj
-	console.log(KEYWORD_DICONTARY)
+	if (KeywordObj) KEYWORD_DICONTARY = KeywordObj.keywords
 
 }
 export function GetKeyword(word: string): MarkdownString | undefined {

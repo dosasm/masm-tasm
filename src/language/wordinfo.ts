@@ -48,7 +48,7 @@ export function getrefer(word: string, doc: vscode.TextDocument): vscode.Locatio
 export function codeformatting(doc: vscode.TextDocument, options: vscode.FormattingOptions): vscode.TextEdit[] {
 	let formator: vscode.TextEdit[] = []
 	scanDocumnt(doc)
-	console.log(asmline)
+	//console.log(asmline)
 	// if (docsymbol.length === 0) {
 	// 	formator = formateline(0, asmline.length, doc, formator)
 	// }

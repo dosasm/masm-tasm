@@ -1,2061 +1,2064 @@
-[
-    {
-        "name": "small",
-        "data": "small",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "128KB"
-    },
-    {
-        "name": "tiny",
-        "data": "tiny",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "64KB"
-    },
-    {
-        "name": "compact",
-        "data": "compact",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "640KB"
-    },
-    {
-        "name": "huge",
-        "data": "huge",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "640KB"
-    },
-    {
-        "name": "medium",
-        "data": "medium",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "640KB"
-    },
-    {
-        "name": "large",
-        "data": "large",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "640KB"
-    },
-    {
-        "name": "flat",
-        "data": "flat",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "4GB (Not supported with TASM)"
-    },
-    {
-        "name": "stdcall",
-        "data": "stdcall",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 7,
-        "def": "Can be included in another file"
-    },
-    {
-        "name": "al",
-        "data": "al",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The lower byte of ax",
-        "chs": "寄存器AX的低八位"
-    },
-    {
-        "name": "ah",
-        "data": "ah",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The upper byte of ax",
-        "chs": "寄存器AX的高八位"
-    },
-    {
-        "name": "bl",
-        "data": "bl",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The lower byte of bx",
-        "chs": "寄存器BX的低八位"
-    },
-    {
-        "name": "bh",
-        "data": "bh",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The upper byte of bx",
-        "chs": "寄存器BX的高八位"
-    },
-    {
-        "name": "cl",
-        "data": "cl",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The lower byte of cx",
-        "chs": "寄存器CX的低八位"
-    },
-    {
-        "name": "ch",
-        "data": "ch",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The upper byte of cx",
-        "chs": "寄存器CX的高八位"
-    },
-    {
-        "name": "dl",
-        "data": "dl",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The lower byte of dx",
-        "chs": "寄存器DX的低八位"
-    },
-    {
-        "name": "dh",
-        "data": "dh",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "The upper byte of dx",
-        "chs": "寄存器DX的高八位"
-    },
-    {
-        "name": "ax",
-        "data": "ax",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register used with arithmatic operations",
-        "chs": "16位累加器"
-    },
-    {
-        "name": "bx",
-        "data": "bx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register used to acess memory data",
-        "chs": "16位基址寄存器"
-    },
-    {
-        "name": "cx",
-        "data": "cx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register used with loops",
-        "chs": "16位计数器"
-    },
-    {
-        "name": "dx",
-        "data": "dx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register used with data mangment",
-        "chs": "16位数据寄存器"
-    },
-    {
-        "name": "sp",
-        "data": "sp",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register that points at the stack",
-        "chs": "16位堆栈指针寄存器"
-    },
-    {
-        "name": "bp",
-        "data": "bp",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register that is used to pass arguments",
-        "chs": "16位基址指针寄存器"
-    },
-    {
-        "name": "di",
-        "data": "di",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register used to acess memory data",
-        "chs": "16位目的变址寄存器"
-    },
-    {
-        "name": "si",
-        "data": "si",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "16 bit register used to acess memory data",
-        "chs": "16位源变址寄存器"
-    },
-    {
-        "name": "eax",
-        "data": "eax",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register used with arithmatic operations",
-        "chs": "32位累加寄存器器"
-    },
-    {
-        "name": "ebx",
-        "data": "ebx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register used to acess memory data",
-        "chs": "32位基址寄存器"
-    },
-    {
-        "name": "ecx",
-        "data": "ecx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register used with loops",
-        "chs": "32位计数器"
-    },
-    {
-        "name": "edx",
-        "data": "edx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register used with data mangment",
-        "chs": "32位数据寄存器"
-    },
-    {
-        "name": "esp",
-        "data": "esp",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register that points at the stack",
-        "chs": "32位堆栈指针寄存器"
-    },
-    {
-        "name": "ebp",
-        "data": "ebp",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register that is used to pass arguments",
-        "chs": "32位基址指针寄存器"
-    },
-    {
-        "name": "edi",
-        "data": "edi",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register used to acess memory data",
-        "chs": "32位目的变址寄存器"
-    },
-    {
-        "name": "esi",
-        "data": "esi",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "32 bit register used to acess memory data",
-        "chs": "32位源变址寄存器"
-    },
-    {
-        "name": "rax",
-        "data": "rax",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register used with arithmatic operations",
-        "chs": "64位累加器"
-    },
-    {
-        "name": "rbx",
-        "data": "rbx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register used to acess memory data",
-        "chs": "64位基址寄存器"
-    },
-    {
-        "name": "rcx",
-        "data": "rcx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register used with loops",
-        "chs": "64位计数器"
-    },
-    {
-        "name": "rdx",
-        "data": "rdx",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register used with data mangment",
-        "chs": "64位数据寄存器"
-    },
-    {
-        "name": "rsp",
-        "data": "rsp",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register that points at the stack",
-        "chs": "64位堆栈指针寄存器"
-    },
-    {
-        "name": "rbp",
-        "data": "rbp",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register that is used to pass arguments",
-        "chs": "64位基址指针寄存器"
-    },
-    {
-        "name": "rdi",
-        "data": "rdi",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register used to acess memory data",
-        "chs": "64位目的变址寄存器"
-    },
-    {
-        "name": "rsi",
-        "data": "rsi",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "64 bit register used to acess memory data",
-        "chs": "64位源变址寄存器"
-    },
-    {
-        "name": "db",
-        "data": "[name] db [value]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 5,
-        "def": "Allocates a byte of memory",
-        "chs": "分配1字节存储空间"
-    },
-    {
-        "name": "dw",
-        "data": "[name] dw [value]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 5,
-        "def": "Allocates 2 byte of memory (Word)",
-        "chs": "分配2字节存储空间"
-    },
-    {
-        "name": "dd",
-        "data": "[name] dd [value]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 5,
-        "def": "Allocates 4 byte of memory (Double Word)",
-        "chs": "分配4字节存储空间（双字）"
-    },
-    {
-        "name": "dq",
-        "data": "[name] dq [value]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 5,
-        "def": "Allocates 8 byte of memory (Quad Word)",
-        "chs": "分配8字节存储空间 (四字)"
-    },
-    {
-        "name": "dt",
-        "data": "[name] dt [value]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 5,
-        "def": "Allocates 10 byte of memory ",
-        "chs": "分配10字节存储空间"
-    },
-    {
-        "name": "byte",
-        "data": "byte",
-        "allowType": 6,
-        "opCount": -1,
-        "type": 5,
-        "def": "Locates 1 byte of memory"
-    },
-    {
-        "name": "word",
-        "data": "word",
-        "allowType": 6,
-        "opCount": -1,
-        "type": 5,
-        "def": "Locates 2 byte of memory (Word)"
-    },
-    {
-        "name": "dword",
-        "data": "dword",
-        "allowType": 6,
-        "opCount": -1,
-        "type": 5,
-        "def": "Locates 4 byte of memory (Double Word)"
-    },
-    {
-        "name": "qword",
-        "data": "qword",
-        "allowType": 6,
-        "opCount": -1,
-        "type": 5,
-        "def": "Locates 8 byte of memory (Quad Word)"
-    },
-    {
-        "name": "tbyte",
-        "data": "tbyte",
-        "allowType": 6,
-        "opCount": -1,
-        "type": 5,
-        "def": "Locates 10 byte of memory "
-    },
-    {
-        "name": "cs",
-        "data": "cs",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Code segement address",
-        "chs": "代码段寄存器"
-    },
-    {
-        "name": "ss",
-        "data": "ss",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Stack segement address",
-        "chs": "堆栈段寄存器"
-    },
-    {
-        "name": "ds",
-        "data": "ds",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Data segement address",
-        "chs": "数据段寄存器"
-    },
-    {
-        "name": "es",
-        "data": "es",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Extra segement address",
-        "chs": "附加段寄存器"
-    },
-    {
-        "name": "DATASEG",
-        "data": "DATASEG",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": "Start of the data segment",
-        "chs": "数据段的开始"
-    },
-    {
-        "name": "IDEAL",
-        "data": "IDEAL",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": "",
-        "chs": ""
-    },
-    {
-        "name": "CODESEG",
-        "data": "CODESEG",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": "Start of the code segment",
-        "chs": "代码段的开始"
-    },
-    {
-        "name": "MODEL",
-        "data": "MODEL [size]",
-        "allowType": 4,
-        "opCount": 1,
-        "type": 6,
-        "def": "Defines the scope of the file"
-    },
-    {
-        "name": "STACK",
-        "data": "STACK [constant]",
-        "allowType": 2,
-        "opCount": 1,
-        "type": 6,
-        "def": "Sets the size of the stack"
-    },
-    {
-        "name": "mov",
-        "data": "mov [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Moves value from adress/constant/register to a register or adress."
-    },
-    {
-        "name": "int",
-        "data": "int [interruptIndex]",
-        "allowType": 2,
-        "opCount": 1,
-        "type": 2,
-        "def": "Interrupt call see [list]( https://github.com/xsro/masm-tasm/wiki/interrupt_en)"
-    },
-    {
-        "name": "into",
-        "data": "into",
-        "allowType": 2,
-        "opCount": 1,
-        "type": 2,
-        "def": "Trap into overflow flag"
-    },
-    {
-        "name": "nop",
-        "data": "nop",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Do nothing"
-    },
-    {
-        "name": "hlt",
-        "data": "hlt",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Enters halt mode"
-    },
-    {
-        "name": "iret",
-        "data": "iret",
-        "allowType": 2,
-        "opCount": 1,
-        "type": 2,
-        "def": " "
-    },
-    {
-        "name": "cmp",
-        "data": "cmp [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Compares the 2 operands.",
-        "chs": "比较2个操作数"
-    },
-    {
-        "name": "include",
-        "data": "include [fileName]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Includes a file in this file"
-    },
-    {
-        "name": "in",
-        "data": "in [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Reads data from a port",
-        "chs": "从端口读取数据"
-    },
-    {
-        "name": "out",
-        "data": "out [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Writes data to a port",
-        "chs": "向端口写数据"
-    },
-    {
-        "name": "or",
-        "data": "or [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Or operation on 2 registers.",
-        "chs": "或操作."
-    },
-    {
-        "name": "and",
-        "data": "and [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "And operation on 2 registers.",
-        "chs": "与操作."
-    },
-    {
-        "name": "xor",
-        "data": "xor [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Xor operation on 2 register",
-        "chs": "异或操作"
-    },
-    {
-        "name": "shl",
-        "data": "shl [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Moves all the bits to the left by the second operand."
-    },
-    {
-        "name": "xchg",
-        "data": "xchg [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Exchages regeter or memeory address with register."
-    },
-    {
-        "name": "xadd",
-        "data": "xadd [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Exchages regeter or memeory address with register and the summary is moved to SI."
-    },
-    {
-        "name": "cmpxchg",
-        "data": "cmpxchg [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "cmp + xchg."
-    },
-    {
-        "name": "rcl",
-        "data": "rcl [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Rotates left (Carry)."
-    },
-    {
-        "name": "rcl",
-        "data": "rcl [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Rotates left (Carry)."
-    },
-    {
-        "name": "rcr",
-        "data": "rcr [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Rotates right (Carry)."
-    },
-    {
-        "name": "rol",
-        "data": "rol [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Rotates left."
-    },
-    {
-        "name": "ror",
-        "data": "ror [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Rotates right."
-    },
-    {
-        "name": "shld",
-        "data": "shld [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Double precesion shift left."
-    },
-    {
-        "name": "sal",
-        "data": "sal [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Moves all the bits to the left by the second operand. (Signed)"
-    },
-    {
-        "name": "lea",
-        "data": "lea [operand], [operand]",
-        "allowType": 1,
-        "opCount": 2,
-        "type": 2,
-        "def": "Moves the memory address of operand 2 to operand 1."
-    },
-    {
-        "name": "shr",
-        "data": "shr [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Moves all the bits to the right by the second operand."
-    },
-    {
-        "name": "shrd",
-        "data": "shrd [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Double precesion shift right."
-    },
-    {
-        "name": "sar",
-        "data": "sar [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Moves all the bits to the right by the second operand. (Unsigned)"
-    },
-    {
-        "name": "not",
-        "data": "not [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Flips all the bits of the operand"
-    },
-    {
-        "name": "lahf",
-        "data": "lahf",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Move flags to ah (SF:ZF:xx:AF:xx:PF:xx:CF)"
-    },
-    {
-        "name": "sahf",
-        "data": "sahf",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Move ah to flags (SF:ZF:xx:AF:xx:PF:xx:CF)"
-    },
-    {
-        "name": "std",
-        "data": "std",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Set direction flag CF=1"
-    },
-    {
-        "name": "cld",
-        "data": "cld",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Clear direction flag DF=0"
-    },
-    {
-        "name": "sti",
-        "data": "sti",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Set interrupt flag IF=1",
-        "chs": "设置i标为1"
-    },
-    {
-        "name": "cli",
-        "data": "cli",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Clear interrupt flag IF=0",
-        "chs": "设置i标为0"
-    },
-    {
-        "name": "stc",
-        "data": "stc",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Set carry flag CF=1"
-    },
-    {
-        "name": "clc",
-        "data": "clc",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Clear carry flag CF=0"
-    },
-    {
-        "name": "cmc",
-        "data": "cmc",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Complement carry flag CF=!CF"
-    },
-    {
-        "name": "proc",
-        "data": "proc [name]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Creates a new procedure"
-    },
-    {
-        "name": "endp",
-        "data": "endp [name]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Ends a procedure defenition"
-    },
-    {
-        "name": "struc",
-        "data": "struc [name]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Creates a new structure"
-    },
-    {
-        "name": "struct",
-        "data": "struct [name]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Creates a new structure (Not supported)"
-    },
-    {
-        "name": "ends",
-        "data": "ends [name]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Ends a structure defenition"
-    },
-    {
-        "name": "macro",
-        "data": "macro [name]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Creates a new macro"
-    },
-    {
-        "name": "endm",
-        "data": "endm [name]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Ends a macro defenition"
-    },
-    {
-        "name": "equ",
-        "data": "[name] equ [value]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 4,
-        "def": "Replaces all instances of name with value"
-    },
-    {
-        "name": "dup",
-        "data": "[count] dup([values])",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Allocates values count times"
-    },
-    {
-        "name": "end",
-        "data": "end [label]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 4,
-        "def": "Ends the file"
-    },
-    {
-        "name": "label",
-        "data": "label [name] [value]",
-        "allowType": 5,
-        "opCount": 2,
-        "type": 4,
-        "def": "Simple macro"
-    },
-    {
-        "name": "         local",
-        "data": "local [args]...",
-        "allowType": 5,
-        "opCount": -1,
-        "type": 4,
-        "def": "Create local data or labels"
-    },
-    {
-        "name": "if",
-        "data": "if [operand]",
-        "allowType": 1,
-        "opCount": 1,
-        "type": 4,
-        "def": "Compares a value to zero"
-    },
-    {
-        "name": "ife",
-        "data": "ife [operand]",
-        "allowType": 1,
-        "opCount": 1,
-        "type": 4,
-        "def": "If the value is not zero"
-    },
-    {
-        "name": "ifb",
-        "data": "ifb <[operand]>",
-        "allowType": 1,
-        "opCount": 1,
-        "type": 4,
-        "def": " "
-    },
-    {
-        "name": "ifnb",
-        "data": "ifnb <[operand]>",
-        "allowType": 1,
-        "opCount": 1,
-        "type": 4,
-        "def": " "
-    },
-    {
-        "name": "ifdef",
-        "data": "ifdef [operand]",
-        "allowType": 1,
-        "opCount": 1,
-        "type": 4,
-        "def": "If the argument exsits"
-    },
-    {
-        "name": "ifndef",
-        "data": "ifndef [operand]",
-        "allowType": 1,
-        "opCount": 1,
-        "type": 4,
-        "def": "If the argument doesn't exsits"
-    },
-    {
-        "name": "ifdif",
-        "data": "ifdif [operand], [operand]",
-        "allowType": 1,
-        "opCount": 2,
-        "type": 4,
-        "def": "If the arguments are diffrent"
-    },
-    {
-        "name": "ifndif",
-        "data": "ifndif [operand], [operand]",
-        "allowType": 1,
-        "opCount": 2,
-        "type": 4,
-        "def": "If the arguments are identical"
-    },
-    {
-        "name": "if1",
-        "data": "if1",
-        "allowType": 1,
-        "opCount": 0,
-        "type": 4,
-        "def": " "
-    },
-    {
-        "name": "if2",
-        "data": "if2",
-        "allowType": 1,
-        "opCount": 0,
-        "type": 4,
-        "def": " "
-    },
-    {
-        "name": "rept",
-        "data": "rept [operand]",
-        "allowType": 1,
-        "opCount": 1,
-        "type": 4,
-        "def": "Repeats an action a ciretien of times"
-    },
-    {
-        "name": "irp",
-        "data": "rept [operand] <[operands]>",
-        "allowType": 1,
-        "opCount": 2,
-        "type": 4,
-        "def": " "
-    },
-    {
-        "name": "endif",
-        "data": "endif",
-        "allowType": 5,
-        "opCount": 0,
-        "type": 4,
-        "def": "Closes an if statement"
-    },
-    {
-        "name": "else",
-        "data": "else",
-        "allowType": 5,
-        "opCount": 0,
-        "type": 4,
-        "def": "Accurs if the if statement before didn't"
-    },
-    {
-        "name": "width",
-        "data": "width",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": " "
-    },
-    {
-        "name": "this",
-        "data": "this",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": " "
-    },
-    {
-        "name": "times",
-        "data": "times",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": " "
-    },
-    {
-        "name": "length",
-        "data": "length",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": " "
-    },
-    {
-        "name": "le",
-        "data": "le",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": " "
-    },
-    {
-        "name": "ge",
-        "data": "ge",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": " "
-    },
-    {
-        "name": "add",
-        "data": "add [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Adds the second operand to the first one.",
-        "chs": "将第二个操作数加到第一个操作数."
-    },
-    {
-        "name": "sub",
-        "data": "sub [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Subtracts the second operand from the first one.",
-        "chs": "第一个操作数减去第二个操作数."
-    },
-    {
-        "name": "inc",
-        "data": "inc [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Adds 1 to the operand.",
-        "chs": "操作数加1."
-    },
-    {
-        "name": "dec",
-        "data": "dec [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Subtracts 1 from the operand.",
-        "chs": "操作数减1."
-    },
-    {
-        "name": "neg",
-        "data": "neg [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Negates the value of the operand."
-    },
-    {
-        "name": "abs",
-        "data": "abs [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Turns the value to a positive value. (Not supported)",
-        "chs": "取绝对值(Not supported)"
-    },
-    {
-        "name": "mul",
-        "data": "mul [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Multiplies ax by the operand (Unsigned)."
-    },
-    {
-        "name": "imul",
-        "data": "imul [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Multiplies ax by the operand (Signed)."
-    },
-    {
-        "name": "div",
-        "data": "div [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Divides ax by the operand (Unsigned) {Mod at dx (16 bit) or ah (8 bit)}."
-    },
-    {
-        "name": "idiv",
-        "data": "idiv [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Divides ax by the operand (Signed) {Mod at dx (16 bit) or ah (8 bit)}."
-    },
-    {
-        "name": "daa",
-        "data": "daa",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "After addition ajusts al to be in range of a decimal number"
-    },
-    {
-        "name": "das",
-        "data": "das",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "After subtraction ajusts al to be in range of a decimal number"
-    },
-    {
-        "name": "aaa",
-        "data": "aaa",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Ajust al to decimal number (add/sub)"
-    },
-    {
-        "name": "aas",
-        "data": "aas",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Ajust al to decimal number (add/sub)"
-    },
-    {
-        "name": "aam",
-        "data": "aam",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Ajust al to decimal number (mul)"
-    },
-    {
-        "name": "aad",
-        "data": "aad",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Ajust al to decimal number (div)"
-    },
-    {
-        "name": "wait",
-        "data": "wait",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Processor suspends instruction execution until the BUSY # pin is inactive"
-    },
-    {
-        "name": "fwait",
-        "data": "fwait",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Processor checks for pending unmasked numeric exceptions before proceeding."
-    },
-    {
-        "name": "push",
-        "data": "push [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "pushes a value to the stack"
-    },
-    {
-        "name": "pushf",
-        "data": "pushf",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pushes flag data to the stack"
-    },
-    {
-        "name": "pushfw",
-        "data": "pushfw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pushes flag data to the stack"
-    },
-    {
-        "name": "pushfd",
-        "data": "pushfd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pushes flag data to the stack"
-    },
-    {
-        "name": "pop",
-        "data": "pop [operand]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "pops a value from the stack"
-    },
-    {
-        "name": "popf",
-        "data": "popf",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pops flag data to the stack"
-    },
-    {
-        "name": "popfw",
-        "data": "popfw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pops flag data to the stack"
-    },
-    {
-        "name": "popfd",
-        "data": "popfd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pops flag data to the stack"
-    },
-    {
-        "name": "pusha",
-        "data": "pusha",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pushes all register to the stack"
-    },
-    {
-        "name": "popa",
-        "data": "popa",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "pops all register to from the stack stack"
-    },
-    {
-        "name": "jmp",
-        "data": "jmp [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump to a part in the code",
-        "chs": "跳转到给定标号的指令"
-    },
-    {
-        "name": "jz",
-        "alias": [
-            "je"
-        ],
-        "data": "jz [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if zero flag on\n\njump if equal",
-        "chs": "假如z标为1跳转\n\n相等时跳转"
-    },
-    {
-        "name": "jnz",
-        "alias": [
-            "jne"
-        ],
-        "data": "jnz [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if zero flag off\n\njump if not equal",
-        "chs": "假如z标为0跳转\n\n不相等时跳转"
-    },
-    {
-        "name": "js",
-        "data": "js [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if sign flag on",
-        "chs": "假如s标为1跳转"
-    },
-    {
-        "name": "jns",
-        "data": "jns [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if sign flag off",
-        "chs": "假如s标为0跳转"
-    },
-    {
-        "name": "jp",
-        "alias": [
-            "jpe"
-        ],
-        "data": "jp [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if parity flag on",
-        "chs": "假如p标为1跳转"
-    },
-    {
-        "name": "jnp",
-        "alias": [
-            "jpo"
-        ],
-        "data": "jnp [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if parity flag off",
-        "chs": "假如p标为0跳转"
-    },
-    {
-        "name": "jo",
-        "data": "jo [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if Overflow flag on",
-        "chs": "假如o标为1跳转"
-    },
-    {
-        "name": "jno",
-        "data": "jno [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if Overflow flag off",
-        "chs": "假如o标为0跳转"
-    },
-    {
-        "name": "ja",
-        "alias": [
-            "jnbe"
-        ],
-        "data": "ja [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if greater (Unsinged)",
-        "chs": "（无符号数）大于跳转"
-    },
-    {
-        "name": "jna",
-        "alias": [
-            "jbe"
-        ],
-        "data": "ja [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if less or equal(Unsinged)",
-        "chs": "（无符号数）不大于跳转"
-    },
-    {
-        "name": "jc",
-        "alias": [
-            "jb",
-            "jnae"
-        ],
-        "data": "jc [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if less (Unsinged)\n\njump if carry flag on",
-        "chs": "（无符号数）小于跳转"
-    },
-    {
-        "name": "jnc",
-        "alias": [
-            "jnb",
-            "jae"
-        ],
-        "data": "jnc [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if greater or equals(Unsigned)\n\njump if carry flag off",
-        "chs": "（无符号数）不小于跳转"
-    },
-    {
-        "name": "jg",
-        "data": "jg [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if greater (Singed)",
-        "chs": "（有符号数）大于时跳转"
-    },
-    {
-        "name": "jge",
-        "data": "jge [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if greater or equals (Signed)",
-        "chs": "（有符号数）不大于时跳转"
-    },
-    {
-        "name": "jl",
-        "data": "jl [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if less (Singed)",
-        "chs": "（有符号数）小于时跳转"
-    },
-    {
-        "name": "jle",
-        "data": "jle [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if less or equals (Signed)",
-        "chs": "（有符号数）不小于时跳转"
-    },
-    {
-        "name": "jcxz",
-        "data": "jcxz [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if cx is 0",
-        "chs": "假如CX寄存器为0跳转"
-    },
-    {
-        "name": "jecxz",
-        "data": "jcxz [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "jump if ecx is 0",
-        "chs": "假如ECX寄存器为0跳转"
-    },
-    {
-        "name": "call",
-        "data": "call [procName]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Calls a procedure",
-        "chs": "调用子程序"
-    },
-    {
-        "name": "far",
-        "data": "[procName] far",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": "Turns the procedure into a far procedure"
-    },
-    {
-        "name": "near",
-        "data": "[procName] near",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 6,
-        "def": "Turns the procedure into a near procedure"
-    },
-    {
-        "name": "ret",
-        "data": "ret [op:RemoveStack]",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Returns from a procedure",
-        "chs": "从子程序返回"
-    },
-    {
-        "name": "enter",
-        "data": "enter [dynamic], [nesting]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Create dynamic and nested stack",
-        "chs": "Create dynamic and nested stack 创建动态嵌套堆栈"
-    },
-    {
-        "name": "leave",
-        "data": "leave",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "High level ret"
-    },
-    {
-        "name": "les",
-        "data": "les [poiner], [register]",
-        "allowType": 0,
-        "opCount": 2,
-        "type": 2,
-        "def": "Load memory from ES:Pointer 1 to operand 2 from es"
-    },
-    {
-        "name": "lds",
-        "data": "lds [poiner], [register]",
-        "allowType": 0,
-        "opCount": 2,
-        "type": 2,
-        "def": "Load memory from DS:Pointer 1 to operand 2 from ds"
-    },
-    {
-        "name": "lfs",
-        "data": "lfs [poiner], [register]",
-        "allowType": 0,
-        "opCount": 2,
-        "type": 2,
-        "def": "Load memory from FS:Pointer 1 to operand 2 from fs"
-    },
-    {
-        "name": "lgs",
-        "data": "lgs [poiner], [register]",
-        "allowType": 0,
-        "opCount": 2,
-        "type": 2,
-        "def": "Load memory from GS:Pointer 1 to operand 2 from gs"
-    },
-    {
-        "name": "lss",
-        "data": "lss [poiner], [register]",
-        "allowType": 0,
-        "opCount": 2,
-        "type": 2,
-        "def": "Load memory from SS:Pointer to operand 2 from ss"
-    },
-    {
-        "name": "st0",
-        "data": "st0",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 0"
-    },
-    {
-        "name": "st1",
-        "data": "st1",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 1"
-    },
-    {
-        "name": "st2",
-        "data": "st2",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 2"
-    },
-    {
-        "name": "st3",
-        "data": "st3",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 3"
-    },
-    {
-        "name": "st4",
-        "data": "st4",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 4"
-    },
-    {
-        "name": "st5",
-        "data": "st5",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 5"
-    },
-    {
-        "name": "st6",
-        "data": "st6",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 6"
-    },
-    {
-        "name": "st7",
-        "data": "st7",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register 7"
-    },
-    {
-        "name": "st",
-        "data": "st",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Floting point register"
-    },
-    {
-        "name": "db0",
-        "data": "db0",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Debug register 0"
-    },
-    {
-        "name": "db1",
-        "data": "db1",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Debug register 1"
-    },
-    {
-        "name": "db2",
-        "data": "db2",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Debug register 2"
-    },
-    {
-        "name": "db3",
-        "data": "db3",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Debug register 3"
-    },
-    {
-        "name": "tr6",
-        "data": "tr6",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Test register 4"
-    },
-    {
-        "name": "tr7",
-        "data": "tr7",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Test register 5"
-    },
-    {
-        "name": "db6",
-        "data": "db6",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Debug register 6"
-    },
-    {
-        "name": "db7",
-        "data": "db7",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 3,
-        "def": "Debug register 7"
-    },
-    {
-        "name": "rep",
-        "data": "rep [operation]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Repeat while equals",
-        "chs": "Repeat while equals 相等时重复"
-    },
-    {
-        "name": "repz",
-        "data": "repz [operation]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Repeat while zero",
-        "chs": "Repeat while zero 不等于零的时候重复"
-    },
-    {
-        "name": "repnz",
-        "data": "repnz [operation]",
-        "allowType": 6,
-        "opCount": 1,
-        "type": 2,
-        "def": "Repeat while not zero",
-        "chs": "Repeat while not zero 非零时重复"
-    },
-    {
-        "name": "xlat",
-        "data": "xlat",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Table lookup to al",
-        "chs": "Table lookup to al al表查找"
-    },
-    {
-        "name": "bound",
-        "data": "bound [operand], [operand]",
-        "allowType": 6,
-        "opCount": 2,
-        "type": 2,
-        "def": "Check the 16-bit signed array index value in the operand 1 against the doubleword with the upper and lower bounds specified by operand 2"
-    },
-    {
-        "name": "scas",
-        "data": "scas",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with AX or AL"
-    },
-    {
-        "name": "scasb",
-        "data": "scasb",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with AL"
-    },
-    {
-        "name": "scasw",
-        "data": "scasw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with AX"
-    },
-    {
-        "name": "scasd",
-        "data": "scasd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with EAX (Not supported)"
-    },
-    {
-        "name": "cmps",
-        "data": "cmps",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with ES:SI"
-    },
-    {
-        "name": "cmpsb",
-        "data": "cmpsb",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with ES:SI (Byte)"
-    },
-    {
-        "name": "cmpsw",
-        "data": "cmpsw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with ES:SI"
-    },
-    {
-        "name": "cmpsd",
-        "data": "cmpsd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Compare ES:DI with ES:SI (32 bit)"
-    },
-    {
-        "name": "stos",
-        "data": "stos",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets ES:DI to AX AL"
-    },
-    {
-        "name": "stosb",
-        "data": "stosb",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets ES:DI to AL"
-    },
-    {
-        "name": "stosw",
-        "data": "stosw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets ES:DI to AX"
-    },
-    {
-        "name": "stosd",
-        "data": "stosd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets ES:DI to EAX  (Not supported)"
-    },
-    {
-        "name": "lods",
-        "data": "lods",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets Ax to ES:DI"
-    },
-    {
-        "name": "lodsb",
-        "data": "lodsb",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets AL to ES:DI"
-    },
-    {
-        "name": "lodsw",
-        "data": "lodsw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets AX to ES:DI"
-    },
-    {
-        "name": "lodsd",
-        "data": "lodsd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets EAX to ES:DI 32-bit (Not supported)"
-    },
-    {
-        "name": "outs",
-        "data": "outs",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": " "
-    },
-    {
-        "name": "outsb",
-        "data": "outsb",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "ES:DI -> DL"
-    },
-    {
-        "name": "outsw",
-        "data": "outsw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "ES:DI -> DX"
-    },
-    {
-        "name": "outsd",
-        "data": "outsd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "ES:DI -> EDX (Not supported)"
-    },
-    {
-        "name": "ins",
-        "data": "ins",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": " "
-    },
-    {
-        "name": "insb",
-        "data": "insb",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "ES:DI <- DL"
-    },
-    {
-        "name": "insw",
-        "data": "insw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "ES:DI <- DX"
-    },
-    {
-        "name": "insd",
-        "data": "insd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "ES:DI <- EDX (Not supported)"
-    },
-    {
-        "name": "movs",
-        "data": "movs",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets Ax to ES:DI"
-    },
-    {
-        "name": "movsb",
-        "data": "movsb",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets AL to ES:DI"
-    },
-    {
-        "name": "movsw",
-        "data": "movsw",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets AX to ES:DI"
-    },
-    {
-        "name": "movsd",
-        "data": "movsd",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "Sets EAX to ES:DI 32-bit (Not supported)"
-    },
-    {
-        "name": "req",
-        "data": "req",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "(Not supported)"
-    },
-    {
-        "name": "c",
-        "data": "c",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "(Not supported)"
-    },
-    {
-        "name": "wrt",
-        "data": "wrt",
-        "allowType": 6,
-        "opCount": 0,
-        "type": 2,
-        "def": "(Not supported)"
-    },
-    {
-        "name": "loop",
-        "data": "loop [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "- decrease `CX`\n\n- Jumps to a label if cx is not 0"
-    },
-    {
-        "name": "loopz",
-        "alias": [
-            "loope"
-        ],
-        "data": "loope [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** Zero flag is 1"
-    },
-    {
-        "name": "loopnz",
-        "alias": [
-            "loopne"
-        ],
-        "data": "loopz [label]",
-        "allowType": 8,
-        "opCount": 1,
-        "type": 2,
-        "def": "- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** zero flag is not 1"
-    }
-]
+{
+    "$schema": null,
+    "keywords": [
+        {
+            "name": "small",
+            "synopsis": "small",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "128KB"
+        },
+        {
+            "name": "tiny",
+            "synopsis": "tiny",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "64KB"
+        },
+        {
+            "name": "compact",
+            "synopsis": "compact",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "640KB"
+        },
+        {
+            "name": "huge",
+            "synopsis": "huge",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "640KB"
+        },
+        {
+            "name": "medium",
+            "synopsis": "medium",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "640KB"
+        },
+        {
+            "name": "large",
+            "synopsis": "large",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "640KB"
+        },
+        {
+            "name": "flat",
+            "synopsis": "flat",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "4GB (Not supported with TASM)"
+        },
+        {
+            "name": "stdcall",
+            "synopsis": "stdcall",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 7,
+            "description": "Can be included in another file"
+        },
+        {
+            "name": "al",
+            "synopsis": "al",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The lower byte of ax",
+            "chs": "寄存器AX的低八位"
+        },
+        {
+            "name": "ah",
+            "synopsis": "ah",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The upper byte of ax",
+            "chs": "寄存器AX的高八位"
+        },
+        {
+            "name": "bl",
+            "synopsis": "bl",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The lower byte of bx",
+            "chs": "寄存器BX的低八位"
+        },
+        {
+            "name": "bh",
+            "synopsis": "bh",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The upper byte of bx",
+            "chs": "寄存器BX的高八位"
+        },
+        {
+            "name": "cl",
+            "synopsis": "cl",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The lower byte of cx",
+            "chs": "寄存器CX的低八位"
+        },
+        {
+            "name": "ch",
+            "synopsis": "ch",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The upper byte of cx",
+            "chs": "寄存器CX的高八位"
+        },
+        {
+            "name": "dl",
+            "synopsis": "dl",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The lower byte of dx",
+            "chs": "寄存器DX的低八位"
+        },
+        {
+            "name": "dh",
+            "synopsis": "dh",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "The upper byte of dx",
+            "chs": "寄存器DX的高八位"
+        },
+        {
+            "name": "ax",
+            "synopsis": "ax",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register used with arithmatic operations",
+            "chs": "16位累加器"
+        },
+        {
+            "name": "bx",
+            "synopsis": "bx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register used to acess memory data",
+            "chs": "16位基址寄存器"
+        },
+        {
+            "name": "cx",
+            "synopsis": "cx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register used with loops",
+            "chs": "16位计数器"
+        },
+        {
+            "name": "dx",
+            "synopsis": "dx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register used with data mangment",
+            "chs": "16位数据寄存器"
+        },
+        {
+            "name": "sp",
+            "synopsis": "sp",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register that points at the stack",
+            "chs": "16位堆栈指针寄存器"
+        },
+        {
+            "name": "bp",
+            "synopsis": "bp",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register that is used to pass arguments",
+            "chs": "16位基址指针寄存器"
+        },
+        {
+            "name": "di",
+            "synopsis": "di",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register used to acess memory data",
+            "chs": "16位目的变址寄存器"
+        },
+        {
+            "name": "si",
+            "synopsis": "si",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "16 bit register used to acess memory data",
+            "chs": "16位源变址寄存器"
+        },
+        {
+            "name": "eax",
+            "synopsis": "eax",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register used with arithmatic operations",
+            "chs": "32位累加寄存器器"
+        },
+        {
+            "name": "ebx",
+            "synopsis": "ebx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register used to acess memory data",
+            "chs": "32位基址寄存器"
+        },
+        {
+            "name": "ecx",
+            "synopsis": "ecx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register used with loops",
+            "chs": "32位计数器"
+        },
+        {
+            "name": "edx",
+            "synopsis": "edx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register used with data mangment",
+            "chs": "32位数据寄存器"
+        },
+        {
+            "name": "esp",
+            "synopsis": "esp",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register that points at the stack",
+            "chs": "32位堆栈指针寄存器"
+        },
+        {
+            "name": "ebp",
+            "synopsis": "ebp",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register that is used to pass arguments",
+            "chs": "32位基址指针寄存器"
+        },
+        {
+            "name": "edi",
+            "synopsis": "edi",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register used to acess memory data",
+            "chs": "32位目的变址寄存器"
+        },
+        {
+            "name": "esi",
+            "synopsis": "esi",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "32 bit register used to acess memory data",
+            "chs": "32位源变址寄存器"
+        },
+        {
+            "name": "rax",
+            "synopsis": "rax",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register used with arithmatic operations",
+            "chs": "64位累加器"
+        },
+        {
+            "name": "rbx",
+            "synopsis": "rbx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register used to acess memory data",
+            "chs": "64位基址寄存器"
+        },
+        {
+            "name": "rcx",
+            "synopsis": "rcx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register used with loops",
+            "chs": "64位计数器"
+        },
+        {
+            "name": "rdx",
+            "synopsis": "rdx",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register used with data mangment",
+            "chs": "64位数据寄存器"
+        },
+        {
+            "name": "rsp",
+            "synopsis": "rsp",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register that points at the stack",
+            "chs": "64位堆栈指针寄存器"
+        },
+        {
+            "name": "rbp",
+            "synopsis": "rbp",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register that is used to pass arguments",
+            "chs": "64位基址指针寄存器"
+        },
+        {
+            "name": "rdi",
+            "synopsis": "rdi",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register used to acess memory data",
+            "chs": "64位目的变址寄存器"
+        },
+        {
+            "name": "rsi",
+            "synopsis": "rsi",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "64 bit register used to acess memory data",
+            "chs": "64位源变址寄存器"
+        },
+        {
+            "name": "db",
+            "synopsis": "[name] db [value]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 5,
+            "description": "Allocates a byte of memory",
+            "chs": "分配1字节存储空间"
+        },
+        {
+            "name": "dw",
+            "synopsis": "[name] dw [value]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 5,
+            "description": "Allocates 2 byte of memory (Word)",
+            "chs": "分配2字节存储空间"
+        },
+        {
+            "name": "dd",
+            "synopsis": "[name] dd [value]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 5,
+            "description": "Allocates 4 byte of memory (Double Word)",
+            "chs": "分配4字节存储空间（双字）"
+        },
+        {
+            "name": "dq",
+            "synopsis": "[name] dq [value]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 5,
+            "description": "Allocates 8 byte of memory (Quad Word)",
+            "chs": "分配8字节存储空间 (四字)"
+        },
+        {
+            "name": "dt",
+            "synopsis": "[name] dt [value]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 5,
+            "description": "Allocates 10 byte of memory ",
+            "chs": "分配10字节存储空间"
+        },
+        {
+            "name": "byte",
+            "synopsis": "byte",
+            "allowType": 6,
+            "opCount": -1,
+            "type": 5,
+            "description": "Locates 1 byte of memory"
+        },
+        {
+            "name": "word",
+            "synopsis": "word",
+            "allowType": 6,
+            "opCount": -1,
+            "type": 5,
+            "description": "Locates 2 byte of memory (Word)"
+        },
+        {
+            "name": "dword",
+            "synopsis": "dword",
+            "allowType": 6,
+            "opCount": -1,
+            "type": 5,
+            "description": "Locates 4 byte of memory (Double Word)"
+        },
+        {
+            "name": "qword",
+            "synopsis": "qword",
+            "allowType": 6,
+            "opCount": -1,
+            "type": 5,
+            "description": "Locates 8 byte of memory (Quad Word)"
+        },
+        {
+            "name": "tbyte",
+            "synopsis": "tbyte",
+            "allowType": 6,
+            "opCount": -1,
+            "type": 5,
+            "description": "Locates 10 byte of memory "
+        },
+        {
+            "name": "cs",
+            "synopsis": "cs",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Code segement address",
+            "chs": "代码段寄存器"
+        },
+        {
+            "name": "ss",
+            "synopsis": "ss",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Stack segement address",
+            "chs": "堆栈段寄存器"
+        },
+        {
+            "name": "ds",
+            "synopsis": "ds",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Data segement address",
+            "chs": "数据段寄存器"
+        },
+        {
+            "name": "es",
+            "synopsis": "es",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Extra segement address",
+            "chs": "附加段寄存器"
+        },
+        {
+            "name": "DATASEG",
+            "synopsis": "DATASEG",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": "Start of the data segment",
+            "chs": "数据段的开始"
+        },
+        {
+            "name": "IDEAL",
+            "synopsis": "IDEAL",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": "",
+            "chs": ""
+        },
+        {
+            "name": "CODESEG",
+            "synopsis": "CODESEG",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": "Start of the code segment",
+            "chs": "代码段的开始"
+        },
+        {
+            "name": "MODEL",
+            "synopsis": "MODEL [size]",
+            "allowType": 4,
+            "opCount": 1,
+            "type": 6,
+            "description": "Defines the scope of the file"
+        },
+        {
+            "name": "STACK",
+            "synopsis": "STACK [constant]",
+            "allowType": 2,
+            "opCount": 1,
+            "type": 6,
+            "description": "Sets the size of the stack"
+        },
+        {
+            "name": "mov",
+            "synopsis": "mov [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Moves value from adress/constant/register to a register or adress."
+        },
+        {
+            "name": "int",
+            "synopsis": "int [interruptIndex]",
+            "allowType": 2,
+            "opCount": 1,
+            "type": 2,
+            "description": "Interrupt call see [list]( https://github.com/xsro/masm-tasm/wiki/interrupt_en)"
+        },
+        {
+            "name": "into",
+            "synopsis": "into",
+            "allowType": 2,
+            "opCount": 1,
+            "type": 2,
+            "description": "Trap into overflow flag"
+        },
+        {
+            "name": "nop",
+            "synopsis": "nop",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Do nothing"
+        },
+        {
+            "name": "hlt",
+            "synopsis": "hlt",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Enters halt mode"
+        },
+        {
+            "name": "iret",
+            "synopsis": "iret",
+            "allowType": 2,
+            "opCount": 1,
+            "type": 2,
+            "description": " "
+        },
+        {
+            "name": "cmp",
+            "synopsis": "cmp [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Compares the 2 operands.",
+            "chs": "比较2个操作数"
+        },
+        {
+            "name": "include",
+            "synopsis": "include [fileName]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Includes a file in this file"
+        },
+        {
+            "name": "in",
+            "synopsis": "in [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Reads data from a port",
+            "chs": "从端口读取数据"
+        },
+        {
+            "name": "out",
+            "synopsis": "out [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Writes data to a port",
+            "chs": "向端口写数据"
+        },
+        {
+            "name": "or",
+            "synopsis": "or [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Or operation on 2 registers.",
+            "chs": "或操作."
+        },
+        {
+            "name": "and",
+            "synopsis": "and [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "And operation on 2 registers.",
+            "chs": "与操作."
+        },
+        {
+            "name": "xor",
+            "synopsis": "xor [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Xor operation on 2 register",
+            "chs": "异或操作"
+        },
+        {
+            "name": "shl",
+            "synopsis": "shl [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Moves all the bits to the left by the second operand."
+        },
+        {
+            "name": "xchg",
+            "synopsis": "xchg [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Exchages regeter or memeory address with register."
+        },
+        {
+            "name": "xadd",
+            "synopsis": "xadd [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Exchages regeter or memeory address with register and the summary is moved to SI."
+        },
+        {
+            "name": "cmpxchg",
+            "synopsis": "cmpxchg [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "cmp + xchg."
+        },
+        {
+            "name": "rcl",
+            "synopsis": "rcl [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Rotates left (Carry)."
+        },
+        {
+            "name": "rcl",
+            "synopsis": "rcl [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Rotates left (Carry)."
+        },
+        {
+            "name": "rcr",
+            "synopsis": "rcr [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Rotates right (Carry)."
+        },
+        {
+            "name": "rol",
+            "synopsis": "rol [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Rotates left."
+        },
+        {
+            "name": "ror",
+            "synopsis": "ror [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Rotates right."
+        },
+        {
+            "name": "shld",
+            "synopsis": "shld [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Double precesion shift left."
+        },
+        {
+            "name": "sal",
+            "synopsis": "sal [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Moves all the bits to the left by the second operand. (Signed)"
+        },
+        {
+            "name": "lea",
+            "synopsis": "lea [operand], [operand]",
+            "allowType": 1,
+            "opCount": 2,
+            "type": 2,
+            "description": "Moves the memory address of operand 2 to operand 1."
+        },
+        {
+            "name": "shr",
+            "synopsis": "shr [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Moves all the bits to the right by the second operand."
+        },
+        {
+            "name": "shrd",
+            "synopsis": "shrd [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Double precesion shift right."
+        },
+        {
+            "name": "sar",
+            "synopsis": "sar [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Moves all the bits to the right by the second operand. (Unsigned)"
+        },
+        {
+            "name": "not",
+            "synopsis": "not [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Flips all the bits of the operand"
+        },
+        {
+            "name": "lahf",
+            "synopsis": "lahf",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Move flags to ah (SF:ZF:xx:AF:xx:PF:xx:CF)"
+        },
+        {
+            "name": "sahf",
+            "synopsis": "sahf",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Move ah to flags (SF:ZF:xx:AF:xx:PF:xx:CF)"
+        },
+        {
+            "name": "std",
+            "synopsis": "std",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Set direction flag CF=1"
+        },
+        {
+            "name": "cld",
+            "synopsis": "cld",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Clear direction flag DF=0"
+        },
+        {
+            "name": "sti",
+            "synopsis": "sti",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Set interrupt flag IF=1",
+            "chs": "设置i标为1"
+        },
+        {
+            "name": "cli",
+            "synopsis": "cli",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Clear interrupt flag IF=0",
+            "chs": "设置i标为0"
+        },
+        {
+            "name": "stc",
+            "synopsis": "stc",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Set carry flag CF=1"
+        },
+        {
+            "name": "clc",
+            "synopsis": "clc",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Clear carry flag CF=0"
+        },
+        {
+            "name": "cmc",
+            "synopsis": "cmc",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Complement carry flag CF=!CF"
+        },
+        {
+            "name": "proc",
+            "synopsis": "proc [name]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Creates a new procedure"
+        },
+        {
+            "name": "endp",
+            "synopsis": "endp [name]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Ends a procedure defenition"
+        },
+        {
+            "name": "struc",
+            "synopsis": "struc [name]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Creates a new structure"
+        },
+        {
+            "name": "struct",
+            "synopsis": "struct [name]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Creates a new structure (Not supported)"
+        },
+        {
+            "name": "ends",
+            "synopsis": "ends [name]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Ends a structure defenition"
+        },
+        {
+            "name": "macro",
+            "synopsis": "macro [name]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Creates a new macro"
+        },
+        {
+            "name": "endm",
+            "synopsis": "endm [name]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Ends a macro defenition"
+        },
+        {
+            "name": "equ",
+            "synopsis": "[name] equ [value]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 4,
+            "description": "Replaces all instances of name with value"
+        },
+        {
+            "name": "dup",
+            "synopsis": "[count] dup([values])",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Allocates values count times"
+        },
+        {
+            "name": "end",
+            "synopsis": "end [label]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 4,
+            "description": "Ends the file"
+        },
+        {
+            "name": "label",
+            "synopsis": "label [name] [value]",
+            "allowType": 5,
+            "opCount": 2,
+            "type": 4,
+            "description": "Simple macro"
+        },
+        {
+            "name": "         local",
+            "synopsis": "local [args]...",
+            "allowType": 5,
+            "opCount": -1,
+            "type": 4,
+            "description": "Create local data or labels"
+        },
+        {
+            "name": "if",
+            "synopsis": "if [operand]",
+            "allowType": 1,
+            "opCount": 1,
+            "type": 4,
+            "description": "Compares a value to zero"
+        },
+        {
+            "name": "ife",
+            "synopsis": "ife [operand]",
+            "allowType": 1,
+            "opCount": 1,
+            "type": 4,
+            "description": "If the value is not zero"
+        },
+        {
+            "name": "ifb",
+            "synopsis": "ifb <[operand]>",
+            "allowType": 1,
+            "opCount": 1,
+            "type": 4,
+            "description": " "
+        },
+        {
+            "name": "ifnb",
+            "synopsis": "ifnb <[operand]>",
+            "allowType": 1,
+            "opCount": 1,
+            "type": 4,
+            "description": " "
+        },
+        {
+            "name": "ifdef",
+            "synopsis": "ifdef [operand]",
+            "allowType": 1,
+            "opCount": 1,
+            "type": 4,
+            "description": "If the argument exsits"
+        },
+        {
+            "name": "ifndef",
+            "synopsis": "ifndef [operand]",
+            "allowType": 1,
+            "opCount": 1,
+            "type": 4,
+            "description": "If the argument doesn't exsits"
+        },
+        {
+            "name": "ifdif",
+            "synopsis": "ifdif [operand], [operand]",
+            "allowType": 1,
+            "opCount": 2,
+            "type": 4,
+            "description": "If the arguments are diffrent"
+        },
+        {
+            "name": "ifndif",
+            "synopsis": "ifndif [operand], [operand]",
+            "allowType": 1,
+            "opCount": 2,
+            "type": 4,
+            "description": "If the arguments are identical"
+        },
+        {
+            "name": "if1",
+            "synopsis": "if1",
+            "allowType": 1,
+            "opCount": 0,
+            "type": 4,
+            "description": " "
+        },
+        {
+            "name": "if2",
+            "synopsis": "if2",
+            "allowType": 1,
+            "opCount": 0,
+            "type": 4,
+            "description": " "
+        },
+        {
+            "name": "rept",
+            "synopsis": "rept [operand]",
+            "allowType": 1,
+            "opCount": 1,
+            "type": 4,
+            "description": "Repeats an action a ciretien of times"
+        },
+        {
+            "name": "irp",
+            "synopsis": "rept [operand] <[operands]>",
+            "allowType": 1,
+            "opCount": 2,
+            "type": 4,
+            "description": " "
+        },
+        {
+            "name": "endif",
+            "synopsis": "endif",
+            "allowType": 5,
+            "opCount": 0,
+            "type": 4,
+            "description": "Closes an if statement"
+        },
+        {
+            "name": "else",
+            "synopsis": "else",
+            "allowType": 5,
+            "opCount": 0,
+            "type": 4,
+            "description": "Accurs if the if statement before didn't"
+        },
+        {
+            "name": "width",
+            "synopsis": "width",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": " "
+        },
+        {
+            "name": "this",
+            "synopsis": "this",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": " "
+        },
+        {
+            "name": "times",
+            "synopsis": "times",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": " "
+        },
+        {
+            "name": "length",
+            "synopsis": "length",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": " "
+        },
+        {
+            "name": "le",
+            "synopsis": "le",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": " "
+        },
+        {
+            "name": "ge",
+            "synopsis": "ge",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": " "
+        },
+        {
+            "name": "add",
+            "synopsis": "add [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Adds the second operand to the first one.",
+            "chs": "将第二个操作数加到第一个操作数."
+        },
+        {
+            "name": "sub",
+            "synopsis": "sub [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Subtracts the second operand from the first one.",
+            "chs": "第一个操作数减去第二个操作数."
+        },
+        {
+            "name": "inc",
+            "synopsis": "inc [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Adds 1 to the operand.",
+            "chs": "操作数加1."
+        },
+        {
+            "name": "dec",
+            "synopsis": "dec [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Subtracts 1 from the operand.",
+            "chs": "操作数减1."
+        },
+        {
+            "name": "neg",
+            "synopsis": "neg [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Negates the value of the operand."
+        },
+        {
+            "name": "abs",
+            "synopsis": "abs [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Turns the value to a positive value. (Not supported)",
+            "chs": "取绝对值(Not supported)"
+        },
+        {
+            "name": "mul",
+            "synopsis": "mul [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Multiplies ax by the operand (Unsigned)."
+        },
+        {
+            "name": "imul",
+            "synopsis": "imul [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Multiplies ax by the operand (Signed)."
+        },
+        {
+            "name": "div",
+            "synopsis": "div [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Divides ax by the operand (Unsigned) {Mod at dx (16 bit) or ah (8 bit)}."
+        },
+        {
+            "name": "idiv",
+            "synopsis": "idiv [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Divides ax by the operand (Signed) {Mod at dx (16 bit) or ah (8 bit)}."
+        },
+        {
+            "name": "daa",
+            "synopsis": "daa",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "After addition ajusts al to be in range of a decimal number"
+        },
+        {
+            "name": "das",
+            "synopsis": "das",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "After subtraction ajusts al to be in range of a decimal number"
+        },
+        {
+            "name": "aaa",
+            "synopsis": "aaa",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Ajust al to decimal number (add/sub)"
+        },
+        {
+            "name": "aas",
+            "synopsis": "aas",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Ajust al to decimal number (add/sub)"
+        },
+        {
+            "name": "aam",
+            "synopsis": "aam",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Ajust al to decimal number (mul)"
+        },
+        {
+            "name": "aad",
+            "synopsis": "aad",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Ajust al to decimal number (div)"
+        },
+        {
+            "name": "wait",
+            "synopsis": "wait",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Processor suspends instruction execution until the BUSY # pin is inactive"
+        },
+        {
+            "name": "fwait",
+            "synopsis": "fwait",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Processor checks for pending unmasked numeric exceptions before proceeding."
+        },
+        {
+            "name": "push",
+            "synopsis": "push [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "pushes a value to the stack"
+        },
+        {
+            "name": "pushf",
+            "synopsis": "pushf",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pushes flag data to the stack"
+        },
+        {
+            "name": "pushfw",
+            "synopsis": "pushfw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pushes flag data to the stack"
+        },
+        {
+            "name": "pushfd",
+            "synopsis": "pushfd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pushes flag data to the stack"
+        },
+        {
+            "name": "pop",
+            "synopsis": "pop [operand]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "pops a value from the stack"
+        },
+        {
+            "name": "popf",
+            "synopsis": "popf",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pops flag data to the stack"
+        },
+        {
+            "name": "popfw",
+            "synopsis": "popfw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pops flag data to the stack"
+        },
+        {
+            "name": "popfd",
+            "synopsis": "popfd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pops flag data to the stack"
+        },
+        {
+            "name": "pusha",
+            "synopsis": "pusha",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pushes all register to the stack"
+        },
+        {
+            "name": "popa",
+            "synopsis": "popa",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "pops all register to from the stack stack"
+        },
+        {
+            "name": "jmp",
+            "synopsis": "jmp [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump to a part in the code",
+            "chs": "跳转到给定标号的指令"
+        },
+        {
+            "name": "jz",
+            "alias": [
+                "je"
+            ],
+            "synopsis": "jz [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if zero flag on\n\njump if equal",
+            "chs": "假如z标为1跳转\n\n相等时跳转"
+        },
+        {
+            "name": "jnz",
+            "alias": [
+                "jne"
+            ],
+            "synopsis": "jnz [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if zero flag off\n\njump if not equal",
+            "chs": "假如z标为0跳转\n\n不相等时跳转"
+        },
+        {
+            "name": "js",
+            "synopsis": "js [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if sign flag on",
+            "chs": "假如s标为1跳转"
+        },
+        {
+            "name": "jns",
+            "synopsis": "jns [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if sign flag off",
+            "chs": "假如s标为0跳转"
+        },
+        {
+            "name": "jp",
+            "alias": [
+                "jpe"
+            ],
+            "synopsis": "jp [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if parity flag on",
+            "chs": "假如p标为1跳转"
+        },
+        {
+            "name": "jnp",
+            "alias": [
+                "jpo"
+            ],
+            "synopsis": "jnp [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if parity flag off",
+            "chs": "假如p标为0跳转"
+        },
+        {
+            "name": "jo",
+            "synopsis": "jo [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if Overflow flag on",
+            "chs": "假如o标为1跳转"
+        },
+        {
+            "name": "jno",
+            "synopsis": "jno [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if Overflow flag off",
+            "chs": "假如o标为0跳转"
+        },
+        {
+            "name": "ja",
+            "alias": [
+                "jnbe"
+            ],
+            "synopsis": "ja [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if greater (Unsinged)",
+            "chs": "（无符号数）大于跳转"
+        },
+        {
+            "name": "jna",
+            "alias": [
+                "jbe"
+            ],
+            "synopsis": "ja [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if less or equal(Unsinged)",
+            "chs": "（无符号数）不大于跳转"
+        },
+        {
+            "name": "jc",
+            "alias": [
+                "jb",
+                "jnae"
+            ],
+            "synopsis": "jc [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if less (Unsinged)\n\njump if carry flag on",
+            "chs": "（无符号数）小于跳转"
+        },
+        {
+            "name": "jnc",
+            "alias": [
+                "jnb",
+                "jae"
+            ],
+            "synopsis": "jnc [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if greater or equals(Unsigned)\n\njump if carry flag off",
+            "chs": "（无符号数）不小于跳转"
+        },
+        {
+            "name": "jg",
+            "synopsis": "jg [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if greater (Singed)",
+            "chs": "（有符号数）大于时跳转"
+        },
+        {
+            "name": "jge",
+            "synopsis": "jge [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if greater or equals (Signed)",
+            "chs": "（有符号数）不大于时跳转"
+        },
+        {
+            "name": "jl",
+            "synopsis": "jl [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if less (Singed)",
+            "chs": "（有符号数）小于时跳转"
+        },
+        {
+            "name": "jle",
+            "synopsis": "jle [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if less or equals (Signed)",
+            "chs": "（有符号数）不小于时跳转"
+        },
+        {
+            "name": "jcxz",
+            "synopsis": "jcxz [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if cx is 0",
+            "chs": "假如CX寄存器为0跳转"
+        },
+        {
+            "name": "jecxz",
+            "synopsis": "jcxz [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "jump if ecx is 0",
+            "chs": "假如ECX寄存器为0跳转"
+        },
+        {
+            "name": "call",
+            "synopsis": "call [procName]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Calls a procedure",
+            "chs": "调用子程序"
+        },
+        {
+            "name": "far",
+            "synopsis": "[procName] far",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": "Turns the procedure into a far procedure"
+        },
+        {
+            "name": "near",
+            "synopsis": "[procName] near",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 6,
+            "description": "Turns the procedure into a near procedure"
+        },
+        {
+            "name": "ret",
+            "synopsis": "ret [op:RemoveStack]",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Returns from a procedure",
+            "chs": "从子程序返回"
+        },
+        {
+            "name": "enter",
+            "synopsis": "enter [dynamic], [nesting]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Create dynamic and nested stack",
+            "chs": "Create dynamic and nested stack 创建动态嵌套堆栈"
+        },
+        {
+            "name": "leave",
+            "synopsis": "leave",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "High level ret"
+        },
+        {
+            "name": "les",
+            "synopsis": "les [poiner], [register]",
+            "allowType": 0,
+            "opCount": 2,
+            "type": 2,
+            "description": "Load memory from ES:Pointer 1 to operand 2 from es"
+        },
+        {
+            "name": "lds",
+            "synopsis": "lds [poiner], [register]",
+            "allowType": 0,
+            "opCount": 2,
+            "type": 2,
+            "description": "Load memory from DS:Pointer 1 to operand 2 from ds"
+        },
+        {
+            "name": "lfs",
+            "synopsis": "lfs [poiner], [register]",
+            "allowType": 0,
+            "opCount": 2,
+            "type": 2,
+            "description": "Load memory from FS:Pointer 1 to operand 2 from fs"
+        },
+        {
+            "name": "lgs",
+            "synopsis": "lgs [poiner], [register]",
+            "allowType": 0,
+            "opCount": 2,
+            "type": 2,
+            "description": "Load memory from GS:Pointer 1 to operand 2 from gs"
+        },
+        {
+            "name": "lss",
+            "synopsis": "lss [poiner], [register]",
+            "allowType": 0,
+            "opCount": 2,
+            "type": 2,
+            "description": "Load memory from SS:Pointer to operand 2 from ss"
+        },
+        {
+            "name": "st0",
+            "synopsis": "st0",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 0"
+        },
+        {
+            "name": "st1",
+            "synopsis": "st1",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 1"
+        },
+        {
+            "name": "st2",
+            "synopsis": "st2",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 2"
+        },
+        {
+            "name": "st3",
+            "synopsis": "st3",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 3"
+        },
+        {
+            "name": "st4",
+            "synopsis": "st4",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 4"
+        },
+        {
+            "name": "st5",
+            "synopsis": "st5",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 5"
+        },
+        {
+            "name": "st6",
+            "synopsis": "st6",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 6"
+        },
+        {
+            "name": "st7",
+            "synopsis": "st7",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register 7"
+        },
+        {
+            "name": "st",
+            "synopsis": "st",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Floting point register"
+        },
+        {
+            "name": "db0",
+            "synopsis": "db0",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Debug register 0"
+        },
+        {
+            "name": "db1",
+            "synopsis": "db1",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Debug register 1"
+        },
+        {
+            "name": "db2",
+            "synopsis": "db2",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Debug register 2"
+        },
+        {
+            "name": "db3",
+            "synopsis": "db3",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Debug register 3"
+        },
+        {
+            "name": "tr6",
+            "synopsis": "tr6",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Test register 4"
+        },
+        {
+            "name": "tr7",
+            "synopsis": "tr7",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Test register 5"
+        },
+        {
+            "name": "db6",
+            "synopsis": "db6",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Debug register 6"
+        },
+        {
+            "name": "db7",
+            "synopsis": "db7",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 3,
+            "description": "Debug register 7"
+        },
+        {
+            "name": "rep",
+            "synopsis": "rep [operation]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Repeat while equals",
+            "chs": "Repeat while equals 相等时重复"
+        },
+        {
+            "name": "repz",
+            "synopsis": "repz [operation]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Repeat while zero",
+            "chs": "Repeat while zero 不等于零的时候重复"
+        },
+        {
+            "name": "repnz",
+            "synopsis": "repnz [operation]",
+            "allowType": 6,
+            "opCount": 1,
+            "type": 2,
+            "description": "Repeat while not zero",
+            "chs": "Repeat while not zero 非零时重复"
+        },
+        {
+            "name": "xlat",
+            "synopsis": "xlat",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Table lookup to al",
+            "chs": "Table lookup to al al表查找"
+        },
+        {
+            "name": "bound",
+            "synopsis": "bound [operand], [operand]",
+            "allowType": 6,
+            "opCount": 2,
+            "type": 2,
+            "description": "Check the 16-bit signed array index value in the operand 1 against the doubleword with the upper and lower bounds specified by operand 2"
+        },
+        {
+            "name": "scas",
+            "synopsis": "scas",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with AX or AL"
+        },
+        {
+            "name": "scasb",
+            "synopsis": "scasb",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with AL"
+        },
+        {
+            "name": "scasw",
+            "synopsis": "scasw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with AX"
+        },
+        {
+            "name": "scasd",
+            "synopsis": "scasd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with EAX (Not supported)"
+        },
+        {
+            "name": "cmps",
+            "synopsis": "cmps",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with ES:SI"
+        },
+        {
+            "name": "cmpsb",
+            "synopsis": "cmpsb",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with ES:SI (Byte)"
+        },
+        {
+            "name": "cmpsw",
+            "synopsis": "cmpsw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with ES:SI"
+        },
+        {
+            "name": "cmpsd",
+            "synopsis": "cmpsd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Compare ES:DI with ES:SI (32 bit)"
+        },
+        {
+            "name": "stos",
+            "synopsis": "stos",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets ES:DI to AX AL"
+        },
+        {
+            "name": "stosb",
+            "synopsis": "stosb",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets ES:DI to AL"
+        },
+        {
+            "name": "stosw",
+            "synopsis": "stosw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets ES:DI to AX"
+        },
+        {
+            "name": "stosd",
+            "synopsis": "stosd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets ES:DI to EAX  (Not supported)"
+        },
+        {
+            "name": "lods",
+            "synopsis": "lods",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets Ax to ES:DI"
+        },
+        {
+            "name": "lodsb",
+            "synopsis": "lodsb",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets AL to ES:DI"
+        },
+        {
+            "name": "lodsw",
+            "synopsis": "lodsw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets AX to ES:DI"
+        },
+        {
+            "name": "lodsd",
+            "synopsis": "lodsd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets EAX to ES:DI 32-bit (Not supported)"
+        },
+        {
+            "name": "outs",
+            "synopsis": "outs",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": " "
+        },
+        {
+            "name": "outsb",
+            "synopsis": "outsb",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "ES:DI -> DL"
+        },
+        {
+            "name": "outsw",
+            "synopsis": "outsw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "ES:DI -> DX"
+        },
+        {
+            "name": "outsd",
+            "synopsis": "outsd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "ES:DI -> EDX (Not supported)"
+        },
+        {
+            "name": "ins",
+            "synopsis": "ins",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": " "
+        },
+        {
+            "name": "insb",
+            "synopsis": "insb",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "ES:DI <- DL"
+        },
+        {
+            "name": "insw",
+            "synopsis": "insw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "ES:DI <- DX"
+        },
+        {
+            "name": "insd",
+            "synopsis": "insd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "ES:DI <- EDX (Not supported)"
+        },
+        {
+            "name": "movs",
+            "synopsis": "movs",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets Ax to ES:DI"
+        },
+        {
+            "name": "movsb",
+            "synopsis": "movsb",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets AL to ES:DI"
+        },
+        {
+            "name": "movsw",
+            "synopsis": "movsw",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets AX to ES:DI"
+        },
+        {
+            "name": "movsd",
+            "synopsis": "movsd",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "Sets EAX to ES:DI 32-bit (Not supported)"
+        },
+        {
+            "name": "req",
+            "synopsis": "req",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "(Not supported)"
+        },
+        {
+            "name": "c",
+            "synopsis": "c",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "(Not supported)"
+        },
+        {
+            "name": "wrt",
+            "synopsis": "wrt",
+            "allowType": 6,
+            "opCount": 0,
+            "type": 2,
+            "description": "(Not supported)"
+        },
+        {
+            "name": "loop",
+            "synopsis": "loop [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "- decrease `CX`\n\n- Jumps to a label if cx is not 0"
+        },
+        {
+            "name": "loopz",
+            "alias": [
+                "loope"
+            ],
+            "synopsis": "loope [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** Zero flag is 1"
+        },
+        {
+            "name": "loopnz",
+            "alias": [
+                "loopne"
+            ],
+            "synopsis": "loopz [label]",
+            "allowType": 8,
+            "opCount": 1,
+            "type": 2,
+            "description": "- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** zero flag is not 1"
+        }
+    ]
+}
