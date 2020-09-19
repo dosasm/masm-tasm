@@ -20,15 +20,14 @@ export class DOSBox {
             let boxparam = more.replace(/\n/g, '"-c "')
             boxcommand = '-c "' + boxparam + '"'
         }
+        let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" '
         if (process.platform == 'win32') {
-            let wincommand = 'start/min/wait "" "' + conf.path + '/dosbox/dosbox.exe" -conf "' + conf.dosboxconfuri.fsPath + '" '
-            if (doc) wincommand = 'del/Q T*.* & copy "' + doc.fileName + '" "T.ASM" & ' + wincommand
-            execSync(wincommand + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' })
+            if (doc) command = 'del/Q T*.* & copy "' + doc.fileName + '" "T.ASM" & ' + command
+            execSync(command + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' })
         }
         else {
-            let linuxcommand = 'dosbox -conf "' + conf.dosboxconfuri.fsPath + '" '
-            if (doc) linuxcommand = 'rm -f [Tt]*.*;cp "' + doc.fileName + '" T.ASM;' + linuxcommand
-            execSync(linuxcommand + boxcommand, { cwd: conf.workpath })
+            if (doc) command = 'rm -f [Tt]*.*;cp "' + doc.fileName + '" T.ASM;' + command
+            execSync(command + boxcommand, { cwd: conf.workpath })
 
         }
         if (diag && doc) this.BOXdiag(conf, diag, doc)
@@ -36,13 +35,12 @@ export class DOSBox {
     public BoxOpenCurrentFolder(conf: Config, doc: TextDocument) {
         let folderpath: string = Uri.joinPath(doc.uri, '../').fsPath
         let Ecmd: string = '-noautoexec -c "mount e \\\"' + folderpath + '\\\"" -c "mount c \\\"' + conf.path + '\\\"" -c "set PATH=%%PATH%%;c:\masm;c:\\tasm"-c "e:"'
+        let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" '
         if (process.platform == 'win32') {
-            let wincommand = 'start/min/wait "" "' + conf.path + '/dosbox/dosbox.exe" -conf "' + conf.dosboxconfuri.fsPath + '" '
-            execSync(wincommand + Ecmd, { cwd: conf.workpath, shell: 'cmd.exe' })
+            execSync(command + Ecmd, { cwd: conf.workpath, shell: 'cmd.exe' })
         }
         else {
-            let linuxcommand = 'dosbox -conf "' + conf.dosboxconfuri.fsPath + '" '
-            execSync(linuxcommand + Ecmd, { cwd: conf.workpath })
+            execSync(command + Ecmd, { cwd: conf.workpath })
         }
 
     }

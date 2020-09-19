@@ -14,6 +14,7 @@ export class Config {
     public readonly savefirst: boolean | undefined
     public readonly MASMorTASM: string | undefined
     public static writefile: any
+    public readonly OpenDosbox: string;
     constructor(exturi: Uri) {
         this.resolution = workspace.getConfiguration('masmtasm.dosbox').get('CustomResolution');
         this.MASMorTASM = workspace.getConfiguration('masmtasm.ASM').get('MASMorTASM');
@@ -24,6 +25,20 @@ export class Config {
         this._exturi = exturi
         this.toolsUri = this._toolsUri()
         this.writeBoxconfig(this)
+        if(process.platform=="win32"){
+            let console=workspace.getConfiguration('masmtasm.dosbox').get('console');
+            let boxpath= '"'+this.path + '\\dosbox\\dosbox.exe"'
+            switch(console){
+            case "min": this.OpenDosbox='start/min/wait "" ' + boxpath;break
+            case "noconsole":this.OpenDosbox=boxpath+' -noconsole';break
+            case "normal":
+                default:this.OpenDosbox=boxpath
+            }
+        }
+        else {
+            this.OpenDosbox='dosbox'
+        }
+        
     }
     /**
      * file path of scripts packaged inside

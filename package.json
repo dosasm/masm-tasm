@@ -164,6 +164,21 @@
 						"%dosasm.config.boxrun.enum3%"
 					]
 				},
+				"masmtasm.dosbox.console": {
+					"type": "string",
+					"default": "min",
+					"description": "%dosasm.config.boxconsole.description%",
+					"enum": [
+						"min",
+						"normal",
+						"noconsole"
+					],
+					"markdownEnumDescriptions": [
+						"%dosasm.config.boxconsole.min%",
+						"%dosasm.config.boxconsole.normal%",
+						"%dosasm.config.boxconsole.noconsole%"
+					]
+				},
 				"masmtasm.dosbox.CustomResolution": {
 					"type": "string",
 					"default": "1024x640",
