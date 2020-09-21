@@ -1,6 +1,10 @@
 # Change Log
 
-## welcome feedback and contribution [issue](https://github.com/xsro/masm-tasm/issues)
+## welcome feedback and contribution [github issue](https://github.com/xsro/masm-tasm/issues)
+
+### 0.3.0
+
+- windows下打开dosbox会弹出控制台窗口，可以在设置`masmtasm.dosbox.console`中选择显示，最小化还是不显示这个窗口
 
 ### 0.2.2/0.2.3
 
@@ -15,7 +19,6 @@
 - [x] 优化diagnose对fatal类错误的匹配,优化大纲视图
 - [x] 提供代码格式化功能（不太完善）
 - [x] 提供查找引用功能
-- [ ] webpack打包（nls部分总是失败）
 
 鉴于这些功能目前可能不完善，你可以在设置中关闭他们（关闭后需要手动重启）
 

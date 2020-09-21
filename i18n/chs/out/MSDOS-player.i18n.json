@@ -1,0 +1,6 @@
+{
+    "msdos.error": "{0}汇编出错,无法运行/调试",
+    "msdos.warn": "成功汇编链接生成EXE，但是汇编时产生了警告信息({0}warning)，可能无法运行/调试,是否继续操作",
+    "msdos.continue": "继续",
+    "msdos.stop": "否"
+}

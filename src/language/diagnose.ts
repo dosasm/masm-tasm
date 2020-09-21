@@ -20,6 +20,7 @@ export class landiagnose {
      * @param text 源代码文件的文本内容
      * @param info 输出的错误信息
      * @param fileuri 源代码文件的位置uri定位
+     * @param ASM MASM或TASM
      */
     //这个函数可能需要简化 需要适应更多不同的masm或tasm输出信息，需要使用一种方式来输出链接时产生的信息
     public ErrMsgProcess(text: string, info: string, fileuri: Uri, ASM?: string): number {
@@ -55,10 +56,10 @@ export class landiagnose {
         this._OutChannel.append('  ' + outinfo.replace(/\n/g, '\n  '))
     }
     /**
- * 根据行数生成range信息，vscode中的位置信息为0base
- * @param str 错误信息所在的文本
- * @param line_get 错误信息所在的行数（1base）
- */
+     * 根据行数生成range信息，vscode中的位置信息为0base
+     * @param str 错误信息所在的文本
+     * @param line_get 错误信息所在的行数（1base）
+     */
     private rangeProvider(str: string, line_get: string | number): Range {
         let line: number
         if (typeof (line_get) == 'number') line = line_get
