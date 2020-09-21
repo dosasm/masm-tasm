@@ -29,7 +29,7 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 |-----|----|
 |![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)|![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)|
 
-Default mode is using `DOSBox` and `TASM`, you can change it in preference->settings like the second gif(using MASM via msdos-palyer).
+When opened a ASM file in Editor, Right click on the Editor, then run or debug the code. Default mode is using `DOSBox` and `TASM`, you can change it in `preference->settings` like the second gif(using MASM via msdos-palyer).
 
 ### Demo 2: code Formate,Diagnose and more
 
@@ -37,7 +37,7 @@ Default mode is using `DOSBox` and `TASM`, you can change it in preference->sett
 |----|-----|
 |![programmatic lanaguage features](https://github.com/xsro/masm-tasm/raw/master/pics/demo_PLFeature.gif)|![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif)
 
-if you dislike these programmatic features like "hover","formate","jump to definition",you can close them in the preferece->settings
+The extension offer some programmatic features like "hover","formate","jump to definition",you can close them in the `preferece->settings`
 
 ### Demo 3: Open dosbox and type the command you need
 
@@ -52,7 +52,7 @@ if you dislike these programmatic features like "hover","formate","jump to defin
 
 ## For linux
 
-The extension is packaged with all needed [tools](#about-tools) inside,but some of these tools are for windows.So **Linux and other OS** users **should** make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox")). Use command like
+The extension is packaged with all needed [tools](#about-tools) inside,but some of these tools are for windows.So **Linux and other OS** users *should* make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox")). Use command like
 
 ```sh
 sudo apt install dosbox  #install dosbox

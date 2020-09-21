@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
 	"description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
-	"version": "0.3.0-beta.1",
+	"version": "0.3.0",
 	"keywords": [
 		"dosbox",
 		"16位",
@@ -29,10 +29,8 @@
 		}
 	],
 	"activationEvents": [
-		"onLanguage:asm",
-		"onLanguage:masm",
-		"onLanguage:tasm",
-		"onLanguage:assembly",
+		"workspaceContains:*.ASM",
+		"workspaceContains:*.asm",
 		"onCommand:masm-tasm.dosboxhere"
 	],
 	"main": "./out/extension.js",
@@ -65,17 +63,17 @@
 		"menus": {
 			"editor/context": [
 				{
-					"when": "resourceLangId == assembly || resourceLangId == asm && editorFocus",
+					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
 					"command": "masm-tasm.opendosbox",
 					"group": "0_MASM-TASM@1"
 				},
 				{
-					"when": "resourceLangId == assembly || resourceLangId == asm && editorFocus",
+					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
 					"command": "masm-tasm.runASM",
 					"group": "0_MASM-TASM@2"
 				},
 				{
-					"when": "resourceLangId == assembly || resourceLangId == asm && editorFocus",
+					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
 					"command": "masm-tasm.debugASM",
 					"group": "0_MASM-TASM@3"
 				}
