@@ -221,7 +221,7 @@
 				},
 				{
 					"name": "keyword.control.other",
-					"match": "\\b((?i)(NOP|HLT|WAIT|ESC|LOCK))\\b"
+					"match": "\\b((?i)(NOP|HLT|WAIT|ESC|LOCK|ASSUME))\\b"
 				}
 			]
 		},
