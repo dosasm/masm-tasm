@@ -35,7 +35,7 @@ When opened a ASM file in Editor, Right click on the Editor, then run or debug t
 
 |Formate Codes|Diagnose|
 |----|-----|
-|![programmatic lanaguage features](https://github.com/xsro/masm-tasm/raw/master/pics/demo_PLFeature.gif)|![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif)
+|![programmatic lanaguage features](https://github.com/xsro/masm-tasm/raw/master/pics/demo_PLFeature.gif)|![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif)|
 
 The extension offer some programmatic features like "hover","formate","jump to definition",you can close them in the `preferece->settings`
 
