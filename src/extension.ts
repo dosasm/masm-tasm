@@ -1,17 +1,17 @@
-import * as vscode from 'vscode'
-import * as nls from 'vscode-nls'
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 
 const localize = nls.config({ messageFormat: nls.MessageFormat.both })();
-import { runcode } from './runcode'
-import { provider } from "./language/provider"
-let asm: runcode
+import { AsmAction } from './runcode';
+import { provider } from "./language/provider";
+let asm: AsmAction;
 export function activate(context: vscode.ExtensionContext) {
 	console.log(localize("activate.hello", 'Congratulations, your extension "masm-tasm" is now active!'));
 	//provide programmaic language features like hover,references,outline(symbol)
-	let programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language").get("programmaticFeatures")
-	if (programmaticFeatures) provider(context)
+	let programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language").get("programmaticFeatures");
+	if (programmaticFeatures) { provider(context); }
 	//run and debug the code in dosbox or msdos-player by TASM ot MASM
-	asm = new runcode(context);
+	asm = new AsmAction(context);
 	let opendosbox = vscode.commands.registerTextEditorCommand('masm-tasm.opendosbox', () => {
 		asm.runcode('opendosbox');
 	});
@@ -35,6 +35,6 @@ export function deactivate() {
 	if (asm) {
 		asm.deactivate();
 		asm.cleanalldiagnose();
-		console.log('extension deactivated')
+		console.log('extension deactivated');
 	}
 }
