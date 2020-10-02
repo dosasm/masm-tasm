@@ -1,4 +1,6 @@
+::this batch file will be used in dosbox by vscode extension
 @echo off
+
 if exist T.exe del T.exe
 if exist T.OBJ del T.OBJ
 if "%1"=="MASM" goto MASM
@@ -35,7 +37,8 @@ exit
 :run
 T.EXE
 echo (END)
-echo The symbol "(END)" means there is the END of your  program
+echo ----------------------------------------------------------
+echo The symbol "(END)" means there is the END of your program's output
 if "%3"=="p" pause
 if "%3"=="k" goto end
 exit

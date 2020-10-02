@@ -144,12 +144,7 @@ export class Config {
         let configContent = `[sdl]
 windowresolution=${conf.resolution}
 output=opengl
-[autoexec]
-mount c "${conf.path}"
-mount d "${conf.workpath}"
-mount x "${conf.batchpath}"
-d:
-set PATH=%PATH%;c:\\tasm;c:\\masm`;
+`;
         if (autoExec) { configContent = configContent + '\n' + autoExec; }
         this.writefile(configUri, configContent);
     }

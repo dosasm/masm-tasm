@@ -5,7 +5,7 @@
 ### 0.3.1
 
 - [x] dosbox更新到0.74-3
-- [ ] 修复中文用户名下无法工作的问题[#5](https://github.com/xsro/masm-tasm/issues/5)
+- [x] 修复Dosbox无法挂载带有中文的路径的问题[#5](https://github.com/xsro/masm-tasm/issues/5)
 
 ### 0.3.0
 

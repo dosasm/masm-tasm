@@ -1,5 +1,5 @@
 {
-	"openemu.msg": "MASM/TASM>>打开DOSBox:{0}",
+	"openemu.msg": "\nMASM/TASM>>打开DOSBox:{0}",
 	"run.msg": "\n{0}({1})>>运行:{2}",
 	"debug.msg": "\n{0}({1})>>调试:{2}"
 }

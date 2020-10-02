@@ -15,12 +15,21 @@ export class DOSBox {
      * @param diag 如果有则诊断输出信息
      */
     public openDOSBox(conf: Config, more?: string, doc?: TextDocument, diag?: AssemblerDiag) {
-        let boxcommand = ' ';
-        if (more) {
-            let boxparam = more.replace(/\n/g, '"-c "');
-            boxcommand = '-c "' + boxparam + '"';
-        }
+        let boxcmd: string = '@echo off\n';
+        //mount the necessary path
+        boxcmd += `mount c \\\"${conf.path}\\\"\nmount d \\\"${conf.workpath}\\\"\nmount x \\\"${conf.batchpath}\\\"\n`;
+        //switch to the working space and add path\
+        boxcmd += "d:\nset PATH=%%PATH%%;c:\\tasm;c:\\masm\n";
+        if (doc) { boxcmd += "echo Your file has been copied as D:\\T.ASM\n"; };
+        boxcmd += "@echo on";
+        //add extra commands
+        if (more) { boxcmd += "\n" + more; }
+        //change string to needed form as dosbox parameter
+        boxcmd = boxcmd.replace(/\n/g, '" -c "');
+        let boxcommand = '-c "' + boxcmd + '"';
+        //command for open dosbox
         let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" ';
+        //exec command by terminal
         if (process.platform === 'win32') {
             if (doc) { command = 'del/Q T*.* & copy "' + doc.fileName + '" "T.ASM" & ' + command; }
             execSync(command + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' });
@@ -28,13 +37,12 @@ export class DOSBox {
         else {
             if (doc) { command = 'rm -f [Tt]*.*;cp "' + doc.fileName + '" T.ASM;' + command; }
             execSync(command + boxcommand, { cwd: conf.workpath });
-
         }
         if (diag && doc) { this.BOXdiag(conf, diag, doc); }
     }
     public BoxOpenCurrentFolder(conf: Config, doc: TextDocument) {
         let folderpath: string = Uri.joinPath(doc.uri, '../').fsPath;
-        let Ecmd: string = '-noautoexec -c "mount e \\\"' + folderpath + '\\\"" -c "mount c \\\"' + conf.path + '\\\"" -c "set PATH=%%PATH%%;c:\masm;c:\\tasm"-c "e:"';
+        let Ecmd: string = '-noautoexec -c "mount e \\\"' + folderpath + '\\\"" -c "mount c \\\"' + conf.path + '\\\"" -c "set PATH=%%PATH%%;c:\\masm;c:\\tasm" -c "e:"';
         let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" ';
         if (process.platform === 'win32') {
             execSync(command + Ecmd, { cwd: conf.workpath, shell: 'cmd.exe' });
