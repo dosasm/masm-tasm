@@ -3,7 +3,7 @@
 	"displayName": "MASM/TASM",
 	"publisher": "xsro",
 	"description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
-	"version": "0.3.0",
+	"version": "0.3.1-beta.1",
 	"keywords": [
 		"dosbox",
 		"16位",
@@ -31,7 +31,8 @@
 	"activationEvents": [
 		"workspaceContains:*.ASM",
 		"workspaceContains:*.asm",
-		"onCommand:masm-tasm.dosboxhere"
+		"onCommand:masm-tasm.dosboxhere",
+		"onlanguage:assembly"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

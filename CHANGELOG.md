@@ -2,6 +2,11 @@
 
 ## welcome feedback and contribution [github issue](https://github.com/xsro/masm-tasm/issues)
 
+### 0.3.1
+
+- dosbox更新到0.74-3
+- 修复中文用户名下无法工作的问题
+
 ### 0.3.0
 
 - windows下打开dosbox会弹出控制台窗口，可以在设置`masmtasm.dosbox.console`中选择显示，最小化还是不显示这个窗口
@@ -36,14 +41,14 @@ DEMO `dosbox here`:(代码来自[dpisdaniel/assembly-pacman](https://github.com/
 
 汇编语言支持的symbol大概有以下几种，但是vscode的[SymbolKind](https://code.visualstudio.com/api/references/vscode-api#SymbolKind)却与它们不对应，我决定做以下对应
 
-|assembly symbol|vscode symbol|汇编关键字|vscode关键字|
-|---|---|---|----|
-|macro|Module|宏|模块|
-|segment|Class|段|类|
-|procedure|Function|子程序|函数|
-|struct|Struct|结构体|结构体|
-|label|Key|标号|键|
-|variable|Variable|变量|变量|
+| assembly symbol | vscode symbol | 汇编关键字 | vscode关键字 |
+| --------------- | ------------- | ---------- | ------------ |
+| macro           | Module        | 宏         | 模块         |
+| segment         | Class         | 段         | 类           |
+| procedure       | Function      | 子程序     | 函数         |
+| struct          | Struct        | 结构体     | 结构体       |
+| label           | Key           | 标号       | 键           |
+| variable        | Variable      | 变量       | 变量         |
 
 ### 0.1.4
 
