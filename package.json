@@ -1,260 +1,261 @@
 {
-	"name": "masm-tasm",
-	"displayName": "MASM/TASM",
-	"publisher": "xsro",
-	"description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
-	"version": "0.3.1-beta.1",
-	"keywords": [
-		"dosbox",
-		"16位",
-		"汇编",
-		"微机原理",
-		"tasm",
-		"masm",
-		"8086"
-	],
-	"icon": "dosboxasm.png",
-	"engines": {
-		"vscode": "^1.44.0"
-	},
-	"categories": [
-		"Programming Languages",
-		"Other"
-	],
-	"badges": [
-		{
-			"url": "https://github.com/xsro/masm-tasm/raw/master/pics/asm.png",
-			"href": "https://github.com/xsro/masm-tasm/wiki/dosbox",
-			"description": "%dosasm.badges.code%"
-		}
-	],
-	"activationEvents": [
-		"workspaceContains:*.ASM",
-		"workspaceContains:*.asm",
-		"onCommand:masm-tasm.dosboxhere",
-		"onlanguage:assembly"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"languages": [
-			{
-				"id": "assembly",
-				"aliases": [
-					"assembly(DOS)"
-				],
-				"extensions": [
-					".asm"
-				],
-				"configuration": "./language-configuration.json"
-			}
-		],
-		"snippets": [
-			{
-				"language": "assembly",
-				"path": "./snippets.json"
-			}
-		],
-		"grammars": [
-			{
-				"language": "assembly",
-				"scopeName": "source.asm",
-				"path": "./syntaxes/assembly.tmLanguage.json"
-			}
-		],
-		"menus": {
-			"editor/context": [
-				{
-					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
-					"command": "masm-tasm.opendosbox",
-					"group": "0_MASM-TASM@1"
-				},
-				{
-					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
-					"command": "masm-tasm.runASM",
-					"group": "0_MASM-TASM@2"
-				},
-				{
-					"when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
-					"command": "masm-tasm.debugASM",
-					"group": "0_MASM-TASM@3"
-				}
-			]
-		},
-		"commands": [
-			{
-				"command": "masm-tasm.opendosbox",
-				"title": "%dosasm.editor.openEmu%"
-			},
-			{
-				"command": "masm-tasm.runASM",
-				"title": "%dosasm.editor.runAsm%"
-			},
-			{
-				"command": "masm-tasm.debugASM",
-				"title": "%dosasm.editor.debugAsm%"
-			},
-			{
-				"command": "masm-tasm.cleanalldiagnose",
-				"title": "%dosasm.command.cleanalldianose%"
-			},
-			{
-				"command": "masm-tasm.dosboxhere",
-				"title": "%dosasm.command.dosboxhere%"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "MASM-TASM:run&debug assembly in DOS emulator",
-			"properties": {
-				"masmtasm.ASM.toolspath": {
-					"type": "string",
-					"markdownDescription": "%dosasm.config.toolspath.mddescription%"
-				},
-				"masmtasm.ASM.MASMorTASM": {
-					"type": "string",
-					"default": "TASM",
-					"description": "%dosasm.config.masmortasm.description%",
-					"enum": [
-						"TASM",
-						"MASM"
-					],
-					"enumDescriptions": [
-						"%dosasm.config.masmortasm.enum1%",
-						"%dosasm.config.masmortasm.enum2%"
-					]
-				},
-				"masmtasm.ASM.emulator": {
-					"type": "string",
-					"default": "dosbox",
-					"description": "%dosasm.config.emulator.description%",
-					"enum": [
-						"dosbox",
-						"msdos player",
-						"auto"
-					],
-					"enumDescriptions": [
-						"%dosasm.config.emulator.dosbox%",
-						"%dosasm.config.emulator.player%",
-						"%dosasm.config.emulator.auto%"
-					]
-				},
-				"masmtasm.ASM.savefirst": {
-					"type": "boolean",
-					"default": true,
-					"description": "%dosasm.config.savefirst%"
-				},
-				"masmtasm.language.programmaticFeatures": {
-					"type": "boolean",
-					"default": true,
-					"description": "Experimental programmatic features like hover,outline,jump to definition/reference. Restart needed"
-				},
-				"masmtasm.dosbox.run": {
-					"type": "string",
-					"default": "pause then exit after run",
-					"description": "%dosasm.config.boxrun.description%",
-					"enum": [
-						"keep(do nothing)",
-						"exit after run",
-						"pause then exit after run"
-					],
-					"enumDescriptions": [
-						"%dosasm.config.boxrun.enum1%",
-						"%dosasm.config.boxrun.enum2%",
-						"%dosasm.config.boxrun.enum3%"
-					]
-				},
-				"masmtasm.dosbox.console": {
-					"type": "string",
-					"default": "min",
-					"description": "%dosasm.config.boxconsole.description%",
-					"enum": [
-						"min",
-						"normal",
-						"noconsole"
-					],
-					"markdownEnumDescriptions": [
-						"%dosasm.config.boxconsole.min%",
-						"%dosasm.config.boxconsole.normal%",
-						"%dosasm.config.boxconsole.noconsole%"
-					]
-				},
-				"masmtasm.dosbox.CustomResolution": {
-					"type": "string",
-					"default": "1024x640",
-					"description": "%dosasm.config.dosbox.resolution%"
-				}
-			}
-		},
-		"problemMatchers": [
-			{
-				"owner": "MASM",
-				"fileLocation": "autoDetect",
-				"pattern": [
-					{
-						"regexp": "^\\s*(.*)\\((\\d+)\\):\\s+(error|warning)\\s+([A-Z]\\d+:\\s+.*)$",
-						"file": 1,
-						"line": 2,
-						"severity": 3,
-						"message": 4,
-						"loop": true
-					}
-				]
-			},
-			{
-				"owner": "TASM",
-				"fileLocation": "autoDetect",
-				"pattern": [
-					{
-						"regexp": "^\\s*\\*+(Error|Warning)\\*+\\s+(.*)\\((\\d+)\\)\\s+(.*)$",
-						"line": 3,
-						"severity": 1,
-						"message": 4,
-						"file": 2,
-						"loop": true
-					}
-				]
-			}
-		]
-	},
-	"scripts": {
-		"compile": "tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^7.0.2",
-		"@types/node": "^13.13.21",
-		"@types/vscode": "^1.44.0",
-		"@typescript-eslint/eslint-plugin": "^2.34.0",
-		"@typescript-eslint/parser": "^2.34.0",
-		"del": "^4.1.1",
-		"eslint": "^6.8.0",
-		"event-stream": "^4.0.1",
-		"glob": "^7.1.6",
-		"gulp": "^4.0.2",
-		"gulp-filter": "^5.1.0",
-		"gulp-sourcemaps": "^2.6.5",
-		"gulp-typescript": "^5.0.1",
-		"mocha": "^7.2.0",
-		"run-sequence": "^2.2.1",
-		"typescript": "^3.9.7",
-		"vsce": "^1.79.5",
-		"vscode-nls-dev": "^3.3.2",
-		"vscode-test": "^1.4.0"
-	},
-	"dependencies": {
-		"vscode-nls": "^4.1.2"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/xsro/masm-tasm"
-	},
-	"bugs": {
-		"url": "https://github.com/xsro/masm-tasm/issues",
-		"email": "clcxsr@outlook.com"
-	},
-	"license": "MIT"
+  "name": "masm-tasm",
+  "displayName": "MASM/TASM",
+  "publisher": "xsro",
+  "description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
+  "version": "0.3.1-beta.2",
+  "keywords": [
+    "dosbox",
+    "16位",
+    "汇编",
+    "微机原理",
+    "tasm",
+    "masm",
+    "8086"
+  ],
+  "icon": "dosboxasm.png",
+  "engines": {
+    "vscode": "^1.44.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "badges": [
+    {
+      "url": "https://github.com/xsro/masm-tasm/raw/master/pics/asm.png",
+      "href": "https://github.com/xsro/masm-tasm/wiki/dosbox",
+      "description": "%dosasm.badges.code%"
+    }
+  ],
+  "activationEvents": [
+    "workspaceContains:*.ASM",
+    "workspaceContains:*.asm",
+    "onCommand:masm-tasm.dosboxhere",
+    "onlanguage:assembly"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "assembly",
+        "aliases": [
+          "assembly(DOS)"
+        ],
+        "extensions": [
+          ".asm"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "assembly",
+        "path": "./snippets.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "assembly",
+        "scopeName": "source.asm",
+        "path": "./syntaxes/assembly.tmLanguage.json"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "command": "masm-tasm.opendosbox",
+          "group": "0_MASM-TASM@1"
+        },
+        {
+          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "command": "masm-tasm.runASM",
+          "group": "0_MASM-TASM@2"
+        },
+        {
+          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "command": "masm-tasm.debugASM",
+          "group": "0_MASM-TASM@3"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "masm-tasm.opendosbox",
+        "title": "%dosasm.editor.openEmu%"
+      },
+      {
+        "command": "masm-tasm.runASM",
+        "title": "%dosasm.editor.runAsm%"
+      },
+      {
+        "command": "masm-tasm.debugASM",
+        "title": "%dosasm.editor.debugAsm%"
+      },
+      {
+        "command": "masm-tasm.cleanalldiagnose",
+        "title": "%dosasm.command.cleanalldianose%"
+      },
+      {
+        "command": "masm-tasm.dosboxhere",
+        "title": "%dosasm.command.dosboxhere%"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "MASM-TASM:run&debug assembly in DOS emulator",
+      "properties": {
+        "masmtasm.ASM.toolspath": {
+          "type": "string",
+          "markdownDescription": "%dosasm.config.toolspath.mddescription%"
+        },
+        "masmtasm.ASM.MASMorTASM": {
+          "type": "string",
+          "default": "TASM",
+          "description": "%dosasm.config.masmortasm.description%",
+          "enum": [
+            "TASM",
+            "MASM"
+          ],
+          "enumDescriptions": [
+            "%dosasm.config.masmortasm.enum1%",
+            "%dosasm.config.masmortasm.enum2%"
+          ]
+        },
+        "masmtasm.ASM.emulator": {
+          "type": "string",
+          "default": "dosbox",
+          "description": "%dosasm.config.emulator.description%",
+          "enum": [
+            "dosbox",
+            "msdos player",
+            "auto"
+          ],
+          "enumDescriptions": [
+            "%dosasm.config.emulator.dosbox%",
+            "%dosasm.config.emulator.player%",
+            "%dosasm.config.emulator.auto%"
+          ]
+        },
+        "masmtasm.ASM.savefirst": {
+          "type": "boolean",
+          "default": true,
+          "description": "%dosasm.config.savefirst%"
+        },
+        "masmtasm.language.programmaticFeatures": {
+          "type": "boolean",
+          "default": true,
+          "description": "Experimental programmatic features like hover,outline,jump to definition/reference. Restart needed"
+        },
+        "masmtasm.dosbox.run": {
+          "type": "string",
+          "default": "pause then exit after run",
+          "description": "%dosasm.config.boxrun.description%",
+          "enum": [
+            "keep(do nothing)",
+            "exit after run",
+            "pause then exit after run"
+          ],
+          "enumDescriptions": [
+            "%dosasm.config.boxrun.enum1%",
+            "%dosasm.config.boxrun.enum2%",
+            "%dosasm.config.boxrun.enum3%"
+          ]
+        },
+        "masmtasm.dosbox.console": {
+          "type": "string",
+          "default": "min",
+          "description": "%dosasm.config.boxconsole.description%",
+          "enum": [
+            "min",
+            "normal",
+            "noconsole"
+          ],
+          "markdownEnumDescriptions": [
+            "%dosasm.config.boxconsole.min%",
+            "%dosasm.config.boxconsole.normal%",
+            "%dosasm.config.boxconsole.noconsole%"
+          ]
+        },
+        "masmtasm.dosbox.CustomResolution": {
+          "type": "string",
+          "default": "1024x640",
+          "description": "%dosasm.config.dosbox.resolution%"
+        }
+      }
+    },
+    "problemMatchers": [
+      {
+        "owner": "MASM",
+        "fileLocation": "autoDetect",
+        "pattern": [
+          {
+            "regexp": "^\\s*(.*)\\((\\d+)\\):\\s+(error|warning)\\s+([A-Z]\\d+:\\s+.*)$",
+            "file": 1,
+            "line": 2,
+            "severity": 3,
+            "message": 4,
+            "loop": true
+          }
+        ]
+      },
+      {
+        "owner": "TASM",
+        "fileLocation": "autoDetect",
+        "pattern": [
+          {
+            "regexp": "^\\s*\\*+(Error|Warning)\\*+\\s+(.*)\\((\\d+)\\)\\s+(.*)$",
+            "line": 3,
+            "severity": 1,
+            "message": 4,
+            "file": 2,
+            "loop": true
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.13.21",
+    "@types/vscode": "^1.44.0",
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^2.34.0",
+    "del": "^4.1.1",
+    "eslint": "^6.8.0",
+    "event-stream": "^4.0.1",
+    "glob": "^7.1.6",
+    "gulp": "^4.0.2",
+    "gulp-filter": "^5.1.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^5.0.1",
+    "mocha": "^7.2.0",
+    "run-sequence": "^2.2.1",
+    "typescript": "^3.9.7",
+    "vsce": "^1.81.0",
+    "vscode-nls-dev": "^3.3.2",
+    "vscode-test": "^1.4.0"
+  },
+  "dependencies": {
+    "iconv-lite": "^0.6.2",
+    "vscode-nls": "^4.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xsro/masm-tasm"
+  },
+  "bugs": {
+    "url": "https://github.com/xsro/masm-tasm/issues",
+    "email": "clcxsr@outlook.com"
+  },
+  "license": "MIT"
 }
