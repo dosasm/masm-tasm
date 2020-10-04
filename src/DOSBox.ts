@@ -1,7 +1,7 @@
 import { Uri, workspace, window, TextDocument } from 'vscode';
 
 import { Config } from './configration';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
 import { AssemblerDiag } from './language/diagnose';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -30,25 +30,28 @@ export class DOSBox {
         //command for open dosbox
         let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" ';
         //exec command by terminal
+        let callback = (error: any) => {
+            if (error) { console.error(error); };
+            if (diag && doc) { this.BOXdiag(conf, diag, doc); }
+        };
         if (process.platform === 'win32') {
             if (doc) { command = 'del/Q T*.* & copy "' + doc.fileName + '" "T.ASM" & ' + command; }
-            execSync(command + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' });
+            exec(command + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' }, callback);
         }
         else {
             if (doc) { command = 'rm -f [Tt]*.*;cp "' + doc.fileName + '" T.ASM;' + command; }
-            execSync(command + boxcommand, { cwd: conf.workpath });
+            exec(command + boxcommand, { cwd: conf.workpath }, callback);
         }
-        if (diag && doc) { this.BOXdiag(conf, diag, doc); }
     }
     public BoxOpenCurrentFolder(conf: Config, doc: TextDocument) {
         let folderpath: string = Uri.joinPath(doc.uri, '../').fsPath;
         let Ecmd: string = '-noautoexec -c "mount e \\\"' + folderpath + '\\\"" -c "mount c \\\"' + conf.path + '\\\"" -c "set PATH=%%PATH%%;c:\\masm;c:\\tasm" -c "e:"';
         let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" ';
         if (process.platform === 'win32') {
-            execSync(command + Ecmd, { cwd: conf.workpath, shell: 'cmd.exe' });
+            exec(command + Ecmd, { cwd: conf.workpath, shell: 'cmd.exe' });
         }
         else {
-            execSync(command + Ecmd, { cwd: conf.workpath });
+            exec(command + Ecmd, { cwd: conf.workpath });
         }
 
     }
