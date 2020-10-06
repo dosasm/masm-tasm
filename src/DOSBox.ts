@@ -17,7 +17,7 @@ export class DOSBox {
     public openDOSBox(conf: Config, more?: string, doc?: TextDocument, diag?: AssemblerDiag) {
         let boxcmd: string = '@echo off\n';
         //mount the necessary path
-        boxcmd += `mount c \\\"${conf.path}\\\"\nmount d \\\"${conf.workpath}\\\"\nmount x \\\"${conf.batchpath}\\\"\n`;
+        boxcmd += `mount c \\\"${conf.path}\\\"\nmount d \\\"${conf.workpath}\\\"\n`;
         //switch to the working space and add path\
         boxcmd += "d:\nset PATH=%%PATH%%;c:\\tasm;c:\\masm\n";
         if (doc) { boxcmd += "echo Your file has been copied as D:\\T.ASM\n"; };
@@ -30,15 +30,20 @@ export class DOSBox {
         //command for open dosbox
         let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" ';
         //exec command by terminal
-        let callback = (error: any) => {
-            if (error) { console.error(error); };
-            if (diag && doc) { this.BOXdiag(conf, diag, doc); }
+        let callback = (error: any, stdout: string, stderr: string) => {
+            if (error) { console.error(error); }
+            else {
+                if (diag && doc) { this.BOXdiag(conf, diag, doc); }
+                console.log(stderr, stdout);
+            }
         };
         if (process.platform === 'win32') {
+            if (more) { command = "copy/Y ..\boxasm.bat boxasm.bat & " + command; }
             if (doc) { command = 'del/Q T*.* & copy "' + doc.fileName + '" "T.ASM" & ' + command; }
             exec(command + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' }, callback);
         }
         else {
+            if (more) { command = "cp ..\boxasm.bat ./ & " + command; }
             if (doc) { command = 'rm -f [Tt]*.*;cp "' + doc.fileName + '" T.ASM;' + command; }
             exec(command + boxcommand, { cwd: conf.workpath }, callback);
         }
