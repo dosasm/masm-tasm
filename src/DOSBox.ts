@@ -38,12 +38,12 @@ export class DOSBox {
             }
         };
         if (process.platform === 'win32') {
-            if (more) { command = "copy/Y ..\boxasm.bat boxasm.bat & " + command; }
+            if (more) { command = "copy/Y ..\\boxasm.bat boxasm.bat & " + command; }
             if (doc) { command = 'del/Q T*.* & copy "' + doc.fileName + '" "T.ASM" & ' + command; }
             exec(command + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' }, callback);
         }
         else {
-            if (more) { command = "cp ..\boxasm.bat ./ & " + command; }
+            if (more) { command = "cp ../boxasm.bat ./; " + command; }
             if (doc) { command = 'rm -f [Tt]*.*;cp "' + doc.fileName + '" T.ASM;' + command; }
             exec(command + boxcommand, { cwd: conf.workpath }, callback);
         }
