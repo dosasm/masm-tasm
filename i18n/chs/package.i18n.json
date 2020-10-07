@@ -3,7 +3,7 @@
 	"dosasm.editor.runAsm": "运行当前程序(汇编+链接+运行)",
 	"dosasm.editor.debugAsm": "调试当前程序(汇编+链接+调试)",
 	"dosasm.command.cleanalldianose": "清除MASM/TASM的所有问题信息",
-	"dosasm.config.toolspath.mddescription": "自定义汇编工具集地址，不填视为使用插件自带的工具,详见[doc](https://github.com/xsro/masm-tasm/blob/master/doc/Toolspath.md#自定义汇编工具路径)",
+	"dosasm.config.toolspath.mddescription": "自定义汇编工具集地址，不填视为使用插件自带的工具,详见[doc](https://github.com/xsro/masm-tasm/blob/main/doc/Toolspath.md#自定义汇编工具路径)",
 	"dosasm.config.masmortasm.description": "使用MASM还是TASM作为汇编工具",
 	"dosasm.config.masmortasm.enum1": "使用MASM汇编工具集，包括masm.exe,link.exe,debug.exe...",
 	"dosasm.config.masmortasm.enum2": "使用TASM汇编工具集，包括tasm.exe,tlink.exe,td.exe...",

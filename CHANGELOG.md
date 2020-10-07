@@ -2,14 +2,17 @@
 
 ## welcome feedback and contribution [github issue](https://github.com/xsro/masm-tasm/issues)
 
-### 0.3.1
+### 0.4.0
 
-- [x] dosbox更新到0.74-3
-- [x] 修复Dosbox无法挂载带有中文的路径的问题[#5](https://github.com/xsro/masm-tasm/issues/5)
+- fix [#6](https://github.com/xsro/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题
+  - 假如文件languageID是assembly,masm,tasm时插件会激活
+- 增加一个设置选项`masmtasm.language.Hover`以决定是否显示悬浮提示Hover
 
 ### 0.3.0
 
 - windows下打开dosbox会弹出控制台窗口，可以在设置`masmtasm.dosbox.console`中选择显示，最小化还是不显示这个窗口
+- (0.3.1)dosbox更新到0.74-3
+- (0.3.1)修复Dosbox无法挂载带有中文的路径的问题[#5](https://github.com/xsro/masm-tasm/issues/5)
 
 ### 0.2.2/0.2.3
 
@@ -32,7 +35,7 @@ DEMO `dosbox here`:(代码来自[dpisdaniel/assembly-pacman](https://github.com/
 1. 打开命令面板，win下为`ctrl+shift+p`
 2. 在打开的dosbox窗口，输入汇编、链接、运行命令`tasm projf`,`tlink projf`,`projf`
 
-![demo pacman](https://github.com/xsro/masm-tasm/raw/master/pics/demo_pacman.gif)
+![demo pacman](https://github.com/xsro/masm-tasm/raw/main/pics/demo_pacman.gif)
 
 ## 0.2.0
 

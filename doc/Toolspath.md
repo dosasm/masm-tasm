@@ -13,13 +13,21 @@ VSCode文档中关于插件安装路径的说明[VSCode-doc](https://code.visual
 - macOS `~/.vscode/extensions`
 - Linux `~/.vscode/extensions`
 
+### 插件调用dosbox时会挂载哪些目录
+
+| DOSBox | 电脑中的真实目录                        |
+| ------ | --------------------------------------- |
+| C:     | 汇编工具目录                            |
+| D:     | 插件汇编工作目录                        |
+| E:     | 使用`dosbox here`时的编辑器文件所在目录 |
+
 ### 自带的汇编工具版本
 
 16位环境模拟工具和汇编工具来自[github仓库](https://github.com/xsro/VSC-ASMtasks/releases),使用的是msdos的是MS-DOS Player (i486) for Win32 console
 
-|file|masm.exe|link.exe|debug.exe|tasm.exe|tlink.exe|td.exe|dosbox|msdos|
-|---|----------|----------|----------|---------|----------|------|--------|--------|
-|version|5.00|3.60|---|4.1|7.1.30.1|--|0.74|4/10/2020|
+| file    | masm.exe | link.exe | debug.exe | tasm.exe | tlink.exe | td.exe | dosbox | msdos     |
+| ------- | -------- | -------- | --------- | -------- | --------- | ------ | ------ | --------- |
+| version | 5.00     | 3.60     | ---       | 4.1      | 7.1.30.1  | --     | 0.74-3 | 4/10/2020 |
 
 ## 自定义汇编工具路径
 
