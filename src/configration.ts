@@ -107,8 +107,9 @@ export class Config {
         let command: string = ' ';
         switch (this._BOXrun) {
             case "keep": command = ' '; break;
-            case "exit after run": command = 'exit'; break;
-            case "pause then exit after run": command = 'pause \n exit'; break;
+            case "exit": command = '\n exit'; break;
+            case "pause":
+            default: command = '\n pause \n exit'; break;
         }
         return command;
     }
@@ -120,7 +121,8 @@ export class Config {
         switch (this._BOXrun) {
             case "keep": param = 'k'; break;
             case "exit": param = 'e'; break;
-            case "pause": param = 'p'; break;
+            case "pause":
+            default: param = 'p'; break;
         }
         return param;
     }
