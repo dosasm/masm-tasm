@@ -66,6 +66,13 @@
             "description": "Can be included in another file"
         },
         {
+            "name": "assume",
+            "synopsis": "assume [segment register]:[segment's name]",
+            "type": 2,
+            "description": "the ASSUME directive tells the assembler the names of the logical segments to use as the physical segments",
+            "chs": "段约定伪指令，约定段寄存器所对应的段"
+        },
+        {
             "name": "al",
             "synopsis": "al",
             "allowType": 6,
@@ -207,7 +214,7 @@
             "opCount": 0,
             "type": 3,
             "description": "16 bit register used to acess memory data",
-            "chs": "16位源变址寄存器"
+            "chs": "16位变址寄存器"
         },
         {
             "name": "eax",
@@ -531,7 +538,8 @@
             "allowType": 2,
             "opCount": 1,
             "type": 2,
-            "description": "Interrupt call see [list]( https://github.com/xsro/masm-tasm/wiki/interrupt_en)"
+            "description": "Interrupt call see [list]( https://github.com/xsro/masm-tasm/wiki/interrupt_en)",
+            "chs": "软件中断指令（中断调用指令），[常见中断表]( https://github.com/xsro/masm-tasm/wiki/interrupt)"
         },
         {
             "name": "into",
@@ -563,7 +571,8 @@
             "allowType": 2,
             "opCount": 1,
             "type": 2,
-            "description": " "
+            "description": " ",
+            "chs": "中断返回指令，从堆栈中依次弹出3个字，分别装入IP、CS和FLAG标志寄存器"
         },
         {
             "name": "cmp",
