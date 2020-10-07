@@ -440,7 +440,7 @@ export function scanDocumnt(doc?: vscode.TextDocument): vscode.DocumentSymbol[] 
 // part two offer imformation for keyword and number(char)
 
 export function isNumberStr(str: string): boolean {
-	let a = str.match(/([01]+B|[0-7]+[Qq]|[0-9][0-9A-Fa-f]*[Hh]|[0-9]+[Dd]?)/);
+	let a = str.match(/([01]+[Bb]|[0-7]+[Qq]|[0-9][0-9A-Fa-f]*[Hh]|[0-9]+[Dd]?)/);
 	if (a && a[0] === str) { return true; }
 	return false;
 }

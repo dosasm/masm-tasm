@@ -66,16 +66,22 @@ class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
 	}
 }
 export function provider(context: vscode.ExtensionContext) {
-	let uri = vscode.Uri.joinPath(context.extensionUri, "./scripts/keyword.json");
-	vscode.workspace.fs.readFile(uri).then(
-		(text) => {
-			key.Dictionary(text.toString());
-		}
-	);
-	context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider()));
-	context.subscriptions.push(vscode.languages.registerDefinitionProvider("assembly", new AsmDefProvider()));
-	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly", new Asmsymbolprovider()));
-	context.subscriptions.push(vscode.languages.registerReferenceProvider("assembly", new AsmReferenceProvider()));
-	context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider("assembly", new AsmDocFormat()));
+	let programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language");
+	if (programmaticFeatures.get("Hover")) {
+		let uri = vscode.Uri.joinPath(context.extensionUri, "./scripts/keyword.json");
+		vscode.workspace.fs.readFile(uri).then(
+			(text) => {
+				key.Dictionary(text.toString());
+			}
+		);
+		context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider()));
+	}
+	if (programmaticFeatures.get("programmaticFeatures")) {
+		context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly", new Asmsymbolprovider()));
+		context.subscriptions.push(vscode.languages.registerDefinitionProvider("assembly", new AsmDefProvider()));
+		context.subscriptions.push(vscode.languages.registerReferenceProvider("assembly", new AsmReferenceProvider()));
+		context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider("assembly", new AsmDocFormat()));
+	}
+
 }
 

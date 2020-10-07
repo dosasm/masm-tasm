@@ -148,7 +148,12 @@
         "masmtasm.language.programmaticFeatures": {
           "type": "boolean",
           "default": true,
-          "description": "Experimental programmatic features like hover,outline,jump to definition/reference. Restart needed"
+          "description": "Experimental programmatic features like outline,jump to definition/reference. Restart needed"
+        },
+        "masmtasm.language.Hover": {
+          "type": "boolean",
+          "default": true,
+          "description": "%dosasm.config.hover%"
         },
         "masmtasm.dosbox.run": {
           "type": "string",

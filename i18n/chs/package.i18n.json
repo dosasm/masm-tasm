@@ -21,5 +21,6 @@
 	"dosasm.config.boxconsole.normal": "显示控制台窗口，使用命令如`dosbox`",
 	"dosasm.config.boxconsole.noconsole": "不显示控制台窗口，而是重定向到文件，使用命令如`dosbox -noconsole`",
 	"dosasm.config.dosbox.resolution": "自定义dosbox窗口大小，格式如1024x640，不设置则为DOSBox默认大小",
-	"dosasm.command.dosboxhere": "打开DOSBox将当前文件所在目录挂载到E盘，并配置相关环境"
+	"dosasm.command.dosboxhere": "打开DOSBox将当前文件所在目录挂载到E盘，并配置相关环境",
+	"dosasm.config.hover": "是否显示悬浮提示(hover)，可能需要重启vscode来应用变更"
 }

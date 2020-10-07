@@ -21,5 +21,6 @@
 	"dosasm.config.boxconsole.normal": "Show the console window, via command like `dosbox`",
 	"dosasm.config.boxconsole.noconsole": "Redirect the console stdout and stderr to files, via command like `dosbox -noconsole`",
 	"dosasm.config.dosbox.resolution": "Set dosbox resolution like '1024x640'.If left empty, it means use the default resolution of DOSBox",
-	"dosasm.command.dosboxhere": "Dosbox here: Open DosBox, Mount the path of the editor files's folder as E:\\ and set the needed environment"
+	"dosasm.command.dosboxhere": "Dosbox here: Open DosBox, Mount the path of the editor files's folder as E:\\ and set the needed environment",
+	"dosasm.config.hover": "Display Hover information or not, restart VSCode to apply"
 }
