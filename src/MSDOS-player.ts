@@ -87,7 +87,7 @@ export class MSDOSplayer {
         else {
             let box = new DOSBox();
             if (runordebug) {
-                box.openDOSBox(conf, 'T.EXE\n' + conf.boxruncmd);
+                box.openDOSBox(conf, 'T.EXE' + conf.boxruncmd);
             }
             else {
                 box.openDOSBox(conf, debug);

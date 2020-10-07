@@ -40,7 +40,7 @@ export class AsmAction {
         switch (this._config.DOSemu) {
             case 'msdos player': this.msdosplayer.PlayerASM(this._config, true, true, this.landiag, doc); break;
             case 'dosbox':
-                let text = 'x:\\boxasm.bat ' + this._config.MASMorTASM + ' run ' + this._config.boxrunbat;
+                let text = 'boxasm.bat ' + this._config.MASMorTASM + ' run ' + this._config.boxrunbat;
                 this.dosbox.openDOSBox(this._config, text, doc, this.landiag);
                 break;
             case 'auto': this.msdosplayer.PlayerASM(this._config, true, false, this.landiag, doc); break;
@@ -63,7 +63,7 @@ export class AsmAction {
             this.msdosplayer.PlayerASM(this._config, false, inplayer, this.landiag, doc);
         }
         else {
-            let text = 'x:\\boxasm.bat ' + this._config.MASMorTASM + ' debug';
+            let text = 'boxasm.bat ' + this._config.MASMorTASM + ' debug';
             this.dosbox.openDOSBox(this._config, text, doc, this.landiag);
         }
     }

@@ -25,25 +25,25 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 
 ### Demo 1: Run and Debug Assembly
 
-|using TASM via DOSBox|using MASM via msdos-player|
-|-----|----|
-|![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif)|![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif)|
+| using TASM via DOSBox                                                                       | using MASM via msdos-player                                                                      |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_dosbox_tasm.gif) | ![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/master/pics/demo_msdos_masm.gif) |
 
 When opened a ASM file in Editor, Right click on the Editor, then run or debug the code. Default mode is using `DOSBox` and `TASM`, you can change it in `preference->settings` like the second gif(using MASM via msdos-palyer).
 
 ### Demo 2: code Formate,Diagnose and more
 
-|Formate Codes|Diagnose|
-|----|-----|
-|![programmatic lanaguage features](https://github.com/xsro/masm-tasm/raw/master/pics/demo_PLFeature.gif)|![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif)|
+| Formate Codes                                                                                            | Diagnose                                                                              |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| ![programmatic lanaguage features](https://github.com/xsro/masm-tasm/raw/master/pics/demo_PLFeature.gif) | ![diagnose](https://github.com/xsro/masm-tasm/raw/master/pics/demo_diagnose_tasm.gif) |
 
 The extension offer some programmatic features like "hover","formate","jump to definition",you can close them in the `preferece->settings`
 
 ### Demo 3: Open dosbox and type the command you need
 
-|Single-File (command `Open DOSBox`)|Multi-Files (command `Dosbox here`)|
-|---|---|
-|![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif)|[![pacman](https://github.com/xsro/masm-tasm/raw/master/pics/demo_pacman.gif)](https://github.com/dpisdaniel/assembly-pacman)|
+| Single-File (command `Open DOSBox`)                                                 | Multi-Files (command `Dosbox here`)                                                                                           |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/master/pics/opendosbox.gif) | [![pacman](https://github.com/xsro/masm-tasm/raw/master/pics/demo_pacman.gif)](https://github.com/dpisdaniel/assembly-pacman) |
 
 - some ASM commands you may need: [ASM_commands](https://github.com/xsro/masm-tasm/blob/master/doc/ASM_commands.md).
 - Some interesting assembly codes you may need: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
@@ -93,12 +93,11 @@ Folder dosbox and player are emulator for windows and this extension will not us
 
 The extension will mount some folder to DOSBox 's disk. Please don't modify them.
 
-|in DOSBox|real path in the computor|
-|---|---|
-|C:|the path of tools folder|
-|D:|the path of the work space|
-|E:|the path of the editor file's folder(when using command `dosbox here`)|
-|X:|the path of some scripts for the extension to use|
+| in DOSBox | real path in the computor                                              |
+| --------- | ---------------------------------------------------------------------- |
+| C:        | the path of tools folder                                               |
+| D:        | the path of the work space                                             |
+| E:        | the path of the editor file's folder(when using command `dosbox here`) |
 
 ## Docs & Thanks & Licenses
 
