@@ -50,7 +50,7 @@ The extension offer some programmatic features like "hover","formate","jump to d
 - some ASM commands you may need: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
 - Some interesting assembly codes you may need: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
 
-## For linux
+## For linux and other system
 
 The extension is packaged with all needed [tools](#about-tools) inside,but some of these tools are for windows. So **Linux and other OS** users *should* make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox")). Use command like
 
@@ -75,11 +75,11 @@ for more,please see the `preference->settings`
 - `masmtasm.ASM.savefirst`  save file first before using
 - `masmtasm.dosbox.run`：what to do after run your code in DOSBox
 - `masmtasm.dosbox.CustomResolution`: size(resolution) of the dosbox window,for example `1024x960`
-- `masmtasm.ASM.toolspath` custom path of your ASM tools. [more info](#about-tools)
+- `masmtasm.ASM.toolspath` custom path of your ASM tools. [#about-tools](#about-tools)
 
 ### About Tools
 
-the extension has built in tools for windows. But if you need to use assembler or emulator of different version. You can organize your tools following the structure bellow and add your folder's path to  `masmtasm.ASM.toolspath`, see [more info](https://github.com/xsro/masm-tasm/blob/main/doc/Toolspath.md)
+the extension has built in tools for windows. But if you need to use assembler or emulator of different version. You can organize your tools following the structure bellow and add your folder's path to  `masmtasm.ASM.toolspath`, see [about ASM tools](https://github.com/xsro/masm-tasm/blob/main/doc/Toolspath.md)
 
 - tools:your tools folder name, you can add the path of it to settings `masmtasm.ASM.toolspath`
   1. `TASM`: TASM tools including `tasm.exe`,`tlink.exe`,`td.exe`

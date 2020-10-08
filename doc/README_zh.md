@@ -17,7 +17,7 @@
 
 当编辑器为汇编文件时，在编辑器界面右键菜单中会提供以下三个选项：
 
-1. 打开dosbox并配置环境(挂载)：打开DOSBox，然后就可以手动在打开的DOSBox窗口进行[汇编相关操作命令](doc/ASM_commands.md)
+1. 打开dosbox并配置环境(挂载)：打开DOSBox，然后就可以手动在打开的DOSBox窗口输入指令进行操作
 2. 运行当前程序(汇编+链接+运行)：生成exe程序并运行
 3. 调试当前程序(汇编+链接+调试)：生成exe程序并调试，使用MASM则会调用debug调试，使用TASM会调用td调试
 
@@ -78,13 +78,13 @@ dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插
 - `masmtasm.ASM.savefirst`：启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
 - `masmtasm.dosbox.run`：规定dosbox运行程序之后进行什么操作（是否直接退出程序，还是等待）
 - `masmtasm.dosbox.CustomResolution`：调整dosbox窗口大小
-- `masmtasm.ASM.toolspath`：设置自定义汇编工具路径,详见:[自定义汇编工具路径](doc/Toolspath.md#自定义汇编工具路径)
+- `masmtasm.ASM.toolspath`：设置自定义汇编工具路径,详见:[自定义汇编工具路径](./Toolspath.md#自定义汇编工具路径)
 
 ### :clap:文档 & 感谢 & 许可
 
 - 感谢[masm-code](https://github.com/Woodykaixa/masm-code),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
   - 他们的[相关信息](doc/license_and_info.md)
-- 关于插件对汇编工具的使用：[Toolspath](doc/Toolspath.md)
+- 关于插件对汇编工具的使用：[Toolspath](./Toolspath.md)
 - 一些相关资料：[wiki](https://github.com/xsro/masm-tasm/wiki)
 
 Enjoy!:smile:
