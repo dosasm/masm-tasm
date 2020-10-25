@@ -25,9 +25,9 @@ VSCode文档中关于插件安装路径的说明[VSCode-doc](https://code.visual
 
 16位环境模拟工具和汇编工具来自[github仓库](https://github.com/xsro/VSC-ASMtasks/releases),使用的是msdos的是MS-DOS Player (i486) for Win32 console
 
-| file    | masm.exe | link.exe | debug.exe | tasm.exe | tlink.exe | td.exe | dosbox | msdos     |
+| file    | masm.exe(ml.exe) | link.exe | debug.exe | tasm.exe | tlink.exe | td.exe | dosbox | msdos     |
 | ------- | -------- | -------- | --------- | -------- | --------- | ------ | ------ | --------- |
-| version | 5.00     | 3.60     | ---       | 4.1      | 7.1.30.1  | --     | 0.74-3 | 4/10/2020 |
+| version | 6.11     | 5.31.009 | ---       | 4.1      | 7.1.30.1  | --     | 0.74-3 | 4/10/2020 |
 
 ## 自定义汇编工具路径
 

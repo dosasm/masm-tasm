@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
-  "version": "0.4.0",
+  "version": "0.4.1-alpha.1",
   "keywords": [
     "dosbox",
     "16位",

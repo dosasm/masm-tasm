@@ -2,6 +2,10 @@
 
 ## welcome feedback and contribution [github issue](https://github.com/xsro/masm-tasm/issues)
 
+### [unreleased]
+
+- update masm tools to `6.11`
+
 ### 0.4.0
 
 - fix [#6](https://github.com/xsro/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题
@@ -115,6 +119,6 @@ DEMO `dosbox here`:(代码来自[dpisdaniel/assembly-pacman](https://github.com/
 - [x] 实现在msdos之下运行调试MASM程序，运行TASM程序
 - [x] 实现Dosbox来进行相关功能调用
 
-### [Unreleased]
+### [Prereleased]
 
 在学习南邮的《微机原理与接口技术》的时候，苦于没有比较好的汇编环境，一开始使用的dosbox里面的`edit.com` 后来使用的`notepad++`, 最近接触了`VSCode`，发现里面有`masm-code`这个插件可以基本很好地实现汇编操作，但是不支持TASM，下载相关组件有时会失败，于是决定在这个插件的基础上修改，并发布了这个插件，非常感谢。
