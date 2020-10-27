@@ -7,7 +7,7 @@
 	"dosasm.config.masmortasm.description": "使用MASM还是TASM作为汇编工具",
 	"dosasm.config.masmortasm.enum1": "使用MASM汇编工具集，包括masm.exe,link.exe,debug.exe...",
 	"dosasm.config.masmortasm.enum2": "使用TASM汇编工具集，包括tasm.exe,tlink.exe,td.exe...",
-	"dosasm.config.emulator.description": "windows下选择使用的16位环境模拟器，其他系统都视为使用DOSBox",
+	"dosasm.config.emulator.description": "windows下选择使用的16位环境模拟器，其他系统都视为使用DOSBox,msdos player可能不够稳定",
 	"dosasm.config.emulator.dosbox": "全部使用dosbox模拟16位系统环境,相对比较稳定",
 	"dosasm.config.emulator.player": "尽量使用msdos player模拟，td时使用dosbox，不会弹出一个窗口，但是可能无法得到程序预期的运行结果",
 	"dosasm.config.emulator.auto": "自动选择（推荐）：使用MSDOS-player汇编链接，使用dosbox运行，TD调试时用dosbox，debug调试时用MSDOS player",

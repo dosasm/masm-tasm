@@ -11,3 +11,4 @@ scripts/VSC-ExtUse.conf
 *.nls.*.json
 !/i18n/*/*.i18n.json
 
+tools/boxasm.bat

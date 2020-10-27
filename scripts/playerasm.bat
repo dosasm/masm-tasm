@@ -1,9 +1,8 @@
-::a small batch to reduce ts code when using msdos
+::this batch file is used to assemble and link ASM code by xsro.masm-tasm
 ::%1 toolspath
 ::%2 masmortasm
 ::%3 file path
 ::%4 workpath
-:: exit 9 copy dailed
 @echo off
 set "cdo=%CD%">nul
 ::echo ASMfile:%~f3
@@ -17,7 +16,7 @@ if "%2" == "TASM" goto tasm
 goto end
 :masm
     echo (msdos-player)masm T.ASM;
-    msdos masm T.ASM;
+    masm T.ASM;
     echo (msdos-player)link T.OBJ;
     msdos link T.OBJ;
     goto end
@@ -28,5 +27,6 @@ goto end
     msdos tlink /v/3 T.OBJ
 :end
 cd "%cdo%"
+exit
 
 

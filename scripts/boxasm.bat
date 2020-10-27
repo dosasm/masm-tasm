@@ -1,4 +1,4 @@
-::this batch file will be used in dosbox by vscode extension
+::this batch file will be used in dosbox by xsro.masm-tasm
 @echo off
 if exist T.exe del T.exe
 if exist T.OBJ del T.OBJ

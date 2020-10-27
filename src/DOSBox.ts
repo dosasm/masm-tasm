@@ -1,83 +1,129 @@
-import { Uri, workspace, window, TextDocument } from 'vscode';
-
+import { Uri, workspace, window, TextDocument, FileType } from 'vscode';
 import { Config } from './configration';
-import { exec } from 'child_process';
+import { exec, ExecOptions } from 'child_process';
 import { AssemblerDiag } from './language/diagnose';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
-export class DOSBox {
-    constructor() {
-    }
-    /**打开dosbox,操作文件
-     * @param conf 配置信息
-     * @param more 需要执行的额外命令
-     * @param doc 需要处理的文件，假如有会清理工作文件夹，复制该文件到工作文件夹
-     * @param diag 如果有则诊断输出信息
-     */
-    public openDOSBox(conf: Config, more?: string, doc?: TextDocument, diag?: AssemblerDiag) {
-        let boxcmd: string = '@echo off\n';
-        //mount the necessary path
-        boxcmd += `mount c \\\"${conf.path}\\\"\nmount d \\\"${conf.workpath}\\\"\n`;
-        //switch to the working space and add path\
-        boxcmd += "d:\nset PATH=%%PATH%%;c:\\tasm;c:\\masm\n";
-        if (doc) { boxcmd += "echo Your file has been copied as D:\\T.ASM\n"; };
-        boxcmd += "@echo on";
-        //add extra commands
-        if (more) { boxcmd += "\n" + more; }
-        //change string to needed form as dosbox parameter
-        boxcmd = boxcmd.replace(/\n/g, '" -c "');
-        let boxcommand = '-c "' + boxcmd + '"';
-        //command for open dosbox
-        let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" ';
-        //exec command by terminal
-        let callback = (error: any, stdout: string, stderr: string) => {
-            if (error) { console.error(error); }
-            else {
-                if (diag && doc) { this.BOXdiag(conf, diag, doc); }
-                console.log(stderr, stdout);
-            }
-        };
-        if (process.platform === 'win32') {
-            if (more) { command = "copy/Y ..\\boxasm.bat boxasm.bat & " + command; }
-            if (doc) { command = 'del/Q T*.* & copy "' + doc.fileName + '" "T.ASM" & ' + command; }
-            exec(command + boxcommand, { cwd: conf.workpath, shell: 'cmd.exe' }, callback);
-        }
-        else {
-            if (more) { command = "cp ../boxasm.bat ./; " + command; }
-            if (doc) { command = 'rm -f [Tt]*.*;cp "' + doc.fileName + '" T.ASM;' + command; }
-            exec(command + boxcommand, { cwd: conf.workpath }, callback);
-        }
-    }
-    public BoxOpenCurrentFolder(conf: Config, doc: TextDocument) {
-        let folderpath: string = Uri.joinPath(doc.uri, '../').fsPath;
-        let Ecmd: string = '-noautoexec -c "mount e \\\"' + folderpath + '\\\"" -c "mount c \\\"' + conf.path + '\\\"" -c "set PATH=%%PATH%%;c:\\masm;c:\\tasm" -c "e:"';
-        let command = conf.OpenDosbox + ' -conf "' + conf.dosboxconfuri.fsPath + '" ';
-        if (process.platform === 'win32') {
-            exec(command + Ecmd, { cwd: conf.workpath, shell: 'cmd.exe' });
-        }
-        else {
-            exec(command + Ecmd, { cwd: conf.workpath });
-        }
-
-    }
-    private BOXdiag(conf: Config, diag: AssemblerDiag, doc: TextDocument): string {
-        let info: string = ' ', content: string;
-        let document = doc;
-        if (document) {
-            content = document.getText();
-            workspace.fs.readFile(conf.workloguri).then(
-                (text) => {
-                    info = text.toString();
-                    if (diag.ErrMsgProcess(content, info, doc.uri, conf.MASMorTASM) === 0) {
-                        let Errmsgwindow = localize("dosbox.errmsg", '{0} Failed to compile. See the output for more information', conf.MASMorTASM);
-                        window.showErrorMessage(Errmsgwindow);
-                    }
-                },
-                () => { console.error('read dosbox mode T.txt FAILED'); }
+/**
+ * A function used when using boxasm.bat
+ * @param conf The config information
+ * @param runOrDebug true for run ASM code,false for debug
+ * @param doc the source ASM file
+ * @param diag using its `diag.ErrMsgProcess` to process the assembler's output
+ */
+export function runDosbox2(conf: Config, runOrDebug: boolean, doc: TextDocument, diag: AssemblerDiag) {
+    let fs = workspace.fs;
+    let src: Uri = Uri.joinPath(conf.extScriptsUri, "./boxasm.bat");
+    let target: Uri = Uri.joinPath(conf.toolsUri, "./boxasm.bat");
+    fs.copy(src, target, { overwrite: conf.toolsBuiltin }).then(
+        () => {
+            runDosbox(conf, conf.boxasmCommand(runOrDebug), doc).then(
+                (stdout) => { BOXdiag(conf, diag, doc); }
+            );
+        },
+        (reason) => {
+            console.log(reason);
+            runDosbox(conf, conf.boxasmCommand(runOrDebug), doc).then(
+                (stdout) => { BOXdiag(conf, diag, doc); }
             );
         }
-        return info;
+    );
+}
+/**open dosbox and do things about it
+ * @param conf The config information
+ * @param more The commands needed to exec in dosbox
+ * @param doc If defined, copy this file to workspace as T.xxx(xxx is the files extension)
+ */
+export function runDosbox(conf: Config, more?: string, doc?: TextDocument): Promise<string> {
+    let filename = doc?.fileName;
+    let fileext = filename?.substring(filename.lastIndexOf("."), filename.length);
+    let preCommand: string = "";
+    let boxcmd: string = '@echo off\n';
+    boxcmd += `mount c \\\"${conf.path}\\\"\nmount d \\\"${conf.workpath}\\\"\n`;//mount the necessary path
+    boxcmd += "d:\nset PATH=%%PATH%%;c:\\tasm;c:\\masm\n";//switch to the working space and add path\
+    if (doc) {
+        boxcmd += `echo Your file has been copied as D:\\T${fileext}\n`;
+        if (process.platform === 'win32') {
+            preCommand = `del/Q T*.* & copy "${filename}" "T${fileext}" & `;
+        }
+        else {
+            preCommand = `rm -f [Tt]*.*;cp "${filename}" T${fileext};'`;
+        }
+    };
+    boxcmd += "@echo on";
+    if (more) { boxcmd += "\n" + more; }//add extra commands
+    let opt: OPTS = {
+        cwd: conf.workpath,
+        preOpen: preCommand,
+        core: conf.OpenDosbox,
+        boxcmd: boxcmd,
+        parameter: ' -conf "' + conf.dosboxconfuri.fsPath + '" '
+    };
+    return openDosbox(opt);
+}
+export function BoxOpenCurrentFolder(conf: Config, doc: TextDocument) {
+    let folderpath: string = Uri.joinPath(doc.uri, '../').fsPath;
+    let opt: OPTS = {
+        cwd: conf.workpath,
+        core: conf.OpenDosbox,
+        boxcmd: `mount e \\\"${folderpath}\\\"\nmount c \\\"${conf.path}\\\"\nset PATH=%%PATH%%;c:\\masm;c:\\tasm\ne:`,
+        parameter: ' -conf "' + conf.dosboxconfuri.fsPath + '" '
+    };
+    openDosbox(opt);
+}
+interface OPTS {
+    cwd: string,
+    core: string
+    preOpen?: string,
+    parameter?: string,
+    boxcmd?: string
+}
+function openDosbox(opt: OPTS): Promise<string> {
+    let str = opt.core + opt.parameter;
+    if (opt.preOpen) {
+        str = opt.preOpen + str;
     }
+    if (opt.boxcmd) {
+        let cmd = opt.boxcmd.replace(/\n/g, '" -c "');
+        cmd = '-c "' + cmd + '"';
+        str += cmd;
+    }
+    let execOption: ExecOptions;
+    if (process.platform === 'win32') {
+        execOption = { cwd: opt.cwd, shell: 'cmd.exe' };
+    }
+    else {
+        execOption = { cwd: opt.cwd };
+    }
+    return new Promise(
+        (resolve, reject) => {
+            exec(str, execOption, (error: any, stdout: string, stderr: string) => {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    resolve(stdout);
+                }
+            });
+        }
+    );
+}
+function BOXdiag(conf: Config, diag: AssemblerDiag, doc: TextDocument): string {
+    let info: string = ' ', content: string;
+    if (doc) {
+        content = doc.getText();
+        workspace.fs.readFile(conf.workloguri).then(
+            (text) => {
+                info = text.toString();
+                if (diag.ErrMsgProcess(content, info, doc.uri, conf.MASMorTASM) === 0) {
+                    let Errmsgwindow = localize("dosbox.errmsg", '{0} Failed to compile. See the output for more information', conf.MASMorTASM);
+                    window.showErrorMessage(Errmsgwindow);
+                }
+            },
+            () => { console.error('read dosbox mode T.txt FAILED'); }
+        );
+    }
+    return info;
 }
 
 

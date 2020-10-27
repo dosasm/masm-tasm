@@ -1,25 +1,21 @@
 import * as vscode from 'vscode';
 import { Config } from './configration';
-import { DOSBox } from './DOSBox';
-import { MSDOSplayer } from './MSDOS-player';
-import { Uri } from 'vscode';
+import * as DOSBox from './DOSBox';
+import { MSDOSplayer } from './viaPlayer';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import { AssemblerDiag } from './language/diagnose';
 export class AsmAction {
     private readonly extOutChannel: vscode.OutputChannel;
-    private readonly exturi: Uri;
     private _config: Config;
     private msdosplayer: MSDOSplayer;
-    private dosbox: DOSBox;
     private landiag: AssemblerDiag;
-    constructor(content: vscode.ExtensionContext) {
-        this.exturi = content.extensionUri;
+    constructor(context: vscode.ExtensionContext) {
         this.extOutChannel = vscode.window.createOutputChannel('Masm-Tasm');
-        this._config = new Config(this.exturi);
+        this._config = new Config(context);
         this.msdosplayer = new MSDOSplayer();
-        this.dosbox = new DOSBox();
         this.landiag = new AssemblerDiag(this.extOutChannel);
+        vscode.workspace.onDidChangeConfiguration((event) => { this._config = new Config(context); }, this._config);
     }
     /**
      * open the emulator(currently just the DOSBox)
@@ -28,7 +24,7 @@ export class AsmAction {
     private Openemu(doc: vscode.TextDocument) {
         let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Open DOSBox:{0}", doc.fileName);
         this.extOutChannel.appendLine(openemumsg);
-        this.dosbox.openDOSBox(this._config, undefined, doc);
+        DOSBox.runDosbox(this._config, undefined, doc);
     }
     /**
      * run the ASM code
@@ -40,8 +36,7 @@ export class AsmAction {
         switch (this._config.DOSemu) {
             case 'msdos player': this.msdosplayer.PlayerASM(this._config, true, true, this.landiag, doc); break;
             case 'dosbox':
-                let text = 'boxasm.bat ' + this._config.MASMorTASM + ' run ' + this._config.boxrunbat;
-                this.dosbox.openDOSBox(this._config, text, doc, this.landiag);
+                DOSBox.runDosbox2(this._config, true, doc, this.landiag);
                 break;
             case 'auto': this.msdosplayer.PlayerASM(this._config, true, false, this.landiag, doc); break;
             default: throw new Error("未指定emulator");
@@ -63,8 +58,7 @@ export class AsmAction {
             this.msdosplayer.PlayerASM(this._config, false, inplayer, this.landiag, doc);
         }
         else {
-            let text = 'boxasm.bat ' + this._config.MASMorTASM + ' debug';
-            this.dosbox.openDOSBox(this._config, text, doc, this.landiag);
+            DOSBox.runDosbox2(this._config, false, doc, this.landiag);
         }
     }
     public cleanalldiagnose() {
@@ -82,9 +76,6 @@ export class AsmAction {
      * @param command "opendosbox" or "run" or "debug" or "here"
      */
     public runcode(command: string) {
-        let exturi = this.exturi;
-        //update the configuration
-        vscode.workspace.onDidChangeConfiguration((event) => { this._config = new Config(exturi); }, this._config);
         let document = vscode.window.activeTextEditor?.document;
         if (document) {
             if (this._config.savefirst && vscode.window.activeTextEditor?.document.isDirty) {
@@ -99,7 +90,7 @@ export class AsmAction {
             case 'opendosbox': this.Openemu(doc); break;
             case 'run': this.Run(doc); break;
             case 'debug': this.Debug(doc); break;
-            case 'here': this.dosbox.BoxOpenCurrentFolder(this._config, doc);
+            case 'here': DOSBox.BoxOpenCurrentFolder(this._config, doc);
         }
     }
 }
