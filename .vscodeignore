@@ -24,7 +24,6 @@ scripts/work/*
 !scripts/work/ignore.txt
 tools/dosbox/dosbox-0.74.conf
 tools/boxasm.bat
-tools/masm/ML.*
 scripts/VSC-ExtUse.conf
 # ignore i18n
 i18n

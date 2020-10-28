@@ -43,7 +43,7 @@ export class AsmAction {
             let goon: boolean = false;
             switch (code) {
                 case 0:
-                    let Errmsgwindow = localize("runcode.error", "{0} Error,Can't generate .exe file", MASMorTASM);
+                    let Errmsgwindow = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM);
                     window.showErrorMessage(Errmsgwindow);
                     break;
                 case 1:
