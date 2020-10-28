@@ -1,4 +1,4 @@
-import { workspace, window, Uri, FileSystem, FileType, ExtensionContext } from 'vscode';
+import { workspace, Uri, FileSystem, FileType, ExtensionContext } from 'vscode';
 import { TextEncoder } from 'util';
 interface ToolInfo {
     uri: Uri,

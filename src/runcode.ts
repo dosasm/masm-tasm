@@ -60,7 +60,9 @@ export class AsmAction {
             }
             if (goon && (DOSemu === "msdos player" || DOSemu === "auto")) {
                 let flag: boolean = DOSemu === "msdos player";
-                flag = (MASMorTASM === "masm" || runOrDebug === false || DOSemu == "auto") || flag
+                //msdos mode:  TASM debug command `TD` can only run in dosbox;(I do this inside `MSDos.RunDebug`)
+                //auto mode: run in dosbox,`TD` in dosbox,MASM debug command `debuq` in player
+                flag = (MASMorTASM === "MASM" && runOrDebug === false && DOSemu == "auto") || flag
                 MSDos.RunDebug(this._config, flag, runOrDebug);
             };
         }

@@ -1,4 +1,4 @@
-import { window, Terminal, Uri, TextDocument } from 'vscode';
+import { window, Terminal } from 'vscode';
 import { Config } from './configration';
 import { exec } from 'child_process';
 import * as DOSBox from './DOSBox';
@@ -17,6 +17,20 @@ export function runPlayer(conf: Config, filename: string): Promise<string> {
                     }
                 }
             );
+            child.on('exit', (code) => {
+                if (code && code !== 0) {
+                    let msg = `Use playerasm.bat Failed\t exitcode${code}\t\nFilepath: ${conf.msbatpath}`;
+                    window.showErrorMessage(msg);
+                }
+            });
+            let timeout: number = 3000;
+            setTimeout(() => {
+                if (child.exitCode === null) {
+                    child.kill();
+                    window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nFilepath: ${conf.msbatpath} `)
+                }
+            }, timeout);
+
         }
     );
 

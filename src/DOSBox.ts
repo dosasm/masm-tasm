@@ -1,4 +1,4 @@
-import { Uri, workspace, window, TextDocument, FileType } from 'vscode';
+import { Uri, workspace, window, TextDocument } from 'vscode';
 import { Config } from './configration';
 import { exec, ExecOptions } from 'child_process';
 /**
@@ -126,7 +126,6 @@ function openDosbox(opt: OPTS): Promise<string> {
                     }
                     window.showErrorMessage(msg);
                 }
-
             })
         }
     );
