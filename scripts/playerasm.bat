@@ -9,8 +9,8 @@ set "cdo=%CD%">nul
 set path=%~f1\player\;%~f1\masm\;%~f1\tasm\
 cd %~f4
 %~d4
-del T*.*
-copy %3 T.ASM>nul
+::del T*.*
+::copy %3 T.ASM>nul
 if "%2" == "MASM" goto masm
 if "%2" == "TASM" goto tasm
 goto end

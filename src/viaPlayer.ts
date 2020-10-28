@@ -29,7 +29,8 @@ export function RunDebug(conf: Config, viaplayer: boolean, runordebug: boolean) 
     else {
         debug = 'DEBUG T.EXE';
     }
-    if (viaplayer) {
+    let flag: boolean = (conf.MASMorTASM === "TASM" && runordebug === false);
+    if (viaplayer && !flag) {
         outTerminal(runordebug, conf);
     }
     else {

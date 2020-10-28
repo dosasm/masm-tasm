@@ -23,7 +23,7 @@ export async function runDosbox2(conf: Config, runOrDebug: boolean): Promise<str
 export function runDosbox(conf: Config, more?: string, doc?: TextDocument): Promise<string> {
     let preCommand: string = "";
     let boxcmd: string = '@echo off\n';
-    boxcmd += `mount c \\\"${conf.path}\\\"\nmount d \\\"${conf.workUri.fsPath}\\\"\n`;//mount the necessary path
+    boxcmd += `mount c \\\"${conf.toolsUri.fsPath}\\\"\nmount d \\\"${conf.workUri.fsPath}\\\"\n`;//mount the necessary path
     boxcmd += "d:\nset PATH=%%PATH%%;c:\\tasm;c:\\masm\n";//switch to the working space and add path\
     if (doc) {
         let filename = doc?.fileName;

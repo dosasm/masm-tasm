@@ -531,11 +531,11 @@ enum KeywordType {
 export function getType(type: KeywordType): string {
 	switch (type) {
 		case KeywordType.Instruction:
-			return localize("keykind.Command", "(Command)");
+			return localize("keykind.Command", "(Opcode mnemonics)");
 		case KeywordType.MemoryAllocation:
-			return localize("keykind.Memory", "(Memory)");
+			return localize("keykind.Memory", "(Data definitions)");
 		case KeywordType.PreCompileCommand:
-			return localize("keykind.Instruction", "(Instruction)");
+			return localize("keykind.Instruction", "(Assembly directives)");
 		case KeywordType.Register:
 			return localize("keykind.Register", "(Register)");
 		case KeywordType.SavedWord:

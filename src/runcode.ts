@@ -59,7 +59,9 @@ export class AsmAction {
                     break;
             }
             if (goon && (DOSemu === "msdos player" || DOSemu === "auto")) {
-                MSDos.RunDebug(this._config, DOSemu === "msdos player", runOrDebug);
+                let flag: boolean = DOSemu === "msdos player";
+                flag = (MASMorTASM === "masm" || runOrDebug === false || DOSemu == "auto") || flag
+                MSDos.RunDebug(this._config, flag, runOrDebug);
             };
         }
     }

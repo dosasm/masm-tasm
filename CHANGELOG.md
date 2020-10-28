@@ -2,7 +2,7 @@
 
 ## welcome feedback and contribution [github issue](https://github.com/xsro/masm-tasm/issues)
 
-### [unreleased]
+### 0.5.0/0.5.1
 
 - MASM插件更新到 `6.11`，最近在想如何支持`masm6.x`语法
 - 尝试用异步重写了一些代码，希望不要引入bug

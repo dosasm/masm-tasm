@@ -1,7 +1,7 @@
 {
     "keykind.Command": "操作码助记符",
-    "keykind.Memory": "Memory",
-    "keykind.Instruction": "Instruction伪指令助记符",
+    "keykind.Memory": "数据定义指令",
+    "keykind.Instruction": "伪指令助记符",
     "keykind.Register": "Register寄存器",
     "keykind.Saved": "Saved保留字",
     "keykind.Size": "Size",
@@ -45,8 +45,8 @@
     "ascii.US": "(单元分隔符)",
     "ascii.space": "(空格)",
     "ascii.DEL": "(删除)",
-    "num.hex":"十六进制数",
-    "num.oct":"八进制数",
-    "num.dec":"十进制数",
-    "num.bin":"二进制数"
+    "num.hex": "十六进制数",
+    "num.oct": "八进制数",
+    "num.dec": "十进制数",
+    "num.bin": "二进制数"
 }

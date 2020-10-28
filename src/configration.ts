@@ -31,7 +31,7 @@ async function customToolCheck(path: string): Promise<ToolInfo> {
         hasTasm: false
     };
     let dir1 = await fs.readDirectory(uri);
-    console.log(inArrays(dir1, ["boxasm.bat", FileType.File]));
+    //console.log(inArrays(dir1, ["boxasm.bat", FileType.File]));
     if (inArrays(dir1, ["dosbox", FileType.Directory]) && process.platform === "win32") {
         let dir2 = await fs.readDirectory(Uri.joinPath(uri, './dosbox'));
         if (inArrays(dir2, ["dosbox.exe", FileType.File])) {
@@ -47,7 +47,7 @@ async function customToolCheck(path: string): Promise<ToolInfo> {
     info.hasBoxasm = inArrays(dir1, ["boxasm.bat", FileType.File]);
     info.hasMasm = inArrays(dir1, ["masm", FileType.Directory]);
     info.hasTasm = inArrays(dir1, ["tasm", FileType.Directory]);
-    console.log(dir1, info);
+    //console.log(dir1, info);
     return info;
 };
 function writefile(Uri: Uri, Content: string) {
@@ -82,11 +82,13 @@ export class Config {
         this.toolsUri = Uri.joinPath(content.extensionUri, './tools');
         if (toolpath) {
             customToolCheck(toolpath).then(
-                (value) => { this.customToolInfo = value; },
+                (value) => {
+                    this.customToolInfo = value;
+                    this.toolsUri = value.uri;
+                },
                 (reason) => { console.log(reason); this.customToolInfo = undefined; }
             );
         };
-
         //写dosbox配置信息
         this.writeBoxconfig(this);
     }
