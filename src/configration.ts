@@ -9,7 +9,7 @@ interface ToolInfo {
     hasMasm: boolean,
     hasTasm: boolean,
 }
-const inArrays = (data: [string, FileType][], arr: [string, FileType]) => {
+export const inArrays = (data: [string, FileType][], arr: [string, FileType]) => {
     let ignoreCase = process.platform === "win32";
     if (ignoreCase) {
         return data.some(e => e[0].toLowerCase() === arr[0] && e[1] === arr[1]);
@@ -32,9 +32,6 @@ async function customToolCheck(path: string): Promise<ToolInfo> {
     };
     let dir1 = await fs.readDirectory(uri);
     console.log(inArrays(dir1, ["boxasm.bat", FileType.File]));
-    if (inArrays(dir1, ["boxasm.bat", FileType.File])) {
-        info.hasBoxasm = true;
-    }
     if (inArrays(dir1, ["dosbox", FileType.Directory]) && process.platform === "win32") {
         let dir2 = await fs.readDirectory(Uri.joinPath(uri, './dosbox'));
         if (inArrays(dir2, ["dosbox.exe", FileType.File])) {
@@ -47,6 +44,7 @@ async function customToolCheck(path: string): Promise<ToolInfo> {
             info.hasPlayerasm = true;
         }
     }
+    info.hasBoxasm = inArrays(dir1, ["boxasm.bat", FileType.File]);
     info.hasMasm = inArrays(dir1, ["masm", FileType.Directory]);
     info.hasTasm = inArrays(dir1, ["tasm", FileType.Directory]);
     console.log(dir1, info);
@@ -65,12 +63,11 @@ export class Config {
     private _BOXrun: string | undefined;
     private emulator: string | undefined;
     public toolsUri: Uri;
-    private customToolInfo: ToolInfo | undefined = undefined;
-    public readonly toolsBuiltin: boolean = false;
+    public customToolInfo: ToolInfo | undefined = undefined;
     public readonly resolution: string | undefined;
     public readonly savefirst: boolean | undefined;
     public readonly MASMorTASM: string | undefined;
-    public OpenDosbox: string;
+    public readonly _console: string | undefined;
     constructor(content: ExtensionContext) {
         let configuration = workspace.getConfiguration('masmtasm');
         this.MASMorTASM = configuration.get('ASM.MASMorTASM');
@@ -78,6 +75,7 @@ export class Config {
         this.savefirst = configuration.get('ASM.savefirst');
         this.resolution = configuration.get('dosbox.CustomResolution');
         this._BOXrun = configuration.get('dosbox.run');
+        this._console = configuration.get("dosbox.console");
         this._exturi = content.extensionUri;
         //the tools' Uri
         let toolpath: string | undefined = configuration.get('ASM.toolspath');
@@ -88,19 +86,25 @@ export class Config {
                 (reason) => { console.log(reason); this.customToolInfo = undefined; }
             );
         };
+
+        //写dosbox配置信息
+        this.writeBoxconfig(this);
+    }
+    public get OpenDosbox() {
         //command for open
         let boxUri = Uri.joinPath(this._exturi, './tools/dosbox/dosbox.exe');
         if (this.customToolInfo?.hasDosbox) { boxUri = Uri.joinPath(this.customToolInfo.uri, './dosbox/dosbox.exe'); }
-        let command: string, path = '"' + boxUri.fsPath + '"';
-        switch (configuration.get("dosbox.console")) {
-            case "min": command = 'start/min/wait "" ' + path; break;
-            case "noconsole": command = path + ' -noconsole'; break;
-            case "normal":
-            default: command = path;
+        let command: string = "dosbox";
+        if (process.platform === "win32") {
+            let path = '"' + boxUri.fsPath + '"';
+            switch (this._console) {
+                case "min": command = 'start/min/wait "" ' + path; break;
+                case "noconsole": command = path + ' -noconsole'; break;
+                case "normal":
+                default: command = path;
+            }
         }
-        this.OpenDosbox = command;
-        //写dosbox配置信息
-        this.writeBoxconfig(this);
+        return command;
     }
     /**
      * file path of scripts packaged inside
@@ -120,9 +124,8 @@ export class Config {
      * file path of the separated space for DOSBox to use
      * which will be mounted as `D:` in dosbox
      */
-    public get workpath(): string {
-        let path = Uri.joinPath(this._exturi, './scripts/work/').fsPath;
-        return path;
+    public get workUri(): Uri {
+        return Uri.joinPath(this._exturi, './scripts/work/');
     }
     /**
      * file path of the compiler information in the dosbox mode

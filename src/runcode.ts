@@ -1,64 +1,66 @@
-import * as vscode from 'vscode';
-import { Config } from './configration';
+import { ExtensionContext, FileType, OutputChannel, TextDocument, Uri, window, workspace, } from 'vscode';
+import { Config, inArrays } from './configration';
 import * as DOSBox from './DOSBox';
-import { MSDOSplayer } from './viaPlayer';
+import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import { AssemblerDiag } from './language/diagnose';
 export class AsmAction {
-    private readonly extOutChannel: vscode.OutputChannel;
+    private readonly extOutChannel: OutputChannel;
     private _config: Config;
-    private msdosplayer: MSDOSplayer;
     private landiag: AssemblerDiag;
-    constructor(context: vscode.ExtensionContext) {
-        this.extOutChannel = vscode.window.createOutputChannel('Masm-Tasm');
+    constructor(context: ExtensionContext) {
+        this.extOutChannel = window.createOutputChannel('Masm-Tasm');
         this._config = new Config(context);
-        this.msdosplayer = new MSDOSplayer();
         this.landiag = new AssemblerDiag(this.extOutChannel);
-        vscode.workspace.onDidChangeConfiguration((event) => { this._config = new Config(context); }, this._config);
+        workspace.onDidChangeConfiguration((event) => { this._config = new Config(context); }, this._config);
     }
     /**
      * open the emulator(currently just the DOSBox)
      * @param doc The vscode document to be copied to the workspace
      */
-    private Openemu(doc: vscode.TextDocument) {
+    private Openemu(doc: TextDocument) {
         let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Open DOSBox:{0}", doc.fileName);
         this.extOutChannel.appendLine(openemumsg);
         DOSBox.runDosbox(this._config, undefined, doc);
     }
-    /**
-     * run the ASM code
-     * @param doc The vscode document to be compiled to run
-     */
-    private Run(doc: vscode.TextDocument) {
-        let runmsg = localize("run.msg", "\n{0}({1})>>Run:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName);
-        this.extOutChannel.appendLine(runmsg);
-        switch (this._config.DOSemu) {
-            case 'msdos player': this.msdosplayer.PlayerASM(this._config, true, true, this.landiag, doc); break;
-            case 'dosbox':
-                DOSBox.runDosbox2(this._config, true, doc, this.landiag);
-                break;
-            case 'auto': this.msdosplayer.PlayerASM(this._config, true, false, this.landiag, doc); break;
-            default: throw new Error("未指定emulator");
+    public async RunDebug(doc: TextDocument, runOrDebug: boolean) {
+        await CleanCopy(doc.uri, this._config.workUri);
+        let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM
+        let stdout: string | undefined = undefined;
+        if (runOrDebug) { msg = localize("run.msg", "\n{0}({1})>>Run:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
+        else { msg = localize("debug.msg", "\n{0}({1})>>Debug:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
+        this.extOutChannel.appendLine(msg);
+        if (DOSemu === "dosbox") {
+            stdout = await DOSBox.runDosbox2(this._config, runOrDebug,)
         }
-    }
-    /**
-     * debug the ASM code
-     * @param doc The vscode document to be compiled and debug
-     */
-    private Debug(doc: vscode.TextDocument) {
-        let debugmsg = localize("debug.msg", "\n{0}({1})>>Debug:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName);
-        this.extOutChannel.appendLine(debugmsg);
-        if (this._config.DOSemu === 'msdos player' && this._config.MASMorTASM === 'MASM') {
-            this.msdosplayer.PlayerASM(this._config, false, true, this.landiag, doc);
+        else if (DOSemu === "auto" || DOSemu === "msdos player") {
+            stdout = await MSDos.runPlayer(this._config, doc.fileName);
         }
-        else if (this._config.DOSemu === 'auto') {
-            let inplayer: boolean = false;
-            if (this._config.MASMorTASM === 'MASM') { inplayer = true; }
-            this.msdosplayer.PlayerASM(this._config, false, inplayer, this.landiag, doc);
-        }
-        else {
-            DOSBox.runDosbox2(this._config, false, doc, this.landiag);
+        //process the error information from assembler
+        if (stdout) {
+            let code = this.landiag.ErrMsgProcess(doc.getText(), stdout, doc.uri, MASMorTASM);
+            let goon: boolean = false;
+            switch (code) {
+                case 0:
+                    let Errmsgwindow = localize("runcode.error", "{0} Error,Can't generate .exe file", MASMorTASM);
+                    window.showErrorMessage(Errmsgwindow);
+                    break;
+                case 1:
+                    let warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", MASMorTASM);
+                    let Go_on = localize("runcode.continue", "continue");
+                    let Stop = localize("runcode.stop", "stop");
+                    window.showInformationMessage(warningmsgwindow, Go_on, Stop).then(result => {
+                        if (result === Go_on) { goon = true; }
+                    });
+                    break;
+                case 2:
+                    goon = true;
+                    break;
+            }
+            if (goon && (DOSemu === "msdos player" || DOSemu === "auto")) {
+                MSDos.RunDebug(this._config, DOSemu === "msdos player", runOrDebug);
+            };
         }
     }
     public cleanalldiagnose() {
@@ -66,7 +68,7 @@ export class AsmAction {
     }
     public deactivate() {
         this.extOutChannel.dispose();
-        this.msdosplayer.deactivate();
+        MSDos.deactivate();
     }
     /**Do the operation according to the input.
      * "opendosbox": open DOSBOX at a separated space;
@@ -76,21 +78,32 @@ export class AsmAction {
      * @param command "opendosbox" or "run" or "debug" or "here"
      */
     public runcode(command: string) {
-        let document = vscode.window.activeTextEditor?.document;
+        let document = window.activeTextEditor?.document;
         if (document) {
-            if (this._config.savefirst && vscode.window.activeTextEditor?.document.isDirty) {
+            if (this._config.savefirst && window.activeTextEditor?.document.isDirty) {
                 document.save().then(() => { if (document) { this.asmit(command, document); } });
             }
             else { this.asmit(command, document); }
         }
     }
 
-    private asmit(command: string, doc: vscode.TextDocument) {
+    private asmit(command: string, doc: TextDocument) {
         switch (command) {
             case 'opendosbox': this.Openemu(doc); break;
-            case 'run': this.Run(doc); break;
-            case 'debug': this.Debug(doc); break;
+            case 'run': this.RunDebug(doc, true); break;
+            case 'debug': this.RunDebug(doc, false); break;
             case 'here': DOSBox.BoxOpenCurrentFolder(this._config, doc);
         }
     }
+}
+async function CleanCopy(file: Uri, dir: Uri) {
+    let fs = workspace.fs;
+    let dirInfo = await fs.readDirectory(dir);
+    if (inArrays(dirInfo, ["T.OBJ", FileType.File])) {
+        await fs.delete(Uri.joinPath(dir, "./T.OBJ"), { recursive: false, useTrash: false });
+    }
+    if (inArrays(dirInfo, ["T.EXE", FileType.File])) {
+        await fs.delete(Uri.joinPath(dir, "./T.EXE"), { recursive: false, useTrash: false });
+    }
+    fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
 }
