@@ -90,7 +90,7 @@ export class Config {
             );
         };
         //写dosbox配置信息
-        this.writeBoxconfig(this);
+        this.writeBoxconfig();
     }
     public get OpenDosbox() {
         //command for open
@@ -212,16 +212,15 @@ export class Config {
     }
     /**
      * write the DOSBox configuration file
-     * @param conf 
      * @param autoExec 
      */
-    private writeBoxconfig(conf: Config, autoExec?: string) {
-        let configUri = conf.dosboxconfuri;
+    private writeBoxconfig(autoExec?: string) {
+        let configUri = this.dosboxconfuri;
         let configContent = `[sdl]
-windowresolution=${conf.resolution}
+windowresolution=${this.resolution}
 output=opengl
 `;
-        if (autoExec) { configContent = configContent + '\n' + autoExec; }
+        if (autoExec) { configContent = configContent + '\n[AUTOEXEC]\n' + autoExec; }
         writefile(configUri, configContent);
     }
 

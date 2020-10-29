@@ -1,13 +1,14 @@
 # Change Log
 
-## welcome feedback and contribution [github issue](https://github.com/xsro/masm-tasm/issues)
+## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
-### 0.5.0/0.5.1/0.5.2
+## 0.5.x
 
 - MASM插件更新到 `6.11`，最近在想如何支持`masm6.x`语法
 - 尝试用异步重写了一些代码，希望不要引入bug
 - (0.5.2)修复由于masm无法脱离ml运行而引发的问题
-- 如果仍然有问题，可以安装历史版本
+- (0.5.3)修复有些情况会调用错误的dos模拟器的问题
+- 如果仍然有问题，可以安装历史版本推荐`0.4.0`,`0.5.0-0.5.2`可能有致命问题不推荐
 
 ### 0.4.0
 

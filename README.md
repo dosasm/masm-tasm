@@ -4,14 +4,11 @@
 
 Language support for DOS assembly,may be suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
 
-- Offer *grammar*,basic *outline* view,*hover*,*code formate* support for DOS assembly language
-- Support both **TASM and MASM** assembler tools: you can choose MASM or TASM in the preference
-- In **Editor Menu**: run and debug assembly with right click on the VSCode editor panel
+- (**Language Support**) Offer *grammar*,basic *outline* view,*hover*,*code formate* support for DOS assembly language
+- **Run and debug** assembly with right click on the VSCode editor panel. You can choose using MASM or TASM in the preference-settings.
 - **Diagnose**: process the output of ASM tools and display them in VSCode
 - **For windows**, all needed tools have been packaged in the extension.Just install and enjoy!
-- [For other systems](#for-linux): you need to install [DOSBox](https://www.dosbox.com) first
-
-Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) 's extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086),[blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) and [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code). Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help.
+- [For other systems](#for-other-system): you need to install [DOSBox](https://www.dosbox.com) first
 
 ## Features
 
@@ -50,7 +47,7 @@ The extension offer some programmatic features like "hover","formate","jump to d
 - some ASM commands you may need: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
 - Some interesting assembly codes you may need: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
 
-## For linux and other system
+## For other system
 
 The extension is packaged with all needed [tools](#about-tools) inside,but some of these tools are for windows. So **Linux and other OS** users *should* make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox")). Use command like
 
@@ -101,8 +98,10 @@ The extension will mount some folder to DOSBox 's disk. Please don't modify them
 
 ## Docs & Thanks & Licenses
 
-- This extension is [MIT license](https://github.com/xsro/masm-tasm/blob/main/LICENSE).
-- Thanks for [Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086),[Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code),[blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm),[msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com)
+- Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) 's extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086),[blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) for ASM language information
+- Thanks to [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code)
+- Using [msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com) as DOS environment emulator
+- Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help
 - [some infomation :wiki](https://github.com/xsro/masm-tasm/wiki)
 
 Enjoy!:smile:
