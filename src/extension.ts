@@ -7,7 +7,7 @@ import { provider } from "./language/provider";
 let asm: AsmAction;
 export function activate(context: vscode.ExtensionContext) {
 	console.log(localize("activate.hello", 'Congratulations, your extension "masm-tasm" is now active!'));
-	//provide programmaic language features like hover,references,outline(symbol)masmtasm.language.Hover
+	//provide programmaic language features like hover,references,outline(symbol)
 	provider(context);
 	//run and debug the code in dosbox or msdos-player by TASM ot MASM
 	asm = new AsmAction(context);
@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let debugASM = vscode.commands.registerTextEditorCommand('masm-tasm.debugASM', () => {
 		asm.runcode('debug');
 	});
-	let cleanalldiagnose = vscode.commands.registerTextEditorCommand('masm-tasm.cleanalldiagnose', () => {
+	let cleanalldiagnose = vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => {
 		asm.cleanalldiagnose();
 	});
 	let dosboxhere = vscode.commands.registerCommand('masm-tasm.dosboxhere', () => {

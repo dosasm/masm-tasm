@@ -27,7 +27,8 @@ export function runPlayer(conf: Config, filename: string): Promise<string> {
             setTimeout(() => {
                 if (child.exitCode === null) {
                     child.kill();
-                    window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nFilepath: ${conf.msbatpath} `)
+                    window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nFilepath: ${conf.msbatpath}`);
+                    console.log(child);
                 }
             }, timeout);
 
