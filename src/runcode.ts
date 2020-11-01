@@ -22,7 +22,8 @@ export class AsmAction {
     private Openemu(doc: TextDocument) {
         let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Open DOSBox:{0}", doc.fileName);
         this.extOutChannel.appendLine(openemumsg);
-        DOSBox.runDosbox(this._config, undefined, doc);
+        CleanCopy(doc.uri, this._config.workUri);
+        DOSBox.runDosbox(this._config);
     }
     public async RunDebug(doc: TextDocument, runOrDebug: boolean) {
         await CleanCopy(doc.uri, this._config.workUri);
@@ -100,14 +101,32 @@ export class AsmAction {
         }
     }
 }
+const delList = [
+    "T.exe",
+    "T.map",
+    "T.obj",
+    "T.TXT",
+    "T.TR",
+    "TDCONFIG.TD"
+];
 async function CleanCopy(file: Uri, dir: Uri) {
     let fs = workspace.fs;
     let dirInfo = await fs.readDirectory(dir);
-    if (inArrays(dirInfo, ["T.OBJ", FileType.File])) {
-        await fs.delete(Uri.joinPath(dir, "./T.OBJ"), { recursive: false, useTrash: false });
-    }
-    if (inArrays(dirInfo, ["T.EXE", FileType.File])) {
-        await fs.delete(Uri.joinPath(dir, "./T.EXE"), { recursive: false, useTrash: false });
-    }
+    //delete files to avoid this files confusing the codes
+    delList.forEach(
+        async (value) => {
+            if (inArrays(dirInfo, [value, FileType.File])) {
+                await fs.delete(Uri.joinPath(dir, value), { recursive: false, useTrash: false });
+            }
+        }
+    )
     fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
+}
+const foudFile = (data: [string, FileType][], arr: [string, FileType], ignoreCases: boolean) => {
+    for (let i = 0; i < data.length; i++) {
+        if (arr === data[i]) {
+            return data[i];
+            break;
+        }
+    }
 }

@@ -12,7 +12,7 @@ interface ToolInfo {
 export const inArrays = (data: [string, FileType][], arr: [string, FileType]) => {
     let ignoreCase = process.platform === "win32";
     if (ignoreCase) {
-        return data.some(e => e[0].toLowerCase() === arr[0] && e[1] === arr[1]);
+        return data.some(e => e[0].toLowerCase() === arr[0].toLowerCase() && e[1] === arr[1]);
     }
     else {
         return data.some(e => e.every((o, i) => Object.is(arr[i], o)));
