@@ -12,7 +12,7 @@ export async function runDosbox2(conf: Config, runOrDebug: boolean): Promise<str
     let target: Uri = Uri.joinPath(conf.toolsUri, "./boxasm.bat");
     if (!conf.customToolInfo?.hasBoxasm) { await fs.copy(src, target, { overwrite: true }); }
     await runDosbox(conf, conf.boxasmCommand(runOrDebug));
-    let stdout: Uint8Array = await fs.readFile(conf.workloguri)
+    let stdout: Uint8Array = await fs.readFile(conf.workloguri);
     return stdout.toString();
 }
 /**open dosbox and do things about it
@@ -121,9 +121,7 @@ function openDosbox(opt: OPTS): Promise<string> {
             child.on('exit', (code) => {
                 if (code !== 0) {
                     let msg = `Open dosbox Failed\t exitcode${code}\n`;
-                    if (process.platform !== "win32") {
-                        msg += 'PLEASE make sure DOSBox can be opened by terminal command "dosbox"';
-                    }
+                    msg += 'PLEASE make sure DOSBox can be opened by terminal command \n' + str;
                     window.showErrorMessage(msg);
                 }
             })

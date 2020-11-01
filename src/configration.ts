@@ -58,16 +58,18 @@ function writefile(Uri: Uri, Content: string) {
  * class for configurations
  */
 export class Config {
-    private readonly _toolspackaged: boolean = true;//如果打包时没有包含汇编工具（tools）改为false 废弃
-    private readonly _exturi: Uri;
-    private _BOXrun: string | undefined;
-    private emulator: string | undefined;
     public toolsUri: Uri;
     public customToolInfo: ToolInfo | undefined = undefined;
-    public readonly resolution: string | undefined;
     public readonly savefirst: boolean | undefined;
     public readonly MASMorTASM: string | undefined;
-    public readonly _console: string | undefined;
+    //
+    private readonly _toolspackaged: boolean = true;//如果打包时没有包含汇编工具（tools）改为false 废弃
+    private readonly _exturi: Uri;
+    private readonly _BOXrun: string | undefined;
+    private readonly emulator: string | undefined;
+    private readonly resolution: string | undefined;
+    private readonly _console: string | undefined;
+    private readonly _command: string | undefined;
     constructor(content: ExtensionContext) {
         let configuration = workspace.getConfiguration('masmtasm');
         this.MASMorTASM = configuration.get('ASM.MASMorTASM');
@@ -76,6 +78,7 @@ export class Config {
         this.resolution = configuration.get('dosbox.CustomResolution');
         this._BOXrun = configuration.get('dosbox.run');
         this._console = configuration.get("dosbox.console");
+        this._command = configuration.get("dosbox.command");
         this._exturi = content.extensionUri;
         //the tools' Uri
         let toolpath: string | undefined = configuration.get('ASM.toolspath');
@@ -92,12 +95,20 @@ export class Config {
         //写dosbox配置信息
         this.writeBoxconfig();
     }
+    /**
+     * @returns a string can be send to terminal, to open dosbox according to different system and configration
+     */
     public get OpenDosbox() {
-        //command for open
-        let boxUri = Uri.joinPath(this._exturi, './tools/dosbox/dosbox.exe');
-        if (this.customToolInfo?.hasDosbox) { boxUri = Uri.joinPath(this.customToolInfo.uri, './dosbox/dosbox.exe'); }
+        //command for open dosbox
         let command: string = "dosbox";
+        //First, use the user-defined command;
+        if (this._command) {
+            return this._command + " ";
+        }
+        //for windows,using different command according to dosbox's path and the choice of the console window
         if (process.platform === "win32") {
+            let boxUri = Uri.joinPath(this._exturi, './tools/dosbox/dosbox.exe');
+            if (this.customToolInfo?.hasDosbox) { boxUri = Uri.joinPath(this.customToolInfo.uri, './dosbox/dosbox.exe'); }
             let path = '"' + boxUri.fsPath + '"';
             switch (this._console) {
                 case "min": command = 'start/min/wait "" ' + path; break;
@@ -106,10 +117,15 @@ export class Config {
                 default: command = path;
             }
         }
+        //for darwin
+        else if (process.platform === "darwin") {
+            command = "open -a DOSBox --args ";
+        }
+        //for other system, temporarily use command `dosbox`
         return command;
     }
     /**
-     * file path of scripts packaged inside
+     * @return Uri of scripts packaged inside
      */
     public get extScriptsUri(): Uri {
         let path = Uri.joinPath(this._exturi, './scripts');
