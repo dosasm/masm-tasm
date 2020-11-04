@@ -1,6 +1,6 @@
 # DOS assembly (MASM/TASM) via DOSBox(and msdos-player)
 
-[中文](https://github.com/xsro/masm-tasm/blob/main/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/main/README.md)
+[中文](https://github.com/xsro/masm-tasm/blob/main/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/main/README.md)|[more versions](https://github.com/xsro/masm-tasm/releases)
 
 Language support for DOS assembly,may be suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
 
@@ -49,12 +49,22 @@ The extension offer some programmatic features like "hover","formate","jump to d
 
 ## For other system
 
-The extension is packaged with all needed [tools](#about-tools) inside,but some of these tools are for windows. So **Linux and other OS** users *should* make sure DOSBox can be opened by shell command `dosbox` (node: child_process.exec("dosbox")). Use command like
+The extension is packaged with needed [tools](#about-tools) for windows inside while **other OS** users *should* make sure DOSBox can be opened by shell command.We can download DOSBox from its website:[DOSBox](https://www.dosbox.com)
+
+For MacOS (Darwin),the extension will use command `open -a DOSBox --args` to open DOSBox. So you need to 
+
+1. download dmg file from [DOSBox's website](https://www.dosbox.com)
+2. Double-click the `.DMG` file to mount it. A new Finder window showing its contents should appear.
+3. double-click the mounted volume on your desktop and drag the app icon from there to the “Applications” icon in the Finder sidebar.
+
+For Ubuntu and other linux system user,The extension will use shell command `dosbox` to open DOSBox. We can use command like this:
 
 ```sh
 sudo apt install dosbox  #install dosbox
 dosbox #if successfully opened the dosbox, it is largely possible for the extension to use dosbox
 ```
+
+You can also use the setting ID `masmtasm.dosbox.command` to set your command for the extension to open DOSBox.
 
 ## Extension Settings
 

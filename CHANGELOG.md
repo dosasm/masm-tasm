@@ -2,6 +2,11 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
+## 0.6.0
+
+- 通过终端命令`open -a DOSBox --args `支持在MAC（darwin）中打开dosbox
+- 支持通过设置`masmtasm.dosbox.command`自定义用来打开DOSBox的命令 
+
 ## 0.5.x
 
 - MASM插件更新到 `6.11`，最近在想如何支持`masm6.x`语法

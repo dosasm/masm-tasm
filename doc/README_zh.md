@@ -1,6 +1,6 @@
 # 16位/32位汇编语言开发工具
 
-[中文](https://github.com/xsro/masm-tasm/blob/main/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/main/README.md)
+[中文](https://github.com/xsro/masm-tasm/blob/main/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/main/README.md)|[其他版本](https://github.com/xsro/masm-tasm/releases)
 
 :raising_hand:在学习《微型计算机原理与接口技术》的**汇编语言**部分时，苦于没有比较顺手的编程环境，此插件实现了在VSCode中对DOSBox等汇编工具的快速调用。主要功能特性如下：
 
@@ -56,7 +56,9 @@ sudo apt install dosbox #安装dosbox
 dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插件也能调用
 ```
 
-理论上说只要能在命令行执行`dosbox`命令打开dosbox（nodejs 的child_process.exec(dosbox)命令），就可以使用本插件。
+- 对于MAC系统，安装DOSBox需要将下载的dmg文件双击打开，并把里面的文件DOSBox程序文件拖到mac的应用程序（application）文件夹中。插件将使用终端命令`open -a DOSBox --args`来启动DOSBox
+- 对于其他系统，理论上说只要能在命令行执行`dosbox`命令打开DOSBox（nodejs 的child_process.exec(dosbox)命令），就可以使用本插件了
+- 也可以设置`masmtasm.dosbox.command`来自定义打开DOSBox的命令
 
 ## :point_right:Extension Settings主要拓展设置
 
