@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 
-const localize = nls.config({ messageFormat: nls.MessageFormat.both })();
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 import { AsmAction } from './runcode';
 import { provider } from "./language/provider";
 let asm: AsmAction;

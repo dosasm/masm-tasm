@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 let symbols: TasmSymbol[] = [];//record symbols in the doc in a simple way
 let _documentText: string | undefined;//record the processing document
 let _docUri: vscode.Uri | undefined;

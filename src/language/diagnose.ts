@@ -1,6 +1,7 @@
 import { languages, Diagnostic, Range, Position, DiagnosticCollection, Uri, DiagnosticRelatedInformation, OutputChannel, env } from 'vscode';
 import * as nls from "vscode-nls";
-const localize = nls.loadMessageBundle();
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 export class AssemblerDiag {
     private masmCollection: DiagnosticCollection;
     private tasmCollection: DiagnosticCollection;

@@ -3,7 +3,9 @@ import { Config, inArrays } from './configration';
 import * as DOSBox from './DOSBox';
 import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 import { AssemblerDiag } from './language/diagnose';
 export class AsmAction {
     private readonly extOutChannel: OutputChannel;
@@ -13,7 +15,7 @@ export class AsmAction {
         this.extOutChannel = window.createOutputChannel('Masm-Tasm');
         this._config = new Config(context);
         this.landiag = new AssemblerDiag(this.extOutChannel);
-        workspace.onDidChangeConfiguration((event) => { this._config = new Config(context); }, this._config);
+        workspace.onDidChangeConfiguration(() => { this._config = new Config(context); }, this._config);
     }
     /**
      * open the emulator(currently just the DOSBox)
@@ -27,13 +29,13 @@ export class AsmAction {
     }
     public async RunDebug(doc: TextDocument, runOrDebug: boolean) {
         await CleanCopy(doc.uri, this._config.workUri);
-        let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM
+        let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM;
         let stdout: string | undefined = undefined;
         if (runOrDebug) { msg = localize("run.msg", "\n{0}({1})>>Run:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
         else { msg = localize("debug.msg", "\n{0}({1})>>Debug:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
         this.extOutChannel.appendLine(msg);
         if (DOSemu === "dosbox") {
-            stdout = await DOSBox.runDosbox2(this._config, runOrDebug,)
+            stdout = await DOSBox.runDosbox2(this._config, runOrDebug);
         }
         else if (DOSemu === "auto" || DOSemu === "msdos player") {
             stdout = await MSDos.runPlayer(this._config, doc.fileName);
@@ -63,7 +65,7 @@ export class AsmAction {
                 let flag: boolean = DOSemu === "msdos player";
                 //msdos mode:  TASM debug command `TD` can only run in dosbox;(I do this inside `MSDos.RunDebug`)
                 //auto mode: run in dosbox,`TD` in dosbox,MASM debug command `debuq` in player
-                flag = (MASMorTASM === "MASM" && runOrDebug === false && DOSemu == "auto") || flag
+                flag = (MASMorTASM === "MASM" && runOrDebug === false && DOSemu === "auto") || flag;
                 MSDos.RunDebug(this._config, flag, runOrDebug);
             };
         }
@@ -119,14 +121,14 @@ async function CleanCopy(file: Uri, dir: Uri) {
                 await fs.delete(Uri.joinPath(dir, value), { recursive: false, useTrash: false });
             }
         }
-    )
+    );
     fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
 }
-const foudFile = (data: [string, FileType][], arr: [string, FileType], ignoreCases: boolean) => {
+const foudFile = (data: [string, FileType][], arr: [string, FileType], _ignoreCases: boolean) => {
     for (let i = 0; i < data.length; i++) {
         if (arr === data[i]) {
             return data[i];
             break;
         }
     }
-}
+};

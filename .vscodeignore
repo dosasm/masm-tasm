@@ -4,7 +4,7 @@
 .vscode-test/**
 out/test/**
 # ignore unarchieved feature
-dist/**
+out/**
 # ignore source
 src/**
 #ignore dev files
@@ -12,6 +12,7 @@ src/**
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/.eslintrc.json
+**/.eslintignore.json
 **/*.map
 **/*.ts
 gulpfile.js

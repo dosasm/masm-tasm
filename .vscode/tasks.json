@@ -16,14 +16,27 @@
 			"detail": "tsc -watch -p ./"
 		},
 		{
-			"type": "gulp",
-			"task": "build",
+			"type": "npm",
+			"script": "compile-dev",
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			},
+			}
+		},
+		{
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"label": "npm: lint",
+			"detail": "eslint src --ext ts"
+		},
+		{
+			"type": "gulp",
+			"task": "clean",
 			"problemMatcher": [],
-			"label": "gulp: build"
+			"label": "gulp: clean"
 		}
 	]
 }

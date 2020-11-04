@@ -124,7 +124,7 @@ function openDosbox(opt: OPTS): Promise<string> {
                     msg += 'PLEASE make sure DOSBox can be opened by terminal command \n' + str;
                     window.showErrorMessage(msg);
                 }
-            })
+            });
         }
     );
 }
