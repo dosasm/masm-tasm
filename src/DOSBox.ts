@@ -103,7 +103,7 @@ function openDosbox(opt: OPTS): Promise<string> {
     }
     let execOption: ExecOptions;
     if (process.platform === 'win32') {
-        execOption = { cwd: opt.cwd, shell: 'cmd.exe' };
+        execOption = { cwd: opt.cwd };
     }
     else {
         execOption = { cwd: opt.cwd };
