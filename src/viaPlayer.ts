@@ -1,7 +1,7 @@
 import { window, Terminal } from 'vscode';
 import { Config } from './configration';
 import { exec } from 'child_process';
-import * as DOSBox from './DOSBox';
+
 let msdosTerminal: Terminal | null = null;
 export function runPlayer(conf: Config, filename: string): Promise<string> {
     let command = '"' + conf.msbatpath + '" "' + conf.path + '" ' + conf.MASMorTASM + ' "' + filename + '" "' + conf.workUri.fsPath + '"';
@@ -36,28 +36,7 @@ export function runPlayer(conf: Config, filename: string): Promise<string> {
     );
 
 }
-export function RunDebug(conf: Config, viaplayer: boolean, runordebug: boolean) {
-    let debug: string;
-    if (conf.MASMorTASM === 'TASM') {
-        debug = 'if exist c:\\tasm\\TDC2.TD copy c:\\tasm\\TDC2.TD TDCONFIG.TD \nTD T.EXE';
-    }
-    else {
-        debug = 'DEBUG T.EXE';
-    }
-    let flag: boolean = (conf.MASMorTASM === "TASM" && runordebug === false);
-    if (viaplayer && !flag) {
-        outTerminal(runordebug, conf);
-    }
-    else {
-        if (runordebug) {
-            DOSBox.runDosbox(conf, 'T.EXE' + conf.boxruncmd);
-        }
-        else {
-            DOSBox.runDosbox(conf, debug);
-        }
-    }
-}
-function outTerminal(run: boolean, conf: Config) {
+export function outTerminal(run: boolean, conf: Config) {
     let myenv = process.env;
     let myenvPATH = myenv.PATH + ';' + conf.path + '\\player;' + conf.path + '\\tasm;' + conf.path + '\\masm;';
     if (msdosTerminal?.exitStatus || msdosTerminal === null) {

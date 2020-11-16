@@ -5,7 +5,6 @@ import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
 import { AssemblerDiag } from './language/diagnose';
 export class AsmAction {
     private readonly extOutChannel: OutputChannel;
@@ -27,6 +26,15 @@ export class AsmAction {
         CleanCopy(doc.uri, this._config.workUri);
         DOSBox.runDosbox(this._config);
     }
+    /**
+     *  `msdos (player) mode`: use msdos for run and debug,but TASM debug command `TD` can only run in dosbox
+     *  `auto mode`: run in dosbox,`TD` in dosbox,MASM debug command `debug` in player 
+     * 
+     *  | feature | MASM run | MASM debug | TASM run | TASM TD |
+     *  | ------- | -------- | ---------- | -------- | ------- |
+     *  | msdos   | msdos    | msdos      | msdos    | dosbox  |
+     *  | auto    | dosbox   | msdos      | dosbox   | dosbox  |
+     */
     public async RunDebug(doc: TextDocument, runOrDebug: boolean) {
         await CleanCopy(doc.uri, this._config.workUri);
         let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM;
@@ -62,11 +70,29 @@ export class AsmAction {
                     break;
             }
             if (goon && (DOSemu === "msdos player" || DOSemu === "auto")) {
-                let flag: boolean = DOSemu === "msdos player";
-                //msdos mode:  TASM debug command `TD` can only run in dosbox;(I do this inside `MSDos.RunDebug`)
-                //auto mode: run in dosbox,`TD` in dosbox,MASM debug command `debuq` in player
-                flag = (MASMorTASM === "MASM" && runOrDebug === false && DOSemu === "auto") || flag;
-                MSDos.RunDebug(this._config, flag, runOrDebug);
+                let viaPlayer: boolean = DOSemu === "msdos player";
+                //use msdos for debug.exe when debugging code via MASM
+                if (MASMorTASM === "MASM" && runOrDebug === false && DOSemu === "auto") { viaPlayer = true; }
+                //use dosbox for TD.exe when debugging code with TASM
+                if (MASMorTASM === "TASM" && runOrDebug === false && DOSemu === "msdos player") { viaPlayer = false; }
+                if (viaPlayer) {
+                    MSDos.outTerminal(runOrDebug, this._config);
+                }
+                else {
+                    if (runOrDebug) {
+                        DOSBox.runDosbox(this._config, 'T.EXE' + this._config.boxruncmd);
+                    }
+                    else {
+                        let debug: string;
+                        if (MASMorTASM === 'TASM') {
+                            debug = 'if exist c:\\tasm\\TDC2.TD copy c:\\tasm\\TDC2.TD TDCONFIG.TD \nTD T.EXE';
+                        }
+                        else {
+                            debug = 'DEBUG T.EXE';
+                        }
+                        DOSBox.runDosbox(this._config, debug);
+                    }
+                }
             };
         }
     }
