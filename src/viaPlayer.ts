@@ -1,14 +1,31 @@
-import { window, Terminal } from 'vscode';
-import { Config } from './configration';
+import { window, Terminal, Uri } from 'vscode';
 import { exec } from 'child_process';
-
+export interface PlayerConfig {
+    /**
+     * the path of the playerasm.bat
+     */
+    playerbat: string;
+    /**
+     * the workspace path
+     */
+    workUri: Uri;
+    /**
+     * the Uri of the folder of ASM tools
+     */
+    ASMtoolsUri: Uri;
+    /**
+     * "MASM" or "TASM"
+     */
+    MASMorTASM: 'MASM' | 'TASM';
+}
 let msdosTerminal: Terminal | null = null;
-export function runPlayer(conf: Config, filename: string): Promise<string> {
-    let command = '"' + conf.msbatpath + '" "' + conf.path + '" ' + conf.MASMorTASM + ' "' + filename + '" "' + conf.workUri.fsPath + '"';
+export function runPlayer(conf: PlayerConfig, filename: string): Promise<string> {
+    let toolspath = conf.ASMtoolsUri.fsPath;
+    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + filename + '" "' + conf.workUri.fsPath + '"';
     return new Promise<string>(
         (resolve, reject) => {
             let child = exec(
-                command, { cwd: conf.path, shell: 'cmd.exe' }, (error, stdout, stderr) => {
+                command, { cwd: toolspath, shell: 'cmd.exe' }, (error, stdout, stderr) => {
                     if (error) {
                         reject(["exec msdos player error", error, stderr]);
                     }
@@ -19,7 +36,7 @@ export function runPlayer(conf: Config, filename: string): Promise<string> {
             );
             child.on('exit', (code) => {
                 if (code && code !== 0) {
-                    let msg = `Use playerasm.bat Failed\t exitcode${code}\t\nFilepath: ${conf.msbatpath}`;
+                    let msg = `Use playerasm.bat Failed\t exitcode${code}\t\nFilepath: ${conf.playerbat}`;
                     window.showErrorMessage(msg);
                 }
             });
@@ -27,7 +44,7 @@ export function runPlayer(conf: Config, filename: string): Promise<string> {
             setTimeout(() => {
                 if (child.exitCode === null) {
                     child.kill();
-                    window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nFilepath: ${conf.msbatpath}`);
+                    window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nCommand: ${command}`);
                     console.log(child);
                 }
             }, timeout);
@@ -36,9 +53,9 @@ export function runPlayer(conf: Config, filename: string): Promise<string> {
     );
 
 }
-export function outTerminal(run: boolean, conf: Config) {
-    let myenv = process.env;
-    let myenvPATH = myenv.PATH + ';' + conf.path + '\\player;' + conf.path + '\\tasm;' + conf.path + '\\masm;';
+export function outTerminal(run: boolean, conf: PlayerConfig) {
+    let myenv = process.env, toolspath = conf.ASMtoolsUri.fsPath;
+    let myenvPATH = myenv.PATH + ';' + toolspath + '\\player;' + toolspath + '\\tasm;' + toolspath + '\\masm;';
     if (msdosTerminal?.exitStatus || msdosTerminal === null) {
         msdosTerminal = window.createTerminal({
             cwd: conf.workUri.fsPath,

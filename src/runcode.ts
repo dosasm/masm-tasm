@@ -3,9 +3,9 @@ import { Config, inArrays } from './configration';
 import * as DOSBox from './DOSBox';
 import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
+import { AssemblerDiag } from './language/diagnose';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-import { AssemblerDiag } from './language/diagnose';
 export class AsmAction {
     private readonly extOutChannel: OutputChannel;
     private _config: Config;
@@ -14,7 +14,9 @@ export class AsmAction {
         this.extOutChannel = window.createOutputChannel('Masm-Tasm');
         this._config = new Config(context);
         this.landiag = new AssemblerDiag(this.extOutChannel);
-        workspace.onDidChangeConfiguration(() => { this._config = new Config(context); }, this._config);
+        workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context); }
+        });
     }
     /**
      * open the emulator(currently just the DOSBox)
@@ -150,11 +152,11 @@ async function CleanCopy(file: Uri, dir: Uri) {
     );
     fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
 }
-const foudFile = (data: [string, FileType][], arr: [string, FileType], _ignoreCases: boolean) => {
-    for (let i = 0; i < data.length; i++) {
-        if (arr === data[i]) {
-            return data[i];
-            break;
-        }
-    }
-};
+// const foudFile = (data: [string, FileType][], arr: [string, FileType], _ignoreCases: boolean) => {
+//     for (let i = 0; i < data.length; i++) {
+//         if (arr === data[i]) {
+//             return data[i];
+//             break;
+//         }
+//     }
+// };
