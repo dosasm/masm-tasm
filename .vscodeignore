@@ -2,9 +2,7 @@
 .vscode/**
 # ignore test
 .vscode-test/**
-out/test/**
-# ignore unarchieved feature
-out/**
+dist/test/**
 # ignore source
 src/**
 #ignore dev files
