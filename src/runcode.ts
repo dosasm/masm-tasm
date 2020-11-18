@@ -37,7 +37,7 @@ export class AsmAction {
      *  | msdos   | msdos    | msdos      | msdos    | dosbox  |
      *  | auto    | dosbox   | msdos      | dosbox   | dosbox  |
      */
-    public async RunDebug(doc: TextDocument, runOrDebug: boolean) {
+    public async RunDebug(doc: TextDocument, runOrDebug: boolean): Promise<Object> {
         await CleanCopy(doc.uri, this._config.workUri);
         let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM;
         let stdout: string | undefined = undefined;
@@ -50,26 +50,29 @@ export class AsmAction {
         else if (DOSemu === "auto" || DOSemu === "msdos player") {
             stdout = await MSDos.runPlayer(this._config, doc.fileName);
         }
-        //process the error information from assembler
+        let workFolder = await workspace.fs.readDirectory(this._config.workUri);
+        let exeGenerated: boolean = inArrays(workFolder, ["t.exe", FileType.File], true);
+        let diagCode: number | undefined = undefined;
         if (stdout) {
-            let code = this.landiag.ErrMsgProcess(doc.getText(), stdout, doc.uri, MASMorTASM);
+            diagCode = this.landiag.ErrMsgProcess(doc.getText(), stdout, doc.uri, MASMorTASM);
+        }
+        if (exeGenerated === false) {
+            let Errmsg: string = "EXE file generate failed, Reason unknown stdout:\n" + stdout;
+            if (diagCode === 0) { Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM); };
+            window.showErrorMessage(Errmsg);
+        }
+        else if (exeGenerated === true) {
             let goon: boolean = false;
-            switch (code) {
-                case 0:
-                    let Errmsgwindow = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM);
-                    window.showErrorMessage(Errmsgwindow);
-                    break;
-                case 1:
-                    let warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", MASMorTASM);
-                    let Go_on = localize("runcode.continue", "continue");
-                    let Stop = localize("runcode.stop", "stop");
-                    window.showInformationMessage(warningmsgwindow, Go_on, Stop).then(result => {
-                        if (result === Go_on) { goon = true; }
-                    });
-                    break;
-                case 2:
-                    goon = true;
-                    break;
+            if (diagCode === 1) {
+                let warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", MASMorTASM);
+                let Go_on = localize("runcode.continue", "continue");
+                let Stop = localize("runcode.stop", "stop");
+                window.showInformationMessage(warningmsgwindow, Go_on, Stop).then(result => {
+                    if (result === Go_on) { goon = true; }
+                });
+            }
+            else {
+                goon = true;
             }
             if (goon && (DOSemu === "msdos player" || DOSemu === "auto")) {
                 let viaPlayer: boolean = DOSemu === "msdos player";
@@ -95,8 +98,13 @@ export class AsmAction {
                         DOSBox.runDosbox(this._config, debug);
                     }
                 }
-            };
+            }
         }
+        return {
+            ASMmsg: stdout,
+            diagCode: diagCode,
+            exeGen: exeGenerated
+        };
     }
     public cleanalldiagnose() {
         this.landiag.cleandiagnose('both');
@@ -132,8 +140,8 @@ export class AsmAction {
     }
 }
 const delList = [
-    "T.exe",
-    "T.map",
+    "t.exe",
+    "t.map",
     "T.obj",
     "T.TXT",
     "T.TR",

@@ -4,7 +4,7 @@
 ::%3 file path
 ::%4 workpath
 @echo off
-set "cdo=%CD%">nul
+set "cdo=%CD%"
 ::echo ASMfile:%~f3
 set path=%~f1\player\;%~f1\masm\;%~f1\tasm\
 cd %~f4

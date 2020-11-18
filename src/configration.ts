@@ -11,9 +11,12 @@ interface ToolInfo {
     hasMasm: boolean,
     hasTasm: boolean,
 }
-export const inArrays = (data: [string, FileType][], arr: [string, FileType]) => {
-    let ignoreCase = process.platform === "win32";
+export const inArrays = (data: [string, FileType][], arr: [string, FileType], ignoreCase?: boolean) => {
+    let ignore: boolean = process.platform === "win32";
     if (ignoreCase) {
+        ignore = ignoreCase;
+    }
+    if (ignore) {
         return data.some(e => e[0].toLowerCase() === arr[0].toLowerCase() && e[1] === arr[1]);
     }
     else {
