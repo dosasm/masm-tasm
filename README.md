@@ -1,6 +1,6 @@
 # DOS assembly (MASM/TASM) via DOSBox(and msdos-player)
 
-[中文](https://github.com/xsro/masm-tasm/blob/main/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/main/README.md)|[more versions](https://github.com/xsro/masm-tasm/releases)
+[中文](doc/README_zh.md)|[English](README.md)|[more versions](https://github.com/xsro/masm-tasm/releases)
 
 Language support for DOS assembly,may be suitable for studying MASM/TASM and the course <*principles& peripheral technology of microprocessor*>.
 
@@ -22,25 +22,25 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 
 ### Demo 1: Run and Debug Assembly
 
-| using TASM via DOSBox                                                                     | using MASM via msdos-player                                                                    |
-| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| ![demo dosbox tasm](https://github.com/xsro/masm-tasm/raw/main/pics/demo_dosbox_tasm.gif) | ![demo msdos-player masm](https://github.com/xsro/masm-tasm/raw/main/pics/demo_msdos_masm.gif) |
+| using TASM via DOSBox                          | using MASM via msdos-player                         |
+| ---------------------------------------------- | --------------------------------------------------- |
+| ![demo dosbox tasm](pics/demo_dosbox_tasm.gif) | ![demo msdos-player masm](pics/demo_msdos_masm.gif) |
 
 When opened a ASM file in Editor, Right click on the Editor, then run or debug the code. Default mode is using `DOSBox` and `TASM`, you can change them in `preference->settings` like the second gif(using MASM via msdos-palyer).
 
 ### Demo 2: code Formate,Diagnose and more
 
-| Formate Codes                                                                                          | Diagnose                                                                            |
-| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| ![programmatic lanaguage features](https://github.com/xsro/masm-tasm/raw/main/pics/demo_PLFeature.gif) | ![diagnose](https://github.com/xsro/masm-tasm/raw/main/pics/demo_diagnose_tasm.gif) |
+| Formate Codes                                               | Diagnose                                 |
+| ----------------------------------------------------------- | ---------------------------------------- |
+| ![programmatic lanaguage features](pics/demo_PLFeature.gif) | ![diagnose](pics/demo_diagnose_tasm.gif) |
 
 The extension offer some programmatic features like "hover","formate","jump to definition",you can close them in the `preferece->settings`
 
 ### Demo 3: Open dosbox and type the command you need
 
-| Single-File (command `Open DOSBox`)                                               | Multi-Files (command `Dosbox here`)                                                                                         |
-| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| ![Open in Dosbox](https://github.com/xsro/masm-tasm/raw/main/pics/opendosbox.gif) | [![pacman](https://github.com/xsro/masm-tasm/raw/main/pics/demo_pacman.gif)](https://github.com/dpisdaniel/assembly-pacman) |
+| Single-File (command `Open DOSBox`)    | Multi-Files (command `Dosbox here`)                                              |
+| -------------------------------------- | -------------------------------------------------------------------------------- |
+| ![Open in Dosbox](pics/opendosbox.gif) | [![pacman](pics/demo_pacman.gif)](https://github.com/dpisdaniel/assembly-pacman) |
 
 - Command "`Open DOSBox`": Your file will be copied as `D:\T.ASM` in DOSBox. (The extension will copy your file to work space and mount this space to DOSbox disk `D:`)
 - Command "`Doxbox here`": The extension will mount your active editor file's folder directly to dosbox's disk `E:`.
@@ -86,7 +86,7 @@ for more,please see the `preference->settings`
 
 ### About Tools
 
-the extension has built in tools for windows. But if you need to use assembler or emulator of different version. You can organize your tools following the structure bellow and add your folder's path to  `masmtasm.ASM.toolspath`, see [about ASM tools](https://github.com/xsro/masm-tasm/blob/main/doc/Toolspath.md)
+the extension has built in tools for windows. But if you need to use assembler or emulator of different version. You can organize your tools following the structure bellow and add your folder's path to  `masmtasm.ASM.toolspath`, see [about ASM tools](doc/Toolspath.md)
 
 - tools:your tools folder name, you can add the path of it to settings `masmtasm.ASM.toolspath`
   1. `TASM`: TASM tools including `tasm.exe`,`tlink.exe`,`td.exe`

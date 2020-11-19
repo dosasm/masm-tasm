@@ -1,6 +1,6 @@
 # 16位/32位汇编语言开发工具
 
-[中文](https://github.com/xsro/masm-tasm/blob/main/doc/README_zh.md)|[English](https://github.com/xsro/masm-tasm/blob/main/README.md)|[其他版本](https://github.com/xsro/masm-tasm/releases)
+[中文](README_zh.md)|[English](../README.md)|[其他版本](https://github.com/xsro/masm-tasm/releases)
 
 :raising_hand:在学习《微型计算机原理与接口技术》的**汇编语言**部分时，苦于没有比较顺手的编程环境，此插件实现了在VSCode中对DOSBox等汇编工具的快速调用。主要功能特性如下：
 

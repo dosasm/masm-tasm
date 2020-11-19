@@ -1,24 +1,19 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+//clean files
+const del = require('del');
+const cleanTask = function () {
+	return del(['out/**', 'dist/**', 'package.nls.*.json', 'masm-tasm*.vsix']);
+};
 
+//build nls
 const gulp = require('gulp');
 const filter = require('gulp-filter');
 const ts = require('gulp-typescript');
 const typescript = require('typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const nls = require('vscode-nls-dev');
-const del = require('del');
-const cleanTask = function () {
-	return del(['out/**', 'dist/**', 'package.nls.*.json', 'masm-tasm*.vsix']);
-};
 const tsProject = ts.createProject('./tsconfig.json', { typescript });
 const languages = [
 	{ id: "zh-cn", folderName: "chs", transifexId: "zh-hans" }];
-//-----------------
 const generateAdditionalLocFiles = () => {
 	return gulp.src(['package.nls.json'])
 		.pipe(nls.createAdditionalLanguageFiles(languages, 'i18n'))
