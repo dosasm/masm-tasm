@@ -21,7 +21,7 @@ export interface PlayerConfig {
 let msdosTerminal: Terminal | null = null;
 export function runPlayer(conf: PlayerConfig, filename: string): Promise<string> {
     let toolspath = conf.ASMtoolsUri.fsPath;
-    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + filename + '" "' + conf.workUri.fsPath + '"';
+    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + conf.workUri.fsPath + '"';
     return new Promise<string>(
         (resolve, reject) => {
             let child = exec(

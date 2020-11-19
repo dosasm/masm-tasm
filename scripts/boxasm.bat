@@ -13,7 +13,7 @@ set path=%path%;c:\masm
 echo ...masm T.asm;
 masm T.ASM;>T.txt
 echo ...link T.obj;
-link T.OBJ;>>T.txt
+if  exist T.obj link T.OBJ;>>T.txt
 if  exist T.exe goto MASMNEXT
 goto ERR
 :TASM
@@ -21,7 +21,7 @@ set path=%path%;c:\tasm
 echo ...tasm T.ASM
 tasm /zi T.ASM>T.txt
 echo ...tlink T.OBJ
-tlink /v/3 T.OBJ>>T.txt
+if  exist T.obj tlink /v/3 T.OBJ>>T.txt
 if  exist T.exe goto TASMNEXT
 goto ERR
 
