@@ -54,7 +54,14 @@ export class AsmAction {
         let exeGenerated: boolean = inArrays(workFolder, ["t.exe", FileType.File], true);
         let diagCode: number | undefined = undefined;
         if (stdout) {
-            diagCode = this.landiag.ErrMsgProcess(doc.getText(), stdout, doc.uri, MASMorTASM);
+            let diag = this.landiag.ErrMsgProcess(doc.getText(), stdout, doc.uri, MASMorTASM);
+            diagCode = diag?.flag;
+            if (diag) {
+                if (diagCode !== 2) { this.extOutChannel.show(); }
+                let collectmessage: string = localize("diag.msg", "{0} Error,{1}  Warning, collected. The following is the output of assembler and linker'", diag.error.toString(), diag.warn);
+                this.extOutChannel.appendLine(collectmessage);
+                this.extOutChannel.append(this.landiag.channaloutput(stdout));
+            }
         }
         if (exeGenerated === false) {
             let Errmsg: string = "EXE file generate failed, Reason unknown stdout:\n" + stdout;
