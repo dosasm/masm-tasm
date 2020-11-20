@@ -36,7 +36,7 @@ const generateSrcLocBundle = () => {
 //package and publish
 const fs = require('fs');
 const vsce = require('vsce');
-function getOption() {
+function getOption(date) {
 	const packageJson = fs.readFileSync('./package.json', { encoding: 'utf-8' });
 	const version = JSON.parse(packageJson).version;
 	let ver = "main"
@@ -45,17 +45,31 @@ function getOption() {
 			ver = 'v' + version;
 		}
 	}
-	return {
+	let opt = {
 		baseContentUrl: `https://github.com/xsro/masm-tasm/blob/${ver}/`,
 		baseImagesUrl: `https://github.com/xsro/masm-tasm/raw/${ver}/`
+	};
+	if (date) {
+		let date = new Date();
+		let month = date.getMonth();
+		let day = date.getDate();
+		let hour = date.getHours();
+		let minute = date.getMinutes();
+		let second = date.getSeconds();
+		hour = hour > 9 ? hour : `0${hour}`
+		minute = minute > 9 ? minute : `0${minute}`
+		second = second > 9 ? second : `0${second}`
+		opt.packagePath = `masm-tasm_${version}_${month}-${day}_${hour}${minute}${second}.vsix`; //获取日期与时间
 	}
+	return opt;
 }
 
 const vscePublishTask = function () {
 	return vsce.publish(getOption());
 };
 const vscePackageTask = function () {
-	return vsce.createVSIX(getOption());
+
+	return vsce.createVSIX(getOption(true));
 };
 
 gulp.task('clean', cleanTask);
