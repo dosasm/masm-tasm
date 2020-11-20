@@ -17,6 +17,7 @@ gulpfile.js
 # doc pic license
 doc/
 pics/
+*/*.md
 LICENSE
 # ignore tools and files of ext
 scripts/work/*

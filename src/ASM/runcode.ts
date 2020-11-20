@@ -3,7 +3,7 @@ import { Config, inArrays } from './configration';
 import * as DOSBox from './DOSBox';
 import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
-import { AssemblerDiag } from './language/diagnose';
+import { AssemblerDiag } from './diagnose';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 export class AsmAction {
