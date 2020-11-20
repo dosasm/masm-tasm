@@ -33,5 +33,34 @@ const generateSrcLocBundle = () => {
 		.pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
 		.pipe(gulp.dest('dist'));
 };
+//package and publish
+const fs = require('fs');
+const vsce = require('vsce');
+function getOption() {
+	const packageJson = fs.readFileSync('./package.json', { encoding: 'utf-8' });
+	const version = JSON.parse(packageJson).version;
+	let ver = "main"
+	if (typeof (version) === 'string') {
+		if (version.match(/^\d+\.\d+\.\d+$/)) {
+			ver = 'v' + version;
+		}
+	}
+	return {
+		baseContentUrl: `https://github.com/xsro/masm-tasm/blob/${ver}/`,
+		baseImagesUrl: `https://github.com/xsro/masm-tasm/raw/${ver}/`
+	}
+}
+
+const vscePublishTask = function () {
+	return vsce.publish(getOption());
+};
+const vscePackageTask = function () {
+	return vsce.createVSIX(getOption());
+};
+
 gulp.task('clean', cleanTask);
 gulp.task('translations-generate', gulp.series(generateSrcLocBundle, generateAdditionalLocFiles));
+
+gulp.task('publish', gulp.series(vscePublishTask));
+
+gulp.task('package', gulp.series(vscePackageTask));
