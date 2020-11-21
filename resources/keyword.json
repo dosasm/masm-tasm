@@ -1482,7 +1482,7 @@
             "opCount": 1,
             "type": 2,
             "description": "jump if greater or equals (Signed)",
-            "chs": "（有符号数）不大于时跳转"
+            "chs": "（有符号数）大于或等于时跳转"
         },
         {
             "name": "jl",
@@ -1500,7 +1500,7 @@
             "opCount": 1,
             "type": 2,
             "description": "jump if less or equals (Signed)",
-            "chs": "（有符号数）不小于时跳转"
+            "chs": "（有符号数）小于或等于时跳转"
         },
         {
             "name": "jcxz",
