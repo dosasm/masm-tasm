@@ -153,7 +153,7 @@ export class Config implements Config2 {
         let toolpath: string | undefined = configuration.get('ASM.toolspath');
         this.ASMtoolsUri = Uri.joinPath(content.extensionUri, './tools');
         this.BOXfolder = Uri.joinPath(this._exturi, './tools/dosbox/');
-        this.workUri = Uri.joinPath(this._exturi, './scripts/work/');
+        this.workUri = Uri.joinPath(this._exturi, './resources/work/');
         if (toolpath) {
             customToolCheck(toolpath).then(
                 (value) => {
@@ -216,19 +216,19 @@ export class Config implements Config2 {
         return command;
     }
     public get extScriptsUri(): Uri {
-        let path = Uri.joinPath(this._exturi, './scripts');
+        let path = Uri.joinPath(this._exturi, './resources');
         return path;
     }
     public get dosboxconfuri(): Uri {
-        let uri = Uri.joinPath(this._exturi, './scripts/VSC-ExtUse.conf');
+        let uri = Uri.joinPath(this._exturi, './resources/VSC-ExtUse.conf');
         return uri;
     }
     public get workloguri(): Uri {
-        let uri = Uri.joinPath(this._exturi, './scripts/work/T.TXT');
+        let uri = Uri.joinPath(this._exturi, './resources/work/T.TXT');
         return uri;
     }
     public get playerbat() {
-        let path = Uri.joinPath(this._exturi, './scripts/playerasm.bat').fsPath;
+        let path = Uri.joinPath(this._exturi, './resources/playerasm.bat').fsPath;
         if (this.customToolInfo?.hasPlayerasm) {
             path = Uri.joinPath(this.customToolInfo.uri, './player/playerasm.bat').fsPath;
         }

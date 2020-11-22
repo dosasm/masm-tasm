@@ -68,7 +68,7 @@ class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
 export function provider(context: vscode.ExtensionContext) {
 	let programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language");
 	if (programmaticFeatures.get("Hover")) {
-		let uri = vscode.Uri.joinPath(context.extensionUri, "./scripts/keyword.json");
+		let uri = vscode.Uri.joinPath(context.extensionUri, "./resources/keyword.json");
 		vscode.workspace.fs.readFile(uri).then(
 			(text) => {
 				key.Dictionary(text.toString());
