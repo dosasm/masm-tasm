@@ -21,8 +21,7 @@ pics/
 */*.md
 LICENSE
 # ignore tools and files of ext
-resources/work/*
-!resources/work/ignore.txt
+/workspace
 tools/dosbox/dosbox-0.74.conf
 tools/boxasm.bat
 resources/VSC-ExtUse.conf

@@ -153,7 +153,8 @@ export class Config implements Config2 {
         let toolpath: string | undefined = configuration.get('ASM.toolspath');
         this.ASMtoolsUri = Uri.joinPath(content.extensionUri, './tools');
         this.BOXfolder = Uri.joinPath(this._exturi, './tools/dosbox/');
-        this.workUri = Uri.joinPath(this._exturi, './resources/work/');
+        this.workUri = Uri.joinPath(this._exturi, './workspace/');
+        workspace.fs.createDirectory(this.workUri);
         if (toolpath) {
             customToolCheck(toolpath).then(
                 (value) => {
