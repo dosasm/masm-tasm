@@ -5,7 +5,7 @@
 @echo off
 set "cdo=%CD%"
 ::echo ASMfile:%~f3
-set path=%~f1\player\;%~f1\masm\;%~f1\tasm\
+@REM set path=%~f1\player\;%~f1\masm\;%~f1\tasm\
 cd %~f3
 %~d3
 if "%2" == "MASM" goto masm

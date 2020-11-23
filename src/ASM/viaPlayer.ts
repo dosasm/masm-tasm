@@ -17,15 +17,24 @@ export interface PlayerConfig {
      * "MASM" or "TASM"
      */
     MASMorTASM: 'MASM' | 'TASM';
+    /**
+     * folder of the msdos.exe
+     */
+    Playerfolder: Uri;
 }
 let msdosTerminal: Terminal | null = null;
 export function runPlayer(conf: PlayerConfig, filename: string): Promise<string> {
     let toolspath = conf.ASMtoolsUri.fsPath;
+    let myenv: NodeJS.ProcessEnv = {
+        "path": conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;'
+    };
     let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + conf.workUri.fsPath + '"';
     return new Promise<string>(
         (resolve, reject) => {
+            let timeout: number = 3000;
             let child = exec(
-                command, { cwd: toolspath, shell: 'cmd.exe' }, (error, stdout, stderr) => {
+                command, { cwd: toolspath, timeout: timeout, env: myenv },
+                (error, stdout, stderr) => {
                     if (error) {
                         reject(["exec msdos player error", error, stderr]);
                     }
@@ -35,27 +44,23 @@ export function runPlayer(conf: PlayerConfig, filename: string): Promise<string>
                 }
             );
             child.on('exit', (code) => {
-                if (code && code !== 0) {
-                    let msg = `Use playerasm.bat Failed\t exitcode${code}\t\nFilepath: ${conf.playerbat}`;
-                    window.showErrorMessage(msg);
-                }
-            });
-            let timeout: number = 3000;
-            setTimeout(() => {
-                if (child.exitCode === null) {
+                if (code === null) {
                     child.kill();
                     window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nCommand: ${command}`);
                     console.log(child);
                 }
-            }, timeout);
-
+                else if (code !== 0) {
+                    let msg = `Use playerasm.bat Failed\t exitcode${code}\t\nFilepath: ${conf.playerbat}`;
+                    window.showErrorMessage(msg);
+                }
+            });
         }
     );
 
 }
 export function outTerminal(run: boolean, conf: PlayerConfig) {
     let myenv = process.env, toolspath = conf.ASMtoolsUri.fsPath;
-    let myenvPATH = myenv.PATH + ';' + toolspath + '\\player;' + toolspath + '\\tasm;' + toolspath + '\\masm;';
+    let myenvPATH = myenv.PATH + ';' + conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;';
     if (msdosTerminal?.exitStatus || msdosTerminal === null) {
         msdosTerminal = window.createTerminal({
             cwd: conf.workUri.fsPath,

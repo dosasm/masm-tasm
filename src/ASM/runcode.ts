@@ -12,10 +12,10 @@ export class AsmAction {
     private landiag: AssemblerDiag;
     constructor(context: ExtensionContext) {
         this.extOutChannel = window.createOutputChannel('Masm-Tasm');
-        this._config = new Config(context);
+        this._config = new Config(context, this.extOutChannel);
         this.landiag = new AssemblerDiag(this.extOutChannel);
         workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context); }
+            if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context, this.extOutChannel); }
         });
     }
     /**

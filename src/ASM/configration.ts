@@ -1,4 +1,4 @@
-import { workspace, Uri, FileSystem, FileType, ExtensionContext } from 'vscode';
+import { workspace, Uri, FileSystem, FileType, ExtensionContext, OutputChannel } from 'vscode';
 import { TextEncoder } from 'util';
 import { BoxConfig } from './DOSBox';
 import { PlayerConfig } from './viaPlayer';
@@ -7,6 +7,7 @@ interface ToolInfo {
     hasBoxasm: boolean,
     hasPlayerasm: boolean
     hasDosbox: boolean,
+    hasPlayer: boolean,
     hasDosboxConf?: boolean,
     hasMasm: boolean,
     hasTasm: boolean,
@@ -31,6 +32,7 @@ async function customToolCheck(path: string): Promise<ToolInfo> {
         hasBoxasm: false,
         hasPlayerasm: false,
         hasDosbox: false,
+        hasPlayer: false,
         hasMasm: false,
         hasTasm: false
     };
@@ -42,7 +44,8 @@ async function customToolCheck(path: string): Promise<ToolInfo> {
             info.hasDosbox = true;
         }
     }
-    if (inArrays(dir1, ["player", FileType.Directory]) && process.platform === "win32") {
+    info.hasPlayer = inArrays(dir1, ["player", FileType.Directory]);
+    if (info.hasPlayer) {
         let dir2 = await fs.readDirectory(Uri.joinPath(uri, './player'));
         if (inArrays(dir2, ["playerasm.bat", FileType.File])) {
             info.hasPlayerasm = true;
@@ -121,6 +124,18 @@ function OpenDosbox() {
     //for other system, temporarily use command `dosbox`
     return command;
 }
+function printConfig(channel: OutputChannel, conf: Config) {
+    let date = new Date();
+    let output =
+        `
+${date.toLocaleString()}
+    workspace: ${conf.workUri.fsPath}
+    use DOSBox from folder: ${conf.BOXfolder.fsPath}
+    use MSdos-player from folder: ${conf.Playerfolder.fsPath} 
+    use assembler from folder: ${conf.ASMtoolsUri.fsPath}
+`;
+    channel.append(output);
+}
 interface Config2 extends PlayerConfig, BoxConfig {
     DOSemu: 'dosbox' | 'auto' | 'msdos player'
 };
@@ -137,11 +152,12 @@ export class Config implements Config2 {
     public readonly workUri: Uri;
     public ASMtoolsUri: Uri;
     public BOXfolder: Uri;
+    public Playerfolder: Uri;
     public customToolInfo: ToolInfo | undefined = undefined;
     //private
     private readonly _exturi: Uri;
     private readonly _BOXrun: string | undefined;
-    constructor(content: ExtensionContext) {
+    constructor(content: ExtensionContext, channel?: OutputChannel) {
         configuration = workspace.getConfiguration('masmtasm');
         this.MASMorTASM = MASMorTASM();
         this.DOSemu = emulator();
@@ -153,6 +169,7 @@ export class Config implements Config2 {
         let toolpath: string | undefined = configuration.get('ASM.toolspath');
         this.ASMtoolsUri = Uri.joinPath(content.extensionUri, './tools');
         this.BOXfolder = Uri.joinPath(this._exturi, './tools/dosbox/');
+        this.Playerfolder = Uri.joinPath(this._exturi, './tools/player/');
         this.workUri = Uri.joinPath(this._exturi, './workspace/');
         workspace.fs.createDirectory(this.workUri);
         if (toolpath) {
@@ -161,10 +178,14 @@ export class Config implements Config2 {
                     this.customToolInfo = value;
                     if (value.hasMasm && value.hasTasm) { this.ASMtoolsUri = value.uri; }
                     if (value.hasDosbox) { this.BOXfolder = Uri.joinPath(value.uri, "./dosbox"); }
+                    if (value.hasPlayer) {
+                        this.Playerfolder = Uri.joinPath(this._exturi, './tools/player/');
+                    }
+                    if (channel) { printConfig(channel, this); }
                 },
                 (reason) => { console.log(reason); this.customToolInfo = undefined; }
             );
-        };
+        } else if (channel) { printConfig(channel, this); }
         //write dosbox.conf
         writeBoxconfig(this.dosboxconfuri);
     }
