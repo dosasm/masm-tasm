@@ -4,7 +4,7 @@ import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-import { AsmAction } from './runcode';
+import { AsmAction } from './ASM/runcode';
 import { provider } from "./language/provider";
 let asm: AsmAction;
 export function activate(context: vscode.ExtensionContext) {

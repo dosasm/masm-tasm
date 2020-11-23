@@ -5,5 +5,6 @@
 	"runcode.error": "{0}汇编出错,无法运行/调试,详细信息见输出面板",
 	"runcode.warn": "成功汇编链接生成EXE，但是汇编时产生了警告信息({0}warning)，可能无法运行/调试,是否继续操作",
 	"runcode.continue": "继续",
-	"runcode.stop": "否"
+	"runcode.stop": "否",
+	"diag.msg": "收集到{0}条错误,{1}条警告, 下面是汇编器的输出信息"
 }

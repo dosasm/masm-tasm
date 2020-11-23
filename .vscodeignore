@@ -18,13 +18,14 @@ webpack.config.js
 # doc pic license
 doc/
 pics/
+*/*.md
 LICENSE
 # ignore tools and files of ext
-scripts/work/*
-!scripts/work/ignore.txt
+resources/work/*
+!resources/work/ignore.txt
 tools/dosbox/dosbox-0.74.conf
 tools/boxasm.bat
-scripts/VSC-ExtUse.conf
+resources/VSC-ExtUse.conf
 # ignore i18n
 i18n
 Themes
