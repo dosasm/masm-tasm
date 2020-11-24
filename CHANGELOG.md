@@ -2,13 +2,17 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
-## 0.6.0
+## 0.6.0/0.6.1/0.6.2
 
 - 通过终端命令`open -a DOSBox --args `支持在MAC（darwin）中打开dosbox
-- 支持通过设置`masmtasm.dosbox.command`自定义用来打开DOSBox的命令 
-- (0.6.1)fix#10：修复悬浮提示中指令`jge`和`jle`信息的错误
+- 支持通过设置`masmtasm.dosbox.command`自定义用来打开DOSBox的命令
+- 0.6.1
+  - 修复[#10](https://github.com/xsro/masm-tasm/issues/10) 中`jle`和`jge`两条指令的悬浮提示错误
+- 0.6.2
+  - 废弃`masmtasm.dosbox.CustomResolution`设置选项，通过`masmtasm.dosbox.config`来支持更多的dosbox选项
+  - 提供MASM的部分错误信息跳转到Microsoft docs页面的CodeAction
 
-## 0.5.x
+## 0.5.0-0.5.3
 
 - MASM插件更新到 `6.11`，最近在想如何支持`masm6.x`语法
 - 尝试用异步重写了一些代码，希望不要引入bug
@@ -18,13 +22,13 @@
 
 ### 0.4.0
 
-- fix [#6](https://github.com/xsro/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题
+- fix [#6](https://github.com/xsro/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题 
   - 假如文件languageID是assembly,masm,tasm时插件会激活
 - 增加一个设置选项`masmtasm.language.Hover`以决定是否显示悬浮提示Hover
 
 ### 0.3.0
 
-- windows下打开dosbox会弹出控制台窗口，可以在设置`masmtasm.dosbox.console`中选择显示，最小化还是不显示这个窗口
+- windows下打开dosbox会弹出控制台窗口，可以在设置`masmtasm.dosbox.console`中选择显示，最小化还是不显示这个窗口。
 - (0.3.1)dosbox更新到0.74-3
 - (0.3.1)修复Dosbox无法挂载带有中文的路径的问题[#5](https://github.com/xsro/masm-tasm/issues/5)
 
@@ -104,23 +108,21 @@ DEMO `dosbox here`:(代码来自[dpisdaniel/assembly-pacman](https://github.com/
 
 实现diagnose问题信息的相对精准地显示，提供一个命令，打开命令面板之后可以使用“清除MASM/TASM的所有问题信息”清除diagnose信息。
 
-### 0.0.5/0.0.6/0.0.7
+### 0.0.5/0.0.6/0.0.7 处理汇编器的输出信息
 
-增加一个auto模式，在汇编链接时调用msdos-player，（比较安静）在运行时使用dosbox，在使用TASM TD调试时使用dosbox（msdos会显示异常），在使用masm debug的时候使用msdos，这样直接在终端中显示会比较舒服。（变动有点大，可能会不稳定，欢迎issue和PR呀,估计最近几个版本都是修bug了）
+增加一个auto模式，在汇编链接时调用msdos-player，（比较安静）在运行时使用dosbox，在使用TASM TD调试时使用dosbox（msdos会显示异常），在使用masm debug的时候使用msdos，这样直接在终端中显示会比较舒服。
 
 1. 0.0.6：修复检测错误不全的问题，应该没有大问题了
 2. 0.0.7: 修复dosbox中调用失灵的问题
 
 - [x] 增加问题匹配功能，*已经可以提供一个简单的匹配功能了*
-- [x] 在运行和调试之前先diagnose，即mixed模块
+- [x] 在运行和调试之前先diagnose
 
 ### 0.0.2/0.0.3/0.0.4
 
 1. 0.0.2使用batch来简化msdos的调用，将需要的工具和插件一起打包，（基本失去支持除了windows系统以外系统的可能）。
 2. 0.0.3修复了一个terminal.sendtext 传递的内容被吞掉了开头的一个字符的问题，简单地增加了一些空格，并没有根除问题。
 3. 0.0.4使用child_process来替换掉一些vscode.terminal 应该解决了0.0.2中发现的问题了
-
-- [ ] 实现根据情况自动下载相关组件 *废弃,已经直接打包在插件里面了*
 
 ### 0.0.1
 

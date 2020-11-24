@@ -47,7 +47,7 @@ function getOption(date) {
 	}
 	let opt = {
 		baseContentUrl: `https://github.com/xsro/masm-tasm/blob/${ver}/`,
-		baseImagesUrl: `https://github.com/xsro/masm-tasm/raw/${ver}/`
+		baseImagesUrl: `https://github.com/xsro/masm-tasm/raw/main/`
 	};
 	if (date) {
 		let date = new Date();

@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
-  "version": "0.6.2-dev.2",
+  "version": "0.6.2",
   "keywords": [
     "dosbox",
     "16位",
@@ -249,7 +249,7 @@
   "devDependencies": {
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^13.13.30",
+    "@types/node": "^13.13.34",
     "@types/vscode": "^1.44.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",

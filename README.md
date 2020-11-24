@@ -1,15 +1,18 @@
 # DOS assembly (MASM/TASM) via DOSBox(and msdos-player)
 
-[中文](doc/chs/README.md)|[English](README.md)|[more versions](https://github.com/xsro/masm-tasm/releases)
+[Chinese](doc/chs/README.md)|
+[English](README.md)|
+[中文](https://gitee.com/xsro/masm-tasm/tree/main/doc/chs)|
+[more versions](https://github.com/xsro/masm-tasm/releases)
 
-Language support for DOS assembly,may be suitable for studying MASM/TASM and the course *principles& peripheral technology of microprocessor*.
+Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSBox and the course *principles& peripheral technology of microprocessor*.
 
 - (**Language Support**) Offer *grammar*,basic *outline* view,*hover*,*code formate* support for DOS assembly language
 - **Run and debug** assembly with right click on the VSCode editor panel. You can choose using MASM or TASM in the preference-settings.
 - **Diagnose**: process the output of ASM tools and display them in VSCode
 - **For windows**, all needed tools have been packaged in the extension.Just install and enjoy!
 - [For other systems](#for-other-system): you need to install DOSBox first
-- Note: this extension is built for assembly in DOS, so may not works with assembly for wins
+- Note: this extension is built for assembly in DOS, so may not works well with assembly for win32 or assembly with not just one file
 
 ## Demo
 
@@ -25,7 +28,10 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 2. **Run ASM code**: Assemble,link and Run the program
 3. **Debug ASM code**: Assemble,link and Debug the program
 
-The extension will copy your file in active editor to the extension's `workspace` folder and do operations. Default is using `DOSBox` and `TASM`, you can change them in `preference->settings` like the second gif(using MASM via msdos-palyer).
+**NOTE**:
+
+- The extension will copy your file in active editor to the extension's `workspace` folder and do operations. - Default is using `DOSBox` and `TASM`,you can change them in `preference->settings` like the second gif(using MASM via msdos-palyer).
+- If you use `include` to include another file or use `extern`, please use `dosbox here`(see demo2)
 
 ### Demo 2: Open dosbox and type the command you need
 
@@ -48,7 +54,7 @@ The extension offer some programmatic features like "hover","formate","jump to d
 
 ## For other system
 
-The extension is packaged with needed [tools](#about-tools) for windows inside while **other OS** users *should* make sure DOSBox can be opened by shell command.We can download DOSBox from its website:[DOSBox](https://www.dosbox.com)
+The extension is packaged with needed [tools](doc/Toolspath.md) for windows inside while **other OS** users *should* make sure DOSBox can be opened by shell command.We can download DOSBox from its website:[DOSBox](https://www.dosbox.com)
 
 For MacOS (Darwin),the extension will use command `open -a DOSBox --args` to open DOSBox. So you need to 
 
@@ -80,7 +86,6 @@ for more,please see the `preference->settings`
     4. use DOSBox for TASM(TD)
 - `masmtasm.ASM.savefirst`  save file first before using
 - `masmtasm.dosbox.run`：what to do after run your code in DOSBox
-- `masmtasm.dosbox.CustomResolution`: size(resolution) of the dosbox window,for example `1024x960`
 - `"masmtasm.ASM.toolspath`: use tools from this path, see [Toolpath](doc/Toolspath.md)
 
 ### About use of DOSBox
@@ -93,8 +98,13 @@ The extension will mount some folder to DOSBox 's disk. Please don't modify them
 | D:        | the path of the work space                                             |
 | E:        | the path of the editor file's folder(when using command `dosbox here`) |
 
+## known issues
+
+- lack of support of assembly in not just one file
+
 ## Docs & Thanks & Licenses
 
+- Thanks to my teacher and girlfriend. Hope 2020 and the coming 2021 happy and worthy
 - Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) 's extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086),[blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) for ASM language information
 - Thanks to [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code)
 - Using [msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com) as DOS environment emulator

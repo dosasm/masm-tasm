@@ -19,7 +19,7 @@ sudo npm install -g cnpm --registry=https://registry.npm.taobao.org
 
 ```bash
 sudo npm install -g gulp-cli #or use cnpm istead
-sudo npm install #or use cnpm instead
+npm install #or use cnpm instead
 ```
 
 ### 3.generate `visx` package

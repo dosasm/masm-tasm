@@ -24,7 +24,11 @@
 2. 运行当前程序(汇编+链接+运行)：生成exe程序并运行
 3. 调试当前程序(汇编+链接+调试)：生成exe程序并调试，使用MASM则会调用debug调试，使用TASM会调用td调试
 
-插件会把此时编辑器里面的文件复制到插件的安装目录下的`workspace`文件夹中，并将此文件夹挂载到DOSBox的D盘，此时DOSBox中的`D:\T.ASM`即为编辑器文件的副本。然后，会根据`首选项-设置`中的设置，调用DOSBox或者msdos使用MASM/TASM来进行相应的操作，默认情况下插件使用 `DOSBox` 和 `TASM`，可以在设置中修改这些选项。如果汇编代码位于多个文件中，请使用Demo2的`Dosbox here`命令手动进行操作。
+**Note**: 
+
+- 插件会把此时编辑器里面的文件**复制**到插件的安装目录下的`workspace`文件夹中，并将此文件夹挂载到DOSBox的D盘，此时DOSBox中的`D:\T.ASM`即为编辑器文件的副本。
+- 然后，插件会根据`首选项-设置`中的设置，调用DOSBox或者msdos使用MASM/TASM来进行相应的操作，默认情况下插件使用 `DOSBox` 和 `TASM`，可以在设置中修改这些选项。
+- 当使用`include`来包含其他文件或者使用`extern`来进行多模块汇编的时候，请使用`Dosbox here`命令手动操作（见demo2）
 
 ### Demo 2: 打开DOSBox手动输入命令
 
@@ -37,13 +41,13 @@
 - 汇编常用命令: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
 - 有些有趣的汇编代码: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
 
-### Demo 2: 代码格式化与错误输出
+### Demo 3: 代码格式化与错误输出
 
 | 格式化代码                                                        | 错误信息输出                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------- |
 | ![programmatic lanaguage features](../../pics/demo_PLFeature.gif) | ![diagnose](../../pics/demo_diagnose_tasm_zh.gif) |
 
-提供一些“编程语言特性”（悬浮提示，代码格式化，跳到定义，查看引用）来方便代码编写与阅读，如果不喜欢可以在设置中关闭，重启之后会生效
+提供一些“编程语言特性”（悬浮提示，代码格式化，跳到定义，查看引用）来方便代码编写与阅读，如果不喜欢可以在设置`masmtasm.language.Hover`，`masmtasm.language.programmaticFeatures`中关闭，重启之后会生效。由于我学得不得行，所以对于插件对于多文件的支持不是很好，这些功能对多文件的汇编都支持得不是很好或者根本不支持。
 
 # 非windows使用者
 
@@ -55,7 +59,7 @@ dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插
 ```
 
 - 对于MAC系统，安装DOSBox需要将下载的dmg文件双击打开，并把里面的文件DOSBox程序文件拖到mac的应用程序（application）文件夹中。插件将使用终端命令`open -a DOSBox --args`来启动DOSBox
-- 对于其他系统，理论上说只要能在命令行执行`dosbox`命令打开DOSBox（nodejs 的child_process.exec(dosbox)命令），就可以使用本插件了
+- 对于其他系统，理论上说只要能在命令行执行`dosbox`命令打开DOSBox（nodejs 的child_process.exec('dosbox')命令），就可以使用本插件了
 - 也可以设置`masmtasm.dosbox.command`来自定义打开DOSBox的命令
 
 ## 插件调用dosbox时会挂载哪些目录
@@ -81,8 +85,15 @@ dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插
     4. 调试中TASM(TD)在DOSBox中运行（目前只能这样）
 - `masmtasm.ASM.savefirst`：启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
 - `masmtasm.dosbox.run`：规定dosbox运行程序之后进行什么操作（是否直接退出程序，还是等待）
-- `masmtasm.dosbox.CustomResolution`：调整dosbox窗口大小
 - `masmtasm.ASM.toolspath`：设置自定义汇编工具路径,详见:[自定义汇编工具路径](./Toolspath.md#自定义汇编工具路径)
+
+### 待解决的问题
+
+由于已经不学微机了，可能没有太多时间解决这些问题了
+
+- [ ] 如何支持多文件，多模块汇编，优化相关的汇编语言语法支持与运行调试支持
+- [ ] 优化代码格式化的方式，使之更美观，并适配对于制表符和空格符号的区分
+- [ ] 提供LSP
 
 ### :clap:文档 & 感谢 & 许可
 
