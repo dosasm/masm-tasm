@@ -68,7 +68,7 @@ export class AsmAction {
             if (diagCode === 0) { Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM); };
             window.showErrorMessage(Errmsg);
         }
-        else if (exeGenerated === true) {
+        else if (exeGenerated === true && (DOSemu === "msdos player" || DOSemu === "auto")) {
             let goon: boolean = false;
             if (diagCode === 1) {
                 let warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", MASMorTASM);
@@ -81,7 +81,7 @@ export class AsmAction {
             else {
                 goon = true;
             }
-            if (goon && (DOSemu === "msdos player" || DOSemu === "auto")) {
+            if (goon) {
                 let viaPlayer: boolean = DOSemu === "msdos player";
                 //use msdos for debug.exe when debugging code via MASM
                 if (MASMorTASM === "MASM" && runOrDebug === false && DOSemu === "auto") { viaPlayer = true; }
