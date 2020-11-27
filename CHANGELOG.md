@@ -6,6 +6,7 @@
 
 - 通过终端命令`open -a DOSBox --args `支持在MAC（darwin）中打开dosbox
 - 支持通过设置`masmtasm.dosbox.command`自定义用来打开DOSBox的命令 
+- (0.6.1)fix#10：修复悬浮提示中指令`jge`和`jle`信息的错误
 
 ## 0.5.x
 

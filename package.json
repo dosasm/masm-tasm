@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
-  "version": "0.6.1-beta.1",
+  "version": "0.6.1",
   "keywords": [
     "dosbox",
     "16位",
@@ -148,7 +148,7 @@
         "masmtasm.language.programmaticFeatures": {
           "type": "boolean",
           "default": true,
-          "description": "Experimental programmatic features like outline,jump to definition/reference. Restart needed"
+          "description": "%dosasm.config.PLF%"
         },
         "masmtasm.language.Hover": {
           "type": "boolean",
@@ -172,7 +172,7 @@
         },
         "masmtasm.dosbox.command": {
           "type": "string",
-          "description": "If defined the extension will use this command to open dosbox instead of default command"
+          "description": "%dosasm.config.boxcommand%"
         },
         "masmtasm.dosbox.console": {
           "type": "string",
@@ -268,7 +268,7 @@
   },
   "bugs": {
     "url": "https://github.com/xsro/masm-tasm/issues",
-    "email": "clcxsr@outlook.com"
+    "email": "xsro@foxmail.com"
   },
   "license": "MIT"
 }

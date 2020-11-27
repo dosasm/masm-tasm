@@ -1,61 +1,48 @@
-# 汇编工具相关信息
+# About tools
 
-## 插件如何使用汇编工具
+## How the extension use tools
 
-插件会从用户获取它的用户工具的根目录，如果没有设置那么就是[插件安装目录](#插件安装路径一般在哪里)
-下的tools文件夹，插件首先会将需要使用的文件（编辑器当前文件）复制到插件工作文件夹，再在汇编工具文件夹中找到相应工具进行处理
+The extension will use the tools in the extension's foler `tools`. If defined the setting `masmtasm.ASM.toolspath`, the extension will use tools in this folder instead.
 
-### 插件安装路径一般在哪里
+### where-are-extensions-installed
 
-VSCode文档中关于插件安装路径的说明[VSCode-doc](https://code.visualstudio.com/docs/editor/extension-gallery#_where-are-extensions-installed)，摘录如下
+According to [VSCode-doc](https://code.visualstudio.com/docs/editor/extension-gallery#_where-are-extensions-installed), the extension will be installed in following folder:
 
 - Windows `%USERPROFILE%\.vscode\extensions`
 - macOS `~/.vscode/extensions`
 - Linux `~/.vscode/extensions`
 
-### 插件调用dosbox时会挂载哪些目录
-
-| DOSBox | 电脑中的真实目录                        |
-| ------ | --------------------------------------- |
-| C:     | 汇编工具目录                            |
-| D:     | 插件汇编工作目录                        |
-| E:     | 使用`dosbox here`时的编辑器文件所在目录 |
-
-### 自带的汇编工具版本
-
-16位环境模拟工具和汇编工具来自[github仓库](https://github.com/xsro/VSC-ASMtasks/releases),使用的是msdos的是MS-DOS Player (i486) for Win32 console
+### the versions of the built in tools
 
 | file    | masm.exe(ml.exe) | link.exe | debug.exe | tasm.exe | tlink.exe | td.exe | dosbox | msdos     |
 | ------- | ---------------- | -------- | --------- | -------- | --------- | ------ | ------ | --------- |
 | version | 6.11             | 5.31.009 | ---       | 4.1      | 7.1.30.1  | --     | 0.74-3 | 4/10/2020 |
 
-## 自定义汇编工具路径
+links of some tools: [dosbox](https://dosbox.com)、[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)
 
-如果需要使用不同版本的软件，可以自定义汇编工具路径。将文件路径复制到设置中即可。插件会从对应的文件夹中寻找相关组件,注意windows下如果通过json设置需要使用`\\`，首选项中设置直接使用`\`即可。
+## use your tools
 
-### tools文件夹的目录结构
+if you want to use your tools of assembler and emulator, please paste your path to the setting "masmtasm.ASM.toolspath", your files should follow the structrue like [tools](../tools)
 
-自定义汇编工具集地址时需要遵守这个目录结构，至少包含这些文件及它们的依赖才能使用。部分相关软件的链接：[dosbox](https://dosbox.com)、[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)
-
-1. masm文件夹：MASM汇编工具（不区分大小写）
-   - masm.exe 汇编工具
-   - link.exe 链接工具
-   - debug.exe 调试工具
-2. tasm文件夹：TASM汇编工具（不区分大小写）
-   - tasm.exe 汇编工具
-   - tlink.exe 调试工具
-   - td.exe 调试工具（TDC2.td为调试工具配置文件，如果有将使用这个td配置文件）
-3. dosbox文件夹：dosbox软件目录（for windows）
+1. Folder:`masm`
+   - masm.exe 
+   - link.exe 
+   - debug.exe 
+2. Folder:tasm
+   - tasm.exe 
+   - tlink.exe 
+   - td.exe 
+3. Folder:dosbox
    - dosbox.exe
    - SDL.dll
    - SDL_net.dll
-4. player文件夹：MSDOS-player软件目录（for windows）
+4. Folder:player：
    - msdos.exe
-   - **假如**这里有文件`playerasm.bat`插件会使用这个文件来进行汇编链接操作
-5. 假如这里有文件`boxasm.bat`插件会使用这个文件来进行操作
+5. if there is a file `boxasm.bat` here,the extension will use this file to operate 
 
 
-#### 首选项中设置
+#### How to set this
+##### 自定义汇编工具路径
 
 ![set the tool path](../pics/settools.gif)
 
