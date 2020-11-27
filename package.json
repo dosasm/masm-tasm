@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "DOS汇编语言开发环境和语法支持，win下安装即用,自带DOSBox.exe和TASM/MASM工具",
-  "version": "0.6.1",
+  "version": "0.6.2-dev.1",
   "keywords": [
     "dosbox",
     "16位",
@@ -229,10 +229,12 @@
   },
   "scripts": {
     "compile": "gulp translations-generate && webpack --mode production --vscode-nls",
+    "compile-tsc": "tsc -p ./  --rootDir src",
     "compile-dev": "webpack --mode development",
     "compile-nls": "gulp translations-generate && webpack --mode development --vscode-nls",
     "lint": "eslint src --ext ts",
-    "watch": "tsc -watch -p ./",
+    "lint-fix": "eslint src --ext ts --fix",
+    "watch": "tsc -watch -p ./ --rootDir src",
     "pretest": "npm run compile && npm run lint",
     "compile-test": "tsc -p ./src/test",
     "test": "node ./dist/test/runTest.js",

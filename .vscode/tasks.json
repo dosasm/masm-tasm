@@ -10,7 +10,9 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"problemMatcher": [],
+			"problemMatcher": [
+				"$tsc"
+			],
 			"label": "npm: compile-dev",
 			"detail": "webpack --mode development"
 		},
@@ -21,7 +23,7 @@
 				"$tsc"
 			],
 			"label": "npm: compile-test",
-			"detail": "tsc -p ./",
+			"detail": "tsc -p ./src/test",
 			"dependsOn": "npm: compile-dev"
 		},
 		{
@@ -53,7 +55,9 @@
 		{
 			"type": "npm",
 			"script": "compile",
-			"problemMatcher": [],
+			"problemMatcher": [
+				"$tsc"
+			],
 			"group": "build",
 			"label": "npm: compile",
 			"detail": "gulp translations-generate && webpack --mode production --vscode-nls"
