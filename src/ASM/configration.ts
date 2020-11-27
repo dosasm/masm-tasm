@@ -227,13 +227,13 @@ export class Config implements Config2 {
     /**
      * the command need to run in DOSBox after run the ASM code
      */
-    public get boxruncmd(): string {
-        let command: string = ' ';
+    public get boxruncmd(): string[] {
+        let command: string[] = [];
         switch (this._BOXrun) {
-            case "keep": command = ' '; break;
-            case "exit": command = '\n exit'; break;
+            case "keep": break;
+            case "exit": command.push('exit'); break;
             case "pause":
-            default: command = '\n pause \n exit'; break;
+            default: command.push('pause', 'exit'); break;
         }
         return command;
     }

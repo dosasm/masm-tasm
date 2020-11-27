@@ -13,10 +13,36 @@ export class AsmAction {
     constructor(context: ExtensionContext) {
         this.extOutChannel = window.createOutputChannel('Masm-Tasm');
         this._config = new Config(context, this.extOutChannel);
-        this.landiag = new AssemblerDiag(this.extOutChannel);
+        this.landiag = new AssemblerDiag();
         workspace.onDidChangeConfiguration((e) => {
             if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context, this.extOutChannel); }
         });
+    }
+    /**Do the operation according to the input.
+     * "opendosbox": open DOSBOX at a separated space;
+     * "here": open dosbox at the vscode editor file's folder;
+     * "run": compile and run the ASM code ;
+     * "debug": compile and debug the ASM code;
+     * @param command "opendosbox" or "run" or "debug" or "here"
+     */
+    public runcode(command: string) {
+        let document = window.activeTextEditor?.document;
+        const asmit = (command: string, doc: TextDocument) => {
+            switch (command) {
+                case 'opendosbox': this.Openemu(doc); break;
+                case 'run': this.RunDebug(doc, true); break;
+                case 'debug': this.RunDebug(doc, false); break;
+                case 'here': DOSBox.BoxOpenCurrentFolder(this._config, doc);
+            };
+        };
+        if (document) {
+            if (this._config.savefirst && document.isDirty) {
+                document.save().then(() => {
+                    if (document) { asmit(command, document); }
+                });
+            }
+            else { asmit(command, document); }
+        }
     }
     /**
      * open the emulator(currently just the DOSBox)
@@ -38,20 +64,22 @@ export class AsmAction {
      *  | auto    | dosbox   | msdos      | dosbox   | dosbox  |
      */
     public async RunDebug(doc: TextDocument, runOrDebug: boolean): Promise<Object> {
-        await CleanCopy(doc.uri, this._config.workUri);
         let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM;
         let stdout: string | undefined = undefined;
+        //show message
         if (runOrDebug) { msg = localize("run.msg", "\n{0}({1})>>Run:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
         else { msg = localize("debug.msg", "\n{0}({1})>>Debug:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
         this.extOutChannel.appendLine(msg);
+        //clean files and copy the file to workspace AS `T.ASM`
+        await CleanCopy(doc.uri, this._config.workUri);
+        //get the output of assembler
         if (DOSemu === "dosbox") {
             stdout = await DOSBox.runDosbox2(this._config, runOrDebug);
         }
         else if (DOSemu === "auto" || DOSemu === "msdos player") {
             stdout = await MSDos.runPlayer(this._config, doc.fileName);
         }
-        let workFolder = await workspace.fs.readDirectory(this._config.workUri);
-        let exeGenerated: boolean = inArrays(workFolder, ["t.exe", FileType.File], true);
+        //process and output the output of the assembler
         let diagCode: number | undefined = undefined;
         if (stdout) {
             let diag = this.landiag.ErrMsgProcess(doc.getText(), stdout, doc.uri, MASMorTASM);
@@ -60,9 +88,13 @@ export class AsmAction {
                 if (diagCode !== 2) { this.extOutChannel.show(); }
                 let collectmessage: string = localize("diag.msg", "{0} Error,{1}  Warning, collected. The following is the output of assembler and linker'", diag.error.toString(), diag.warn);
                 this.extOutChannel.appendLine(collectmessage);
-                this.extOutChannel.append(this.landiag.channaloutput(stdout));
+                let stdout_output = stdout.replace(/\r\n\r\n/g, '\r\n').replace(/\n\n/g, '\n').replace(/\n/g, '\n  ');
+                this.extOutChannel.append(stdout_output);
             }
         }
+        //check whether the EXE file generated
+        let workFolder = await workspace.fs.readDirectory(this._config.workUri);
+        let exeGenerated: boolean = inArrays(workFolder, ["t.exe", FileType.File], true);
         if (exeGenerated === false) {
             let Errmsg: string = "EXE file generate failed, Reason unknown stdout:\n" + stdout;
             if (diagCode === 0) { Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM); };
@@ -92,15 +124,15 @@ export class AsmAction {
                 }
                 else {
                     if (runOrDebug) {
-                        DOSBox.runDosbox(this._config, 'T.EXE' + this._config.boxruncmd);
+                        DOSBox.runDosbox(this._config, ['T.EXE', ...this._config.boxruncmd]);
                     }
                     else {
-                        let debug: string;
+                        let debug: string[] = [];
                         if (MASMorTASM === 'TASM') {
-                            debug = 'if exist c:\\tasm\\TDC2.TD copy c:\\tasm\\TDC2.TD TDCONFIG.TD \nTD T.EXE';
+                            debug.push('if exist c:\\tasm\\TDC2.TD copy c:\\tasm\\TDC2.TD TDCONFIG.TD', 'TD T.EXE');
                         }
                         else {
-                            debug = 'DEBUG T.EXE';
+                            debug.push('DEBUG T.EXE');
                         }
                         DOSBox.runDosbox(this._config, debug);
                     }
@@ -119,31 +151,6 @@ export class AsmAction {
     public deactivate() {
         this.extOutChannel.dispose();
         MSDos.deactivate();
-    }
-    /**Do the operation according to the input.
-     * "opendosbox": open DOSBOX at a separated space;
-     * "here": open dosbox at the vscode editor file's folder;
-     * "run": compile and run the ASM code ;
-     * "debug": compile and debug the ASM code;
-     * @param command "opendosbox" or "run" or "debug" or "here"
-     */
-    public runcode(command: string) {
-        let document = window.activeTextEditor?.document;
-        if (document) {
-            if (this._config.savefirst && window.activeTextEditor?.document.isDirty) {
-                document.save().then(() => { if (document) { this.asmit(command, document); } });
-            }
-            else { this.asmit(command, document); }
-        }
-    }
-
-    private asmit(command: string, doc: TextDocument) {
-        switch (command) {
-            case 'opendosbox': this.Openemu(doc); break;
-            case 'run': this.RunDebug(doc, true); break;
-            case 'debug': this.RunDebug(doc, false); break;
-            case 'here': DOSBox.BoxOpenCurrentFolder(this._config, doc);
-        }
     }
 }
 const delList = [
@@ -167,11 +174,3 @@ async function CleanCopy(file: Uri, dir: Uri) {
     );
     fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
 }
-// const foudFile = (data: [string, FileType][], arr: [string, FileType], _ignoreCases: boolean) => {
-//     for (let i = 0; i < data.length; i++) {
-//         if (arr === data[i]) {
-//             return data[i];
-//             break;
-//         }
-//     }
-// };
