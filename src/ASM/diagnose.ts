@@ -1,7 +1,7 @@
 import { languages, DiagnosticCollection, TextDocument, Diagnostic, Range, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Uri, Location } from 'vscode';
-import { masmDiagnose } from './diagnoseMASM'
-import { tasmDiagnose } from './diagnoseTASM'
-import { getInternetlink } from './diagnoseMasm-error-list'
+import { masmDiagnose } from './diagnoseMASM';
+import { tasmDiagnose } from './diagnoseTASM';
+import { getInternetlink } from './diagnoseMasm-error-list';
 /**
  * the class use to diagnose the information from the MASM or TASM assembler
  */
@@ -21,9 +21,8 @@ export class AssemblerDiag {
      * @param ASM MASM or TASM
      */
     public ErrMsgProcess(AsmMsg: string, doc: TextDocument, ASM: 'MASM' | 'TASM'): DIAGINFO | undefined {
-        let MASMorTASM: string | undefined;
-        let diag: DIAGINFO | undefined
-        switch (MASMorTASM) {
+        let diag: DIAGINFO | undefined;
+        switch (ASM) {
             case 'TASM':
                 diag = tasmDiagnose(AsmMsg, doc, this._tasmCollection);
                 break;
@@ -37,7 +36,7 @@ export class AssemblerDiag {
             diag.flag = 2;
             if (diag.error !== 0) { diag.flag = 0; }
             else if (diag.warn !== 0) { diag.flag = 1; }
-            return diag
+            return diag;
         }
         return undefined;
     }
@@ -70,28 +69,28 @@ export class ASMdiagnostic {
     macro: {
         name?: string,
         uri?: Uri
-        line?: number
+        line?: number//1-base
         local?: boolean
-    }
+    };
     code?: string;
     constructor() {
         this.macro = {};
     }
     toVscDiagnostic(doc: TextDocument): Diagnostic | undefined {
         let diag: Diagnostic | undefined = undefined;
-        if (this.line && this.message && this.severity) {
+        if (this.line && this.message) {
             diag = new Diagnostic(
-                doc.lineAt(this.line).range,
+                doc.lineAt(this.line - 1).range,
                 this.message,
                 this.severity
-            )
+            );
             if (this.code) {
                 let link: string | undefined = getInternetlink(this.code);
                 if (link) {
                     diag.code = {
                         value: this.code,
                         target: Uri.parse(link)
-                    }
+                    };
                 }
             }
             if (this.macro.line && this.macro.name && this.macro.uri) {
@@ -108,17 +107,17 @@ export class ASMdiagnostic {
                     diag.relatedInformation = [new DiagnosticRelatedInformation(
                         macroLocation,
                         this.message
-                    )]
+                    )];
                 }
             }
         }
-        return diag
+        return diag;
     }
     check(): boolean {
         if (this.line && this.message && this.severity) {
-            return true
+            return true;
         }
-        return false
+        return false;
     }
 }
 /**
@@ -145,7 +144,7 @@ function lineMacro2DOC(text: string, macroName: string, macroLine: number, local
                 }
             };
         }
-    )
+    );
     if (docMacroLine) {
         return docMacroLine + macroLine;
     }

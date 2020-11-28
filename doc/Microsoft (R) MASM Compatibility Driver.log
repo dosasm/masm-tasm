@@ -2,11 +2,11 @@
   Copyright (C) Microsoft Corp 1993.  All rights reserved.
    Invoking: ML.EXE /I. /Zm /c /Ta T.ASM 
    Assembling: T.ASM
-  T.ASM(45): error A2008: syntax error : MESGERR
-  T.ASM(84): error A2008: syntax error : Z
-   SCOMP(4): Macro Called From
-    T.ASM(84): Main Line Code
-  T.ASM(85): error A2008: syntax error : Z
-   SCOMP(4): Macro Called From
-    T.ASM(85): Main Line Code
-  T.ASM(89): error A2006: undefined symbol : MESGERR
+T.ASM(45): error A2008: syntax error : MESGERR
+T.ASM(84): error A2008: syntax error : Z
+  SCOMP(4): Macro Called From
+  T.ASM(84): Main Line Code
+T.ASM(85): error A2008: syntax error : Z
+  SCOMP(4): Macro Called From
+  T.ASM(85): Main Line Code
+T.ASM(89): error A2006: undefined symbol : MESGERR

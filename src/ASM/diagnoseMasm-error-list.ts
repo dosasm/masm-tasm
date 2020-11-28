@@ -1,4 +1,4 @@
-const link = "https://docs.microsoft.com/en-us/cpp/assembler/masm/"
+const link = "https://docs.microsoft.com/en-us/cpp/assembler/masm/";
 const namelist = [
     "ml-fatal-error-a1000",
     "ml-fatal-error-a1005",
@@ -51,7 +51,7 @@ const namelist = [
     "ml-warning-a4004",
     "ml-warning-a4012",
     "ml-warning-a4014",
-]
+];
 /**
  * offer a link like `https://docs.microsoft.com/en-us/cpp/assembler/masm/ml-nonfatal-error-a2008`
  * for reference
@@ -59,11 +59,10 @@ const namelist = [
  */
 export function getInternetlink(str: string): string | undefined {
     let code = str.toLowerCase();
-    let find = namelist.find(value => {
-        value.match(code)
-    });
-    if (find) {
-        return link + find
+    for (let val of namelist) {
+        if (val.match(code)) {
+            return link + val;
+        }
     }
-    return undefined
+    return undefined;
 }

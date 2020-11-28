@@ -82,7 +82,7 @@ export class AsmAction {
         //process and output the output of the assembler
         let diagCode: number | undefined = undefined;
         if (stdout) {
-            let diag = this.landiag.ErrMsgProcess(doc.getText(), stdout, doc.uri, MASMorTASM);
+            let diag = this.landiag.ErrMsgProcess(stdout, doc, MASMorTASM);
             diagCode = diag?.flag;
             if (diag) {
                 if (diagCode !== 2) { this.extOutChannel.show(); }
