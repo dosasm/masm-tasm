@@ -27,6 +27,12 @@ export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: Dia
                 diag.code = RegExec[3];
                 diag.message = RegExec[4];
             }
+            RegExec = /(\w*)\((\d+)\): Macro Called From/.exec(value)
+            if (RegExec) {
+                diag.macro.uri = doc.uri;
+                diag.macro.name = RegExec[1];
+                diag.macro.line = parseInt(RegExec[2]);
+            }
             let diagnostic: Diagnostic | undefined = diag.toVscDiagnostic(doc);
             if (diagnostic) {
                 diagnostics.push(diagnostic);
