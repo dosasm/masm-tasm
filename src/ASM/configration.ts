@@ -105,9 +105,16 @@ class BOXCONF {
     toFileString(): string {
         let b = this.config, str: string = "";
         for (let id1 in b) {
-            str += `[${id1}]\n`;
-            for (let id2 in b[id1]) {
-                str += `${id2}=${b[id1][id2]}\n`;
+            if (id1 === "AUTOEXEC") {
+                str += "[AUTOEXEC]\n";
+                let execstr = b[id1].undefined
+                str += execstr.replace(/\\n/g, '\n') + '\n';
+            }
+            else {
+                str += `[${id1}]\n`;
+                for (let id2 in b[id1]) {
+                    str += `${id2}=${b[id1][id2]}\n`;
+                }
             }
         }
         return str;

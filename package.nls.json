@@ -23,7 +23,7 @@
 	"dosasm.config.boxconsole.normal": "Show the console window, via command like `dosbox`",
 	"dosasm.config.boxconsole.noconsole": "Redirect the console stdout and stderr to files, via command like `dosbox -noconsole`",
 	"dosasm.config.dosbox.resolution": "Set dosbox resolution like '1024x640'.If left empty, it means use the default resolution of DOSBox",
-	"dosasm.config.boxconfig.description": "dosbox configurations that will be used, see [link](https://www.dosbox.com/wiki/Dosbox.conf)",
+	"dosasm.config.boxconfig.description": "dosbox configurations that will be used, see [link](https://www.dosbox.com/wiki/Dosbox.conf),use property like `\"AUTOEXEC\":\"echo hi\\ndir\"` if need to use *AUTOEXEC*",
 	"dosasm.config.hover": "Display Hover information or not, restart VSCode to apply",
 	"dosasm.config.PLF": "Experimental programmatic language features like outline,jump to definition/reference. Restart needed"
 }
