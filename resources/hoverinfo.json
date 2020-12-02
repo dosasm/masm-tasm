@@ -1,0 +1,1355 @@
+{
+    "$schema": null,
+    "_description": "this is hoverinformation for VSCode extension xsro.masm-tasm",
+    "_chs": "这里是插件xsro.masm-tasm用来生成悬浮提示信息的数据",
+    "Size": [
+        {
+            "name": "small",
+            "syntax": "small",
+            "info": "128KB"
+        },
+        {
+            "name": "tiny",
+            "syntax": "tiny",
+            "info": "64KB"
+        },
+        {
+            "name": "compact",
+            "syntax": "compact",
+            "info": "640KB"
+        },
+        {
+            "name": "huge",
+            "syntax": "huge",
+            "info": "640KB"
+        },
+        {
+            "name": "medium",
+            "syntax": "medium",
+            "info": "640KB"
+        },
+        {
+            "name": "large",
+            "syntax": "large",
+            "info": "640KB"
+        },
+        {
+            "name": "flat",
+            "syntax": "flat",
+            "info": "4GB (Not supported with TASM)"
+        },
+        {
+            "name": "stdcall",
+            "syntax": "stdcall",
+            "info": "Can be included in another file"
+        }
+    ],
+    "Instruction": [
+        {
+            "name": "assume",
+            "syntax": "assume [segment register]:[segment's name]",
+            "chs": "段约定伪指令，约定段寄存器所对应的段",
+            "info": "the ASSUME directive tells the assembler the names of the logical segments to use as the physical segments"
+        },
+        {
+            "name": "mov",
+            "syntax": "mov [operand], [operand]",
+            "info": "Moves value from adress/constant/register to a register or adress."
+        },
+        {
+            "name": "int",
+            "syntax": "int [interruptIndex]",
+            "chs": "软件中断指令（中断调用指令），[常见中断表]( https://github.com/xsro/masm-tasm/wiki/interrupt)",
+            "info": "Interrupt call see [list]( https://github.com/xsro/masm-tasm/wiki/interrupt_en)"
+        },
+        {
+            "name": "into",
+            "syntax": "into",
+            "info": "Trap into overflow flag"
+        },
+        {
+            "name": "nop",
+            "syntax": "nop",
+            "info": "Do nothing"
+        },
+        {
+            "name": "hlt",
+            "syntax": "hlt",
+            "info": "Enters halt mode"
+        },
+        {
+            "name": "iret",
+            "syntax": "iret",
+            "chs": "中断返回指令，从堆栈中依次弹出3个字，分别装入IP、CS和FLAG标志寄存器",
+            "info": " "
+        },
+        {
+            "name": "cmp",
+            "syntax": "cmp [operand], [operand]",
+            "chs": "比较2个操作数",
+            "info": "Compares the 2 operands."
+        },
+        {
+            "name": "in",
+            "syntax": "in [operand], [operand]",
+            "chs": "从端口读取数据",
+            "info": "Reads data from a port"
+        },
+        {
+            "name": "out",
+            "syntax": "out [operand], [operand]",
+            "chs": "向端口写数据",
+            "info": "Writes data to a port"
+        },
+        {
+            "name": "or",
+            "syntax": "or [operand], [operand]",
+            "chs": "或操作.",
+            "info": "Or operation on 2 registers."
+        },
+        {
+            "name": "and",
+            "syntax": "and [operand], [operand]",
+            "chs": "与操作.",
+            "info": "And operation on 2 registers."
+        },
+        {
+            "name": "xor",
+            "syntax": "xor [operand], [operand]",
+            "chs": "异或操作",
+            "info": "Xor operation on 2 register"
+        },
+        {
+            "name": "shl",
+            "syntax": "shl [operand], [operand]",
+            "info": "Moves all the bits to the left by the second operand."
+        },
+        {
+            "name": "xchg",
+            "syntax": "xchg [operand], [operand]",
+            "info": "Exchages regeter or memeory address with register."
+        },
+        {
+            "name": "xadd",
+            "syntax": "xadd [operand], [operand]",
+            "info": "Exchages regeter or memeory address with register and the summary is moved to SI."
+        },
+        {
+            "name": "cmpxchg",
+            "syntax": "cmpxchg [operand], [operand]",
+            "info": "cmp + xchg."
+        },
+        {
+            "name": "rcl",
+            "syntax": "rcl [operand], [operand]",
+            "info": "Rotates left (Carry)."
+        },
+        {
+            "name": "rcl",
+            "syntax": "rcl [operand], [operand]",
+            "info": "Rotates left (Carry)."
+        },
+        {
+            "name": "rcr",
+            "syntax": "rcr [operand], [operand]",
+            "info": "Rotates right (Carry)."
+        },
+        {
+            "name": "rol",
+            "syntax": "rol [operand], [operand]",
+            "info": "Rotates left."
+        },
+        {
+            "name": "ror",
+            "syntax": "ror [operand], [operand]",
+            "info": "Rotates right."
+        },
+        {
+            "name": "shld",
+            "syntax": "shld [operand], [operand]",
+            "info": "Double precesion shift left."
+        },
+        {
+            "name": "sal",
+            "syntax": "sal [operand], [operand]",
+            "info": "Moves all the bits to the left by the second operand. (Signed)"
+        },
+        {
+            "name": "lea",
+            "syntax": "lea [operand], [operand]",
+            "info": "Moves the memory address of operand 2 to operand 1."
+        },
+        {
+            "name": "shr",
+            "syntax": "shr [operand], [operand]",
+            "info": "Moves all the bits to the right by the second operand."
+        },
+        {
+            "name": "shrd",
+            "syntax": "shrd [operand], [operand]",
+            "info": "Double precesion shift right."
+        },
+        {
+            "name": "sar",
+            "syntax": "sar [operand], [operand]",
+            "info": "Moves all the bits to the right by the second operand. (Unsigned)"
+        },
+        {
+            "name": "not",
+            "syntax": "not [operand]",
+            "info": "Flips all the bits of the operand"
+        },
+        {
+            "name": "lahf",
+            "syntax": "lahf",
+            "info": "Move flags to ah (SF:ZF:xx:AF:xx:PF:xx:CF)"
+        },
+        {
+            "name": "sahf",
+            "syntax": "sahf",
+            "info": "Move ah to flags (SF:ZF:xx:AF:xx:PF:xx:CF)"
+        },
+        {
+            "name": "std",
+            "syntax": "std",
+            "info": "Set direction flag CF=1"
+        },
+        {
+            "name": "cld",
+            "syntax": "cld",
+            "info": "Clear direction flag DF=0"
+        },
+        {
+            "name": "sti",
+            "syntax": "sti",
+            "chs": "设置i标为1",
+            "info": "Set interrupt flag IF=1"
+        },
+        {
+            "name": "cli",
+            "syntax": "cli",
+            "chs": "设置i标为0",
+            "info": "Clear interrupt flag IF=0"
+        },
+        {
+            "name": "stc",
+            "syntax": "stc",
+            "info": "Set carry flag CF=1"
+        },
+        {
+            "name": "clc",
+            "syntax": "clc",
+            "info": "Clear carry flag CF=0"
+        },
+        {
+            "name": "cmc",
+            "syntax": "cmc",
+            "info": "Complement carry flag CF=!CF"
+        },
+        {
+            "name": "add",
+            "syntax": "add [operand], [operand]",
+            "chs": "将第二个操作数加到第一个操作数.",
+            "info": "Adds the second operand to the first one."
+        },
+        {
+            "name": "sub",
+            "syntax": "sub [operand], [operand]",
+            "chs": "第一个操作数减去第二个操作数.",
+            "info": "Subtracts the second operand from the first one."
+        },
+        {
+            "name": "inc",
+            "syntax": "inc [operand]",
+            "chs": "操作数加1.",
+            "info": "Adds 1 to the operand."
+        },
+        {
+            "name": "dec",
+            "syntax": "dec [operand]",
+            "chs": "操作数减1.",
+            "info": "Subtracts 1 from the operand."
+        },
+        {
+            "name": "neg",
+            "syntax": "neg [operand]",
+            "info": "Negates the value of the operand."
+        },
+        {
+            "name": "abs",
+            "syntax": "abs [operand]",
+            "chs": "取绝对值(Not supported)",
+            "info": "Turns the value to a positive value. (Not supported)"
+        },
+        {
+            "name": "mul",
+            "syntax": "mul [operand]",
+            "info": "Multiplies ax by the operand (Unsigned)."
+        },
+        {
+            "name": "imul",
+            "syntax": "imul [operand]",
+            "info": "Multiplies ax by the operand (Signed)."
+        },
+        {
+            "name": "div",
+            "syntax": "div [operand]",
+            "info": "Divides ax by the operand (Unsigned) {Mod at dx (16 bit) or ah (8 bit)}."
+        },
+        {
+            "name": "idiv",
+            "syntax": "idiv [operand]",
+            "info": "Divides ax by the operand (Signed) {Mod at dx (16 bit) or ah (8 bit)}."
+        },
+        {
+            "name": "daa",
+            "syntax": "daa",
+            "info": "After addition ajusts al to be in range of a decimal number"
+        },
+        {
+            "name": "das",
+            "syntax": "das",
+            "info": "After subtraction ajusts al to be in range of a decimal number"
+        },
+        {
+            "name": "aaa",
+            "syntax": "aaa",
+            "info": "Ajust al to decimal number (add/sub)"
+        },
+        {
+            "name": "aas",
+            "syntax": "aas",
+            "info": "Ajust al to decimal number (add/sub)"
+        },
+        {
+            "name": "aam",
+            "syntax": "aam",
+            "info": "Ajust al to decimal number (mul)"
+        },
+        {
+            "name": "aad",
+            "syntax": "aad",
+            "info": "Ajust al to decimal number (div)"
+        },
+        {
+            "name": "wait",
+            "syntax": "wait",
+            "info": "Processor suspends instruction execution until the BUSY # pin is inactive"
+        },
+        {
+            "name": "fwait",
+            "syntax": "fwait",
+            "info": "Processor checks for pending unmasked numeric exceptions before proceeding."
+        },
+        {
+            "name": "push",
+            "syntax": "push [operand]",
+            "info": "pushes a value to the stack"
+        },
+        {
+            "name": "pushf",
+            "syntax": "pushf",
+            "info": "pushes flag data to the stack"
+        },
+        {
+            "name": "pushfw",
+            "syntax": "pushfw",
+            "info": "pushes flag data to the stack"
+        },
+        {
+            "name": "pushfd",
+            "syntax": "pushfd",
+            "info": "pushes flag data to the stack"
+        },
+        {
+            "name": "pop",
+            "syntax": "pop [operand]",
+            "info": "pops a value from the stack"
+        },
+        {
+            "name": "popf",
+            "syntax": "popf",
+            "info": "pops flag data to the stack"
+        },
+        {
+            "name": "popfw",
+            "syntax": "popfw",
+            "info": "pops flag data to the stack"
+        },
+        {
+            "name": "popfd",
+            "syntax": "popfd",
+            "info": "pops flag data to the stack"
+        },
+        {
+            "name": "pusha",
+            "syntax": "pusha",
+            "info": "pushes all register to the stack"
+        },
+        {
+            "name": "popa",
+            "syntax": "popa",
+            "info": "pops all register to from the stack stack"
+        },
+        {
+            "name": "jmp",
+            "syntax": "jmp [label]",
+            "chs": "跳转到给定标号的指令",
+            "info": "jump to a part in the code"
+        },
+        {
+            "name": "jz",
+            "syntax": "jz [label]",
+            "chs": "假如z标为1跳转\n\n相等时跳转",
+            "info": "jump if zero flag on\n\njump if equal",
+            "alias": [
+                "je"
+            ]
+        },
+        {
+            "name": "jnz",
+            "syntax": "jnz [label]",
+            "chs": "假如z标为0跳转\n\n不相等时跳转",
+            "info": "jump if zero flag off\n\njump if not equal",
+            "alias": [
+                "jne"
+            ]
+        },
+        {
+            "name": "js",
+            "syntax": "js [label]",
+            "chs": "假如s标为1跳转",
+            "info": "jump if sign flag on"
+        },
+        {
+            "name": "jns",
+            "syntax": "jns [label]",
+            "chs": "假如s标为0跳转",
+            "info": "jump if sign flag off"
+        },
+        {
+            "name": "jp",
+            "syntax": "jp [label]",
+            "chs": "假如p标为1跳转",
+            "info": "jump if parity flag on",
+            "alias": [
+                "jpe"
+            ]
+        },
+        {
+            "name": "jnp",
+            "syntax": "jnp [label]",
+            "chs": "假如p标为0跳转",
+            "info": "jump if parity flag off",
+            "alias": [
+                "jpo"
+            ]
+        },
+        {
+            "name": "jo",
+            "syntax": "jo [label]",
+            "chs": "假如o标为1跳转",
+            "info": "jump if Overflow flag on"
+        },
+        {
+            "name": "jno",
+            "syntax": "jno [label]",
+            "chs": "假如o标为0跳转",
+            "info": "jump if Overflow flag off"
+        },
+        {
+            "name": "ja",
+            "syntax": "ja [label]",
+            "chs": "（无符号数）大于跳转",
+            "info": "jump if greater (Unsinged)",
+            "alias": [
+                "jnbe"
+            ]
+        },
+        {
+            "name": "jna",
+            "syntax": "ja [label]",
+            "chs": "（无符号数）不大于跳转",
+            "info": "jump if less or equal(Unsinged)",
+            "alias": [
+                "jbe"
+            ]
+        },
+        {
+            "name": "jc",
+            "syntax": "jc [label]",
+            "chs": "（无符号数）小于跳转",
+            "info": "jump if less (Unsinged)\n\njump if carry flag on",
+            "alias": [
+                "jb",
+                "jnae"
+            ]
+        },
+        {
+            "name": "jnc",
+            "syntax": "jnc [label]",
+            "chs": "（无符号数）不小于跳转",
+            "info": "jump if greater or equals(Unsigned)\n\njump if carry flag off",
+            "alias": [
+                "jnb",
+                "jae"
+            ]
+        },
+        {
+            "name": "jg",
+            "syntax": "jg [label]",
+            "chs": "（有符号数）大于时跳转",
+            "info": "jump if greater (Singed)"
+        },
+        {
+            "name": "jge",
+            "syntax": "jge [label]",
+            "chs": "（有符号数）大于或等于时跳转",
+            "info": "jump if greater or equals (Signed)"
+        },
+        {
+            "name": "jl",
+            "syntax": "jl [label]",
+            "chs": "（有符号数）小于时跳转",
+            "info": "jump if less (Singed)"
+        },
+        {
+            "name": "jle",
+            "syntax": "jle [label]",
+            "chs": "（有符号数）小于或等于时跳转",
+            "info": "jump if less or equals (Signed)"
+        },
+        {
+            "name": "jcxz",
+            "syntax": "jcxz [label]",
+            "chs": "假如CX寄存器为0跳转",
+            "info": "jump if cx is 0"
+        },
+        {
+            "name": "jecxz",
+            "syntax": "jcxz [label]",
+            "chs": "假如ECX寄存器为0跳转",
+            "info": "jump if ecx is 0"
+        },
+        {
+            "name": "call",
+            "syntax": "call [procName]",
+            "chs": "调用子程序",
+            "info": "Calls a procedure"
+        },
+        {
+            "name": "ret",
+            "syntax": "ret [op:RemoveStack]",
+            "chs": "从子程序返回",
+            "info": "Returns from a procedure"
+        },
+        {
+            "name": "enter",
+            "syntax": "enter [dynamic], [nesting]",
+            "chs": "Create dynamic and nested stack 创建动态嵌套堆栈",
+            "info": "Create dynamic and nested stack"
+        },
+        {
+            "name": "leave",
+            "syntax": "leave",
+            "info": "High level ret"
+        },
+        {
+            "name": "les",
+            "syntax": "les [poiner], [register]",
+            "info": "Load memory from ES:Pointer 1 to operand 2 from es"
+        },
+        {
+            "name": "lds",
+            "syntax": "lds [poiner], [register]",
+            "info": "Load memory from DS:Pointer 1 to operand 2 from ds"
+        },
+        {
+            "name": "lfs",
+            "syntax": "lfs [poiner], [register]",
+            "info": "Load memory from FS:Pointer 1 to operand 2 from fs"
+        },
+        {
+            "name": "lgs",
+            "syntax": "lgs [poiner], [register]",
+            "info": "Load memory from GS:Pointer 1 to operand 2 from gs"
+        },
+        {
+            "name": "lss",
+            "syntax": "lss [poiner], [register]",
+            "info": "Load memory from SS:Pointer to operand 2 from ss"
+        },
+        {
+            "name": "rep",
+            "syntax": "rep [operation]",
+            "chs": "Repeat while equals 相等时重复",
+            "info": "Repeat while equals"
+        },
+        {
+            "name": "repz",
+            "syntax": "repz [operation]",
+            "chs": "Repeat while zero 不等于零的时候重复",
+            "info": "Repeat while zero"
+        },
+        {
+            "name": "repnz",
+            "syntax": "repnz [operation]",
+            "chs": "Repeat while not zero 非零时重复",
+            "info": "Repeat while not zero"
+        },
+        {
+            "name": "xlat",
+            "syntax": "xlat",
+            "chs": "Table lookup to al al表查找",
+            "info": "Table lookup to al"
+        },
+        {
+            "name": "bound",
+            "syntax": "bound [operand], [operand]",
+            "info": "Check the 16-bit signed array index value in the operand 1 against the doubleword with the upper and lower bounds specified by operand 2"
+        },
+        {
+            "name": "scas",
+            "syntax": "scas",
+            "info": "Compare ES:DI with AX or AL"
+        },
+        {
+            "name": "scasb",
+            "syntax": "scasb",
+            "info": "Compare ES:DI with AL"
+        },
+        {
+            "name": "scasw",
+            "syntax": "scasw",
+            "info": "Compare ES:DI with AX"
+        },
+        {
+            "name": "scasd",
+            "syntax": "scasd",
+            "info": "Compare ES:DI with EAX (Not supported)"
+        },
+        {
+            "name": "cmps",
+            "syntax": "cmps",
+            "info": "Compare ES:DI with ES:SI"
+        },
+        {
+            "name": "cmpsb",
+            "syntax": "cmpsb",
+            "info": "Compare ES:DI with ES:SI (Byte)"
+        },
+        {
+            "name": "cmpsw",
+            "syntax": "cmpsw",
+            "info": "Compare ES:DI with ES:SI"
+        },
+        {
+            "name": "cmpsd",
+            "syntax": "cmpsd",
+            "info": "Compare ES:DI with ES:SI (32 bit)"
+        },
+        {
+            "name": "stos",
+            "syntax": "stos",
+            "info": "Sets ES:DI to AX AL"
+        },
+        {
+            "name": "stosb",
+            "syntax": "stosb",
+            "info": "Sets ES:DI to AL"
+        },
+        {
+            "name": "stosw",
+            "syntax": "stosw",
+            "info": "Sets ES:DI to AX"
+        },
+        {
+            "name": "stosd",
+            "syntax": "stosd",
+            "info": "Sets ES:DI to EAX  (Not supported)"
+        },
+        {
+            "name": "lods",
+            "syntax": "lods",
+            "info": "Sets Ax to ES:DI"
+        },
+        {
+            "name": "lodsb",
+            "syntax": "lodsb",
+            "info": "Sets AL to ES:DI"
+        },
+        {
+            "name": "lodsw",
+            "syntax": "lodsw",
+            "info": "Sets AX to ES:DI"
+        },
+        {
+            "name": "lodsd",
+            "syntax": "lodsd",
+            "info": "Sets EAX to ES:DI 32-bit (Not supported)"
+        },
+        {
+            "name": "outs",
+            "syntax": "outs",
+            "info": " "
+        },
+        {
+            "name": "outsb",
+            "syntax": "outsb",
+            "info": "ES:DI -> DL"
+        },
+        {
+            "name": "outsw",
+            "syntax": "outsw",
+            "info": "ES:DI -> DX"
+        },
+        {
+            "name": "outsd",
+            "syntax": "outsd",
+            "info": "ES:DI -> EDX (Not supported)"
+        },
+        {
+            "name": "ins",
+            "syntax": "ins",
+            "info": " "
+        },
+        {
+            "name": "insb",
+            "syntax": "insb",
+            "info": "ES:DI <- DL"
+        },
+        {
+            "name": "insw",
+            "syntax": "insw",
+            "info": "ES:DI <- DX"
+        },
+        {
+            "name": "insd",
+            "syntax": "insd",
+            "info": "ES:DI <- EDX (Not supported)"
+        },
+        {
+            "name": "movs",
+            "syntax": "movs",
+            "info": "Sets Ax to ES:DI"
+        },
+        {
+            "name": "movsb",
+            "syntax": "movsb",
+            "info": "Sets AL to ES:DI"
+        },
+        {
+            "name": "movsw",
+            "syntax": "movsw",
+            "info": "Sets AX to ES:DI"
+        },
+        {
+            "name": "movsd",
+            "syntax": "movsd",
+            "info": "Sets EAX to ES:DI 32-bit (Not supported)"
+        },
+        {
+            "name": "req",
+            "syntax": "req",
+            "info": "(Not supported)"
+        },
+        {
+            "name": "c",
+            "syntax": "c",
+            "info": "(Not supported)"
+        },
+        {
+            "name": "wrt",
+            "syntax": "wrt",
+            "info": "(Not supported)"
+        },
+        {
+            "name": "loop",
+            "syntax": "loop [label]",
+            "info": "- decrease `CX`\n\n- Jumps to a label if cx is not 0"
+        },
+        {
+            "name": "loopz",
+            "syntax": "loope [label]",
+            "info": "- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** Zero flag is 1",
+            "alias": [
+                "loope"
+            ]
+        },
+        {
+            "name": "loopnz",
+            "syntax": "loopz [label]",
+            "info": "- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** zero flag is not 1",
+            "alias": [
+                "loopne"
+            ]
+        }
+    ],
+    "Register": [
+        {
+            "name": "al",
+            "syntax": "al",
+            "chs": "寄存器AX的低八位",
+            "info": "The lower byte of ax"
+        },
+        {
+            "name": "ah",
+            "syntax": "ah",
+            "chs": "寄存器AX的高八位",
+            "info": "The upper byte of ax"
+        },
+        {
+            "name": "bl",
+            "syntax": "bl",
+            "chs": "寄存器BX的低八位",
+            "info": "The lower byte of bx"
+        },
+        {
+            "name": "bh",
+            "syntax": "bh",
+            "chs": "寄存器BX的高八位",
+            "info": "The upper byte of bx"
+        },
+        {
+            "name": "cl",
+            "syntax": "cl",
+            "chs": "寄存器CX的低八位",
+            "info": "The lower byte of cx"
+        },
+        {
+            "name": "ch",
+            "syntax": "ch",
+            "chs": "寄存器CX的高八位",
+            "info": "The upper byte of cx"
+        },
+        {
+            "name": "dl",
+            "syntax": "dl",
+            "chs": "寄存器DX的低八位",
+            "info": "The lower byte of dx"
+        },
+        {
+            "name": "dh",
+            "syntax": "dh",
+            "chs": "寄存器DX的高八位",
+            "info": "The upper byte of dx"
+        },
+        {
+            "name": "ax",
+            "syntax": "ax",
+            "chs": "16位累加器",
+            "info": "16 bit register used with arithmatic operations"
+        },
+        {
+            "name": "bx",
+            "syntax": "bx",
+            "chs": "16位基址寄存器",
+            "info": "16 bit register used to acess memory data"
+        },
+        {
+            "name": "cx",
+            "syntax": "cx",
+            "chs": "16位计数器",
+            "info": "16 bit register used with loops"
+        },
+        {
+            "name": "dx",
+            "syntax": "dx",
+            "chs": "16位数据寄存器",
+            "info": "16 bit register used with data mangment"
+        },
+        {
+            "name": "sp",
+            "syntax": "sp",
+            "chs": "16位堆栈指针寄存器",
+            "info": "16 bit register that points at the stack"
+        },
+        {
+            "name": "bp",
+            "syntax": "bp",
+            "chs": "16位基址指针寄存器",
+            "info": "16 bit register that is used to pass arguments"
+        },
+        {
+            "name": "di",
+            "syntax": "di",
+            "chs": "16位目的变址寄存器",
+            "info": "16 bit register used to acess memory data"
+        },
+        {
+            "name": "si",
+            "syntax": "si",
+            "chs": "16位变址寄存器",
+            "info": "16 bit register used to acess memory data"
+        },
+        {
+            "name": "eax",
+            "syntax": "eax",
+            "chs": "32位累加寄存器器",
+            "info": "32 bit register used with arithmatic operations"
+        },
+        {
+            "name": "ebx",
+            "syntax": "ebx",
+            "chs": "32位基址寄存器",
+            "info": "32 bit register used to acess memory data"
+        },
+        {
+            "name": "ecx",
+            "syntax": "ecx",
+            "chs": "32位计数器",
+            "info": "32 bit register used with loops"
+        },
+        {
+            "name": "edx",
+            "syntax": "edx",
+            "chs": "32位数据寄存器",
+            "info": "32 bit register used with data mangment"
+        },
+        {
+            "name": "esp",
+            "syntax": "esp",
+            "chs": "32位堆栈指针寄存器",
+            "info": "32 bit register that points at the stack"
+        },
+        {
+            "name": "ebp",
+            "syntax": "ebp",
+            "chs": "32位基址指针寄存器",
+            "info": "32 bit register that is used to pass arguments"
+        },
+        {
+            "name": "edi",
+            "syntax": "edi",
+            "chs": "32位目的变址寄存器",
+            "info": "32 bit register used to acess memory data"
+        },
+        {
+            "name": "esi",
+            "syntax": "esi",
+            "chs": "32位源变址寄存器",
+            "info": "32 bit register used to acess memory data"
+        },
+        {
+            "name": "rax",
+            "syntax": "rax",
+            "chs": "64位累加器",
+            "info": "64 bit register used with arithmatic operations"
+        },
+        {
+            "name": "rbx",
+            "syntax": "rbx",
+            "chs": "64位基址寄存器",
+            "info": "64 bit register used to acess memory data"
+        },
+        {
+            "name": "rcx",
+            "syntax": "rcx",
+            "chs": "64位计数器",
+            "info": "64 bit register used with loops"
+        },
+        {
+            "name": "rdx",
+            "syntax": "rdx",
+            "chs": "64位数据寄存器",
+            "info": "64 bit register used with data mangment"
+        },
+        {
+            "name": "rsp",
+            "syntax": "rsp",
+            "chs": "64位堆栈指针寄存器",
+            "info": "64 bit register that points at the stack"
+        },
+        {
+            "name": "rbp",
+            "syntax": "rbp",
+            "chs": "64位基址指针寄存器",
+            "info": "64 bit register that is used to pass arguments"
+        },
+        {
+            "name": "rdi",
+            "syntax": "rdi",
+            "chs": "64位目的变址寄存器",
+            "info": "64 bit register used to acess memory data"
+        },
+        {
+            "name": "rsi",
+            "syntax": "rsi",
+            "chs": "64位源变址寄存器",
+            "info": "64 bit register used to acess memory data"
+        },
+        {
+            "name": "cs",
+            "syntax": "cs",
+            "chs": "代码段寄存器",
+            "info": "Code segement address"
+        },
+        {
+            "name": "ss",
+            "syntax": "ss",
+            "chs": "堆栈段寄存器",
+            "info": "Stack segement address"
+        },
+        {
+            "name": "ds",
+            "syntax": "ds",
+            "chs": "数据段寄存器",
+            "info": "Data segement address"
+        },
+        {
+            "name": "es",
+            "syntax": "es",
+            "chs": "附加段寄存器",
+            "info": "Extra segement address"
+        },
+        {
+            "name": "st0",
+            "syntax": "st0",
+            "info": "Floting point register 0"
+        },
+        {
+            "name": "st1",
+            "syntax": "st1",
+            "info": "Floting point register 1"
+        },
+        {
+            "name": "st2",
+            "syntax": "st2",
+            "info": "Floting point register 2"
+        },
+        {
+            "name": "st3",
+            "syntax": "st3",
+            "info": "Floting point register 3"
+        },
+        {
+            "name": "st4",
+            "syntax": "st4",
+            "info": "Floting point register 4"
+        },
+        {
+            "name": "st5",
+            "syntax": "st5",
+            "info": "Floting point register 5"
+        },
+        {
+            "name": "st6",
+            "syntax": "st6",
+            "info": "Floting point register 6"
+        },
+        {
+            "name": "st7",
+            "syntax": "st7",
+            "info": "Floting point register 7"
+        },
+        {
+            "name": "st",
+            "syntax": "st",
+            "info": "Floting point register"
+        },
+        {
+            "name": "db0",
+            "syntax": "db0",
+            "info": "Debug register 0"
+        },
+        {
+            "name": "db1",
+            "syntax": "db1",
+            "info": "Debug register 1"
+        },
+        {
+            "name": "db2",
+            "syntax": "db2",
+            "info": "Debug register 2"
+        },
+        {
+            "name": "db3",
+            "syntax": "db3",
+            "info": "Debug register 3"
+        },
+        {
+            "name": "tr6",
+            "syntax": "tr6",
+            "info": "Test register 4"
+        },
+        {
+            "name": "tr7",
+            "syntax": "tr7",
+            "info": "Test register 5"
+        },
+        {
+            "name": "db6",
+            "syntax": "db6",
+            "info": "Debug register 6"
+        },
+        {
+            "name": "db7",
+            "syntax": "db7",
+            "info": "Debug register 7"
+        }
+    ],
+    "MemoryAllocation": [
+        {
+            "name": "db",
+            "syntax": "[name] db [value]",
+            "chs": "分配1字节存储空间",
+            "info": "Allocates a byte of memory"
+        },
+        {
+            "name": "dw",
+            "syntax": "[name] dw [value]",
+            "chs": "分配2字节存储空间",
+            "info": "Allocates 2 byte of memory (Word)"
+        },
+        {
+            "name": "dd",
+            "syntax": "[name] dd [value]",
+            "chs": "分配4字节存储空间（双字）",
+            "info": "Allocates 4 byte of memory (Double Word)"
+        },
+        {
+            "name": "dq",
+            "syntax": "[name] dq [value]",
+            "chs": "分配8字节存储空间 (四字)",
+            "info": "Allocates 8 byte of memory (Quad Word)"
+        },
+        {
+            "name": "dt",
+            "syntax": "[name] dt [value]",
+            "chs": "分配10字节存储空间",
+            "info": "Allocates 10 byte of memory "
+        },
+        {
+            "name": "byte",
+            "syntax": "byte",
+            "info": "Locates 1 byte of memory"
+        },
+        {
+            "name": "word",
+            "syntax": "word",
+            "info": "Locates 2 byte of memory (Word)"
+        },
+        {
+            "name": "dword",
+            "syntax": "dword",
+            "info": "Locates 4 byte of memory (Double Word)"
+        },
+        {
+            "name": "qword",
+            "syntax": "qword",
+            "info": "Locates 8 byte of memory (Quad Word)"
+        },
+        {
+            "name": "tbyte",
+            "syntax": "tbyte",
+            "info": "Locates 10 byte of memory "
+        }
+    ],
+    "SavedWord": [
+        {
+            "name": "DATASEG",
+            "syntax": "DATASEG",
+            "chs": "数据段的开始",
+            "info": "Start of the data segment"
+        },
+        {
+            "name": "IDEAL",
+            "syntax": "IDEAL",
+            "chs": "",
+            "info": ""
+        },
+        {
+            "name": "CODESEG",
+            "syntax": "CODESEG",
+            "chs": "代码段的开始",
+            "info": "Start of the code segment"
+        },
+        {
+            "name": "MODEL",
+            "syntax": "MODEL [size]",
+            "info": "Defines the scope of the file"
+        },
+        {
+            "name": "STACK",
+            "syntax": "STACK [constant]",
+            "info": "Sets the size of the stack"
+        },
+        {
+            "name": "width",
+            "syntax": "width",
+            "info": " "
+        },
+        {
+            "name": "this",
+            "syntax": "this",
+            "info": " "
+        },
+        {
+            "name": "times",
+            "syntax": "times",
+            "info": " "
+        },
+        {
+            "name": "length",
+            "syntax": "length",
+            "info": " "
+        },
+        {
+            "name": "le",
+            "syntax": "le",
+            "info": " "
+        },
+        {
+            "name": "ge",
+            "syntax": "ge",
+            "info": " "
+        },
+        {
+            "name": "far",
+            "syntax": "[procName] far",
+            "info": "Turns the procedure into a far procedure"
+        },
+        {
+            "name": "near",
+            "syntax": "[procName] near",
+            "info": "Turns the procedure into a near procedure"
+        }
+    ],
+    "PreCompileCommand": [
+        {
+            "name": "include",
+            "syntax": "include [fileName]",
+            "info": "Includes a file in this file"
+        },
+        {
+            "name": "proc",
+            "syntax": "proc [name]",
+            "info": "Creates a new procedure"
+        },
+        {
+            "name": "endp",
+            "syntax": "endp [name]",
+            "info": "Ends a procedure defenition"
+        },
+        {
+            "name": "struc",
+            "syntax": "struc [name]",
+            "info": "Creates a new structure"
+        },
+        {
+            "name": "struct",
+            "syntax": "struct [name]",
+            "info": "Creates a new structure (Not supported)"
+        },
+        {
+            "name": "ends",
+            "syntax": "ends [name]",
+            "info": "Ends a structure defenition"
+        },
+        {
+            "name": "macro",
+            "syntax": "macro [name]",
+            "info": "Creates a new macro"
+        },
+        {
+            "name": "endm",
+            "syntax": "endm [name]",
+            "info": "Ends a macro defenition"
+        },
+        {
+            "name": "equ",
+            "syntax": "[name] equ [value]",
+            "info": "Replaces all instances of name with value"
+        },
+        {
+            "name": "dup",
+            "syntax": "[count] dup([values])",
+            "info": "Allocates values count times"
+        },
+        {
+            "name": "end",
+            "syntax": "end [label]",
+            "info": "Ends the file"
+        },
+        {
+            "name": "label",
+            "syntax": "label [name] [value]",
+            "info": "Simple macro"
+        },
+        {
+            "name": "         local",
+            "syntax": "local [args]...",
+            "info": "Create local data or labels"
+        },
+        {
+            "name": "if",
+            "syntax": "if [operand]",
+            "info": "Compares a value to zero"
+        },
+        {
+            "name": "ife",
+            "syntax": "ife [operand]",
+            "info": "If the value is not zero"
+        },
+        {
+            "name": "ifb",
+            "syntax": "ifb <[operand]>",
+            "info": " "
+        },
+        {
+            "name": "ifnb",
+            "syntax": "ifnb <[operand]>",
+            "info": " "
+        },
+        {
+            "name": "ifdef",
+            "syntax": "ifdef [operand]",
+            "info": "If the argument exsits"
+        },
+        {
+            "name": "ifndef",
+            "syntax": "ifndef [operand]",
+            "info": "If the argument doesn't exsits"
+        },
+        {
+            "name": "ifdif",
+            "syntax": "ifdif [operand], [operand]",
+            "info": "If the arguments are diffrent"
+        },
+        {
+            "name": "ifndif",
+            "syntax": "ifndif [operand], [operand]",
+            "info": "If the arguments are identical"
+        },
+        {
+            "name": "if1",
+            "syntax": "if1",
+            "info": " "
+        },
+        {
+            "name": "if2",
+            "syntax": "if2",
+            "info": " "
+        },
+        {
+            "name": "rept",
+            "syntax": "rept [operand]",
+            "info": "Repeats an action a ciretien of times"
+        },
+        {
+            "name": "irp",
+            "syntax": "rept [operand] <[operands]>",
+            "info": " "
+        },
+        {
+            "name": "endif",
+            "syntax": "endif",
+            "info": "Closes an if statement"
+        },
+        {
+            "name": "else",
+            "syntax": "else",
+            "info": "Accurs if the if statement before didn't"
+        }
+    ]
+}

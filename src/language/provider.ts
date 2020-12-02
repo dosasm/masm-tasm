@@ -1,8 +1,12 @@
 import * as vscode from 'vscode';
 import * as info from "./wordinfo";
-import * as key from "./keyword";
+import { HoverDICT } from "./keyword";
 
 class AsmHoverProvider implements vscode.HoverProvider {
+	hoverDict: HoverDICT
+	constructor(uri: vscode.Uri) {
+		this.hoverDict = new HoverDICT(uri);
+	}
 	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output: vscode.MarkdownString = new vscode.MarkdownString();
 		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
@@ -12,7 +16,7 @@ class AsmHoverProvider implements vscode.HoverProvider {
 			let word = wordo.toLowerCase();
 
 			let char = /'(.)'/.exec(word);//the word is a charactor?
-			let keyword = key.GetKeyword(word);//the word is a keyword of assembly?
+			let keyword = this.hoverDict.GetKeyword(word);//the word is a keyword of assembly?
 			let tasmsymbol = info.findSymbol(wordo);//the word is a symbol?
 
 			if (info.isNumberStr(word)) { output.appendMarkdown(info.getNumMsg(word)); }//the word is a number?
@@ -68,13 +72,8 @@ class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
 export function provider(context: vscode.ExtensionContext) {
 	let programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language");
 	if (programmaticFeatures.get("Hover")) {
-		let uri = vscode.Uri.joinPath(context.extensionUri, "./resources/keyword.json");
-		vscode.workspace.fs.readFile(uri).then(
-			(text) => {
-				key.Dictionary(text.toString());
-			}
-		);
-		context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider()));
+		let uri: vscode.Uri = vscode.Uri.joinPath(context.extensionUri, '/resources/hoverinfo.json');
+		context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider(uri)));
 	}
 	if (programmaticFeatures.get("programmaticFeatures")) {
 		context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly", new Asmsymbolprovider()));

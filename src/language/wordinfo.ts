@@ -530,8 +530,19 @@ export function getcharMsg(char: string) {
 enum KeywordType {
 	MacroLabel, File, Instruction, Register, PreCompileCommand, MemoryAllocation, SavedWord, Size, Variable, Procedure, Structure, Macro, Label, Segment
 }
-export function getType(type: KeywordType): string {
-	switch (type) {
+export function getType(type: KeywordType | string): string {
+	let itsType
+	if (typeof (type) === 'string') {
+		for (let key in KeywordType) {
+			if (key === type) {
+				itsType = KeywordType[key]
+			}
+		}
+	}
+	else {
+		itsType = type;
+	}
+	switch (itsType) {
 		case KeywordType.Instruction:
 			return localize("keykind.Command", "(Opcode mnemonics)");
 		case KeywordType.MemoryAllocation:
@@ -557,5 +568,5 @@ export function getType(type: KeywordType): string {
 		case KeywordType.Segment:
 			return localize("keykind.Segment", "(Segment)");
 	}
-	return "(Unknown)";
+	return type.toString();
 }

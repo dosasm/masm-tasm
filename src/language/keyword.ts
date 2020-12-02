@@ -1,51 +1,15 @@
-import { MarkdownString, env } from "vscode";
+import { MarkdownString, env, Uri, workspace } from "vscode";
 import { getType } from "./wordinfo";
-enum AllowKinds {
-	Memory, Variables, Constants, All, Size, None, Inst, Macro, Label, Interrupt
-}
-enum KeywordType {
-	MacroLabel, File, Instruction, Register, PreCompileCommand, MemoryAllocation, SavedWord, Size, Variable, Procedure, Structure, Macro, Label, Segment
-}
-class ASMKEYWORD {
-	opCount: number;
+interface KEYINFO {
 	name: string;
-	description: string;
-	chs: string | undefined;
-	synopsis: string;
-	type: KeywordType;
-	allowType: AllowKinds;
-	alias: string[] | undefined;
-	/**
-	 * 注册关键字相关的信息
-	 * @param name string关键字名称
-	 * @param def string定义 描述
-	 * @param type keywordType类型
-	 * @param data syntax等提示信息
-	 * @param count 操作数个数
-	 * @param allow 允许接的操作数类型
-	 */
-	constructor(name: string, def: string, type: KeywordType = KeywordType.Instruction, data?: string, count: number = 2, allow?: AllowKinds, alias?: string[]) {
-		this.name = name;
-		this.alias = alias;
-		if (data !== undefined) {
-			this.synopsis = data;
-		} else {
-			this.synopsis = name + " [operand], [operand]";
-		}
-
-		if (allow === undefined) {
-			this.allowType = AllowKinds.Inst;
-		} else {
-			this.allowType = allow;
-		}
-		this.opCount = count;
-		this.type = type;
-		this.description = def;
-	}
+	syntax?: string;
+	info?: string;
+	chs?: string;
+	alias?: string[];
 }
-function markdown(key: ASMKEYWORD): MarkdownString {
-	let md = new MarkdownString(getType(key.type) + " **" + key.name + "**\n\n");
-	let description = key.description;
+function markdown(key: KEYINFO, type: string): MarkdownString {
+	let md = new MarkdownString(getType(type) + " **" + key.name + "**\n\n");
+	let description = key.info;
 	if (env.language === "zh-cn" && key.chs) { description = key.chs; }
 	md.appendMarkdown(description + "\n\n");
 	if (key.alias) {
@@ -57,28 +21,41 @@ function markdown(key: ASMKEYWORD): MarkdownString {
 		msg += "`" + key.alias[i] + "`";
 		md.appendMarkdown(msg);
 	}
-	md.appendCodeblock("Synopsis: " + key.synopsis, "assembly");
+	md.appendCodeblock("Syntax: " + key.syntax, "assembly");
 	return md;
 }
-let KEYWORD_DICONTARY: ASMKEYWORD[] = [];
-export function Dictionary(str: string) {
-	let KeywordObj = JSON.parse(str);
-	if (KeywordObj) { KEYWORD_DICONTARY = KeywordObj.keywords; }
 
-}
-export function GetKeyword(word: string): MarkdownString | undefined {
-	let res: ASMKEYWORD | undefined;
-	for (let i = 0; i < KEYWORD_DICONTARY.length; i++) {
-		const keyword = KEYWORD_DICONTARY[i];
-		if (keyword.name === word) { res = keyword; }
-		if (keyword.alias) {
-			for (let i = 0; i < keyword.alias.length; i++) {
-				const alia = keyword.alias[i];
-				if (alia === word) { res = keyword; }
+export class HoverDICT {
+	KEYWORD_DICONTARY: { [id: string]: KEYINFO[] } | undefined
+	constructor(fileuri: Uri) {
+		workspace.fs.readFile(fileuri).then(
+			(value) => {
+				let hoverJSON = JSON.parse(value.toString())
+				this.KEYWORD_DICONTARY = hoverJSON
+			}
+		)
+	}
+	public GetKeyword(word: string): MarkdownString | undefined {
+		let res: any;
+		if (this.KEYWORD_DICONTARY) {
+			//TODO:type
+			for (let n in this.KEYWORD_DICONTARY) {
+				if (Array.isArray(this.KEYWORD_DICONTARY[n])) {
+					//console.log(n)
+					for (let i = 0; i < this.KEYWORD_DICONTARY[n].length; i++) {
+						const keyword = this.KEYWORD_DICONTARY[n][i];
+						if (keyword.name === word) { res = keyword; return markdown(res, n); }
+						if (keyword.alias) {
+							for (let i = 0; i < keyword.alias.length; i++) {
+								const alia = keyword.alias[i];
+								if (alia === word) { res = keyword; return markdown(res, n); }
+							}
+						}
+					}
+				}
 			}
 		}
+		return;
 	}
-	if (res) { return markdown(res); }
-	return;
 }
 

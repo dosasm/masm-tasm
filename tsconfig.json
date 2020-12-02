@@ -1,4 +1,7 @@
 {
+	"include": [
+		"src/**/*.ts"
+	],
 	"compilerOptions": {
 		"module": "commonjs",
 		"target": "es6",
