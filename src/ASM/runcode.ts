@@ -1,4 +1,4 @@
-import { ExtensionContext, FileType, OutputChannel, TextDocument, Uri, window, workspace, } from 'vscode';
+import { ExtensionContext, FileType, languages, OutputChannel, TextDocument, Uri, window, workspace, } from 'vscode';
 import { Config, inArrays } from './configration';
 import * as DOSBox from './DOSBox';
 import * as MSDos from './viaPlayer';

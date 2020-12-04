@@ -1,67 +1,37 @@
 const link = "https://docs.microsoft.com/en-us/cpp/assembler/masm/";
-const namelist = [
-    "ml-fatal-error-a1000",
-    "ml-fatal-error-a1005",
-    "ml-fatal-error-a1007",
-    "ml-fatal-error-a1008",
-    "ml-fatal-error-a1009",
-    "ml-fatal-error-a1010",
-    "ml-fatal-error-a1011",
-    "ml-fatal-error-a1016",
-    "ml-fatal-error-a1017",
-    "ml-nonfatal-error-a2004",
-    "ml-nonfatal-error-a2006",
-    "ml-nonfatal-error-a2008",
-    "ml-nonfatal-error-a2010",
-    "ml-nonfatal-error-a2019",
-    "ml-nonfatal-error-a2022",
-    "ml-nonfatal-error-a2031",
-    "ml-nonfatal-error-a2034",
-    "ml-nonfatal-error-a2037",
-    "ml-nonfatal-error-a2038",
-    "ml-nonfatal-error-a2039",
-    "ml-nonfatal-error-a2044",
-    "ml-nonfatal-error-a2047",
-    "ml-nonfatal-error-a2050",
-    "ml-nonfatal-error-a2054",
-    "ml-nonfatal-error-a2055",
-    "ml-nonfatal-error-a2057",
-    "ml-nonfatal-error-a2059",
-    "ml-nonfatal-error-a2060",
-    "ml-nonfatal-error-a2063",
-    "ml-nonfatal-error-a2064",
-    "ml-nonfatal-error-a2065",
-    "ml-nonfatal-error-a2066",
-    "ml-nonfatal-error-a2069",
-    "ml-nonfatal-error-a2070",
-    "ml-nonfatal-error-a2074",
-    "ml-nonfatal-error-a2078",
-    "ml-nonfatal-error-a2079",
-    "ml-nonfatal-error-a2083",
-    "ml-nonfatal-error-a2085",
-    "ml-nonfatal-error-a2096",
-    "ml-nonfatal-error-a2097",
-    "ml-nonfatal-error-a2107",
-    "ml-nonfatal-error-a2119",
-    "ml-nonfatal-error-a2133",
-    "ml-nonfatal-error-a2137",
-    "ml-nonfatal-error-a2189",
-    "ml-nonfatal-error-a2206",
-    "ml-nonfatal-error-a2219",
-    "ml-warning-a4004",
-    "ml-warning-a4012",
-    "ml-warning-a4014",
-];
+const list = [
+    {
+        type: "fatal-error",
+        codes: [
+            "a1000", "a1005", "a1007", "a1008", "a1009", "a1010", "a1011", "a1016", "a1017"
+        ],
+    },
+    {
+        type: "nonfatal-error",
+        codes: [
+            "a2004", "a2006", "a2008", "a2010", "a2019", "a2022", "a2031", "a2034", "a2037", "a2038", "a2039", "a2044", "a2047",
+            "a2050", "a2054", "a2055", "a2057", "a2059", "a2060", "a2063", "a2064", "a2065", "a2066", "a2069", "a2070", "a2074",
+            "a2078", "a2079", "a2083", "a2085", "a2096", "a2097", "a2107", "a2119", "a2133", "a2137", "a2189", "a2206", "a2219"
+        ]
+    },
+    {
+        type: "warning",
+        codes: [
+            "a4004", "a4012", "a4014"
+        ]
+    }
+]
 /**
  * offer a link like `https://docs.microsoft.com/en-us/cpp/assembler/masm/ml-nonfatal-error-a2008`
  * for reference
  * @param str the code of the error information
  */
 export function getInternetlink(str: string): string | undefined {
-    let code = str.toLowerCase();
-    for (let val of namelist) {
-        if (val.match(code)) {
-            return link + val;
+    for (let val of list) {
+        for (let code of val.codes) {
+            if (str.toLowerCase() === code) {
+                return `${link}ml-${val.type}-${code}`;
+            }
         }
     }
     return undefined;

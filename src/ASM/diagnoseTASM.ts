@@ -48,6 +48,7 @@ export function tasmDiagnose(TASMmsg: string, doc: TextDocument, collection: Dia
                 }
             }
             if (VSCdiag) {
+                VSCdiag.source = "TASM4.1";
                 diagnostics.push(VSCdiag);
             }
         }
