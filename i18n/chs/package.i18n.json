@@ -3,6 +3,7 @@
 	"dosasm.editor.runAsm": "运行当前程序(汇编+链接+运行)",
 	"dosasm.editor.debugAsm": "调试当前程序(汇编+链接+调试)",
 	"dosasm.command.cleanalldianose": "清除MASM/TASM的所有问题信息",
+	"dosasm.command.dosboxhere": "打开DOSBox将当前文件所在目录挂载到E盘，并配置相关环境",
 	"dosasm.config.toolspath.mddescription": "自定义的汇编目录，用来替换插件自带的工具集",
 	"dosasm.config.masmortasm.description": "使用MASM还是TASM作为汇编工具",
 	"dosasm.config.masmortasm.enum1": "使用MASM汇编工具集，包括masm.exe,link.exe,debug.exe...",
@@ -22,7 +23,7 @@
 	"dosasm.config.boxconsole.normal": "显示控制台窗口，使用命令如`dosbox`",
 	"dosasm.config.boxconsole.noconsole": "不显示控制台窗口，而是重定向到文件，使用命令如`dosbox -noconsole`",
 	"dosasm.config.dosbox.resolution": "自定义dosbox窗口大小，格式如1024x640，不设置则为DOSBox默认大小",
-	"dosasm.command.dosboxhere": "打开DOSBox将当前文件所在目录挂载到E盘，并配置相关环境",
+	"dosasm.config.boxconfig.description": "dosbox的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox官网的说明](https://www.dosbox.com/wiki/Dosbox.conf)",
 	"dosasm.config.hover": "是否显示悬浮提示(hover)，可能需要重启vscode来应用变更",
 	"dosasm.config.PLF": "使用提供大纲，跳到定义，查找引用等programmatic features"
 }

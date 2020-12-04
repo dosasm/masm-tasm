@@ -1,7 +1,8 @@
-import { workspace, Uri, FileSystem, FileType, ExtensionContext, OutputChannel } from 'vscode';
+import { workspace, Uri, FileSystem, FileType, ExtensionContext, OutputChannel, languages } from 'vscode';
 import { TextEncoder } from 'util';
 import { BoxConfig } from './DOSBox';
 import { PlayerConfig } from './viaPlayer';
+import { SeeinCPPDOCS as SeeCppDocs } from './codeAction';
 interface ToolInfo {
     uri: Uri,
     hasBoxasm: boolean,
@@ -85,18 +86,41 @@ function writefile(Uri: Uri, Content: string) {
     let fs: FileSystem = workspace.fs;
     fs.writeFile(Uri, new TextEncoder().encode(Content));
 }
+class BOXCONF {
+    config: { [id1: string]: { [id2: string]: string } }
+    constructor(a: any) {
+        var b: { [id1: string]: { [id2: string]: string } } = {};
+        for (let key in a) {
+            console.log(key, a[key]);
+            let [id1, id2] = key.split(".");
+            if (b[id1]) {
+                b[id1][id2] = a[key];
+            }
+            else {
+                b[id1] = { [id2]: a[key] };
+            }
+        }
+        this.config = b;
+    }
+    toFileString(): string {
+        let b = this.config, str: string = "";
+        for (let id1 in b) {
+            str += `[${id1}]\n`;
+            for (let id2 in b[id1]) {
+                str += `${id2}=${b[id1][id2]}\n`;
+            }
+        }
+        return str;
+    }
+}
 /**
  * write the DOSBox configuration file
  * @param autoExec the command autoexec
  */
 function writeBoxconfig(configUri: Uri, autoExec?: string) {
-    let resolution = configuration.get('dosbox.CustomResolution');
-    let configContent = `[sdl]
-windowresolution=${resolution}
-output=opengl
-`;
-    if (autoExec) { configContent = configContent + '\n[AUTOEXEC]\n' + autoExec; }
-    writefile(configUri, configContent);
+    let content: string = new BOXCONF(configuration.get('dosbox.config')).toFileString();
+    if (autoExec) { content = content + '\n[AUTOEXEC]\n' + autoExec; }
+    writefile(configUri, content);
 }
 function OpenDosbox() {
     //command for open dosbox
@@ -126,14 +150,12 @@ function OpenDosbox() {
 }
 function printConfig(channel: OutputChannel, conf: Config) {
     let date = new Date();
-    let output =
-        `
-${date.toLocaleString()}
+    let output = `${date.toLocaleString()}
     workspace: ${conf.workUri.fsPath}
     use DOSBox from folder: ${conf.BOXfolder.fsPath}
-    use MSdos-player from folder: ${conf.Playerfolder.fsPath} 
+    use MSdos - player from folder: ${conf.Playerfolder.fsPath}
     use assembler from folder: ${conf.ASMtoolsUri.fsPath}
-`;
+    `;
     channel.append(output);
 }
 interface Config2 extends PlayerConfig, BoxConfig {
@@ -186,6 +208,13 @@ export class Config implements Config2 {
                 (reason) => { console.log(reason); this.customToolInfo = undefined; }
             );
         } else if (channel) { printConfig(channel, this); }
+        if (this.MASMorTASM === 'MASM') {
+            content.subscriptions.push(
+                languages.registerCodeActionsProvider('assembly', new SeeCppDocs(), {
+                    providedCodeActionKinds: SeeCppDocs.providedCodeActionKinds
+                })
+            );
+        }
         //write dosbox.conf
         writeBoxconfig(this.dosboxconfuri);
     }
