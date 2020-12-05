@@ -87,11 +87,11 @@ function writefile(Uri: Uri, Content: string) {
     fs.writeFile(Uri, new TextEncoder().encode(Content));
 }
 class BOXCONF {
-    config: { [id1: string]: { [id2: string]: string } }
+    config: { [id1: string]: { [id2: string]: string } };
     constructor(a: any) {
         var b: { [id1: string]: { [id2: string]: string } } = {};
         for (let key in a) {
-            console.log(key, a[key]);
+            //console.log(key, a[key]);
             let [id1, id2] = key.split(".");
             if (b[id1]) {
                 b[id1][id2] = a[key];
@@ -107,7 +107,7 @@ class BOXCONF {
         for (let id1 in b) {
             if (id1 === "AUTOEXEC") {
                 str += "[AUTOEXEC]\n";
-                let execstr = b[id1].undefined
+                let execstr = b[id1].undefined;
                 str += execstr.replace(/\\n/g, '\n') + '\n';
             }
             else {

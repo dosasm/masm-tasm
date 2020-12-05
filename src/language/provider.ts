@@ -1,43 +1,19 @@
 import * as vscode from 'vscode';
-import * as info from "./wordinfo";
-import { HoverDICT } from "./keyword";
-
-class AsmHoverProvider implements vscode.HoverProvider {
-	hoverDict: HoverDICT
-	constructor(uri: vscode.Uri) {
-		this.hoverDict = new HoverDICT(uri);
-	}
-	async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-		let output: vscode.MarkdownString = new vscode.MarkdownString();
-		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-		info.scanDocumnt(document);//scan the document
-		if (range) {
-			let wordo = document.getText(range);
-			let word = wordo.toLowerCase();
-
-			let char = /'(.)'/.exec(word);//the word is a charactor?
-			let keyword = this.hoverDict.GetKeyword(word);//the word is a keyword of assembly?
-			let tasmsymbol = info.findSymbol(wordo);//the word is a symbol?
-
-			if (info.isNumberStr(word)) { output.appendMarkdown(info.getNumMsg(word)); }//the word is a number?
-			else if (char) { output.appendMarkdown(info.getcharMsg(char[1])); }
-			else if (tasmsymbol) { output = tasmsymbol.markdown(); }
-			else if (keyword !== undefined) { output = keyword; }
-		}
-		return new vscode.Hover(output);
-	}
-}
+import { getDocInfo } from "./scanDoc";
+import { AsmDocFormat } from './AsmDocumentFormattingEdit';
+import { AsmHoverProvider } from './AsmHover';
+import { AsmReferenceProvider } from './AsmReference';
 
 class AsmDefProvider implements vscode.DefinitionProvider {
 	async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
 		let output: vscode.Location | undefined;
 		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-		info.scanDocumnt(document);//scan thdocumente 
+		let docinfo = getDocInfo(document);//scan thdocumente 
 		if (range) {
 			let wordo = document.getText(range);
-			let tasmsymbol = info.findSymbol(wordo);
+			let tasmsymbol = docinfo.findSymbol(wordo);
 			if (tasmsymbol) {
-				output = tasmsymbol.location;
+				output = tasmsymbol.location(document.uri);
 			}
 		}
 		return output;
@@ -45,30 +21,10 @@ class AsmDefProvider implements vscode.DefinitionProvider {
 }
 class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
 	provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken) {
-		let docsymbol: vscode.DocumentSymbol[] = [];
-		docsymbol = info.scanDocumnt(document);
-		return docsymbol;
+		return getDocInfo(document).tree;
 	}
-
 }
 
-class AsmReferenceProvider implements vscode.ReferenceProvider {
-	provideReferences(document: vscode.TextDocument, position: vscode.Position, context: vscode.ReferenceContext, token: vscode.CancellationToken) {
-		let range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-		let output: vscode.Location[] = [];
-		info.scanDocumnt(document);//scan thdocumente 
-		if (range) {
-			let word = document.getText(range);
-			output = info.getrefer(word, document);
-		}
-		return output;
-	}
-}
-class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
-	provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.TextEdit[] {
-		return info.codeformatting(document, options);
-	}
-}
 export function provider(context: vscode.ExtensionContext) {
 	let programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language");
 	if (programmaticFeatures.get("Hover")) {

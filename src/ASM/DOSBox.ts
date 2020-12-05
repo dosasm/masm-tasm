@@ -99,10 +99,10 @@ export function runDosbox(conf: BoxConfig, more?: string[], doc?: TextDocument):
 /**
  * opendosbox at the Editor's file's folder
  * @param conf config
- * @param doc the doc
+ * @param the uri of the folder
  */
-export function BoxOpenCurrentFolder(conf: BoxConfig, doc: TextDocument) {
-    let folderpath: string = Uri.joinPath(doc.uri, '../').fsPath;
+export function BoxOpenFolder(conf: BoxConfig, uri: Uri) {
+    let folderpath: string = uri.fsPath;
     let opt: OPTS = {
         cwd: conf.BOXfolder.fsPath,
         core: conf.OpenDosbox,

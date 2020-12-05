@@ -20,7 +20,7 @@ const list = [
             "a4004", "a4012", "a4014"
         ]
     }
-]
+];
 /**
  * offer a link like `https://docs.microsoft.com/en-us/cpp/assembler/masm/ml-nonfatal-error-a2008`
  * for reference

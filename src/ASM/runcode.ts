@@ -32,7 +32,7 @@ export class AsmAction {
                 case 'opendosbox': this.Openemu(doc); break;
                 case 'run': this.RunDebug(doc, true); break;
                 case 'debug': this.RunDebug(doc, false); break;
-                case 'here': DOSBox.BoxOpenCurrentFolder(this._config, doc);
+                case 'here': DOSBox.BoxOpenFolder(this._config, Uri.joinPath(doc.uri, '../'));
             };
         };
         if (document) {
