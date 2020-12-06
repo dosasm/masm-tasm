@@ -18,6 +18,32 @@ export class AsmAction {
             if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context, this.extOutChannel); }
         });
     }
+    public async BoxHere(uri?: Uri) {
+        let folder: Uri | undefined = undefined;
+        if (uri) {
+            folder = uri;
+        }
+        else {
+            if (window.activeTextEditor?.document) {
+                folder = Uri.joinPath(window.activeTextEditor?.document.uri, '../');
+            }
+            else if (workspace.workspaceFolders) {
+                if (workspace.workspaceFolders.length === 1) {
+                    folder = workspace.workspaceFolders[0].uri;
+                }
+                else if (workspace.workspaceFolders.length > 1) {
+                    let a = await window.showWorkspaceFolderPick();
+                    if (a) { folder = a.uri; }
+                }
+            }
+        }
+        if (folder) {
+            DOSBox.BoxOpenFolder(this._config, folder);
+        }
+        else {
+            window.showWarningMessage('no folder to open \nThe extension use the activeEditor file\'s folder or workspace folder');
+        }
+    }
     /**Do the operation according to the input.
      * "opendosbox": open DOSBOX at a separated space;
      * "here": open dosbox at the vscode editor file's folder;
@@ -32,7 +58,6 @@ export class AsmAction {
                 case 'opendosbox': this.Openemu(doc); break;
                 case 'run': this.RunDebug(doc, true); break;
                 case 'debug': this.RunDebug(doc, false); break;
-                case 'here': DOSBox.BoxOpenFolder(this._config, Uri.joinPath(doc.uri, '../'));
             };
         };
         if (document) {

@@ -6,14 +6,14 @@ let _docstr: string | undefined;
 //TODO: scan relative files
 export const getDocInfo = (doc: vscode.TextDocument): DocInfo => {
     let str = doc.getText();
-    if (_docinfo && str == _docstr) {
+    if (_docinfo && str === _docstr) {
     }
     else {
         console.log(count++);
         _docinfo = new DocInfo(doc);
         _docstr = str;
     }
-    return _docinfo
+    return _docinfo;
 };
 export class DocInfo {
     lines: Asmline[];

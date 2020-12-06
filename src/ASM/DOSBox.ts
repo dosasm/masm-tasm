@@ -102,12 +102,11 @@ export function runDosbox(conf: BoxConfig, more?: string[], doc?: TextDocument):
  * @param the uri of the folder
  */
 export function BoxOpenFolder(conf: BoxConfig, uri: Uri) {
-    let folderpath: string = uri.fsPath;
     let opt: OPTS = {
         cwd: conf.BOXfolder.fsPath,
         core: conf.OpenDosbox,
         boxcmd: [
-            `mount e \\\"${folderpath}\\\"`,
+            `mount e \\\"${uri.fsPath}\\\"`,
             `mount c \\\"${conf.ASMtoolsUri.fsPath}\\\"`,
             'set PATH=%%PATH%%;c:\\masm;c:\\tasm',
             'e:',

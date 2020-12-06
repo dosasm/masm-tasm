@@ -25,8 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let cleanalldiagnose = vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => {
 		asm.cleanalldiagnose();
 	});
-	let dosboxhere = vscode.commands.registerCommand('masm-tasm.dosboxhere', () => {
-		asm.runcode('here');
+	let dosboxhere = vscode.commands.registerCommand('masm-tasm.dosboxhere', (uri?: vscode.Uri) => {
+		asm.BoxHere(uri);
 	});
 	context.subscriptions.push(opendosbox, runASM, debugASM, cleanalldiagnose, dosboxhere);
 }
