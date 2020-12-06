@@ -109,7 +109,7 @@ export function BoxOpenFolder(conf: BoxConfig, uri: Uri) {
         boxcmd: [
             `mount e \\\"${folderpath}\\\"`,
             `mount c \\\"${conf.ASMtoolsUri.fsPath}\\\"`,
-            'set PATH=%%PATH%%;c:\\masm;c:\\tasm\n',
+            'set PATH=%%PATH%%;c:\\masm;c:\\tasm',
             'e:',
         ],
         parameter: ' -conf "' + conf.dosboxconfuri.fsPath + '" '

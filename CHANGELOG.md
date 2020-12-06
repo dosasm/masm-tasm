@@ -11,6 +11,7 @@
 - 0.6.2
   - 废弃`masmtasm.dosbox.CustomResolution`设置选项，通过`masmtasm.dosbox.config`来支持更多的dosbox选项
   - 提供MASM的部分错误信息跳转到Microsoft docs页面的CodeAction
+- 0.6.3 修复dosbox here不切换盘符的小问题
 
 ## 0.5.0-0.5.3
 
