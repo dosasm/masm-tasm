@@ -235,14 +235,13 @@
   },
   "scripts": {
     "compile": "gulp translations-generate && webpack --mode production --vscode-nls",
-    "compile-tsc": "tsc -p ./  --rootDir src",
+    "compile-tsc": "tsc -p ./",
     "compile-dev": "webpack --mode development",
     "compile-nls": "gulp translations-generate && webpack --mode development --vscode-nls",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
     "watch": "tsc -watch -p ./ --rootDir src",
     "pretest": "npm run compile && npm run lint",
-    "compile-test": "tsc -p ./src/test",
     "test": "node ./dist/test/runTest.js",
     "vscode:prepublish": "npm run compile"
   },

@@ -1,17 +1,15 @@
 //clean files
 const del = require('del');
-const cleanTask = function () {
-	return del(['out/**', 'dist/**', 'package.nls.*.json', 'masm-tasm*.vsix']);
-};
+const cleanTask = () => del(['dist/**', 'package.nls.*.json']);;
+const cleanTask2 = () => del(['dist/**', 'package.nls.*.json', 'masm-tasm*.vsix']);
 
 //build nls
 const gulp = require('gulp');
 const filter = require('gulp-filter');
 const ts = require('gulp-typescript');
-const typescript = require('typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const nls = require('vscode-nls-dev');
-const tsProject = ts.createProject('./tsconfig.json', { typescript });
+const tsProject = ts.createProject('./tsconfig.json', { rootDir: '.' });
 const languages = [
 	{ id: "zh-cn", folderName: "chs", transifexId: "zh-hans" }];
 const generateAdditionalLocFiles = () => {
@@ -33,6 +31,7 @@ const generateSrcLocBundle = () => {
 		.pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
 		.pipe(gulp.dest('dist'));
 };
+
 //package and publish
 const fs = require('fs');
 const vsce = require('vsce');
@@ -63,18 +62,16 @@ function getOption(date) {
 	}
 	return opt;
 }
-
 const vscePublishTask = function () {
 	return vsce.publish(getOption());
 };
 const vscePackageTask = function () {
-
 	return vsce.createVSIX(getOption(true));
 };
 
 gulp.task('clean', cleanTask);
 gulp.task('translations-generate', gulp.series(generateSrcLocBundle, generateAdditionalLocFiles));
 
-gulp.task('publish', gulp.series(vscePublishTask));
+gulp.task('publish', gulp.series(cleanTask2, vscePublishTask));
 
-gulp.task('package', gulp.series(vscePackageTask));
+gulp.task('package', gulp.series(cleanTask2, vscePackageTask));

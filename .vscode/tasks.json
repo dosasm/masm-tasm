@@ -5,11 +5,21 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "compile-dev",
+			"script": "compile",
+			"problemMatcher": [
+				"$tsc"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
+			"label": "npm: compile",
+			"detail": "gulp translations-generate && webpack --mode production --vscode-nls"
+		},
+		{
+			"type": "npm",
+			"script": "compile-dev",
+			"group": "build",
 			"problemMatcher": [
 				"$tsc"
 			],
@@ -18,13 +28,12 @@
 		},
 		{
 			"type": "npm",
-			"script": "compile-test",
+			"script": "compile-tsc",
 			"problemMatcher": [
 				"$tsc"
 			],
-			"label": "npm: compile-test",
-			"detail": "tsc -p ./src/test",
-			"dependsOn": "npm: compile-dev"
+			"label": "npm: compile-tsc",
+			"detail": "`tsc -p ./` using tsc to compile ts code",
 		},
 		{
 			"type": "npm",
@@ -51,16 +60,6 @@
 			"task": "clean",
 			"problemMatcher": [],
 			"label": "gulp: clean"
-		},
-		{
-			"type": "npm",
-			"script": "compile",
-			"problemMatcher": [
-				"$tsc"
-			],
-			"group": "build",
-			"label": "npm: compile",
-			"detail": "gulp translations-generate && webpack --mode production --vscode-nls"
 		}
 	]
 }

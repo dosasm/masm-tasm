@@ -10,7 +10,7 @@
 			"es6"
 		],
 		"sourceMap": true,
-		"rootDir": ".",
+		"rootDir": "src",
 		"removeComments": true,
 		"strict": true /* enable all strict type-checking options */
 		/* Additional Checks */
