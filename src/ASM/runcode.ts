@@ -4,6 +4,7 @@ import * as DOSBox from './DOSBox';
 import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
 import { AssemblerDiag } from './diagnose';
+import { SeeinCPPDOCS as SeeCppDocs } from './codeAction';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 export class AsmAction {
@@ -12,13 +13,20 @@ export class AsmAction {
     private landiag: AssemblerDiag;
     constructor(context: ExtensionContext) {
         this.extOutChannel = window.createOutputChannel('Masm-Tasm');
-        this._config = new Config(context, this.extOutChannel);
+        this._config = new Config(context.extensionUri, this.extOutChannel);
         this.landiag = new AssemblerDiag();
         workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context, this.extOutChannel); }
+            if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context.extensionUri, this.extOutChannel); }
         });
+        if (this._config.MASMorTASM === 'MASM') {
+            context.subscriptions.push(
+                languages.registerCodeActionsProvider('assembly', new SeeCppDocs(), {
+                    providedCodeActionKinds: SeeCppDocs.providedCodeActionKinds
+                })
+            );
+        }
     }
-    public async BoxHere(uri?: Uri) {
+    public async BoxHere(uri?: Uri, command?: string) {
         let folder: Uri | undefined = undefined;
         if (uri) {
             folder = uri;
@@ -38,7 +46,7 @@ export class AsmAction {
             }
         }
         if (folder) {
-            DOSBox.BoxOpenFolder(this._config, folder);
+            return DOSBox.BoxOpenFolder(this._config, folder, command);
         }
         else {
             window.showWarningMessage('no folder to open \nThe extension use the activeEditor file\'s folder or workspace folder');
@@ -51,23 +59,23 @@ export class AsmAction {
      * "debug": compile and debug the ASM code;
      * @param command "opendosbox" or "run" or "debug" or "here"
      */
-    public runcode(command: string) {
-        let document = window.activeTextEditor?.document;
-        const asmit = (command: string, doc: TextDocument) => {
+    public async runcode(command: string, uri?: Uri) {//TODO: make it possible to use uri
+        let doc = window.activeTextEditor?.document;
+        let output: any;
+        if (doc) {
+            if (this._config.savefirst && doc.isDirty) {
+                await doc.save();
+            }
             switch (command) {
                 case 'opendosbox': this.Openemu(doc); break;
-                case 'run': this.RunDebug(doc, true); break;
-                case 'debug': this.RunDebug(doc, false); break;
+                case 'run': output = await this.RunDebug(doc, true); break;
+                case 'debug': output = await this.RunDebug(doc, false); break;
             };
-        };
-        if (document) {
-            if (this._config.savefirst && document.isDirty) {
-                document.save().then(() => {
-                    if (document) { asmit(command, document); }
-                });
-            }
-            else { asmit(command, document); }
         }
+        else {
+            window.showErrorMessage('no activeTextEditor document');
+        }
+        return output;
     }
     /**
      * open the emulator(currently just the DOSBox)
@@ -88,7 +96,7 @@ export class AsmAction {
      *  | msdos   | msdos    | msdos      | msdos    | dosbox  |
      *  | auto    | dosbox   | msdos      | dosbox   | dosbox  |
      */
-    public async RunDebug(doc: TextDocument, runOrDebug: boolean): Promise<Object> {
+    public async RunDebug(doc: TextDocument, runOrDebug: boolean) {
         let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM;
         let stdout: string | undefined = undefined;
         //show message

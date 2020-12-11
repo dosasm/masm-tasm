@@ -9,7 +9,7 @@ export const getDocInfo = (doc: vscode.TextDocument): DocInfo => {
     if (_docinfo && str === _docstr) {
     }
     else {
-        console.log(count++);
+        //console.log(count++);
         _docinfo = new DocInfo(doc);
         _docstr = str;
     }

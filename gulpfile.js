@@ -1,7 +1,7 @@
 //clean files
 const del = require('del');
-const cleanTask = () => del(['dist/**', 'package.nls.*.json']);;
-const cleanTask2 = () => del(['dist/**', 'package.nls.*.json', 'masm-tasm*.vsix']);
+const cleanTask = () => del(['dist/**', 'package.nls.*.json', 'masm-tasm*.vsix']);;
+const cleanTask2 = () => del(['dist/**', 'package.nls.*.json']);
 
 //build nls
 const gulp = require('gulp');

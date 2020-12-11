@@ -65,7 +65,7 @@ export async function runDosbox2(conf: BoxConfig, runOrDebug: boolean): Promise<
  * @param more The commands needed to exec in dosbox
  * @param doc If defined, copy this file to workspace as T.xxx(xxx is the files extension) using terminal commands
  */
-export function runDosbox(conf: BoxConfig, more?: string[], doc?: TextDocument): Promise<string> {
+export function runDosbox(conf: BoxConfig, more?: string[], doc?: TextDocument) {
     let preCommand: string = "";
     let boxcmd: string[] = ['@echo off'];
     boxcmd.push(
@@ -101,7 +101,7 @@ export function runDosbox(conf: BoxConfig, more?: string[], doc?: TextDocument):
  * @param conf config
  * @param the uri of the folder
  */
-export function BoxOpenFolder(conf: BoxConfig, uri: Uri) {
+export function BoxOpenFolder(conf: BoxConfig, uri: Uri, command?: string) {
     let opt: OPTS = {
         cwd: conf.BOXfolder.fsPath,
         core: conf.OpenDosbox,
@@ -113,7 +113,10 @@ export function BoxOpenFolder(conf: BoxConfig, uri: Uri) {
         ],
         parameter: ' -conf "' + conf.dosboxconfuri.fsPath + '" '
     };
-    openDosbox(opt);
+    if (command) {
+        opt.boxcmd?.push(...command.split('\n'));
+    }
+    return openDosbox(opt);
 }
 /**
  * options for open dosbox
@@ -144,7 +147,7 @@ interface OPTS {
  * open DOSBox through child_process
  * @param opt options
  */
-function openDosbox(opt: OPTS): Promise<string> {
+function openDosbox(opt: OPTS): Promise<{ code?: number | null, stdout?: string, stderr?: string }> {
     let str = opt.core + opt.parameter;
     if (opt.preOpen) {
         str = opt.preOpen + str;
@@ -158,19 +161,24 @@ function openDosbox(opt: OPTS): Promise<string> {
         );
         str += cmd;
     }
+    let exitcode: number | undefined | null = undefined;
     let execOption: ExecOptions = { cwd: opt.cwd };
     return new Promise(
         (resolve, reject) => {
             let child = exec(str, execOption, (error: any, stdout: string, stderr: string) => {
                 if (error) {
                     reject(error);
-                    console.log(stderr);
                 }
                 else {
-                    resolve(stdout);
+                    resolve({
+                        code: exitcode,
+                        stdout: stdout,
+                        stderr: stderr
+                    });
                 }
             });
             child.on('exit', (code) => {
+                exitcode = code;
                 if (code !== 0) {
                     let msg = `Open dosbox Failed with exitcode${code}\n`;
                     msg += 'PLEASE make sure DOSBox can be opened by terminal command \n' + str;

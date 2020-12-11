@@ -13,22 +13,24 @@ export function activate(context: vscode.ExtensionContext) {
 	provider(context);
 	//run and debug the code in dosbox or msdos-player by TASM ot MASM
 	asm = new AsmAction(context);
-	let opendosbox = vscode.commands.registerTextEditorCommand('masm-tasm.opendosbox', () => {
-		asm.runcode('opendosbox');
-	});
-	let runASM = vscode.commands.registerTextEditorCommand('masm-tasm.runASM', () => {
-		asm.runcode('run');
-	});
-	let debugASM = vscode.commands.registerTextEditorCommand('masm-tasm.debugASM', () => {
-		asm.runcode('debug');
-	});
-	let cleanalldiagnose = vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => {
-		asm.cleanalldiagnose();
-	});
-	let dosboxhere = vscode.commands.registerCommand('masm-tasm.dosboxhere', (uri?: vscode.Uri) => {
-		asm.BoxHere(uri);
-	});
-	context.subscriptions.push(opendosbox, runASM, debugASM, cleanalldiagnose, dosboxhere);
+	let commands = [
+		vscode.commands.registerCommand('masm-tasm.opendosbox', (uri?: vscode.Uri) => {
+			return asm.runcode('opendosbox');
+		}),
+		vscode.commands.registerCommand('masm-tasm.runASM', (uri?: vscode.Uri) => {
+			return asm.runcode('run');
+		}),
+		vscode.commands.registerCommand('masm-tasm.debugASM', (uri?: vscode.Uri) => {
+			return asm.runcode('debug');
+		}),
+		vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => {
+			asm.cleanalldiagnose();
+		}),
+		vscode.commands.registerCommand('masm-tasm.dosboxhere', (uri?: vscode.Uri, boxcmd?: string) => {
+			return asm.BoxHere(uri, boxcmd);
+		})
+	];
+	context.subscriptions.push(...commands);
 }
 
 // this method is called when your extension is deactivated

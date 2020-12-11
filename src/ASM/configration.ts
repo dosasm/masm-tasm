@@ -2,7 +2,7 @@ import { workspace, Uri, FileSystem, FileType, ExtensionContext, OutputChannel, 
 import { TextEncoder } from 'util';
 import { BoxConfig } from './DOSBox';
 import { PlayerConfig } from './viaPlayer';
-import { SeeinCPPDOCS as SeeCppDocs } from './codeAction';
+
 interface ToolInfo {
     uri: Uri,
     hasBoxasm: boolean,
@@ -186,17 +186,17 @@ export class Config implements Config2 {
     //private
     private readonly _exturi: Uri;
     private readonly _BOXrun: string | undefined;
-    constructor(content: ExtensionContext, channel?: OutputChannel) {
+    constructor(extensionUri: Uri, channel?: OutputChannel) {
         configuration = workspace.getConfiguration('masmtasm');
         this.MASMorTASM = MASMorTASM();
         this.DOSemu = emulator();
         this.savefirst = savefirst();
         this._BOXrun = configuration.get('dosbox.run');
         this.OpenDosbox = OpenDosbox();
-        this._exturi = content.extensionUri;
+        this._exturi = extensionUri;
         //the tools' Uri
         let toolpath: string | undefined = configuration.get('ASM.toolspath');
-        this.ASMtoolsUri = Uri.joinPath(content.extensionUri, './tools');
+        this.ASMtoolsUri = Uri.joinPath(extensionUri, './tools');
         this.BOXfolder = Uri.joinPath(this._exturi, './tools/dosbox/');
         this.Playerfolder = Uri.joinPath(this._exturi, './tools/player/');
         this.workUri = Uri.joinPath(this._exturi, './workspace/');
@@ -215,13 +215,6 @@ export class Config implements Config2 {
                 (reason) => { console.log(reason); this.customToolInfo = undefined; }
             );
         } else if (channel) { printConfig(channel, this); }
-        if (this.MASMorTASM === 'MASM') {
-            content.subscriptions.push(
-                languages.registerCodeActionsProvider('assembly', new SeeCppDocs(), {
-                    providedCodeActionKinds: SeeCppDocs.providedCodeActionKinds
-                })
-            );
-        }
         //write dosbox.conf
         writeBoxconfig(this.dosboxconfuri);
     }
