@@ -6,6 +6,7 @@ export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: Dia
     const severity = (str: string): DiagnosticSeverity | undefined => {
         switch (str) {
             case 'error':
+            case 'fatal error':
                 count_error++;
                 return DiagnosticSeverity.Error;
             case 'warning':
@@ -13,9 +14,10 @@ export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: Dia
                 return DiagnosticSeverity.Warning;
         }
     };
+    //.ASM(1): fatal error A1000: cannot open file : mac.inc
     const masm = new RegExp(/(?=\n)T.ASM\((\d+)\):(.*)(?=\nT.ASM)/, 's');
-    const masm0 = /\((\d+)\): (error|warning)\s+([A-Z]\d+):\s+(.*)/;
-    const masml = /\s*T.ASM\((\d+)\): Out of memory/g;
+    const masm0 = /\((\d+)\): (error|warning|fatal error)\s+([A-Z]\d+):\s+(.*)/;
+    //const masml = /\s*T.ASM\((\d+)\): Out of memory/g;
     let allmsg = MASMmsg.split('\nT.ASM');
     allmsg.forEach(
         (value, index, array) => {
