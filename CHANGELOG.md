@@ -2,6 +2,11 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
+## 0.7.0
+
+- 升级msdos player到 4/10/2020 i486 x86 version
+- 为了避免一些路径上的问题，使用msdos player时会把相关工具复制到`c:\\.dosasm`，在无需使用该插件后，可以删除它（我想让插件能够自动删除，但是害怕误操作）
+
 ## 0.6.0/0.6.1/0.6.2
 
 - 通过终端命令`open -a DOSBox --args `支持在MAC（darwin）中打开dosbox

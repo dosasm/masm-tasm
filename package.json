@@ -45,7 +45,8 @@
           "assembly(DOS)"
         ],
         "extensions": [
-          ".asm"
+          ".asm",
+          ".inc"
         ],
         "configuration": "./language-configuration.json"
       }

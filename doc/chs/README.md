@@ -20,7 +20,7 @@
 
 当打开一个`ASM`后缀的汇编文件时，可以在编辑器右击，会出现以下三个选项：
 
-1. 打开dosbox并配置环境(挂载)：打开DOSBox，然后就可以手动在打开的DOSBox窗口输入指令进行操作
+1. 打开DOS环境：打开DOSBox，然后就可以手动在打开的DOSBox窗口输入指令进行操作（msdos模式下会打开cmd终端，并将相关工具和msdos假如PATH环境变量）
 2. 运行当前程序(汇编+链接+运行)：生成exe程序并运行
 3. 调试当前程序(汇编+链接+调试)：生成exe程序并调试，使用MASM则会调用debug调试，使用TASM会调用td调试
 
@@ -36,7 +36,7 @@
 | -------------------------------------------- | -------------------------------------------------------------------------------------- |
 | ![Open in Dosbox](../../pics/opendosbox.gif) | [![pacman](../../pics/demo_pacman.gif)](https://github.com/dpisdaniel/assembly-pacman) |
 
-- "`Open DOSBox`"命令 会将编辑器当前文件复制到临时文件夹，并将该文件夹挂载到DOSBox中的“D:”盘，也就是说这时DOSBox中的D盘文件T.ASM就是VSCode当前文件的副本
+- "`Open Emulator`"命令 会将编辑器当前文件复制到临时文件夹，并将该文件夹挂载到DOSBox中的“D:”盘，也就是说这时DOSBox中的D盘文件T.ASM就是VSCode当前文件的副本(dosbox和auto模式下)
 - "`Doxbox here`"命令 会直接将当前文件所在文件夹挂载到DOSBox中的“E:"盘，也就是说这时DOSBox中的E盘内容就是当前编辑器文件所在文件夹里的内容，**注意** 在DOSBox中的操作会直接影响电脑中该文件夹中的**文件**，而且通常都是不可逆的
 - 汇编常用命令: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
 - 有些有趣的汇编代码: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
@@ -86,6 +86,15 @@ dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插
 - `masmtasm.ASM.savefirst`：启动相关功能之前是否先保存文件（不保存的话，只能操作之前保存的版本，建议保存）
 - `masmtasm.dosbox.run`：规定dosbox运行程序之后进行什么操作（是否直接退出程序，还是等待）
 - `masmtasm.ASM.toolspath`：设置自定义汇编工具路径,详见:[自定义汇编工具路径](./Toolspath.md#自定义汇编工具路径)
+- `masmtasm.dosbox.config`: 设置DOSBox的配置信息，信息会被写入dosbox的配置文件中，可以通过这个选项设置**DOSBox窗口大小**
+
+```jsonc
+"masmtasm.dosbox.config": {
+        "SDL.windowresolution": "1024x640",//通过这个选项可以调整屏幕的大小
+        "SDL.output": "opengl"
+    },
+```
+
 
 ### 待解决的问题
 
@@ -99,9 +108,10 @@ dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插
 
 - 感谢南邮韩老师教授的《微型计算机原理与接口技术》课程
 - 该插件受[Woodykaixa](https://github.com/Woodykaixa)的 [masm-code](https://github.com/Woodykaixa/masm-code)启发
-- 非常感谢[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)的[Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)中的汇编语法信息
+- 插件使用了[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)的[Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)中的汇编语法信息
 - 插件通过[msdos player](http://takeda-toshiya.my.coocan.jp/msdos)和[dosbox](https://www.dosbox.com)模拟DOS环境
-- 一些[相关信息](doc/license_and_info.md)
+- 一些[相关信息](doc/license_and_info.md)和[鸣谢](../Thanks.md)
+- gitee 上的一些笔记和代码: [笔记](https://dosasm.gitee.io/),[代码](https://gitee.com/dosasm/asmcodes)
 - 关于插件对汇编工具的使用：[Toolspath](./Toolspath.md)
 - 一些相关资料：[wiki](https://github.com/xsro/masm-tasm/wiki)
 - 插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)或者邮件`xsro@foxmail.com`，一起交流和完善。

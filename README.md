@@ -1,8 +1,7 @@
 # DOS assembly (MASM/TASM) via DOSBox(and msdos-player)
 
-[Chinese](doc/chs/README.md)|
-[English](README.md)|
-[中文](https://gitee.com/xsro/masm-tasm/tree/main/doc/chs)|
+[Chinese](doc/chs/README.md)|[English](README.md)|
+[中文 in gitee](https://gitee.com/dosasm/masm-tasm/tree/main/doc/chs)|
 [more versions](https://github.com/xsro/masm-tasm/releases)
 
 Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSBox and the course *principles& peripheral technology of microprocessor*.
@@ -24,7 +23,7 @@ Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSB
 
 when you are editing `assembly` files ,you can right click at the editor panel,then you will see several choices listed below:
 
-1. **Open dosbox**: Open the dosbox, prepare the environment(copy file to dosbox's D:\ and add tools to path)
+1. **Open Emulator**: Open the dosbox, prepare the environment(copy file to dosbox's D:\ and add tools to path)(For msdos player mode,this will open a cmd terminal)
 2. **Run ASM code**: Assemble,link and Run the program
 3. **Debug ASM code**: Assemble,link and Debug the program
 
@@ -39,7 +38,7 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 | -------------------------------------- | -------------------------------------------------------------------------------- |
 | ![Open in Dosbox](pics/opendosbox.gif) | [![pacman](pics/demo_pacman.gif)](https://github.com/dpisdaniel/assembly-pacman) |
 
-- Command "`Open DOSBox`": Your file will be copied as `D:\T.ASM` in DOSBox. (The extension will copy your file to work space and mount this space to DOSbox disk `D:`)
+- Command "`Open Emulator`": Your file will be copied as `D:\T.ASM` in DOSBox. (The extension will copy your file to work space and mount this space to DOSbox disk `D:`)
 - Command "`Doxbox here`": The extension will mount your active editor file's folder directly to dosbox's disk `E:`.
 - some ASM commands you may need: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
 - Some interesting assembly codes you may need: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
@@ -86,7 +85,15 @@ for more,please see the `preference->settings`
     4. use DOSBox for TASM(TD)
 - `masmtasm.ASM.savefirst`  save file first before using
 - `masmtasm.dosbox.run`：what to do after run your code in DOSBox
-- `"masmtasm.ASM.toolspath`: use tools from this path, see [Toolpath](doc/Toolspath.md)
+- `masmtasm.ASM.toolspath`: use tools from this path, see [Toolpath](doc/Toolspath.md)
+- `masmtasm.dosbox.config`: set the dosbox configuration. The setting will be write to a `.conf` file which will be used by the DOSBox launched by the extension. Set the config like below:
+
+```jsonc
+"masmtasm.dosbox.config": {
+        "SDL.windowresolution": "1024x640",//set the size of the dosbox window
+        "SDL.output": "opengl"
+    },
+```
 
 ### About use of DOSBox
 
@@ -109,6 +116,7 @@ The extension will mount some folder to DOSBox 's disk. Please don't modify them
 - Thanks to [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code)
 - Using [msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com) as DOS environment emulator
 - Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help
+- [THANKS](doc/Thanks.md)
 - [some infomation :wiki](https://github.com/xsro/masm-tasm/wiki)
 
 Enjoy!:smile:
