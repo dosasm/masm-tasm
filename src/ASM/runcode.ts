@@ -123,7 +123,7 @@ export class AsmAction {
             let diag = this.landiag.ErrMsgProcess(stdout, doc, MASMorTASM);
             diagCode = diag?.flag;
             if (diag) {
-                if (diagCode !== 2) { this.extOutChannel.show(); }
+                if (diagCode !== 2) { this.extOutChannel.show(true); }
                 let collectmessage: string = localize("diag.msg", "{0} Error,{1}  Warning, collected. The following is the output of assembler and linker'", diag.error.toString(), diag.warn);
                 this.extOutChannel.appendLine(collectmessage);
                 let stdout_output = stdout.replace(/\r\n\r\n/g, '\r\n').replace(/\n\n/g, '\n').replace(/\n/g, '\n  ');
@@ -134,8 +134,20 @@ export class AsmAction {
         let workFolder = await workspace.fs.readDirectory(this._config.workUri);
         let exeGenerated: boolean = inArrays(workFolder, ["t.exe", FileType.File], true);
         if (exeGenerated === false) {
-            let Errmsg: string = "EXE file generate failed, Reason unknown stdout:\n" + stdout;
-            if (diagCode === 0) { Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM); };
+
+            let Errmsg: string;
+            if (diagCode === 0) {
+                Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM);
+            }
+            else {
+                Errmsg = "EXE file generate failed";
+                if (stdout) {
+                    stdout = stdout.replace(/\r\n\r\n/g, "\n");
+                    this.extOutChannel.append('\n===error message===\n' + stdout + '\n======\n');
+                    this.extOutChannel.show();
+                    console.log(stdout);
+                }
+            }
             window.showErrorMessage(Errmsg);
         }
         else if (exeGenerated === true && (DOSemu === "msdos player" || DOSemu === "auto")) {
@@ -210,5 +222,5 @@ async function CleanCopy(file: Uri, dir: Uri) {
             }
         }
     );
-    fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
+    await fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
 }

@@ -1,4 +1,4 @@
-import { window, Terminal, Uri } from 'vscode';
+import { window, Terminal, Uri, workspace } from 'vscode';
 import { exec } from 'child_process';
 export interface PlayerConfig {
     /**
@@ -25,18 +25,19 @@ export interface PlayerConfig {
 let msdosTerminal: Terminal | null = null;
 export function runPlayer(conf: PlayerConfig): Promise<string> {
     let toolspath = conf.ASMtoolsUri.fsPath;
-    let myenv: NodeJS.ProcessEnv = {
-        "path": conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;'
-    };
-    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + conf.workUri.fsPath + '"';
+    // let myenv: NodeJS.ProcessEnv = {
+    //     "path": conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;'
+    // };
+    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + conf.workUri.fsPath + '">msdoslog.txt & type ASMlog.txt';
     return new Promise<string>(
         (resolve, reject) => {
             let timeout: number = 3000;
             let child = exec(
-                command, { cwd: toolspath, timeout: timeout, env: myenv },
+                command, { cwd: conf.workUri.fsPath, timeout: timeout },
                 (error, stdout, stderr) => {
                     if (error) {
-                        reject(["exec msdos player error", error, stderr]);
+                        (error as any).note = "exec msdos player error";
+                        reject(error);
                     }
                     else {
                         resolve(stdout);
@@ -59,7 +60,7 @@ export function runPlayer(conf: PlayerConfig): Promise<string> {
 }
 export function outTerminal(conf: PlayerConfig, run?: boolean,) {
     let myenv = process.env, toolspath = conf.ASMtoolsUri.fsPath;
-    let myenvPATH = myenv.PATH + ';' + conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;';
+    let myenvPATH = myenv.PATH + ';c:\\.dosasm\\tasm;c:\\.dosasm\\masm;' + conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;';
     if (msdosTerminal?.exitStatus || msdosTerminal === null) {
         msdosTerminal = window.createTerminal({
             cwd: conf.workUri.fsPath,
