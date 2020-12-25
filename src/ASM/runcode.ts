@@ -85,7 +85,12 @@ export class AsmAction {
         let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Open DOSBox:{0}", doc.fileName);
         this.extOutChannel.appendLine(openemumsg);
         CleanCopy(doc.uri, this._config.workUri);
-        DOSBox.runDosbox(this._config);
+        if (this._config.DOSemu === 'msdos player') {
+            MSDos.outTerminal(this._config)
+        }
+        else {
+            DOSBox.runDosbox(this._config);
+        }
     }
     /**
      *  `msdos (player) mode`: use msdos for run and debug,but TASM debug command `TD` can only run in dosbox
@@ -110,7 +115,7 @@ export class AsmAction {
             stdout = await DOSBox.runDosbox2(this._config, runOrDebug);
         }
         else if (DOSemu === "auto" || DOSemu === "msdos player") {
-            stdout = await MSDos.runPlayer(this._config, doc.fileName);
+            stdout = await MSDos.runPlayer(this._config);
         }
         //process and output the output of the assembler
         let diagCode: number | undefined = undefined;
@@ -153,7 +158,7 @@ export class AsmAction {
                 //use dosbox for TD.exe when debugging code with TASM
                 if (MASMorTASM === "TASM" && runOrDebug === false && DOSemu === "msdos player") { viaPlayer = false; }
                 if (viaPlayer) {
-                    MSDos.outTerminal(runOrDebug, this._config);
+                    MSDos.outTerminal(this._config, runOrDebug);
                 }
                 else {
                     if (runOrDebug) {

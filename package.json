@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
-  "version": "0.6.3",
+  "version": "0.6.4-dev",
   "keywords": [
     "dosbox",
     "16位",
@@ -67,7 +67,7 @@
       "editor/context": [
         {
           "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
-          "command": "masm-tasm.opendosbox",
+          "command": "masm-tasm.openEmulator",
           "group": "0_MASM-TASM@1"
         },
         {
@@ -84,7 +84,7 @@
     },
     "commands": [
       {
-        "command": "masm-tasm.opendosbox",
+        "command": "masm-tasm.openEmulator",
         "title": "%dosasm.editor.openEmu%"
       },
       {

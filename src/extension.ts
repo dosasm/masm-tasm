@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 	//run and debug the code in dosbox or msdos-player by TASM ot MASM
 	asm = new AsmAction(context);
 	let commands = [
-		vscode.commands.registerCommand('masm-tasm.opendosbox', (uri?: vscode.Uri) => {
+		vscode.commands.registerCommand('masm-tasm.openEmulator', (uri?: vscode.Uri) => {
 			return asm.runcode('opendosbox');
 		}),
 		vscode.commands.registerCommand('masm-tasm.runASM', (uri?: vscode.Uri) => {

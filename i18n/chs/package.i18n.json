@@ -1,5 +1,5 @@
 {
-	"dosasm.editor.openEmu": "打开dosbox并配置环境(并挂载)",
+	"dosasm.editor.openEmu": "打开DOS环境",
 	"dosasm.editor.runAsm": "运行当前程序(汇编+链接+运行)",
 	"dosasm.editor.debugAsm": "调试当前程序(汇编+链接+调试)",
 	"dosasm.command.cleanalldianose": "清除MASM/TASM的所有问题信息",

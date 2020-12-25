@@ -23,7 +23,7 @@ export interface PlayerConfig {
     Playerfolder: Uri;
 }
 let msdosTerminal: Terminal | null = null;
-export function runPlayer(conf: PlayerConfig, filename: string): Promise<string> {
+export function runPlayer(conf: PlayerConfig): Promise<string> {
     let toolspath = conf.ASMtoolsUri.fsPath;
     let myenv: NodeJS.ProcessEnv = {
         "path": conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;'
@@ -50,15 +50,14 @@ export function runPlayer(conf: PlayerConfig, filename: string): Promise<string>
                     console.log(child);
                 }
                 else if (code !== 0) {
-                    let msg = `Use playerasm.bat Failed\t exitcode${code}\t\nFilepath: ${conf.playerbat}`;
+                    let msg = `Use playerasm.bat Failed\t exitcode${code}\t\n  command:${command}`;
                     window.showErrorMessage(msg);
                 }
             });
         }
     );
-
 }
-export function outTerminal(run: boolean, conf: PlayerConfig) {
+export function outTerminal(conf: PlayerConfig, run?: boolean,) {
     let myenv = process.env, toolspath = conf.ASMtoolsUri.fsPath;
     let myenvPATH = myenv.PATH + ';' + conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;';
     if (msdosTerminal?.exitStatus || msdosTerminal === null) {
@@ -75,7 +74,7 @@ export function outTerminal(run: boolean, conf: PlayerConfig) {
     if (run) {
         msdosTerminal.sendText('msdos T.EXE');
     }
-    else {
+    else if (run === false) {
         msdosTerminal.sendText('msdos -v5.0 debug T.EXE');
     }
 }
