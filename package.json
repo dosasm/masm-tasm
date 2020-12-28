@@ -188,17 +188,21 @@
         },
         "masmtasm.dosbox.console": {
           "type": "string",
-          "default": "min",
+          "default": "redirect(show)",
           "description": "%dosasm.config.boxconsole.description%",
           "enum": [
             "min",
             "normal",
-            "noconsole"
+            "noconsole",
+            "redirect(show)",
+            "redirect(hide)"
           ],
           "markdownEnumDescriptions": [
             "%dosasm.config.boxconsole.min%",
             "%dosasm.config.boxconsole.normal%",
-            "%dosasm.config.boxconsole.noconsole%"
+            "%dosasm.config.boxconsole.noconsole%",
+            "%dosasm.config.boxconsole.redirect-show%",
+            "%dosasm.config.boxconsole.redirect-hide%"
           ]
         }
       }

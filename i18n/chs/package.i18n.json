@@ -22,6 +22,8 @@
 	"dosasm.config.boxconsole.min": "最小化控制台窗口，使用命令如`start/min dosbox`",
 	"dosasm.config.boxconsole.normal": "显示控制台窗口，使用命令如`dosbox`",
 	"dosasm.config.boxconsole.noconsole": "不显示控制台窗口，而是重定向到文件，使用命令如`dosbox -noconsole`",
+	"dosasm.config.boxconsole.redirect-show": "DOSBox控制台信息重定向到VSCode输出窗口并显示窗口",
+	"dosasm.config.boxconsole.redirect-hide": "DOSBox控制台信息重定向到VSCode输出窗口并隐藏窗口",
 	"dosasm.config.dosbox.resolution": "自定义dosbox窗口大小，格式如1024x640，不设置则为DOSBox默认大小",
 	"dosasm.config.boxconfig.description": "dosbox的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox官网的说明](https://www.dosbox.com/wiki/Dosbox.conf),如果需要设置AUTOEXEC,可以使用格式如`\"AUTOEXEC\":\"echo hi\\ndir\"`",
 	"dosasm.config.hover": "是否显示悬浮提示(hover)，可能需要重启vscode来应用变更",

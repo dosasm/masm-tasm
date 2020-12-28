@@ -22,6 +22,8 @@
 	"dosasm.config.boxconsole.min": "Minimize the console window, via command like `start/min dosbox`",
 	"dosasm.config.boxconsole.normal": "Show the console window, via command like `dosbox`",
 	"dosasm.config.boxconsole.noconsole": "Redirect the console stdout and stderr to files, via command like `dosbox -noconsole`",
+	"dosasm.config.boxconsole.redirect-show": "Redirect the console stdout and stderr to VSCode output channel, and show",
+	"dosasm.config.boxconsole.redirect-hide": "Redirect the console stdout and stderr to VSCode output channel, and hide",
 	"dosasm.config.dosbox.resolution": "Set dosbox resolution like '1024x640'.If left empty, it means use the default resolution of DOSBox",
 	"dosasm.config.boxconfig.description": "dosbox configurations that will be used, see [link](https://www.dosbox.com/wiki/Dosbox.conf),use property like `\"AUTOEXEC\":\"echo hi\\ndir\"` if need to use *AUTOEXEC*",
 	"dosasm.config.hover": "Display Hover information or not, restart VSCode to apply",
