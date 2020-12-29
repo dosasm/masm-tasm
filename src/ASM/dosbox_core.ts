@@ -9,6 +9,7 @@ export class DOSBox {
     private _stdout: string = "";
     private _stderr: string = "";
     private _console: string | undefined;
+    private _count: number = 1;
     constructor(cwd?: string, confFile?: Uri) {
         this._confFile = confFile;
         this._cwd = cwd;
@@ -53,10 +54,10 @@ export class DOSBox {
         }
         return redirect;
     }
-    public stdoutHander: (message: string, text?: string) => void = (message: string) => {
+    public stdoutHander: (message: string, text?: string, No?: number) => void = (message: string) => {
         console.log('stdout message', message);
     };
-    public stderrHander: (message: string, text?: string) => void = (message: string) => {
+    public stderrHander: (message: string, text?: string, No?: number) => void = (message: string) => {
         console.log('stderr message', message);
     };
     private cp_run(command: string, ignoreWinStd?: boolean): Promise<DOSBoxStd> {
@@ -84,8 +85,8 @@ export class DOSBox {
                                     output.stderr = value.stderr;
                                     output.stdout = value.stdout;
                                     resolve(output);
-                                    this.stderrHander(value.stderr, value.stderr);
-                                    this.stdoutHander(value.stdout, value.stdout);
+                                    this.stderrHander(value.stderr, value.stderr, this._count);
+                                    this.stdoutHander(value.stdout, value.stdout, this._count);
                                 }
                             });
                     }
@@ -124,11 +125,11 @@ export class DOSBox {
                 if (this.redirect && process.platform !== 'win32') {
                     child.stdout?.on('data', (data) => {
                         this._stdout += data;
-                        this.stdoutHander(data, this._stdout);
+                        this.stdoutHander(data, this._stdout, this._count);
                     });
                     child.stderr?.on('data', (data) => {
                         this._stderr += data;
-                        this.stderrHander(data, this._stderr);
+                        this.stderrHander(data, this._stderr, this._count);
                     });
                 }
             }

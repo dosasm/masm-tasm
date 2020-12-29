@@ -2,6 +2,7 @@ import { Uri, workspace, window, TextDocument, Disposable, OutputChannel } from 
 import { Config } from './configration';
 import { DOSBox } from './dosbox_core';
 import { writeBoxconfig } from './dosbox_conf';
+import { OutChannel } from './outputChannel'
 
 const configuration = workspace.getConfiguration('masmtasm.dosbox');
 
@@ -22,7 +23,7 @@ export interface BOXCONFIG {
     dosboxconfuri: Uri;
 }
 export class AsmDOSBox extends DOSBox implements Disposable {
-    private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
+    //private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
     private _BOXrun: string | undefined
     private _conf: Config;
     constructor(conf: Config) {
@@ -35,16 +36,16 @@ export class AsmDOSBox extends DOSBox implements Disposable {
 
         if (this.redirect) {
             this.stdoutHander = (message: string) => {
-                this.dosboxChannel.append(message);
+                OutChannel.append(message);
                 if (this.console === 'redirect(show)') {
-                    this.dosboxChannel.show(true);
+                    OutChannel.show(true);
                 }
                 else if (this.console === 'redirect(hide)') {
-                    this.dosboxChannel.hide();
+                    OutChannel.hide();
                 }
             };
             this.stderrHander = (message: string) => {
-                this.dosboxChannel.append(message);
+                OutChannel.append(message);
             };
         }
     }
@@ -87,7 +88,6 @@ export class AsmDOSBox extends DOSBox implements Disposable {
     }
 
     public dispose() {
-        this.dosboxChannel.dispose();
     }
 }
 

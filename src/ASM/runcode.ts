@@ -5,18 +5,19 @@ import { AsmDOSBox } from './DOSBox';
 import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
 import { AssemblerDiag, DIAGCODE } from './diagnose';
+import { OutChannel } from './outputChannel';
+
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 export class AsmAction implements Disposable {
-    private readonly extOutChannel: OutputChannel;
     private extUri: Uri;
     private _config: Config;
     private dosbox: AsmDOSBox;
     private landiag: AssemblerDiag;
     constructor(context: ExtensionContext) {
         this.extUri = context.extensionUri
-        this.extOutChannel = window.createOutputChannel('Masm-Tasm');
-        this._config = new Config(context.extensionUri, this.extOutChannel);
+
+        this._config = new Config(context.extensionUri);
         this.landiag = new AssemblerDiag();
         this.dosbox = new AsmDOSBox(this._config);
         this.update();
@@ -25,7 +26,7 @@ export class AsmAction implements Disposable {
     private update() {
         workspace.onDidChangeConfiguration((e) => {
             if (e.affectsConfiguration('masmtasm')) {
-                this._config = new Config(this.extUri, this.extOutChannel);
+                this._config = new Config(this.extUri, OutChannel);
                 this.dosbox = new AsmDOSBox(this._config);
             }
             if (e.affectsConfiguration('masmtasm.dosbox')) {
@@ -94,7 +95,7 @@ export class AsmAction implements Disposable {
      */
     private Openemu(doc: TextDocument) {
         let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Openthis.dosbox:{0}", doc.fileName);
-        this.extOutChannel.appendLine(openemumsg);
+        OutChannel.appendLine(openemumsg);
         CleanCopy(doc.uri, this._config.workUri);
         if (this._config.DOSemu === 'msdos player') {
             MSDos.outTerminal(this._config);
@@ -119,7 +120,7 @@ export class AsmAction implements Disposable {
         //show message
         if (runOrDebug) { msg = localize("run.msg", "\n{0}({1})>>Run:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
         else { msg = localize("debug.msg", "\n{0}({1})>>Debug:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
-        this.extOutChannel.appendLine(msg);
+        OutChannel.appendLine(msg);
         //clean files and copy the file to workspace AS `T.ASM`
         await CleanCopy(doc.uri, this._config.workUri);
         //get the output of assembler
@@ -135,11 +136,11 @@ export class AsmAction implements Disposable {
             let diag = this.landiag.ErrMsgProcess(stdout, doc, MASMorTASM);
             diagCode = diag?.flag;
             if (diag) {
-                if (diagCode === DIAGCODE.hasError) { this.extOutChannel.show(true); }
+                if (diagCode === DIAGCODE.hasError) { OutChannel.show(true); }
                 let collectmessage: string = localize("diag.msg", "{0} Error,{1}  Warning, collected. The following is the output of assembler and linker'", diag.error.toString(), diag.warn);
-                this.extOutChannel.appendLine(collectmessage);
+                OutChannel.appendLine(collectmessage);
                 let stdout_output = stdout.replace(/\r\n\r\n/g, '\r\n').replace(/\n\n/g, '\n').replace(/\n/g, '\n  ');
-                this.extOutChannel.append(stdout_output);
+                OutChannel.append(stdout_output);
             }
         }
         //check whether the EXE file generated
@@ -155,8 +156,8 @@ export class AsmAction implements Disposable {
                 Errmsg = "EXE file generate failed";
                 if (stdout) {
                     stdout = stdout.replace(/\r\n\r\n/g, "\n");
-                    this.extOutChannel.append('\n===error message===\n' + stdout + '\n======\n');
-                    this.extOutChannel.show();
+                    OutChannel.append('\n===error message===\n' + stdout + '\n======\n');
+                    OutChannel.show();
                     console.log(stdout);
                 }
             }
@@ -212,7 +213,7 @@ export class AsmAction implements Disposable {
         this.landiag.cleandiagnose('both');
     }
     public dispose() {
-        this.extOutChannel.dispose();
+        OutChannel.dispose();
         MSDos.deactivate();
         this.dosbox.dispose();
         this.cleanalldiagnose();

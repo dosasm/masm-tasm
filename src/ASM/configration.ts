@@ -1,5 +1,6 @@
 import { OutputChannel, Uri, workspace } from 'vscode';
 import { BOXCONFIG } from './DOSBox';
+import { OutChannel } from './outputChannel';
 import { customToolCheck, ToolInfo } from './ToolInfo';
 import { validfy } from './util';
 import { PlayerConfig } from './viaPlayer';
@@ -66,11 +67,11 @@ export class Config implements Config2 {
                     if (value.hasPlayer) {
                         this.Playerfolder = Uri.joinPath(this._exturi, './tools/player/');
                     }
-                    if (channel) { Config.printConfig(channel, this); }
+                    OutChannel.append(Config.printConfig(this))
                 },
                 (reason) => { console.log(reason); this.customToolInfo = undefined; }
             );
-        } else if (channel) { Config.printConfig(channel, this); }
+        } else { OutChannel.append(Config.printConfig(this)) }
         // //write dosbox.conf
         // writeBoxconfig(this.dosboxconfuri);
     }
@@ -106,7 +107,7 @@ export class Config implements Config2 {
         }
         return path;
     }
-    static printConfig(channel: OutputChannel, conf: Config) {
+    static printConfig(conf: Config) {
         let date = new Date();
         let output = `${date.toLocaleString()}
         workspace: ${conf.workUri.fsPath}
@@ -114,7 +115,7 @@ export class Config implements Config2 {
         use MSdos - player from folder: ${conf.Playerfolder.fsPath}
         use assembler from folder: ${conf.ASMtoolsUri.fsPath}
         `;
-        channel.append(output);
+        return output;
     }
 }
 
