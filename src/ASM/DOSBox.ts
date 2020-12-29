@@ -1,71 +1,143 @@
-import { Uri, workspace, window, TextDocument } from 'vscode';
-import { exec, ExecOptions } from 'child_process';
-export interface BoxConfig {
-    /**
-     * the Uri of folder for scripts
-     */
+import { Uri, workspace, window, TextDocument, Disposable, OutputChannel } from 'vscode';
+import { Config } from './configration';
+import { DOSBox } from './dosbox_core';
+import { writeBoxconfig } from './dosbox_conf';
+
+const configuration = workspace.getConfiguration('masmtasm.dosbox');
+
+export interface BOXCONFIG {
+    /** the Uri of folder for scripts*/
     extScriptsUri: Uri;
-    /**
-     * the Uri of folder for tools
-     */
+    /** the Uri of folder for tools*/
     ASMtoolsUri: Uri;
-    /**
-     * the information of custom tools folder
-     */
+    /**the information of custom tools folder*/
     customToolInfo: any;
-    /**
-     * the command using `boxasm.bat` to assemble
-     * @param runOrDebug true for run false for debug
-     */
-    boxasmCommand(runOrDebug: boolean): string;
-    /**
-     * the Uri of the assembler's output via dosbox
-     */
+    /**the Uri of the assembler's output via dosbox*/
     workloguri: Uri;
-    /**
-     * the workspace's Uri
-     */
+    /** the workspace's Uri*/
     workUri: Uri;
-    /**
-     * the command for open dosbox according to different settings
-     */
-    OpenDosbox: string;
-    /**
-     * the Uri for the dosbox.exe's folder
-     */
+    /** the Uri for the dosbox.exe's folder */
     BOXfolder: Uri;
-    /**
-     * the Uri of the dosbox conf file for the extension to use
-     */
+    /** the Uri of the dosbox conf file for the extension to use*/
     dosboxconfuri: Uri;
 }
+export class AsmDOSBox extends DOSBox implements Disposable {
+    private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
+    private _BOXrun: string | undefined
+    private _conf: Config;
+    constructor(conf: Config) {
+        super(conf.BOXfolder.fsPath, conf.dosboxconfuri);
+        writeBoxconfig(conf.dosboxconfuri, configuration.get('config'));
+
+        this._conf = conf;
+        this.update(configuration);
+        this._BOXrun = configuration.get('run')
+
+        if (this.redirect) {
+            this.stdoutHander = (message: string) => {
+                this.dosboxChannel.append(message);
+                if (this.console === 'redirect(show)') {
+                    this.dosboxChannel.show(true);
+                }
+                else if (this.console === 'redirect(hide)') {
+                    this.dosboxChannel.hide();
+                }
+            };
+            this.stderrHander = (message: string) => {
+                this.dosboxChannel.append(message);
+            };
+        }
+    }
+
+    /**
+     * A function used when using boxasm.bat to run or debug ASM codes in DOSBox
+     * make sure there is a `T.asm` in workspace
+     * @param runOrDebug true for run ASM code,false for debug
+     * @returns the Assembler's output
+     */
+    public async runDosbox2(runOrDebug: boolean, ASM: 'MASM' | 'TASM') {
+        await manageBat(this._conf, runOrDebug);
+        this.runDosbox([boxasmCommand(runOrDebug, ASM, this._BOXrun)]);
+        //TODO: it seems we can read the file when generated instead of reading it after the dosbox exit
+        let stdout: Uint8Array = await workspace.fs.readFile(Uri.joinPath(this._conf.workUri, 'T.TXT'));
+        return stdout.toString();
+    }
+    /**open dosbox and do things about it
+     * this function will mount the tools as `C:` and the workspace as `D:`
+     * set paths for masm and tasm and switch to the disk
+     * @param more The commands needed to exec in dosbox
+     * @param doc If defined, copy this file to workspace as T.xxx(xxx is the files extension) using terminal commands
+     */
+    public runDosbox(more?: string[], doc?: TextDocument) {
+        let p = runDosbox(this._conf, more, doc);
+        return this.run(p.boxcmd, p.opt);
+    }
+    /**
+    * opendosbox at the Editor's file's folder
+    * @param conf config
+    * @param the uri of the folder
+    */
+    public async BoxOpenFolder(uri: Uri, command?: string) {
+        let cmd = BoxOpenFolder(this._conf, uri);
+        if (command) {
+            cmd.push(...command.split('\n'));
+        }
+        let a = await this.run(cmd);
+        return a;
+    }
+
+    public dispose() {
+        this.dosboxChannel.dispose();
+    }
+}
+
 /**
- * A function used when using boxasm.bat to run or debug ASM codes in DOSBox
- * make sure there is a `T.asm` in workspace
- * @param conf The config information
- * @param runOrDebug true for run ASM code,false for debug
- * @returns the Assembler's output
+ * the command to send to dosbox command to operate ASM codes
+ * @param runOrDebug true to run code, false to debug
  */
-export async function runDosbox2(conf: BoxConfig, runOrDebug: boolean): Promise<string> {
+function boxasmCommand(runOrDebug: boolean, MASMorTASM: 'MASM' | 'TASM', BOXrun?: string,): string {
+
+    let str = "c:\\boxasm.bat " + MASMorTASM;
+    if (runOrDebug) {
+        let param: string = ' ';
+        switch (BOXrun) {
+            case "keep": param = 'k'; break;
+            case "exit": param = 'e'; break;
+            case "pause":
+            default: param = 'p'; break;
+        }
+        str += " run " + param;
+    }
+    else {
+        str += " debug ";
+    }
+    return str;
+}
+
+/**
+ * the param need to use with batch in DOSBox after run the ASM code
+ */
+function boxrunbat(BOXrun: string): string {
+    let param: string = ' ';
+    switch (BOXrun) {
+        case "keep": param = 'k'; break;
+        case "exit": param = 'e'; break;
+        case "pause":
+        default: param = 'p'; break;
+    }
+    return param;
+}
+
+async function manageBat(conf: BOXCONFIG, runOrDebug: boolean) {
     let fs = workspace.fs;
     let src: Uri = Uri.joinPath(conf.extScriptsUri, "./boxasm.bat");
     let target: Uri = Uri.joinPath(conf.ASMtoolsUri, "./boxasm.bat");
     //if there is a `boxasm.bat` file in the user's tools folder, use it
     //Otherwise, copy the file packaged inside to the user's folder
     if (!conf.customToolInfo?.hasBoxasm) { await fs.copy(src, target, { overwrite: true }); }
-    await runDosbox(conf, [conf.boxasmCommand(runOrDebug)]);
-    //TODO: it seems we can read the file when generated instead of reading it after the dosbox exit
-    let stdout: Uint8Array = await fs.readFile(Uri.joinPath(conf.workUri, 'T.TXT'));
-    return stdout.toString();
 }
-/**open dosbox and do things about it
- * this function will mount the tools as `C:` and the workspace as `D:`
- * set paths for masm and tasm and switch to the disk
- * @param conf The config information
- * @param more The commands needed to exec in dosbox
- * @param doc If defined, copy this file to workspace as T.xxx(xxx is the files extension) using terminal commands
- */
-export function runDosbox(conf: BoxConfig, more?: string[], doc?: TextDocument) {
+
+function runDosbox(conf: BOXCONFIG, more?: string[], doc?: TextDocument) {
     let preCommand: string = "";
     let boxcmd: string[] = ['@echo off'];
     boxcmd.push(
@@ -87,108 +159,21 @@ export function runDosbox(conf: BoxConfig, more?: string[], doc?: TextDocument) 
     };
     boxcmd.push("@echo on");
     if (more) { boxcmd.push(...more); }//add extra commands
-    let opt: OPTS = {
-        cwd: conf.BOXfolder.fsPath,
+    let opt = {
         preOpen: preCommand,
-        core: conf.OpenDosbox,
-        boxcmd: boxcmd,
-        parameter: ' -conf "' + conf.dosboxconfuri.fsPath + '" '
     };
-    return openDosbox(opt);
+    return { boxcmd, opt };
 }
-/**
- * opendosbox at the Editor's file's folder
- * @param conf config
- * @param the uri of the folder
- */
-export function BoxOpenFolder(conf: BoxConfig, uri: Uri, command?: string) {
-    let opt: OPTS = {
-        cwd: conf.BOXfolder.fsPath,
-        core: conf.OpenDosbox,
-        boxcmd: [
-            `mount e \\\"${uri.fsPath}\\\"`,
-            `mount c \\\"${conf.ASMtoolsUri.fsPath}\\\"`,
-            'set PATH=%%PATH%%;c:\\masm;c:\\tasm',
-            'e:',
-        ],
-        parameter: ' -conf "' + conf.dosboxconfuri.fsPath + '" '
-    };
+
+function BoxOpenFolder(conf: BOXCONFIG, uri: Uri, command?: string) {
+    let boxcmd = [
+        `mount e \\\"${uri.fsPath}\\\"`,
+        `mount c \\\"${conf.ASMtoolsUri.fsPath}\\\"`,
+        'set PATH=%%PATH%%;c:\\masm;c:\\tasm',
+        'e:',
+    ];
     if (command) {
-        opt.boxcmd?.push(...command.split('\n'));
+        boxcmd?.push(...command.split('\n'));
     }
-    return openDosbox(opt);
+    return boxcmd;
 }
-/**
- * options for open dosbox
- */
-interface OPTS {
-    /**
-     * the cwd of child_process
-     */
-    cwd: string,
-    /**
-     * the core command,usually the command for open dosbox
-     */
-    core: string
-    /**
-     * the command exec before the core command
-     */
-    preOpen?: string,
-    /**
-     * the parameter for dosbox command
-     */
-    parameter?: string,
-    /**
-     * the command need to exec inside dosbox
-     */
-    boxcmd?: string[]
-}
-/**
- * open DOSBox through child_process
- * @param opt options
- */
-function openDosbox(opt: OPTS): Promise<{ code?: number | null, stdout?: string, stderr?: string }> {
-    let str = opt.core + opt.parameter;
-    if (opt.preOpen) {
-        str = opt.preOpen + str;
-    }
-    if (opt.boxcmd) {
-        let cmd: string = "";
-        opt.boxcmd.forEach(
-            (value) => {
-                cmd += ' -c "' + value + '"';
-            }
-        );
-        str += cmd;
-    }
-    let exitcode: number | undefined | null = undefined;
-    let execOption: ExecOptions = { cwd: opt.cwd };
-    return new Promise(
-        (resolve, reject) => {
-            let child = exec(str, execOption, (error: any, stdout: string, stderr: string) => {
-                if (error) {
-                    reject(error);
-                }
-                else {
-                    resolve({
-                        code: exitcode,
-                        stdout: stdout,
-                        stderr: stderr
-                    });
-                }
-            });
-            child.on('exit', (code) => {
-                exitcode = code;
-                if (code !== 0) {
-                    let msg = `Open dosbox Failed with exitcode${code}\n`;
-                    msg += 'PLEASE make sure DOSBox can be opened by terminal command \n' + str;
-                    window.showErrorMessage(msg);
-                }
-            });
-        }
-    );
-}
-
-
-
-

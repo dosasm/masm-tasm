@@ -1,31 +1,39 @@
-import { ExtensionContext, FileType, languages, OutputChannel, TextDocument, Uri, window, workspace, } from 'vscode';
-import { Config, inArrays } from './configration';
-import * as DOSBox from './DOSBox';
+import { Disposable, ExtensionContext, FileType, languages, OutputChannel, TextDocument, Uri, window, workspace, } from 'vscode';
+import { Config } from './configration';
+import { inArrays } from "./util";
+import { AsmDOSBox } from './DOSBox';
 import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
-import { AssemblerDiag } from './diagnose';
-import { SeeinCPPDOCS as SeeCppDocs } from './codeAction';
+import { AssemblerDiag, DIAGCODE } from './diagnose';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-export class AsmAction {
+export class AsmAction implements Disposable {
     private readonly extOutChannel: OutputChannel;
+    private extUri: Uri;
     private _config: Config;
+    private dosbox: AsmDOSBox;
     private landiag: AssemblerDiag;
     constructor(context: ExtensionContext) {
+        this.extUri = context.extensionUri
         this.extOutChannel = window.createOutputChannel('Masm-Tasm');
         this._config = new Config(context.extensionUri, this.extOutChannel);
         this.landiag = new AssemblerDiag();
-        workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration('masmtasm')) { this._config = new Config(context.extensionUri, this.extOutChannel); }
-        });
-        if (this._config.MASMorTASM === 'MASM') {
-            context.subscriptions.push(
-                languages.registerCodeActionsProvider('assembly', new SeeCppDocs(), {
-                    providedCodeActionKinds: SeeCppDocs.providedCodeActionKinds
-                })
-            );
-        }
+        this.dosbox = new AsmDOSBox(this._config);
+        this.update();
     }
+
+    private update() {
+        workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration('masmtasm')) {
+                this._config = new Config(this.extUri, this.extOutChannel);
+                this.dosbox = new AsmDOSBox(this._config);
+            }
+            if (e.affectsConfiguration('masmtasm.dosbox')) {
+                this.dosbox.update(workspace.getConfiguration('masmtasm.dosbox'));
+            }
+        });
+    }
+
     public async BoxHere(uri?: Uri, command?: string) {
         let folder: Uri | undefined = undefined;
         if (uri) {
@@ -46,12 +54,16 @@ export class AsmAction {
             }
         }
         if (folder) {
-            return DOSBox.BoxOpenFolder(this._config, folder, command);
+            console.time('打开dosbox');
+            let output = await this.dosbox.BoxOpenFolder(folder, command);
+            console.timeEnd('打开dosbox');
+            return output;
         }
         else {
             window.showWarningMessage('no folder to open \nThe extension use the activeEditor file\'s folder or workspace folder');
         }
     }
+
     /**Do the operation according to the input.
      * "opendosbox": open DOSBOX at a separated space;
      * "here": open dosbox at the vscode editor file's folder;
@@ -77,21 +89,23 @@ export class AsmAction {
         }
         return output;
     }
+
     /**
-     * open the emulator(currently just the DOSBox)
+     * open the emulator(currently just thethis.dosbox)
      * @param doc The vscode document to be copied to the workspace
      */
     private Openemu(doc: TextDocument) {
-        let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Open DOSBox:{0}", doc.fileName);
+        let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Openthis.dosbox:{0}", doc.fileName);
         this.extOutChannel.appendLine(openemumsg);
         CleanCopy(doc.uri, this._config.workUri);
         if (this._config.DOSemu === 'msdos player') {
-            MSDos.outTerminal(this._config)
+            MSDos.outTerminal(this._config);
         }
         else {
-            DOSBox.runDosbox(this._config);
+            this.dosbox.runDosbox();
         }
     }
+
     /**
      *  `msdos (player) mode`: use msdos for run and debug,but TASM debug command `TD` can only run in dosbox
      *  `auto mode`: run in dosbox,`TD` in dosbox,MASM debug command `debug` in player 
@@ -112,18 +126,18 @@ export class AsmAction {
         await CleanCopy(doc.uri, this._config.workUri);
         //get the output of assembler
         if (DOSemu === "dosbox") {
-            stdout = await DOSBox.runDosbox2(this._config, runOrDebug);
+            stdout = await this.dosbox.runDosbox2(runOrDebug, MASMorTASM);
         }
         else if (DOSemu === "auto" || DOSemu === "msdos player") {
             stdout = await MSDos.runPlayer(this._config);
         }
         //process and output the output of the assembler
-        let diagCode: number | undefined = undefined;
+        let diagCode: DIAGCODE | undefined = undefined;
         if (stdout) {
             let diag = this.landiag.ErrMsgProcess(stdout, doc, MASMorTASM);
             diagCode = diag?.flag;
             if (diag) {
-                if (diagCode !== 2) { this.extOutChannel.show(true); }
+                if (diagCode === DIAGCODE.hasError) { this.extOutChannel.show(true); }
                 let collectmessage: string = localize("diag.msg", "{0} Error,{1}  Warning, collected. The following is the output of assembler and linker'", diag.error.toString(), diag.warn);
                 this.extOutChannel.appendLine(collectmessage);
                 let stdout_output = stdout.replace(/\r\n\r\n/g, '\r\n').replace(/\n\n/g, '\n').replace(/\n/g, '\n  ');
@@ -136,7 +150,7 @@ export class AsmAction {
         if (exeGenerated === false) {
 
             let Errmsg: string;
-            if (diagCode === 0) {
+            if (diagCode === DIAGCODE.hasError) {
                 Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", MASMorTASM);
             }
             else {
@@ -174,7 +188,7 @@ export class AsmAction {
                 }
                 else {
                     if (runOrDebug) {
-                        DOSBox.runDosbox(this._config, ['T.EXE', ...this._config.boxruncmd]);
+                        this.dosbox.runDosbox(['T.EXE', ...this._config.boxruncmd]);
                     }
                     else {
                         let debug: string[] = [];
@@ -184,7 +198,7 @@ export class AsmAction {
                         else {
                             debug.push('DEBUG T.EXE');
                         }
-                        DOSBox.runDosbox(this._config, debug);
+                        this.dosbox.runDosbox(debug);
                     }
                 }
             }
@@ -195,14 +209,21 @@ export class AsmAction {
             exeGen: exeGenerated
         };
     }
+
     public cleanalldiagnose() {
         this.landiag.cleandiagnose('both');
     }
-    public deactivate() {
+    public dispose() {
         this.extOutChannel.dispose();
         MSDos.deactivate();
+        this.dosbox.dispose();
+        this.cleanalldiagnose();
     }
+    public get ASM() { return this._config.MASMorTASM; }
+    public get emulator() { return this._config.DOSemu; }
 }
+
+
 const delList = [
     "t.exe",
     "t.map",
@@ -211,6 +232,8 @@ const delList = [
     "T.TR",
     "TDCONFIG.TD"
 ];
+
+
 async function CleanCopy(file: Uri, dir: Uri) {
     let fs = workspace.fs;
     let dirInfo = await fs.readDirectory(dir);

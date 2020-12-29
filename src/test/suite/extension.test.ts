@@ -3,6 +3,7 @@ import * as assert from 'assert';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from 'vscode';
+import { DIAGCODE } from '../../ASM/diagnose';
 // import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', () => {
@@ -10,18 +11,18 @@ suite('Extension Test Suite', () => {
 	test('open dosbox test', function (done) {
 		vscode.commands.executeCommand('masm-tasm.dosboxhere', undefined, 'exit').then(
 			(val) => {
-				assert.ok((val as any).code === 0, 'start code success');
+				assert.ok((val as any).exitcode === 0, 'start code success');
 				done();
 			}
 		);
 	});
-	testAsmCode('1.asm', 2, true);
-	testAsmCode('1err.asm', 0, false);
+	testAsmCode('1.asm', DIAGCODE.ok, true);
+	testAsmCode('1err.asm', DIAGCODE.hasError, false);
 	//testAsmCode('2.asm', 0, false);
 });
 
 //1err.asm
-async function testAsmCode(file: string, diagcode: number, exeGen: boolean) {
+async function testAsmCode(file: string, diagcode: DIAGCODE, exeGen: boolean) {
 	const MASMorTASM = [
 		"MASM",
 		"TASM",
@@ -46,10 +47,10 @@ async function testAsmCode(file: string, diagcode: number, exeGen: boolean) {
 						);
 						let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
 						await vscode.commands.executeCommand('vscode.open', samplefile);
-						let a = await vscode.commands.executeCommand('masm-tasm.runASM');
+						let a = (await vscode.commands.executeCommand('masm-tasm.runASM') as any);
 						//console.log(a)
-						assert.ok((a as any).diagCode === diagcode);
-						assert.ok((a as any).exeGen === exeGen);
+						assert.ok(a.diagCode === diagcode);
+						assert.ok(a.exeGen === exeGen);
 						return a;
 					});
 

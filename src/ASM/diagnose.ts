@@ -2,6 +2,18 @@ import { languages, DiagnosticCollection, TextDocument, Diagnostic, Range, Diagn
 import { masmDiagnose } from './diagnoseMASM';
 import { tasmDiagnose } from './diagnoseTASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
+
+export enum DIAGCODE {
+    /**no error and warning information */
+    ok,
+    /**has error information */
+    hasError,
+    /**has no error but has warning information */
+    hasWarn,
+    /**TODO: not a text of assembler's output */
+    notMSG
+}
+
 /**
  * the class use to diagnose the information from the MASM or TASM assembler
  */
@@ -33,9 +45,13 @@ export class AssemblerDiag {
                 return undefined;
         }
         if (diag) {
-            diag.flag = 2;
-            if (diag.error !== 0) { diag.flag = 0; }
-            else if (diag.warn !== 0) { diag.flag = 1; }
+            diag.flag = DIAGCODE.ok;
+            if (diag.error !== 0) {
+                diag.flag = DIAGCODE.hasError;
+            }
+            else if (diag.warn !== 0) {
+                diag.flag = DIAGCODE.hasWarn;
+            }
             return diag;
         }
         return undefined;
@@ -56,7 +72,7 @@ export class AssemblerDiag {
     }
 };
 interface DIAGINFO {
-    flag?: number,
+    flag?: DIAGCODE,
     error: number,
     warn: number,
     diagnotics?: Diagnostic[]
