@@ -54,9 +54,7 @@ export class AsmAction implements Disposable {
             }
         }
         if (folder) {
-            console.time('打开dosbox');
             let output = await this.dosbox.BoxOpenFolder(folder, command);
-            console.timeEnd('打开dosbox');
             return output;
         }
         else {
@@ -188,7 +186,7 @@ export class AsmAction implements Disposable {
                 }
                 else {
                     if (runOrDebug) {
-                        this.dosbox.runDosbox(['T.EXE', ...this._config.boxruncmd]);
+                        await this.dosbox.runDosbox(['T.EXE', ...this._config.boxruncmd]);
                     }
                     else {
                         let debug: string[] = [];
@@ -198,7 +196,7 @@ export class AsmAction implements Disposable {
                         else {
                             debug.push('DEBUG T.EXE');
                         }
-                        this.dosbox.runDosbox(debug);
+                        await this.dosbox.runDosbox(debug);
                     }
                 }
             }
