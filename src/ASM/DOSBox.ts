@@ -70,6 +70,26 @@ export class AsmDOSBox extends DOSBox implements Disposable {
         let loguri = Uri.joinPath(this._conf.workUri, 'T.TXT');
         let AsmMsg: string = "";
         await manageBat(this._conf, runOrDebug);
+        // //code from here doesn't work
+        // let watcher = NODEwatch(this._conf.workUri.fsPath,
+        //     (event, filename) => {
+        //         // console.log(event, filename);
+        //         if (filename === 'T.TXT') {
+        //             readFile(loguri.fsPath, { encoding: 'utf8' },
+        //                 (error, data) => {
+        //                     if (error) {
+        //                         console.error(error);
+        //                     }
+        //                     //console.log(data);
+        //                     if (data.length > 10) {
+        //                         // console.log(data);
+        //                         watcher.removeAllListeners;
+        //                         AsmMsg = data;
+        //                     }
+        //                 });
+        //         }
+        //     }
+        // );
         await this.runDosbox([boxasmCommand(runOrDebug, ASM, this._BOXrun)]);
         AsmMsg = (await workspace.fs.readFile(loguri)).toString();
         return AsmMsg;
