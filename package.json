@@ -29,8 +29,6 @@
     }
   ],
   "activationEvents": [
-    "workspaceContains:*.ASM",
-    "workspaceContains:*.asm",
     "onCommand:masm-tasm.dosboxhere",
     "onLanguage:assembly",
     "onLanguage:tasm",
