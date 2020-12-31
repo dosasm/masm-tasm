@@ -16,7 +16,7 @@ export class AsmAction implements Disposable {
     private dosbox: AsmDOSBox;
     private landiag: AssemblerDiag;
     constructor(context: ExtensionContext) {
-        this.extUri = context.extensionUri
+        this.extUri = context.extensionUri;
 
         this._config = new Config(context.extensionUri);
         this.landiag = new AssemblerDiag();

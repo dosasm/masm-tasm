@@ -28,7 +28,7 @@ export interface BOXCONFIG {
 }
 export class AsmDOSBox extends DOSBox implements Disposable {
     //private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
-    private _BOXrun: string | undefined
+    private _BOXrun: string | undefined;
     private _conf: Config;
     constructor(conf: Config) {
         super(conf.BOXfolder.fsPath, conf.dosboxconfuri);
@@ -36,7 +36,7 @@ export class AsmDOSBox extends DOSBox implements Disposable {
 
         this._conf = conf;
         this.update(configuration);
-        this._BOXrun = configuration.get('run')
+        this._BOXrun = configuration.get('run');
 
         if (this.redirect) {
             this.stdoutHander = (message: string, text: string, code: number) => {

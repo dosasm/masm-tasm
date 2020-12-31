@@ -28,7 +28,7 @@ export function AsmCommands(context: vscode.ExtensionContext) {
             vscode.languages.registerCodeActionsProvider('assembly', new SeeinCPPDOCS(), {
                 providedCodeActionKinds: SeeinCPPDOCS.providedCodeActionKinds
             })
-        )
+        );
     }
     context.subscriptions.push(...commands);
     return commands;

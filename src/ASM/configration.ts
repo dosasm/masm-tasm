@@ -67,11 +67,11 @@ export class Config implements Config2 {
                     if (value.hasPlayer) {
                         this.Playerfolder = Uri.joinPath(this._exturi, './tools/player/');
                     }
-                    OutChannel.append(Config.printConfig(this))
+                    OutChannel.append(Config.printConfig(this));
                 },
                 (reason) => { console.log(reason); this.customToolInfo = undefined; }
             );
-        } else { OutChannel.append(Config.printConfig(this)) }
+        } else { OutChannel.append(Config.printConfig(this)); }
         // //write dosbox.conf
         // writeBoxconfig(this.dosboxconfuri);
     }
