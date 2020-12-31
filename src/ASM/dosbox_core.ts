@@ -21,19 +21,17 @@ export class DOSBox {
     }
     private cmdBuild(boxcmd: string[], opt?: DOSBoxOption): string {
         let command = this._core;
-        if (opt) {
-            if (opt.preOpen) {
-                command = opt.preOpen + command;
-            }
-            if ((typeof opt.confFile) === 'string') {
-                command += ` -conf "${opt.confFile}"`;
-            }
-            else if (opt.confFile === undefined) {
-                command += ` -conf "${this._confFile?.fsPath}"`;
-            }
-            if (opt.param) {
-                command += ' ' + opt.param;
-            }
+        if (opt?.preOpen) {
+            command = opt.preOpen + command;
+        }
+        if ((typeof opt?.confFile) === 'string') {
+            command += ` -conf "${opt?.confFile}"`;
+        }
+        else if (opt?.confFile === undefined) {
+            command += ` -conf "${this._confFile?.fsPath}"`;
+        }
+        if (opt?.param) {
+            command += ' ' + opt.param;
         }
         if (boxcmd.length > 0) {
             command += ' -c "' + boxcmd.join('" -c "') + '"';
