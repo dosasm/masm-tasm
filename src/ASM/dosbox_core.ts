@@ -9,7 +9,7 @@ export class DOSBox {
     private _stdout: string = "";
     private _stderr: string = "";
     private _console: string | undefined;
-    private _count: number = 1;
+    private _count: number = 0;
     constructor(cwd?: string, confFile?: Uri) {
         this._confFile = confFile;
         this._cwd = cwd;
@@ -54,13 +54,14 @@ export class DOSBox {
         }
         return redirect;
     }
-    public stdoutHander: (message: string, text?: string, No?: number) => void = (message: string) => {
+    public stdoutHander: (message: string, text: string, No: number) => void = (message: string) => {
         console.log('stdout message', message);
     };
-    public stderrHander: (message: string, text?: string, No?: number) => void = (message: string) => {
+    public stderrHander: (message: string, text: string, No: number) => void = (message: string) => {
         console.log('stderr message', message);
     };
     private cp_run(command: string, ignoreWinStd?: boolean): Promise<DOSBoxStd> {
+        this._count++;
         let execOption: ExecOptions = { cwd: this._cwd };
         let output: DOSBoxStd = {
             flag: BoxStdNOTE.normal,
@@ -68,10 +69,6 @@ export class DOSBox {
             stderr: '',
             exitcode: undefined
         };
-        if (this.redirect) {
-            let showingmsg = `\n${new Date().toLocaleTimeString()}`;
-            this.stdoutHander(showingmsg);
-        }
         return new Promise(
             (resolve, reject) => {
                 const callback = (error: any, stdout: string, stderr: string) => {

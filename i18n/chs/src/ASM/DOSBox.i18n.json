@@ -1,0 +1,4 @@
+{
+    "dosbox.console.stdout": "[DOSBox 控制台标准输出] No.{0}",
+    "dosbox.console.stderr": "[DOSBox 控制台标准错误输出] No.{0}"
+}

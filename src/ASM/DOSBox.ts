@@ -2,8 +2,12 @@ import { Uri, workspace, window, TextDocument, Disposable, OutputChannel } from 
 import { Config } from './configration';
 import { DOSBox } from './dosbox_core';
 import { writeBoxconfig } from './dosbox_conf';
-import { OutChannel } from './outputChannel'
+import { logger, OutChannel } from './outputChannel';
+import { watch as NODEwatch, readFile } from 'fs';
+import * as nls from 'vscode-nls';
 
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 const configuration = workspace.getConfiguration('masmtasm.dosbox');
 
 export interface BOXCONFIG {
@@ -35,8 +39,11 @@ export class AsmDOSBox extends DOSBox implements Disposable {
         this._BOXrun = configuration.get('run')
 
         if (this.redirect) {
-            this.stdoutHander = (message: string) => {
-                OutChannel.append(message);
+            this.stdoutHander = (message: string, text: string, code: number) => {
+                logger({
+                    title: localize('dosbox.console.stdout', '[dosbox console stdout] No.{0}', code.toString()),
+                    content: message
+                });
                 if (this.console === 'redirect(show)') {
                     OutChannel.show(true);
                 }
@@ -44,8 +51,11 @@ export class AsmDOSBox extends DOSBox implements Disposable {
                     OutChannel.hide();
                 }
             };
-            this.stderrHander = (message: string) => {
-                OutChannel.append(message);
+            this.stderrHander = (message: string, text: string, code: number) => {
+                logger({
+                    title: localize('dosbox.console.stderr', '[dosbox console stderr] No.{0}', code.toString()),
+                    content: message
+                });
             };
         }
     }
@@ -57,11 +67,12 @@ export class AsmDOSBox extends DOSBox implements Disposable {
      * @returns the Assembler's output
      */
     public async runDosbox2(runOrDebug: boolean, ASM: 'MASM' | 'TASM') {
+        let loguri = Uri.joinPath(this._conf.workUri, 'T.TXT');
+        let AsmMsg: string = "";
         await manageBat(this._conf, runOrDebug);
-        this.runDosbox([boxasmCommand(runOrDebug, ASM, this._BOXrun)]);
-        //TODO: it seems we can read the file when generated instead of reading it after the dosbox exit
-        let stdout: Uint8Array = await workspace.fs.readFile(Uri.joinPath(this._conf.workUri, 'T.TXT'));
-        return stdout.toString();
+        await this.runDosbox([boxasmCommand(runOrDebug, ASM, this._BOXrun)]);
+        AsmMsg = (await workspace.fs.readFile(loguri)).toString();
+        return AsmMsg;
     }
     /**open dosbox and do things about it
      * this function will mount the tools as `C:` and the workspace as `D:`

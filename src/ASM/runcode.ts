@@ -5,10 +5,11 @@ import { AsmDOSBox } from './DOSBox';
 import * as MSDos from './viaPlayer';
 import * as nls from 'vscode-nls';
 import { AssemblerDiag, DIAGCODE } from './diagnose';
-import { OutChannel } from './outputChannel';
+import { logger, OutChannel } from './outputChannel';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 export class AsmAction implements Disposable {
     private extUri: Uri;
     private _config: Config;
@@ -94,15 +95,23 @@ export class AsmAction implements Disposable {
      * @param doc The vscode document to be copied to the workspace
      */
     private Openemu(doc: TextDocument) {
-        let openemumsg = localize("openemu.msg", "\nMASM/TASM>>Openthis.dosbox:{0}", doc.fileName);
-        OutChannel.appendLine(openemumsg);
+        let openemumsg: string = "";
         CleanCopy(doc.uri, this._config.workUri);
         if (this._config.DOSemu === 'msdos player') {
+
+            openemumsg = localize("openemu.msdos", "\n[execute]Open cmd(add msdos to path) and copy file");
             MSDos.outTerminal(this._config);
         }
         else {
+            openemumsg = localize("openemu.dosbox", "\n[execute]Open dosbox and copy file");
             this.dosbox.runDosbox();
         }
+        logger(
+            {
+                title: openemumsg,
+                content: '"' + doc.fileName + '"'
+            }
+        );
     }
 
     /**
@@ -118,9 +127,20 @@ export class AsmAction implements Disposable {
         let msg: string, DOSemu: string = this._config.DOSemu, MASMorTASM = this._config.MASMorTASM;
         let stdout: string | undefined = undefined;
         //show message
-        if (runOrDebug) { msg = localize("run.msg", "\n{0}({1})>>Run:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
-        else { msg = localize("debug.msg", "\n{0}({1})>>Debug:{2}", this._config.MASMorTASM, this._config.DOSemu, doc.fileName); }
-        OutChannel.appendLine(msg);
+        if (runOrDebug) {
+            msg = localize("run.msg", "\n[execute]use {0} in {1} to Run ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
+        }
+        else {
+            msg = localize("debug.msg", "\n[execute]use {0} in {1} to Debug ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
+        }
+        logger(
+            {
+                title: runOrDebug ?
+                    localize("run.msg", "\n[execute]use {0} in {1} to Run ASM code file:", this._config.MASMorTASM, this._config.DOSemu)
+                    : localize("debug.msg", "\n[execute]use {0} in {1} to Debug ASM code file:", this._config.MASMorTASM, this._config.DOSemu),
+                content: '"' + doc.fileName + '"'
+            }
+        );
         //clean files and copy the file to workspace AS `T.ASM`
         await CleanCopy(doc.uri, this._config.workUri);
         //get the output of assembler
@@ -137,10 +157,10 @@ export class AsmAction implements Disposable {
             diagCode = diag?.flag;
             if (diag) {
                 if (diagCode === DIAGCODE.hasError) { OutChannel.show(true); }
-                let collectmessage: string = localize("diag.msg", "{0} Error,{1}  Warning, collected. The following is the output of assembler and linker'", diag.error.toString(), diag.warn);
-                OutChannel.appendLine(collectmessage);
-                let stdout_output = stdout.replace(/\r\n\r\n/g, '\r\n').replace(/\n\n/g, '\n').replace(/\n/g, '\n  ');
-                OutChannel.append(stdout_output);
+                logger({
+                    title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn),
+                    content: stdout
+                });
             }
         }
         //check whether the EXE file generated
@@ -155,9 +175,10 @@ export class AsmAction implements Disposable {
             else {
                 Errmsg = "EXE file generate failed";
                 if (stdout) {
-                    stdout = stdout.replace(/\r\n\r\n/g, "\n");
-                    OutChannel.append('\n===error message===\n' + stdout + '\n======\n');
-                    OutChannel.show();
+                    logger({
+                        title: "[this should not happen]Can't generate .exe file but no error scaned",
+                        content: stdout
+                    });
                     console.log(stdout);
                 }
             }
