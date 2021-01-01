@@ -8,7 +8,6 @@ import * as nls from 'vscode-nls';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-const configuration = workspace.getConfiguration('masmtasm.dosbox');
 
 export interface BOXCONFIG {
     /** the Uri of folder for scripts*/
@@ -32,9 +31,9 @@ export class AsmDOSBox extends DOSBox implements Disposable {
     private _conf: Config;
     constructor(conf: Config) {
         super(conf.BOXfolder.fsPath, conf.dosboxconfuri);
-        writeBoxconfig(conf.dosboxconfuri, configuration.get('config'));
-
         this._conf = conf;
+        const configuration = workspace.getConfiguration('masmtasm.dosbox');
+        writeBoxconfig(conf.dosboxconfuri, configuration.get('config'));
         this.update(configuration);
         this._BOXrun = configuration.get('run');
 

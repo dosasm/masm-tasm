@@ -5,8 +5,6 @@ import { customToolCheck, ToolInfo } from './ToolInfo';
 import { validfy } from './util';
 import { PlayerConfig } from './viaPlayer';
 
-const configuration = workspace.getConfiguration('masmtasm');
-
 enum ASMTYPE {
     MASM = 'MASM',
     TASM = 'TASM'
@@ -39,6 +37,7 @@ export class Config implements Config2 {
     private readonly _exturi: Uri;
     private readonly _BOXrun: string | undefined;
     constructor(extensionUri: Uri, channel?: OutputChannel) {
+        const configuration = workspace.getConfiguration('masmtasm');
 
         let allowedEMU = [DOSEMU.dosbox];
         if (process.platform === 'win32') {
