@@ -48,7 +48,7 @@ export function runPlayer(conf: PlayerConfig): Promise<string> {
                 if (code === null) {
                     child.kill();
                     window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nCommand: ${command}`);
-                    console.log(child);
+                    //console.log(child);
                 }
                 else if (code !== 0) {
                     let msg = `Use playerasm.bat Failed\t exitcode${code}\t\n  command:${command}`;

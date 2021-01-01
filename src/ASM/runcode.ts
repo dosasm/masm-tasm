@@ -179,7 +179,7 @@ export class AsmAction implements Disposable {
                         title: "[this should not happen]Can't generate .exe file but no error scaned",
                         content: stdout
                     });
-                    console.log(stdout);
+                    console.error(stdout);
                 }
             }
             window.showErrorMessage(Errmsg);

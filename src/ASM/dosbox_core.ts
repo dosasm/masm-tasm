@@ -39,7 +39,6 @@ export class DOSBox {
         return command;
     }
     public run(boxcmd: string[], opt?: DOSBoxOption) {
-        // console.log(this);
         return this.cp_run(this.cmdBuild(boxcmd, opt));
     }
     public get console() {
