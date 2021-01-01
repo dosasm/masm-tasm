@@ -47,7 +47,7 @@ export class DOSBox {
     }
     public get redirect() {
         let redirect: boolean = false;
-        if (this._console === 'redirect(show)' || this._console === 'redirect(hide)') {
+        if (this._console?.includes('redirect(show)')) {
             redirect = true;
         }
         return redirect;

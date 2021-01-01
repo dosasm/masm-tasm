@@ -45,7 +45,7 @@ export class AsmDOSBox extends DOSBox implements Disposable {
                     content: message
                 });
                 if (this.console === 'redirect(show)') {
-                    OutChannel.show(true);
+                    OutChannel.show();
                 }
                 else if (this.console === 'redirect(hide)') {
                     OutChannel.hide();
