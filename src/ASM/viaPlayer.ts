@@ -28,7 +28,7 @@ export function runPlayer(conf: PlayerConfig): Promise<string> {
     // let myenv: NodeJS.ProcessEnv = {
     //     "path": conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;'
     // };
-    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + conf.workUri.fsPath + '">msdoslog.txt & type ASMlog.txt';
+    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + conf.workUri.fsPath + '">msdos.log & type ASM.log';
     return new Promise<string>(
         (resolve, reject) => {
             let timeout: number = 3000;

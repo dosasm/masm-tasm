@@ -19,16 +19,16 @@ goto end
     mkdir c:\.dosasm\masm\
     copy "%~f1\masm\*.*" c:\.dosasm\masm\
     set path=%PATH%;c:\.dosasm\masm\
-    masm T.ASM; >ASMlog.txt
+    masm T.ASM; >ASM.log
     if not exist T.obj goto end
-    msdos link T.OBJ; >>ASMlog.txt
+    msdos link T.OBJ; >>ASM.log
     goto end
 :tasm
     mkdir c:\.dosasm\tasm\
     copy "%~f1\tasm\*.*" c:\.dosasm\tasm\
     set path=%PATH%;c:\.dosasm\tasm\
-    msdos tasm /zi T.ASM >ASMlog.txt
+    msdos tasm /zi T.ASM >ASM.log
     if not exist T.obj goto end
-    msdos -e tlink /v/3 T.OBJ >>ASMlog.txt
+    msdos -e tlink /v/3 T.OBJ >>ASM.log
 :end
 cd "%cdo%"
