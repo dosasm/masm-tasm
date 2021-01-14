@@ -237,10 +237,10 @@
     ]
   },
   "scripts": {
-    "compile": "gulp translations-generate && webpack --mode production --vscode-nls",
+    "compile": "npx gulp translations-generate && webpack --mode production --vscode-nls",
     "compile-tsc": "tsc -p ./",
     "compile-dev": "webpack --mode development",
-    "compile-nls": "gulp translations-generate && webpack --mode development --vscode-nls",
+    "compile-nls": "npx gulp translations-generate && webpack --mode development --vscode-nls",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
     "watch": "tsc -watch -p ./ --rootDir src",
