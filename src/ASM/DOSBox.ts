@@ -1,36 +1,23 @@
-import { Uri, workspace, window, TextDocument, Disposable, OutputChannel } from 'vscode';
-import { Config } from './configration';
-import { DOSBox } from './dosbox_core';
-import { writeBoxconfig } from './dosbox_conf';
-import { logger, OutChannel } from './outputChannel';
-import { watch as NODEwatch, readFile } from 'fs';
+import { TextEncoder } from "util";
+import { Disposable, Uri, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
+import { Config, SRCFILE } from './configration';
+import { writeBoxconfig } from './dosbox_conf';
+import { DOSBox } from './dosbox_core';
+import { logger, OutChannel } from './outputChannel';
+
+//the limit of commands can be exec in dosbox, over this limit the commands will be write to a file
+const DOSBOX_CMDS_LIMIT = 5;
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export interface BOXCONFIG {
-    /** the Uri of folder for scripts*/
-    extScriptsUri: Uri;
-    /** the Uri of folder for tools*/
-    ASMtoolsUri: Uri;
-    /**the information of custom tools folder*/
-    customToolInfo: any;
-    /**the Uri of the assembler's output via dosbox*/
-    workloguri: Uri;
-    /** the workspace's Uri*/
-    workUri: Uri;
-    /** the Uri for the dosbox.exe's folder */
-    BOXfolder: Uri;
-    /** the Uri of the dosbox conf file for the extension to use*/
-    dosboxconfuri: Uri;
-}
 export class AsmDOSBox extends DOSBox implements Disposable {
     //private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
     private _BOXrun: string | undefined;
     private _conf: Config;
     constructor(conf: Config) {
-        super(conf.BOXfolder.fsPath, conf.dosboxconfuri);
+        super(conf.Uris.dosbox.fsPath, conf.dosboxconfuri);
         this._conf = conf;
         const configuration = workspace.getConfiguration('masmtasm.dosbox');
         writeBoxconfig(conf.dosboxconfuri, configuration.get('config'));
@@ -60,150 +47,97 @@ export class AsmDOSBox extends DOSBox implements Disposable {
     }
 
     /**
-     * A function used when using boxasm.bat to run or debug ASM codes in DOSBox
-     * make sure there is a `T.asm` in workspace
+     * A function to run or debug ASM codes in DOSBox
      * @param runOrDebug true for run ASM code,false for debug
+     * @param file the Uri of the file
      * @returns the Assembler's output
      */
-    public async runDosbox2(runOrDebug: boolean, ASM: 'MASM' | 'TASM') {
-        let loguri = Uri.joinPath(this._conf.workUri, 'T.TXT');
+    public async runDosbox2(src: SRCFILE, runOrDebug: boolean) {
+        let loguri = Uri.joinPath(this._conf.Uris.globalStorage, 'asm.log');
         let AsmMsg: string = "";
-        await manageBat(this._conf, runOrDebug);
-        // //code from here doesn't work
-        // let watcher = NODEwatch(this._conf.workUri.fsPath,
-        //     (event, filename) => {
-        //         // console.log(event, filename);
-        //         if (filename === 'T.TXT') {
-        //             readFile(loguri.fsPath, { encoding: 'utf8' },
-        //                 (error, data) => {
-        //                     if (error) {
-        //                         console.error(error);
-        //                     }
-        //                     //console.log(data);
-        //                     if (data.length > 10) {
-        //                         // console.log(data);
-        //                         watcher.removeAllListeners;
-        //                         AsmMsg = data;
-        //                     }
-        //                 });
-        //         }
-        //     }
-        // );
-        await this.runDosbox([boxasmCommand(runOrDebug, ASM, this._BOXrun)]);
+        let boxcmd: string[] = [];
+        let asm = this._conf.getBoxAction(this._conf.MASMorTASM, src);
+        boxcmd.push(...Array.isArray(asm) ? asm : []);
+        if (runOrDebug) {
+            let run = this._conf.getBoxAction('run', src);
+            boxcmd.push(...run);
+        }
+        else {
+            let debug = this._conf.getBoxAction(this._conf.MASMorTASM + '_debug', src);
+            if (Array.isArray(debug)) {
+                boxcmd.push(...debug);
+            }
+        }
+        await this.runDosbox(src, boxcmd, { exitwords: true });
         AsmMsg = (await workspace.fs.readFile(loguri)).toString();
         return AsmMsg;
     }
+
     /**open dosbox and do things about it
      * this function will mount the tools as `C:` and the workspace as `D:`
      * set paths for masm and tasm and switch to the disk
+     * @param src The source code file
      * @param more The commands needed to exec in dosbox
-     * @param doc If defined, copy this file to workspace as T.xxx(xxx is the files extension) using terminal commands
      */
-    public runDosbox(more?: string[], doc?: TextDocument) {
-        let p = runDosbox(this._conf, more, doc);
-        return this.run(p.boxcmd, p.opt);
+    public async runDosbox(src: SRCFILE, more?: string[], opt?: { exitwords: boolean }) {
+        let boxcmd: string[] = [];
+        boxcmd.push(
+            `@mount c \\\"${this._conf.Uris.tools.fsPath}\\\"`,//mount the tools folder as disk C
+            `@mount d \\\"${src.folder.fsPath}\\\"`,//mount the folder of source file as disk D
+            `@mount X \\\"${this._conf.Uris.globalStorage.fsPath}\\\"`,//mount a seperate space as X for the extension to read logs
+            "d:"//switch to the disk of source code file
+        );
+
+        if (more) { boxcmd.push(...more); }
+        if (opt?.exitwords) { boxcmd.push(...this.boxruncmd); }
+        if (boxcmd.length > DOSBOX_CMDS_LIMIT) {
+            let omit = boxcmd.slice(DOSBOX_CMDS_LIMIT - 1);
+            let unit8 = new TextEncoder().encode(omit.join('\n'));
+            let dst = Uri.joinPath(this._conf.Uris.globalStorage, 'more.bat');
+            await workspace.fs.writeFile(dst, unit8);
+            boxcmd.splice(DOSBOX_CMDS_LIMIT - 1, omit.length);
+            boxcmd.push('x:\\more.bat');
+        }
+
+        return this.run(boxcmd);
     }
+
     /**
     * opendosbox at the Editor's file's folder
     * @param conf config
     * @param the uri of the folder
     */
     public async BoxOpenFolder(uri: Uri, command?: string) {
-        let cmd = BoxOpenFolder(this._conf, uri);
+        let boxcmd = [
+            `@mount e \\\"${uri.fsPath}\\\"`,
+            `@mount c \\\"${this._conf.Uris.tools.fsPath}\\\"`,
+            '@set PATH=%%PATH%%;c:\\masm;c:\\tasm',
+            'e:',
+        ];
         if (command) {
-            cmd.push(...command.split('\n'));
+            boxcmd.push(...command.split('\n'));
         }
-        let a = await this.run(cmd);
+        let a = await this.run(boxcmd);
         return a;
     }
-
+    /** the command need to run in DOSBox after run the ASM code*/
+    public get boxruncmd(): string[] {
+        let command: string[] = [];
+        switch (this._BOXrun) {
+            case "keep": break;
+            case "exit": command.push('exit'); break;
+            case 'pause': command.push('pause', 'exit');
+            case "choose":
+            default: command = this._conf.getBoxAction('after_action'); break;
+        }
+        return command;
+    }
     public dispose() {
     }
+
+
 }
 
-/**
- * the command to send to dosbox command to operate ASM codes
- * @param runOrDebug true to run code, false to debug
- */
-function boxasmCommand(runOrDebug: boolean, MASMorTASM: 'MASM' | 'TASM', BOXrun?: string,): string {
 
-    let str = "c:\\boxasm.bat " + MASMorTASM;
-    if (runOrDebug) {
-        let param: string = ' ';
-        switch (BOXrun) {
-            case "keep": param = 'k'; break;
-            case "exit": param = 'e'; break;
-            case "pause":
-            default: param = 'p'; break;
-        }
-        str += " run " + param;
-    }
-    else {
-        str += " debug ";
-    }
-    return str;
-}
 
-/**
- * the param need to use with batch in DOSBox after run the ASM code
- */
-function boxrunbat(BOXrun: string): string {
-    let param: string = ' ';
-    switch (BOXrun) {
-        case "keep": param = 'k'; break;
-        case "exit": param = 'e'; break;
-        case "pause":
-        default: param = 'p'; break;
-    }
-    return param;
-}
 
-async function manageBat(conf: BOXCONFIG, runOrDebug: boolean) {
-    let fs = workspace.fs;
-    let src: Uri = Uri.joinPath(conf.extScriptsUri, "./boxasm.bat");
-    let target: Uri = Uri.joinPath(conf.ASMtoolsUri, "./boxasm.bat");
-    //if there is a `boxasm.bat` file in the user's tools folder, use it
-    //Otherwise, copy the file packaged inside to the user's folder
-    if (!conf.customToolInfo?.hasBoxasm) { await fs.copy(src, target, { overwrite: true }); }
-}
-
-function runDosbox(conf: BOXCONFIG, more?: string[], doc?: TextDocument) {
-    let preCommand: string = "";
-    let boxcmd: string[] = ['@echo off'];
-    boxcmd.push(
-        `mount c \\\"${conf.ASMtoolsUri.fsPath}\\\"`,
-        `mount d \\\"${conf.workUri.fsPath}\\\"`,//mount the necessary path
-        "set PATH=%%PATH%%;c:\\tasm;c:\\masm",//switch to the working space and add path\
-        "d:"//switch to the disk
-    );
-    if (doc) {
-        let filename = doc?.fileName;
-        let fileext = filename?.substring(filename.lastIndexOf("."), filename.length);
-        boxcmd.push(`echo Your file has been copied as D:\\T${fileext}`);
-        if (process.platform === 'win32') {
-            preCommand = `del/Q T*.* & copy "${filename}" "T${fileext}" & `;
-        }
-        else {
-            preCommand = `rm -f [Tt]*.*;cp "${filename}" T${fileext};'`;
-        }
-    };
-    boxcmd.push("@echo on");
-    if (more) { boxcmd.push(...more); }//add extra commands
-    let opt = {
-        preOpen: preCommand,
-    };
-    return { boxcmd, opt };
-}
-
-function BoxOpenFolder(conf: BOXCONFIG, uri: Uri, command?: string) {
-    let boxcmd = [
-        `mount e \\\"${uri.fsPath}\\\"`,
-        `mount c \\\"${conf.ASMtoolsUri.fsPath}\\\"`,
-        'set PATH=%%PATH%%;c:\\masm;c:\\tasm',
-        'e:',
-    ];
-    if (command) {
-        boxcmd?.push(...command.split('\n'));
-    }
-    return boxcmd;
-}

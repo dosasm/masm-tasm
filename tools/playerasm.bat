@@ -1,9 +1,11 @@
 ::this batch file is used to assemble and link ASM code by xsro.masm-tasm
 ::%1 toolspath
 ::%2 masmortasm
-::%3 workpath
-cd %~f3
+::%3 the source code file's path
+cd %~dp3
 %~d3
+set filename=%~n3
+if "%filename%" == "" set filename=T
 echo %0 %1 %2 %3
 set "cdo=%CD%"
 mkdir C:\.dosasm\
@@ -13,22 +15,31 @@ echo feel free to delete this folder for it will be create when you use the exte
 set path=%~f1\player\
 if "%2" == "MASM" goto masm
 if "%2" == "TASM" goto tasm
+if "%2" == "run" goto RUN
+if "%2" == "debug" goto DEBUG
 goto end
 
 :masm
     mkdir c:\.dosasm\masm\
     copy "%~f1\masm\*.*" c:\.dosasm\masm\
     set path=%PATH%;c:\.dosasm\masm\
-    masm T.ASM; >ASM.log
-    if not exist T.obj goto end
-    msdos link T.OBJ; >>ASM.log
+    masm %filename%; >ASM.log
+    if not exist %filename%.obj goto end
+    msdos link %filename%; >>ASM.log
     goto end
 :tasm
     mkdir c:\.dosasm\tasm\
     copy "%~f1\tasm\*.*" c:\.dosasm\tasm\
     set path=%PATH%;c:\.dosasm\tasm\
-    msdos tasm /zi T.ASM >ASM.log
-    if not exist T.obj goto end
-    msdos -e tlink /v/3 T.OBJ >>ASM.log
+    msdos tasm /zi %filename% >ASM.log
+    if not exist %filename%.obj goto end
+    msdos -e tlink /v/3 %filename% >>ASM.log
+:RUN
+
+goto end
+:DEBUG
+
+goto end
 :end
+
 cd "%cdo%"

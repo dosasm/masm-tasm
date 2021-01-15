@@ -27,36 +27,33 @@ async function testAsmCode(file: string, diagcode: DIAGCODE, exeGen: boolean) {
 		"MASM",
 		"TASM",
 	];
-	const emulator = ["dosbox"];
+	const emulator: string[] = ["dosbox"];
 	if (process.platform === 'win32') {
 		emulator.push("msdos player", "auto");
 	}
 	const fn = () => {
-		emulator.forEach(
-			(emu) => {
-				for (let asm of MASMorTASM) {
-					test(`run ${asm} via ${emu} ${diagcode}${exeGen}`, async function () {
-						await vscode.workspace.getConfiguration('masmtasm').update(
-							"dosbox.run", "exit"
-						);
-						await vscode.workspace.getConfiguration('masmtasm').update(
-							"ASM.emulator", emu
-						);
-						await vscode.workspace.getConfiguration('masmtasm').update(
-							"ASM.MASMorTASM", asm
-						);
-						let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
-						await vscode.commands.executeCommand('vscode.open', samplefile);
-						let a = (await vscode.commands.executeCommand('masm-tasm.runASM') as any);
-						//console.log(a)
-						assert.ok(a.diagCode === diagcode);
-						assert.ok(a.exeGen === exeGen);
-						return a;
-					});
-
-				}
+		for (let emu of emulator) {
+			for (let asm of MASMorTASM) {
+				test(`run ${asm} via ${emu} ${diagcode}${exeGen}`, async function () {
+					await vscode.workspace.getConfiguration('masmtasm').update(
+						"dosbox.run", "exit"
+					);
+					await vscode.workspace.getConfiguration('masmtasm').update(
+						"ASM.emulator", emu
+					);
+					await vscode.workspace.getConfiguration('masmtasm').update(
+						"ASM.MASMorTASM", asm
+					);
+					let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
+					await vscode.commands.executeCommand('vscode.open', samplefile);
+					let a = (await vscode.commands.executeCommand('masm-tasm.runASM') as any);
+					//console.log(a)
+					assert.ok(a.diagCode === diagcode);
+					assert.ok(a.exeGen === exeGen);
+					return a;
+				});
 			}
-		);
+		}
 	};
 	suite(`test file ${file}`, fn);
 }

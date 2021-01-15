@@ -1,9 +1,152 @@
-import { OutputChannel, Uri, workspace } from 'vscode';
-import { BOXCONFIG } from './DOSBox';
-import { OutChannel } from './outputChannel';
-import { customToolCheck, ToolInfo } from './ToolInfo';
+import { ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
+import { logger } from './outputChannel';
 import { validfy } from './util';
-import { PlayerConfig } from './viaPlayer';
+import { scanTools } from './conf_tools';
+
+const packaged_Tools = "./tools";
+const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
+    let str: string = val;
+    if (src) {
+        str = str
+            .replace(/\${filename}/g, src.filename)
+            .replace(/\${fullname}/g, src.uri.fsPath)
+            .replace(/\${fileFolder}/g, src.folder.fsPath);
+        if (src.disk) {
+            str = str.replace(/\${fileDisk}/g, src.disk);
+        }
+    }
+    if (conf) {
+        str = str.replace(/\${toolpath}/g, conf.Uris.tools.fsPath);
+    }
+    return str;
+};
+
+/**class for configurations
+ * This class defines some settings and some uri to use
+ */
+export class Config {
+    //basic settings
+    /**if true,save file before assembling*/
+    public readonly savefirst: boolean;
+    /**use MASM or TASM */
+    public readonly MASMorTASM: ASMTYPE;
+    /**use dosbox or msdos as emulator */
+    public readonly DOSemu: DOSEMU;
+    //Uris and tools information
+    public Uris: TOOLURIS;
+    public Seperate: boolean = true;
+    private readonly _exturi: Uri;
+    private _asmAction: any;
+    private _toolpath: string | undefined;
+    constructor(ctx: ExtensionContext) {
+        const configuration = workspace.getConfiguration('masmtasm');
+
+        let allowedEMU = [DOSEMU.dosbox];
+        if (process.platform === 'win32') {
+            allowedEMU.push(DOSEMU.auto, DOSEMU.msdos);
+        }
+
+        this.MASMorTASM = validfy(configuration.get('ASM.MASMorTASM'), [ASMTYPE.MASM, ASMTYPE.TASM]);
+        this.DOSemu = validfy(configuration.get('ASM.emulator'), allowedEMU);
+        this.savefirst = validfy(configuration.get('ASM.savefirst'), [true, false]);
+        this._exturi = ctx.extensionUri;
+        //the tools' Uri
+        this.Uris = {
+            tools: Uri.joinPath(this._exturi, './tools/'),
+            workspace: Uri.joinPath(ctx.globalStorageUri, './workspace/'),
+            dosbox: Uri.joinPath(this._exturi, './tools/dosbox/'),
+            msdos: Uri.joinPath(this._exturi, './tools/player/'),
+            globalStorage: ctx.globalStorageUri
+        };
+        workspace.fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
+        this._toolpath = configuration.get('ASM.toolspath');
+    }
+    private async updateTools(uri: Uri) {
+        this._asmAction = await scanTools(uri, this._exturi);
+        this.Uris.tools = uri;
+        let UriChange: boolean = false;
+        if (this._asmAction['dosboxFolder']) {
+            this.Uris.dosbox = Uri.joinPath(uri, this._asmAction['dosboxFolder']);
+            UriChange = true;
+        }
+        else if (this._asmAction['msdosFolder']) {
+            this.Uris.msdos = Uri.joinPath(uri, this._asmAction['msdosFolder']);
+            UriChange = true;
+        }
+        if (UriChange) {
+            logger({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
+        }
+    }
+    public async prepare(): Promise<boolean> {
+        let ASMtoolsUri = Uri.joinPath(this._exturi, packaged_Tools);
+        if (this._toolpath) {
+            ASMtoolsUri = Uri.file(this._toolpath);
+        }
+        await this.updateTools(ASMtoolsUri);
+        let output: boolean = false;
+        switch (this.DOSemu) {
+            case DOSEMU.dosbox:
+                output = !!this._asmAction['dosbox'];
+                break;
+            case DOSEMU.msdos:
+            case DOSEMU.auto:
+                output = !!this._asmAction['msdos'];
+                break;
+        }
+        if (!output) {
+            window.showErrorMessage('Action undefined');
+        }
+        return output;
+    }
+    public getBoxAction(scope: string, src?: SRCFILE): string[] {
+        let obj = this._asmAction['dosbox'];
+        let boxcmd = obj[scope.toLowerCase()];
+        if (Array.isArray(boxcmd)) {
+            boxcmd = boxcmd.map(
+                (val) => str_replacer(val, this, src)
+            );
+            return boxcmd;
+        }
+        else {
+            return [];
+        }
+    }
+    public getPlayerAction(scope: string, src?: SRCFILE): string {
+        let obj = this._asmAction['msdos'];
+        let str = obj[scope.toLowerCase()];
+        str = str_replacer(str, this, src,);
+        return str;
+    }
+    public get dosboxconfuri(): Uri {
+        let uri = Uri.joinPath(this.Uris.globalStorage, 'VSC-ExtUse.conf');
+        return uri;
+    }
+    static printConfig(conf: Config) {
+        let output = `
+workspace: ${conf.Uris.workspace.fsPath}
+use DOSBox from folder: ${conf.Uris.dosbox.fsPath}
+use MSdos - player from folder: ${conf.Uris.msdos.fsPath}
+        `;
+        return output;
+    }
+}
+
+interface TOOLURIS {
+    /**the seperate workspace to use*/
+    workspace: Uri,
+    /**global storage uri */
+    globalStorage: Uri
+    /**the folder for dosbox */
+    dosbox: Uri,
+    /**the folder for msdos player */
+    msdos: Uri,
+    /**tools folder */
+    tools: Uri,
+    /**folder for masm tools */
+    masm?: Uri,
+    /**folder for tasm tools */
+    tasm?: Uri
+};
 
 enum ASMTYPE {
     MASM = 'MASM',
@@ -16,107 +159,75 @@ enum DOSEMU {
     auto = 'auto'
 }
 
-interface Config2 extends PlayerConfig, BOXCONFIG {
-    DOSemu: DOSEMU;
-};
-/**
- * class for configurations
+
+/**The class for source code file
+ * TODO: find out the dependences of all source code files
  */
-export class Config implements Config2 {
-    //basic settings
-    public readonly savefirst: boolean;
-    public readonly MASMorTASM: ASMTYPE;
-    public readonly DOSemu: DOSEMU;
-    //Uris and tools information
-    public readonly workUri: Uri;
-    public ASMtoolsUri: Uri;
-    public BOXfolder: Uri;
-    public Playerfolder: Uri;
-    public customToolInfo: ToolInfo | undefined = undefined;
-    //private
-    private readonly _exturi: Uri;
-    private readonly _BOXrun: string | undefined;
-    constructor(extensionUri: Uri, channel?: OutputChannel) {
-        const configuration = workspace.getConfiguration('masmtasm');
-
-        let allowedEMU = [DOSEMU.dosbox];
-        if (process.platform === 'win32') {
-            allowedEMU.push(DOSEMU.auto, DOSEMU.msdos);
+export class SRCFILE {
+    private _copy: Uri | undefined;
+    public doc: TextDocument | undefined;
+    constructor(private _uri: Uri) {
+    }
+    private pathinfo() {
+        let name = "", ext = "";
+        let r = /.*[\\\/](.*)\.(.*)/;
+        let re = r.exec(this.uri.fsPath);
+        if (re) {
+            name = re[1];
+            ext = re[2];
         }
-
-        this.MASMorTASM = validfy(configuration.get('ASM.MASMorTASM'), [ASMTYPE.TASM, ASMTYPE.TASM]);
-        this.DOSemu = validfy(configuration.get('ASM.emulator'), allowedEMU);
-        this.savefirst = validfy(configuration.get('ASM.savefirst'), [true, false]);
-
-        this._BOXrun = configuration.get('dosbox.run');
-        this._exturi = extensionUri;
-        //the tools' Uri
-        let toolpath: string | undefined = configuration.get('ASM.toolspath');
-        this.ASMtoolsUri = Uri.joinPath(extensionUri, './tools');
-        this.BOXfolder = Uri.joinPath(this._exturi, './tools/dosbox/');
-        this.Playerfolder = Uri.joinPath(this._exturi, './tools/player/');
-        this.workUri = Uri.joinPath(this._exturi, './workspace/');
-        workspace.fs.createDirectory(this.workUri);
-        if (toolpath) {
-            customToolCheck(toolpath).then(
-                (value) => {
-                    this.customToolInfo = value;
-                    if (value.hasMasm && value.hasTasm) { this.ASMtoolsUri = value.uri; }
-                    if (value.hasDosbox) { this.BOXfolder = Uri.joinPath(value.uri, "./dosbox"); }
-                    if (value.hasPlayer) {
-                        this.Playerfolder = Uri.joinPath(this._exturi, './tools/player/');
-                    }
-                    OutChannel.append(Config.printConfig(this));
-                },
-                (reason) => { console.log(reason); this.customToolInfo = undefined; }
-            );
-        } else { OutChannel.append(Config.printConfig(this)); }
-        // //write dosbox.conf
-        // writeBoxconfig(this.dosboxconfuri);
+        return { name: name, ext: ext };
     }
-    /**
-     * the command need to run in DOSBox after run the ASM code
-     */
-    public get boxruncmd(): string[] {
-        let command: string[] = [];
-        switch (this._BOXrun) {
-            case "keep": break;
-            case "exit": command.push('exit'); break;
-            case "pause":
-            default: command.push('pause', 'exit'); break;
+    public get disk() {
+        let re = this.uri.fsPath.match(/([a-zA-Z]):/);
+        if (re) {
+            return re[1];
         }
-        return command;
+        return undefined;
     }
-    public get extScriptsUri(): Uri {
-        let path = Uri.joinPath(this._exturi, './resources');
-        return path;
+    public get filename() {
+        return this.pathinfo().name;
     }
-    public get dosboxconfuri(): Uri {
-        let uri = Uri.joinPath(this._exturi, './resources/VSC-ExtUse.conf');
-        return uri;
+    public get extname() {
+        return this.pathinfo().ext;
     }
-    public get workloguri(): Uri {
-        let uri = Uri.joinPath(this._exturi, './resources/work/T.TXT');
-        return uri;
+    public get dosboxFsReadable() {
+        return this.filename.match(/^\w{1,8}$/);
     }
-    public get playerbat() {
-        let path = Uri.joinPath(this._exturi, './resources/playerasm.bat').fsPath;
-        if (this.customToolInfo?.hasPlayerasm) {
-            path = Uri.joinPath(this.customToolInfo.uri, './player/playerasm.bat').fsPath;
+    /**copy the source code file to another path*/
+    public async copyto(uri: Uri) {
+        if (this._copy === undefined) {
+            const filename = 'T';
+            this._copy = Uri.joinPath(uri, filename + '.' + this.extname);
+            await workspace.fs.copy(this._uri, this._copy, { overwrite: true });
         }
-        return path;
     }
-    static printConfig(conf: Config) {
-        let date = new Date();
-        let output = `${date.toLocaleString()}
-        workspace: ${conf.workUri.fsPath}
-        use DOSBox from folder: ${conf.BOXfolder.fsPath}
-        use MSdos - player from folder: ${conf.Playerfolder.fsPath}
-        use assembler from folder: ${conf.ASMtoolsUri.fsPath}
-        `;
-        return output;
+    /**copy the source code file and the generated exe file to another path*/
+    public async copyEXEto(uri: Uri) {
+        this.copyto(uri);
+        const dstname = 'T';
+        let src = Uri.joinPath(this.folder, this.filename + '.exe');
+        let dst = Uri.joinPath(uri, dstname + '.exe');
+        await workspace.fs.copy(src, dst, { overwrite: true });
+    }
+    public get uri(): Uri {
+        if (this._copy) {
+            return this._copy;
+        }
+        return this._uri;
+    }
+    public get folder() {
+        return Uri.joinPath(this.uri, '../');
+    }
+    public pathMessage(more?: string) {
+        let str = `"${this._uri.fsPath}"`;
+        if (this._copy) { str += `\ncopied as "${this._copy?.fsPath}" `; }
+        if (more) { str += more; }
+        return str;
     }
 }
+
+
 
 
 

@@ -1,0 +1,52 @@
+{
+    "$schema": "../resources/toolsConfigSchema.json",
+    "_description": "This configuration JSON file is to define how the vscode extension xsro.masm-tasm works with tools in this folder",
+    "_chs": "该文件定义了插件xsro.masm-tasm如何操作该文件夹下的工具",
+    "ExtVersion": "0.8.0",
+    "dosboxFolder": "./dosbox",
+    "msdosFolder": "./player",
+    "dosbox": {
+        "open": [
+            "set path=c:\\masm;c:\\tasm"
+        ],
+        "masm": [
+            "set path=c:\\masm",
+            "masm ${filename}.ASM; >X:\\asm.log ",
+            "@type X:\\ASM.log",
+            "link ${filename}.OBJ; >X:\\link.log ",
+            "@type X:\\link.log"
+        ],
+        "tasm": [
+            "set path=c:\\tasm",
+            "tasm /zi ${filename}.ASM >X:\\asm.log ",
+            "@type X:\\ASM.log",
+            "tlink /v/3 ${filename}.obj >X:\\link.log ",
+            "@type X:\\link.log"
+        ],
+        "masm_debug": [
+            "c:\\masm\\debug ${filename}.exe"
+        ],
+        "tasm_debug": [
+            "c:\\tasm\\TD ${filename}.exe"
+        ],
+        "run": [
+            "@if not exist ${filename}.exe exit ",
+            "${filename}.exe",
+            "@echo (END)Here is the end of the program's output"
+        ],
+        "after_action": [
+            "@choice Do you need to keep the DOSBox",
+            "@IF ERRORLEVEL 2 exit",
+            "@IF ERRORLEVEL 1 echo on"
+        ]
+    },
+    "msdos": {
+        "workspace": "c:\\.dosasm",
+        "path": "${toolpath}\\player;${toolpath}\\masm;${toolpath}\\tasm;c:\\.dosasm\\tasm;c:\\.dosasm\\masm;",
+        "masm": "playerasm.bat \"${toolpath}\" MASM \"${fullname}\">msdos.log & type asm.log",
+        "tasm": "playerasm.bat \"${toolpath}\" TASM \"${fullname}\">msdos.log & type asm.log",
+        "masm_debug": "msdos -v5.0 debug ${filename}.exe",
+        "tasm_debug": null,
+        "run": "msdos ${filename}"
+    }
+}

@@ -2,6 +2,12 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
+[unreleased]
+
+- [ ] 重构代码
+  - [x] 美化输出面板格式
+  - [ ] 允许不使用烦人的cleancopy过程
+
 ## 0.7.0
 
 - 升级msdos player到 4/10/2020 i486 x86 version

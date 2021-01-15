@@ -58,6 +58,7 @@ export class DOSBox {
         console.log('stderr message', message);
     };
     private cp_run(command: string, ignoreWinStd?: boolean): Promise<DOSBoxStd> {
+        //console.log(command);
         this._count++;
         let execOption: ExecOptions = { cwd: this._cwd };
         let output: DOSBoxStd = {

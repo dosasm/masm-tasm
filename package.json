@@ -156,12 +156,13 @@
         },
         "masmtasm.dosbox.run": {
           "type": "string",
-          "default": "pause",
+          "default": "choose",
           "description": "%dosasm.config.boxrun.description%",
           "enum": [
             "keep",
             "exit",
-            "pause"
+            "pause",
+            "choose"
           ],
           "enumDescriptions": [
             "%dosasm.config.boxrun.enum1%",
@@ -262,6 +263,7 @@
     "gulp-filter": "^5.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
+    "jsonschema": "^1.4.0",
     "mocha": "^7.2.0",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.7",

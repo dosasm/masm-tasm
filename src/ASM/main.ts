@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { AsmAction } from './runcode';
+import { AsmAction, ASMCMD } from './runcode';
 import { SeeinCPPDOCS } from './codeAction';
 
 /**register commands for run and debug the code
@@ -8,13 +8,13 @@ export function AsmCommands(context: vscode.ExtensionContext) {
     let asm = new AsmAction(context);
     let commands = [
         vscode.commands.registerCommand('masm-tasm.openEmulator', (uri?: vscode.Uri) => {
-            return asm.runcode('opendosbox');
+            return asm.runcode(ASMCMD.OpenEmu);
         }),
         vscode.commands.registerCommand('masm-tasm.runASM', (uri?: vscode.Uri) => {
-            return asm.runcode('run');
+            return asm.runcode(ASMCMD.run);
         }),
         vscode.commands.registerCommand('masm-tasm.debugASM', (uri?: vscode.Uri) => {
-            return asm.runcode('debug');
+            return asm.runcode(ASMCMD.debug);
         }),
         vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => {
             asm.cleanalldiagnose();

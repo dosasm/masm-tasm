@@ -1,39 +1,19 @@
 import { window, Terminal, Uri, workspace } from 'vscode';
 import { exec } from 'child_process';
-export interface PlayerConfig {
-    /**
-     * the path of the playerasm.bat
-     */
-    playerbat: string;
-    /**
-     * the workspace path
-     */
-    workUri: Uri;
-    /**
-     * the Uri of the folder of ASM tools
-     */
-    ASMtoolsUri: Uri;
-    /**
-     * "MASM" or "TASM"
-     */
-    MASMorTASM: 'MASM' | 'TASM';
-    /**
-     * folder of the msdos.exe
-     */
-    Playerfolder: Uri;
-}
+import { Config, SRCFILE } from './configration';
+
 let msdosTerminal: Terminal | null = null;
-export function runPlayer(conf: PlayerConfig): Promise<string> {
-    let toolspath = conf.ASMtoolsUri.fsPath;
-    // let myenv: NodeJS.ProcessEnv = {
-    //     "path": conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;'
-    // };
-    let command = '"' + conf.playerbat + '" "' + toolspath + '" ' + conf.MASMorTASM + ' "' + conf.workUri.fsPath + '">msdos.log & type ASM.log';
+
+export function runPlayer(src: SRCFILE, conf: Config): Promise<string> {
+    let command = conf.getPlayerAction(conf.MASMorTASM, src);
     return new Promise<string>(
         (resolve, reject) => {
             let timeout: number = 3000;
             let child = exec(
-                command, { cwd: conf.workUri.fsPath, timeout: timeout },
+                command,
+                {
+                    cwd: conf.Uris.tools.fsPath, timeout: timeout
+                },
                 (error, stdout, stderr) => {
                     if (error) {
                         (error as any).note = "exec msdos player error";
@@ -58,25 +38,29 @@ export function runPlayer(conf: PlayerConfig): Promise<string> {
         }
     );
 }
-export function outTerminal(conf: PlayerConfig, run?: boolean,) {
-    let myenv = process.env, toolspath = conf.ASMtoolsUri.fsPath;
-    let myenvPATH = myenv.PATH + ';c:\\.dosasm\\tasm;c:\\.dosasm\\masm;' + conf.Playerfolder.fsPath + ';' + toolspath + '\\tasm;' + toolspath + '\\masm;';
+
+export function runDebug(runOrDebug: boolean, conf: Config, src: SRCFILE) {
+    let debugcmd = conf.getPlayerAction('masm_debug', src);
+    let runcmd = conf.getPlayerAction('run', src);
+    let command = runOrDebug ? runcmd : debugcmd;
+    outTerminal(conf, `${src.disk}: & cd \"${src.folder.fsPath}\"`);
+    outTerminal(conf, command);
+
+}
+
+export function outTerminal(conf: Config, command?: string) {
+    let env: NodeJS.ProcessEnv = process.env;
+    let envPath = env.PATH + ';' + conf.getPlayerAction('path');
     if (msdosTerminal?.exitStatus || msdosTerminal === null) {
         msdosTerminal = window.createTerminal({
-            cwd: conf.workUri.fsPath,
-            env: {
-                "PATH": myenvPATH
-            },
+            env: { PATH: envPath },
             shellPath: "cmd.exe",
             hideFromUser: false,
         });
     }
     msdosTerminal.show();
-    if (run) {
-        msdosTerminal.sendText('msdos T.EXE');
-    }
-    else if (run === false) {
-        msdosTerminal.sendText('msdos -v5.0 debug T.EXE');
+    if (command) {
+        msdosTerminal.sendText(command);
     }
 }
 export function deactivate() {
