@@ -12,8 +12,13 @@
 ```bash
 sudo apt install nodejs
 sudo apt install npm
-sudo npm install -g cnpm --registry=https://registry.npm.taobao.org
 ```
+
+<details>
+    <summary> using CNPM</summary>
+    使用alias：alias cnpm="npm --registry=https://registry.npm.taobao.org --cache=$HOME/.npm/.cache/cnpm --disturl=https://npm.taobao.org/dist --userconfig=$HOME/.cnpmrc"<br>
+    使用npm安装：sudo npm install -g cnpm --registry=https://registry.npm.taobao.org
+</details>
 
 ### 2.install dependence and gulp-cli
 
