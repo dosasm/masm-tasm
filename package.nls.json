@@ -26,5 +26,6 @@
 	"dosasm.config.boxconsole.redirect": "Redirect the console stdout and stderr to VSCode output channel. For windows it will not display in real time",
 	"dosasm.config.boxconfig.description": "dosbox configurations that will be used, see [link](https://www.dosbox.com/wiki/Dosbox.conf),use property like `\"AUTOEXEC\":\"echo hi\\ndir\"` if need to use *AUTOEXEC*",
 	"dosasm.config.hover": "Display Hover information or not, restart VSCode to apply",
-	"dosasm.config.PLF": "Experimental programmatic language features like outline,jump to definition/reference. Restart needed"
+	"dosasm.config.PLF": "Experimental programmatic language features like outline,jump to definition/reference. Restart needed",
+	"dosasm.config.seperateSpace": "Use a Seperate space to keep the workspace clean.The extension will copy source code file to this space\n\n*NOTE*:if Enabled this, currently will have probleam with multi-file assembly"
 }

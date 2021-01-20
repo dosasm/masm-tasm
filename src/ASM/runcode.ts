@@ -91,7 +91,7 @@ export class AsmAction implements Disposable {
             let src = new SRCFILE(sourceFile);
             if (this._config.Seperate) {
                 if (this._config.DOSemu === 'dosbox') {
-                    await src.copyto(this._config.Uris.workspace);
+                    await src.copyto(this._config.Uris.workspace, { clean: this._config.Seperate });
                 }
                 else {
                     let path = this._config.getPlayerAction('workspace');
@@ -235,7 +235,7 @@ export class AsmAction implements Disposable {
             }
             else {
                 if (!src.dosboxFsReadable) {
-                    src.copyto(this._config.Uris.workspace);
+                    src.copyEXEto(this._config.Uris.workspace);
                 }
                 if (runOrDebug) {
                     let run = this._config.getBoxAction('run', src);
@@ -270,26 +270,3 @@ export class AsmAction implements Disposable {
 }
 
 
-const delList = [
-    "t.exe",
-    "t.map",
-    "T.obj",
-    "T.TXT",
-    "T.TR",
-    "TDCONFIG.TD"
-];
-
-
-async function CleanCopy(file: Uri, dir: Uri) {
-    let fs = workspace.fs;
-    let dirInfo = await fs.readDirectory(dir);
-    //delete files to avoid this files confusing the codes
-    delList.forEach(
-        async (value) => {
-            if (inArrays(dirInfo, [value, FileType.File])) {
-                await fs.delete(Uri.joinPath(dir, value), { recursive: false, useTrash: false });
-            }
-        }
-    );
-    await fs.copy(file, Uri.joinPath(dir, "./T.ASM"), { overwrite: true });
-}

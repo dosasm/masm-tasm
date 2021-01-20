@@ -139,6 +139,11 @@
             "%dosasm.config.emulator.auto%"
           ]
         },
+        "masmtasm.ASM.seperateSpace": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%dosasm.config.seperateSpace%"
+        },
         "masmtasm.ASM.savefirst": {
           "type": "boolean",
           "default": true,

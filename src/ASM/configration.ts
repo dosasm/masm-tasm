@@ -1,9 +1,11 @@
-import { ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
-import { logger } from './outputChannel';
-import { validfy } from './util';
+import { ExtensionContext, FileType, TextDocument, Uri, window, workspace } from 'vscode';
 import { scanTools } from './conf_tools';
+import { logger } from './outputChannel';
+import { inArrays, validfy } from './util';
 
 const packaged_Tools = "./tools";
+const fs = workspace.fs;
+const delExtList = [".exe", ".obj"];
 const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
     let str: string = val;
     if (src) {
@@ -34,7 +36,7 @@ export class Config {
     public readonly DOSemu: DOSEMU;
     //Uris and tools information
     public Uris: TOOLURIS;
-    public Seperate: boolean = true;
+    public Seperate: boolean = false;
     private readonly _exturi: Uri;
     private _asmAction: any;
     private _toolpath: string | undefined;
@@ -48,6 +50,7 @@ export class Config {
 
         this.MASMorTASM = validfy(configuration.get('ASM.MASMorTASM'), [ASMTYPE.MASM, ASMTYPE.TASM]);
         this.DOSemu = validfy(configuration.get('ASM.emulator'), allowedEMU);
+        this.Seperate = validfy(configuration.get('ASM.seperateSpace'), [false, true]);
         this.savefirst = validfy(configuration.get('ASM.savefirst'), [true, false]);
         this._exturi = ctx.extensionUri;
         //the tools' Uri
@@ -58,7 +61,7 @@ export class Config {
             msdos: Uri.joinPath(this._exturi, './tools/player/'),
             globalStorage: ctx.globalStorageUri
         };
-        workspace.fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
+        fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
         this._toolpath = configuration.get('ASM.toolspath');
     }
     private async updateTools(uri: Uri) {
@@ -195,20 +198,29 @@ export class SRCFILE {
         return this.filename.match(/^\w{1,8}$/);
     }
     /**copy the source code file to another path*/
-    public async copyto(uri: Uri) {
+    public async copyto(uri: Uri, opt?: { clean: boolean }) {
         if (this._copy === undefined) {
             const filename = 'T';
             this._copy = Uri.joinPath(uri, filename + '.' + this.extname);
-            await workspace.fs.copy(this._uri, this._copy, { overwrite: true });
+            await fs.copy(this._uri, this._copy, { overwrite: true });
+        }
+        if (opt?.clean) {
+            let dirs: [string, FileType][] = await fs.readDirectory(uri);
+            let delList = delExtList.map((val) => this.filename + val);
+            for (let value of delList) {
+                if (inArrays(dirs, [value, FileType.File])) {
+                    await fs.delete(Uri.joinPath(uri, value), { recursive: false, useTrash: false });
+                }
+            }
         }
     }
     /**copy the source code file and the generated exe file to another path*/
-    public async copyEXEto(uri: Uri) {
-        this.copyto(uri);
-        const dstname = 'T';
+    public async copyEXEto(uri: Uri, opt?: { clean: boolean }) {
         let src = Uri.joinPath(this.folder, this.filename + '.exe');
+        const dstname = 'T';
         let dst = Uri.joinPath(uri, dstname + '.exe');
-        await workspace.fs.copy(src, dst, { overwrite: true });
+        this.copyto(uri, opt);
+        await fs.copy(src, dst, { overwrite: true });
     }
     public get uri(): Uri {
         if (this._copy) {
@@ -226,6 +238,9 @@ export class SRCFILE {
         return str;
     }
 }
+
+
+
 
 
 
