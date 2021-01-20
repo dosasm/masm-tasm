@@ -2,4 +2,5 @@
 /dosbox/stdout.txt
 /dosbox/stderr.txt
 ASM.log
+link.log
 msdos.log

@@ -43,8 +43,8 @@
     "msdos": {
         "workspace": "c:\\.dosasm",
         "path": "${toolpath}\\player;${toolpath}\\masm;${toolpath}\\tasm;c:\\.dosasm\\tasm;c:\\.dosasm\\masm;",
-        "masm": "playerasm.bat \"${toolpath}\" MASM \"${fullname}\">msdos.log & type asm.log",
-        "tasm": "playerasm.bat \"${toolpath}\" TASM \"${fullname}\">msdos.log & type asm.log",
+        "masm": "playerasm.bat \"${toolpath}\" MASM \"${fullname}\">msdos.log & type \"${toolpath}\\asm.log\"",
+        "tasm": "playerasm.bat \"${toolpath}\" TASM \"${fullname}\">msdos.log & type \"${toolpath}\\asm.log\"",
         "masm_debug": "msdos -v5.0 debug ${filename}.exe",
         "tasm_debug": null,
         "run": "msdos ${filename}"

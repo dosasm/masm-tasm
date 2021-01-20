@@ -5,6 +5,7 @@
 cd %~dp3
 %~d3
 set filename=%~n3
+set TOOLS=%1
 if "%filename%" == "" set filename=T
 echo %0 %1 %2 %3
 set "cdo=%CD%"
@@ -23,17 +24,17 @@ goto end
     mkdir c:\.dosasm\masm\
     copy "%~f1\masm\*.*" c:\.dosasm\masm\
     set path=%PATH%;c:\.dosasm\masm\
-    masm %filename%; >ASM.log
+    masm %filename%; >%TOOLS%\ASM.log
     if not exist %filename%.obj goto end
-    msdos link %filename%; >>ASM.log
+    msdos link %filename%; >%TOOLS%\link.log
     goto end
 :tasm
     mkdir c:\.dosasm\tasm\
     copy "%~f1\tasm\*.*" c:\.dosasm\tasm\
     set path=%PATH%;c:\.dosasm\tasm\
-    msdos tasm /zi %filename% >ASM.log
+    msdos tasm /zi %filename% >%TOOLS%\ASM.log
     if not exist %filename%.obj goto end
-    msdos -e tlink /v/3 %filename% >>ASM.log
+    msdos -e tlink /v/3 %filename% >%TOOLS%\link.log
 :RUN
 
 goto end
