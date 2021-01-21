@@ -144,6 +144,11 @@
           "default": false,
           "markdownDescription": "%dosasm.config.seperateSpace%"
         },
+        "masmtasm.ASM.clean": {
+          "type": "boolean",
+          "default": true,
+          "Description": "%dosasm.config.clean%"
+        },
         "masmtasm.ASM.savefirst": {
           "type": "boolean",
           "default": true,
