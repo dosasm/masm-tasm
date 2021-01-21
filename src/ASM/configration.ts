@@ -37,6 +37,7 @@ export class Config {
     //Uris and tools information
     public Uris: TOOLURIS;
     public Seperate: boolean = false;
+    public Clean: boolean = true;
     private readonly _exturi: Uri;
     private _asmAction: any;
     private _toolpath: string | undefined;
@@ -51,6 +52,7 @@ export class Config {
         this.MASMorTASM = validfy(configuration.get('ASM.MASMorTASM'), [ASMTYPE.MASM, ASMTYPE.TASM]);
         this.DOSemu = validfy(configuration.get('ASM.emulator'), allowedEMU);
         this.Seperate = validfy(configuration.get('ASM.seperateSpace'), [false, true]);
+        this.Clean = validfy(configuration.get('ASM.clean'), [true, false]);
         this.savefirst = validfy(configuration.get('ASM.savefirst'), [true, false]);
         this._exturi = ctx.extensionUri;
         Uri.joinPath(this._exturi, './tools/');
@@ -203,28 +205,32 @@ export class SRCFILE {
         return this.filename.match(/^\w{1,8}$/);
     }
     /**copy the source code file to another path*/
-    public async copyto(uri: Uri, opt?: { clean: boolean }) {
+    public async copyto(uri: Uri) {
         if (this._copy === undefined) {
             const filename = 'T';
             this._copy = Uri.joinPath(uri, filename + '.' + this.extname);
             await fs.copy(this._uri, this._copy, { overwrite: true });
+            return true;
         }
-        if (opt?.clean) {
-            let dirs: [string, FileType][] = await fs.readDirectory(uri);
-            let delList = delExtList.map((val) => this.filename + val);
-            for (let value of delList) {
-                if (inArrays(dirs, [value, FileType.File])) {
-                    await fs.delete(Uri.joinPath(uri, value), { recursive: false, useTrash: false });
-                }
+        return false;
+    }
+    public async cleanDir() {
+        let uri = this.folder;
+        let dirs: [string, FileType][] = await fs.readDirectory(uri);
+        let delList = delExtList.map((val) => this.filename + val);
+        for (let value of delList) {
+            if (inArrays(dirs, [value, FileType.File])) {
+                await fs.delete(Uri.joinPath(uri, value), { recursive: false, useTrash: false });
             }
         }
+
     }
     /**copy the source code file and the generated exe file to another path*/
-    public async copyEXEto(uri: Uri, opt?: { clean: boolean }) {
+    public async copyEXEto(uri: Uri) {
         let src = Uri.joinPath(this.folder, this.filename + '.exe');
         const dstname = 'T';
         let dst = Uri.joinPath(uri, dstname + '.exe');
-        this.copyto(uri, opt);
+        this.copyto(uri);
         await fs.copy(src, dst, { overwrite: true });
     }
     public get uri(): Uri {

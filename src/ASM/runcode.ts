@@ -91,7 +91,7 @@ export class AsmAction implements Disposable {
             let src = new SRCFILE(sourceFile);
             if (this._config.Seperate) {
                 if (this._config.DOSemu === 'dosbox') {
-                    await src.copyto(this._config.Uris.workspace, { clean: this._config.Seperate });
+                    await src.copyto(this._config.Uris.workspace);
                 }
                 else {
                     let path = this._config.getPlayerAction('workspace');
@@ -99,6 +99,7 @@ export class AsmAction implements Disposable {
                     await src.copyto(uri);
                 }
             }
+            if (this._config.Clean) { await src.cleanDir(); }
             src.doc = doc ? doc : undefined;
             let msg = { title: "", content: src.pathMessage() };
             switch (command) {

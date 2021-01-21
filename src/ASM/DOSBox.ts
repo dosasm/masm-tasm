@@ -8,6 +8,10 @@ import { logger, OutChannel } from './outputChannel';
 
 //the limit of commands can be exec in dosbox, over this limit the commands will be write to a file
 const DOSBOX_CMDS_LIMIT = 5;
+const WAIT_AFTER_LAUCH_DOSBOX = 8000;
+const DELAY = (timeout: number) => new Promise((resolve, reject) => {
+    setTimeout(resolve, timeout);
+})
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -68,8 +72,10 @@ export class AsmDOSBox extends DOSBox implements Disposable {
                 boxcmd.push(...debug);
             }
         }
-        await this.runDosbox(src, boxcmd, { exitwords: true });
+        this.runDosbox(src, boxcmd, { exitwords: true });
+        await DELAY(WAIT_AFTER_LAUCH_DOSBOX);
         AsmMsg = (await workspace.fs.readFile(loguri)).toString();
+        console.log(AsmMsg)
         return AsmMsg;
     }
 
