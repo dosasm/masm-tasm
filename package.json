@@ -147,7 +147,7 @@
         "masmtasm.ASM.clean": {
           "type": "boolean",
           "default": true,
-          "Description": "%dosasm.config.clean%"
+          "description": "%dosasm.config.clean%"
         },
         "masmtasm.ASM.savefirst": {
           "type": "boolean",
