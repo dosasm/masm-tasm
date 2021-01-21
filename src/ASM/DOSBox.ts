@@ -75,7 +75,6 @@ export class AsmDOSBox extends DOSBox implements Disposable {
         this.runDosbox(src, boxcmd, { exitwords: true });
         await DELAY(WAIT_AFTER_LAUCH_DOSBOX);
         AsmMsg = (await workspace.fs.readFile(loguri)).toString();
-        console.log(AsmMsg)
         return AsmMsg;
     }
 
