@@ -14,7 +14,7 @@ export class DOSBox {
         this._confFile = confFile;
         this._cwd = cwd;
     }
-    public update(extCONF: WorkspaceConfiguration,) {
+    public update(extCONF: WorkspaceConfiguration) {
         this._console = extCONF.get('console');
         let command: string | undefined = extCONF.get('commmand');
         this._core = OpenDosboxCmd(this._console, command);
@@ -58,7 +58,7 @@ export class DOSBox {
         console.log('stderr message', message);
     };
     private cp_run(command: string, ignoreWinStd?: boolean): Promise<DOSBoxStd> {
-        console.log(command);
+        //console.log(command);
         this._count++;
         let execOption: ExecOptions = { cwd: this._cwd };
         let output: DOSBoxStd = {
