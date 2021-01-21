@@ -53,13 +53,18 @@ export class Config {
         this.Seperate = validfy(configuration.get('ASM.seperateSpace'), [false, true]);
         this.savefirst = validfy(configuration.get('ASM.savefirst'), [true, false]);
         this._exturi = ctx.extensionUri;
+        Uri.joinPath(this._exturi, './tools/');
+        let globalStorageUri = ctx.globalStorageUri;
+        if (globalStorageUri === undefined) {
+            globalStorageUri = Uri.file(ctx.globalStoragePath);//for vscode like 1.44 the global storage Uri API is undenfined
+        }
         //the tools' Uri
         this.Uris = {
             tools: Uri.joinPath(this._exturi, './tools/'),
-            workspace: Uri.joinPath(ctx.globalStorageUri, './workspace/'),
+            workspace: Uri.joinPath(globalStorageUri, './workspace/'),
             dosbox: Uri.joinPath(this._exturi, './tools/dosbox/'),
             msdos: Uri.joinPath(this._exturi, './tools/player/'),
-            globalStorage: ctx.globalStorageUri
+            globalStorage: globalStorageUri
         };
         fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
         this._toolpath = configuration.get('ASM.toolspath');
@@ -117,7 +122,7 @@ export class Config {
     public getPlayerAction(scope: string, src?: SRCFILE): string {
         let obj = this._asmAction['msdos'];
         let str = obj[scope.toLowerCase()];
-        str = str_replacer(str, this, src,);
+        str = str_replacer(str, this, src);
         return str;
     }
     public get dosboxconfuri(): Uri {
