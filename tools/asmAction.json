@@ -3,8 +3,8 @@
     "_description": "This configuration JSON file is to define how the vscode extension xsro.masm-tasm works with tools in this folder",
     "_chs": "该文件定义了插件xsro.masm-tasm如何操作该文件夹下的工具",
     "ExtVersion": "0.8.0",
-    "dosboxFolder": "./dosbox",
-    "msdosFolder": "./player",
+    "dosboxFolder": "./dosbox/",
+    "msdosFolder": "./player/",
     "dosbox": {
         "open": [
             "set path=c:\\masm;c:\\tasm"

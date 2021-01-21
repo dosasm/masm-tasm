@@ -75,14 +75,17 @@ export class Config {
         this._asmAction = await scanTools(uri, this._exturi);
         this.Uris.tools = uri;
         let UriChange: boolean = false;
-        if (this._asmAction['dosboxFolder']) {
-            this.Uris.dosbox = Uri.joinPath(uri, this._asmAction['dosboxFolder']);
-            UriChange = true;
+        const update = (key: string, target: 'msdos' | 'dosbox') => {
+            if (this._asmAction[key]) {
+                let u = Uri.joinPath(uri, this._asmAction[key]);
+                if (u.path !== this.Uris[target].path) {
+                    this.Uris[target] = u;
+                    UriChange = true;
+                }
+            }
         }
-        else if (this._asmAction['msdosFolder']) {
-            this.Uris.msdos = Uri.joinPath(uri, this._asmAction['msdosFolder']);
-            UriChange = true;
-        }
+        update('dosboxFolder', 'dosbox');
+        update('msdosFolder', 'msdos');
         if (UriChange) {
             logger({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
         }
