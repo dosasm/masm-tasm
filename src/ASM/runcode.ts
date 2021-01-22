@@ -243,10 +243,7 @@ export class AsmAction implements Disposable {
                     await this.dosbox.runDosbox(src, run, { exitwords: true });
                 }
                 else {
-                    let debug: string[] = this._config.getBoxAction(conf.MASMorTASM + '_debug', src);
-                    if (debug) {
-                        await this.dosbox.runDosbox(src, debug);
-                    }
+                    asmlog = await this.dosbox.runDosbox2(src, runOrDebug);
                 }
             }
         }
