@@ -236,7 +236,7 @@ export class AsmAction implements Disposable {
             }
             else {
                 if (!src.dosboxFsReadable) {
-                    src.copyEXEto(this._config.Uris.workspace);
+                    await src.copyEXEto(this._config.Uris.workspace);
                 }
                 if (runOrDebug) {
                     let run = this._config.getBoxAction('run', src);

@@ -6,6 +6,7 @@ import { inArrays, validfy } from './util';
 const packaged_Tools = "./tools";
 const fs = workspace.fs;
 const delExtList = [".exe", ".obj"];
+const DST_FILE_NAME = 'T';
 const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
     let str: string = val;
     if (src) {
@@ -70,6 +71,7 @@ export class Config {
         };
         fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
         this._toolpath = configuration.get('ASM.toolspath');
+        logger({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
     }
     private async updateTools(uri: Uri) {
         this._asmAction = await scanTools(uri, this._exturi);
@@ -210,8 +212,7 @@ export class SRCFILE {
     /**copy the source code file to another path*/
     public async copyto(uri: Uri) {
         if (this._copy === undefined) {
-            const filename = 'T';
-            this._copy = Uri.joinPath(uri, filename + '.' + this.extname);
+            this._copy = Uri.joinPath(uri, DST_FILE_NAME + '.' + this.extname);
             await fs.copy(this._uri, this._copy, { overwrite: true });
             return true;
         }
@@ -230,11 +231,18 @@ export class SRCFILE {
     }
     /**copy the source code file and the generated exe file to another path*/
     public async copyEXEto(uri: Uri) {
-        let src = Uri.joinPath(this.folder, this.filename + '.exe');
-        const dstname = 'T';
-        let dst = Uri.joinPath(uri, dstname + '.exe');
+        let dirinfo = await fs.readDirectory(this.folder);
+        let related = dirinfo.filter(
+            (val) => val[0].includes(this.filename) && val[1] === FileType.File
+        );
+        let srcFolder = this.folder;
+        let dstFolder = uri;
+        for (let r of related) {
+            let src = Uri.joinPath(srcFolder, r[0]);
+            let dst = Uri.joinPath(dstFolder, r[0].replace(this.filename, DST_FILE_NAME));
+            await fs.copy(src, dst, { overwrite: true });
+        }
         this.copyto(uri);
-        await fs.copy(src, dst, { overwrite: true });
     }
     public get uri(): Uri {
         if (this._copy) {
