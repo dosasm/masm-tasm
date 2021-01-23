@@ -1,11 +1,11 @@
 import { Disposable, ExtensionContext, FileType, TextDocument, Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 import { Config, SRCFILE } from './configration';
-import { AssemblerDiag, DIAGCODE } from './diagnose';
-import { AsmDOSBox } from './DOSBox';
+import { AssemblerDiag, DIAGCODE } from './diagnose/diagnose';
+import { AsmDOSBox } from './emulator/DOSBox';
 import { logger, OutChannel } from './outputChannel';
 import { inArrays } from "./util";
-import * as MSDos from './viaPlayer';
+import * as MSDos from './emulator/viaPlayer';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();

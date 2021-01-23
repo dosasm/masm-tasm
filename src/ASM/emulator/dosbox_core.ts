@@ -1,6 +1,6 @@
 import { exec, ExecOptions } from 'child_process';
 import { window, WorkspaceConfiguration, workspace, Uri, FileType } from 'vscode';
-import { inArrays } from './util';
+import { inArrays } from '../util';
 
 export class DOSBox {
     private _core: string = 'dosbox';

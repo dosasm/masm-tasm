@@ -1,6 +1,6 @@
 import { window, Terminal, Uri, workspace } from 'vscode';
 import { exec } from 'child_process';
-import { Config, SRCFILE } from './configration';
+import { Config, SRCFILE } from '../configration';
 
 let msdosTerminal: Terminal | null = null;
 

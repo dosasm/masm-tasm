@@ -1,10 +1,10 @@
 import { TextEncoder } from "util";
 import { Disposable, Uri, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
-import { Config, SRCFILE } from './configration';
+import { Config, SRCFILE } from '../configration';
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox } from './dosbox_core';
-import { logger, OutChannel } from './outputChannel';
+import { logger, OutChannel } from '../outputChannel';
 
 //the limit of commands can be exec in dosbox, over this limit the commands will be write to a file
 const DOSBOX_CMDS_LIMIT = 5;

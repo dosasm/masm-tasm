@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { AsmAction, ASMCMD } from './runcode';
-import { SeeinCPPDOCS } from './codeAction';
+import { SeeinCPPDOCS } from './diagnose/codeAction';
 
 /**register commands for run and debug the code
  *  in dosbox or msdos-player by TASM ot MASM */
