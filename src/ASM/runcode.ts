@@ -13,9 +13,9 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
-    prepare(conf: Config): Promise<boolean>;
+    prepare(conf: Config): Promise<boolean> | boolean;
     /**open dosbox need*/
-    openEmu(folder: Uri): Promise<boolean>;
+    openEmu(folder: Uri): Promise<any> | any;
     /**run code*/
     Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any>;
     /**debug code*/
@@ -41,21 +41,21 @@ export class AsmAction implements Disposable {
         this.ctx = context;
         this._config = new Config(context);
         this.landiag = new AssemblerDiag();
-        this._emulator = AsmAction.getEmulator(this.emulator);
+        this._emulator = AsmAction.getEmulator(this.emulator, this._config);
         this.update();
     }
 
-    static getEmulator(emu: DOSEMU) {
+    static getEmulator(emu: DOSEMU, conf: Config) {
         switch (emu) {
             case DOSEMU.dosbox:
-                return new DOSBox();
+                return new DOSBox(conf);
             case DOSEMU.auto:
                 return new AutoMode();
             case DOSEMU.msdos:
                 return new MsdosPlayer();
             default:
                 window.showWarningMessage('use dosbox as emulator')
-                return new DOSBox();
+                return new DOSBox(conf);
         }
     }
 
@@ -91,7 +91,7 @@ export class AsmAction implements Disposable {
         //choose the emulator
         let emu = this._emulator;
         if (emulator) {
-            emu = AsmAction.getEmulator(emulator)
+            emu = AsmAction.getEmulator(emulator, this._config)
         }
         //open the emulator
         if (folder && await emu.prepare(this._config)) {
@@ -106,28 +106,21 @@ export class AsmAction implements Disposable {
     /**Do the operation according to the input.*/
     public async runcode(command: ASMCMD, uri?: Uri) {
         //get the target file
-        let sourceFile = uri, output: any, doc: TextDocument | undefined;
-        if (uri === undefined) {
-            doc = window.activeTextEditor?.document;
-            if (doc) {
-                if (this._config.savefirst && doc.isDirty) {
-                    await doc.save();
-                }
-                sourceFile = doc.uri;
-            }
+        let src: SRCFILE | undefined, output: any, doc: TextDocument | undefined;
+        if (uri) {
+            src = new SRCFILE(uri);
+            src.doc = await workspace.openTextDocument(uri);
         }
         //construct the source code file class
-        if (sourceFile && await this._emulator.prepare(this._config)) {
-            let src = new SRCFILE(sourceFile);
-            src.doc = doc ? doc : undefined;
+        if (src && await this._emulator.prepare(this._config)) {
             if (this._config.Seperate) {
                 await src.copyto(this._config.Uris.workspace);
             }
             if (this._config.Clean) {
                 await src.cleanDir();
             }
-            let msgProcessor = (ASM: string) => {
-                if (src.doc) {
+            const msgProcessor = (ASM: string) => {
+                if (src?.doc) {
                     let daig = this.landiag.ErrMsgProcess(ASM, src.doc, this.ASM);
                     return daig?.flag === DIAGCODE.ok
                 }

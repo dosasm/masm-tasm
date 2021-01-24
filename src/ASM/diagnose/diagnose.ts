@@ -2,6 +2,7 @@ import { languages, DiagnosticCollection, TextDocument, Diagnostic, Range, Diagn
 import { masmDiagnose } from './diagnoseMASM';
 import { tasmDiagnose } from './diagnoseTASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
+import { ASMTYPE } from '../configration'
 
 export enum DIAGCODE {
     /**no error and warning information */
@@ -32,13 +33,13 @@ export class AssemblerDiag {
      * @param doc the document of source code
      * @param ASM MASM or TASM
      */
-    public ErrMsgProcess(AsmMsg: string, doc: TextDocument, ASM: 'MASM' | 'TASM'): DIAGINFO | undefined {
+    public ErrMsgProcess(AsmMsg: string, doc: TextDocument, ASM: ASMTYPE): DIAGINFO | undefined {
         let diag: DIAGINFO | undefined;
         switch (ASM) {
-            case 'TASM':
+            case ASMTYPE.TASM:
                 diag = tasmDiagnose(AsmMsg, doc, this._tasmCollection);
                 break;
-            case 'MASM':
+            case ASMTYPE.MASM:
                 diag = masmDiagnose(AsmMsg, doc, this._masmCollection);
                 break;
             default:

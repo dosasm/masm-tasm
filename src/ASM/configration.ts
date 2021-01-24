@@ -7,7 +7,7 @@ const packaged_Tools = "./tools";
 const fs = workspace.fs;
 const delExtList = [".exe", ".obj"];
 const DST_FILE_NAME = 'T';
-const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
+export const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
     let str: string = val;
     if (src) {
         str = str
@@ -163,9 +163,9 @@ interface TOOLURIS {
     tasm?: Uri
 };
 
-enum ASMTYPE {
-    MASM = 'MASM',
-    TASM = 'TASM'
+export enum ASMTYPE {
+    MASM = 'masm',
+    TASM = 'tasm'
 }
 
 export enum DOSEMU {

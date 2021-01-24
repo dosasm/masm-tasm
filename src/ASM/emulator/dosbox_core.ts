@@ -2,54 +2,70 @@ import { exec, ExecOptions } from 'child_process';
 import { window, WorkspaceConfiguration, workspace, Uri, FileType } from 'vscode';
 import { inArrays } from '../util';
 
+/**defines the option to do with dosbox's console message **in windows system**.
+ * - For **windows**, if in **noconsole** mode,the dosbox will redirect the console message to files in the *dosbox.exe*'s folder.
+ * and the extension will put them to VSCode's outputChannel
+ * - NOTE: the message is put after DOSBox exit in windows;
+ * - For **other OS**, dosbox will put it's console message in shell's stdout and stderr.
+ * So the extension will put them to VSCode's outputChannel
+ */
+export enum WINCONSOLEOPTION {
+    /**use the `this._core` directly use `dosbox` directly.
+     * For windos, dosbox will create a console window.
+     * For other OS, dosbox will output the console message in shell.*/
+    normal,
+    /**for windows using `start /min dosbox`
+     * this will create and minimize the console window*/
+    min,
+    /**for windows using `dosbox -nocosle`
+     * dosbox will redirect the console message to files
+     * NOTE: for the extension, it will try to redirect the message to outputchannel*/
+    noconsole,
+}
+
 export class DOSBox {
-    private _core: string = 'dosbox';
-    private _cwd?: string;
-    private _confFile?: Uri;
+    public readonly _core: string;//the core command for run dosbox
+    public readonly _cwd?: string;//the cwd for child_process, usually as the folder of dosbox
+    protected confFile: Uri | undefined = undefined;
+    protected console: WINCONSOLEOPTION = WINCONSOLEOPTION.noconsole;
+    public get redirect() {
+        if (process.platform === 'win32') {
+            return this.console === WINCONSOLEOPTION.noconsole;
+        }
+        return true;
+    }
     private _stdout: string = "";
     private _stderr: string = "";
-    private _console: string | undefined;
     private _count: number = 0;
-    constructor(cwd?: string, confFile?: Uri) {
-        this._confFile = confFile;
+    constructor(cwd?: string, core: string = 'dosbox') {
+        if (core) {
+            this._core = core;
+        }
+        else {
+            this._core = OpenDosboxCmd(this.console);
+        }
         this._cwd = cwd;
     }
-    public update(extCONF: WorkspaceConfiguration) {
-        this._console = extCONF.get('console');
-        let command: string | undefined = extCONF.get('commmand');
-        this._core = OpenDosboxCmd(this._console, command);
-    }
-    private cmdBuild(boxcmd: string[], opt?: DOSBoxOption): string {
-        let command = this._core;
-        if (opt?.preOpen) {
-            command = opt.preOpen + command;
+    public run(boxcmd: string[], opt?: DOSBoxOption) {
+        let preOpen = opt?.preOpen ? opt?.preOpen : "";
+        let param = [];
+        if (this.console === WINCONSOLEOPTION.noconsole) {
+            param.push('-noconsole');
         }
         if ((typeof opt?.confFile) === 'string') {
-            command += ` -conf "${opt?.confFile}"`;
+            param.push(`-conf "${opt?.confFile}"`);
         }
         else if (opt?.confFile === undefined) {
-            command += ` -conf "${this._confFile?.fsPath}"`;
+            param.push(`-conf "${this.confFile?.fsPath}"`);
         }
-        if (opt?.param) {
-            command += ' ' + opt.param;
+        if (opt?.param && opt?.param.length > 0) {
+            param.push(...opt.param);
         }
         if (boxcmd.length > 0) {
-            command += ' -c "' + boxcmd.join('" -c "') + '"';
+            let mapper = (val: string) => `-c "${val}"`
+            param.push(...boxcmd.map(mapper));
         }
-        return command;
-    }
-    public run(boxcmd: string[], opt?: DOSBoxOption) {
-        return this.cp_run(this.cmdBuild(boxcmd, opt));
-    }
-    public get console() {
-        return this._console;
-    }
-    public get redirect() {
-        let redirect: boolean = false;
-        if (this._console?.includes('redirect(show)')) {
-            redirect = true;
-        }
-        return redirect;
+        return this.cp_run(preOpen + this._core + ' ' + param.join(" "));
     }
     public stdoutHander: (message: string, text: string, No: number) => void = (message: string) => {
         console.log('stdout message', message);
@@ -169,7 +185,7 @@ interface DOSBoxOption {
      * the command may be need to exec before open dosbox*/
     preOpen?: string,
     confFile?: string,
-    param?: string
+    param?: string[]
 }
 
 interface DOSBoxStd {
@@ -178,28 +194,25 @@ interface DOSBoxStd {
     flag: BoxStdNOTE;
     exitcode: number | null | undefined
 }
-/**
- * 
- */
-function OpenDosboxCmd(boxconsole?: string, custom?: string): string {
+
+
+/**default command for open dosbox */
+function OpenDosboxCmd(boxconsole?: WINCONSOLEOPTION): string {
     //command for open dosbox
     let command: string = "dosbox";
-    //First, use the user-defined command;
-    if (custom) {
-        return custom + " ";
-    }
     //for windows,using different command according to dosbox's path and the choice of the console window
     switch (process.platform) {
         case 'win32':
             switch (boxconsole) {
-                case "min": command = 'start/min/wait "" dosbox'; break;
-                case "normal": command = 'dosbox'; break;
-                case "noconsole":
-                default: command = 'dosbox -noconsole'; break;
+                case WINCONSOLEOPTION.min:
+                    command = 'start/min/wait "" dosbox'; break;
+                case WINCONSOLEOPTION.normal:
+                case WINCONSOLEOPTION.noconsole:
+                default: command = 'dosbox'; break;
             }
             break;
         case 'darwin':
-            command = "open -a DOSBox --args ";
+            command = "open -a DOSBox --args";
             break;
         default:
             command = 'dosbox';
