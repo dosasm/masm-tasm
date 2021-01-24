@@ -109,7 +109,9 @@ export class AsmAction implements Disposable {
         let src: SRCFILE | undefined, output: any, doc: TextDocument | undefined;
         if (uri) {
             src = new SRCFILE(uri);
-            src.doc = await workspace.openTextDocument(uri);
+        }
+        else if (window.activeTextEditor?.document) {
+            src = new SRCFILE(window.activeTextEditor.document.uri)
         }
         //construct the source code file class
         if (src && await this._emulator.prepare(this._config)) {
@@ -119,12 +121,10 @@ export class AsmAction implements Disposable {
             if (this._config.Clean) {
                 await src.cleanDir();
             }
+            let doc = await workspace.openTextDocument(src.uri);
             const msgProcessor = (ASM: string) => {
-                if (src?.doc) {
-                    let daig = this.landiag.ErrMsgProcess(ASM, src.doc, this.ASM);
-                    return daig?.flag === DIAGCODE.ok
-                }
-                return false;
+                let daig = this.landiag.ErrMsgProcess(ASM, doc, this.ASM);
+                return daig?.flag === DIAGCODE.ok
             }
             switch (command) {
                 case ASMCMD.OpenEmu:
