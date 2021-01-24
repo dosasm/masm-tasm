@@ -168,10 +168,11 @@ enum ASMTYPE {
     TASM = 'TASM'
 }
 
-enum DOSEMU {
+export enum DOSEMU {
     dosbox = 'dosbox',
     msdos = 'msdos player',
-    auto = 'auto'
+    auto = 'auto',
+    jsdos = 'js-dos',
 }
 
 

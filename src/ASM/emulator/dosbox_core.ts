@@ -166,8 +166,7 @@ async function winReadConsole(folder: string) {
 }
 interface DOSBoxOption {
     /**
-     * the command may be need to exec before open dosbox
-     */
+     * the command may be need to exec before open dosbox*/
     preOpen?: string,
     confFile?: string,
     param?: string

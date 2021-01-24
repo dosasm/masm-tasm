@@ -1,47 +1,75 @@
-import { Disposable, ExtensionContext, FileType, TextDocument, Uri, window, workspace } from 'vscode';
+import { Disposable, ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
-import { Config, SRCFILE } from './configration';
+import { Config, DOSEMU, SRCFILE } from './configration';
 import { AssemblerDiag, DIAGCODE } from './diagnose/diagnose';
-import { AsmDOSBox } from './emulator/DOSBox';
-import { logger, OutChannel } from './outputChannel';
-import { inArrays } from "./util";
-import * as MSDos from './emulator/viaPlayer';
+import { AutoMode } from './emulator/auto-mode';
+import { DOSBox } from './emulator/dosbox';
+import { MsdosPlayer } from './emulator/msdos-player';
+import { OutChannel } from './outputChannel';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
+/**interface for emulator */
+export interface EMURUN {
+    /**some process needed to do before action*/
+    prepare(conf: Config): Promise<boolean>;
+    /**open dosbox need*/
+    openEmu(folder: Uri): Promise<boolean>;
+    /**run code*/
+    Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any>;
+    /**debug code*/
+    Debug(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any>;
+}
+
+/**the commands of action*/
 export enum ASMCMD {
     OpenEmu,
     debug,
     run
 }
 
+/**class for actions of ASM
+ * including run and debug code
+ */
 export class AsmAction implements Disposable {
     private ctx: ExtensionContext;
     private _config: Config;
-    private dosbox: AsmDOSBox;
+    private _emulator: EMURUN;
     private landiag: AssemblerDiag;
     constructor(context: ExtensionContext) {
         this.ctx = context;
         this._config = new Config(context);
         this.landiag = new AssemblerDiag();
-        this.dosbox = new AsmDOSBox(this._config);
+        this._emulator = AsmAction.getEmulator(this.emulator);
         this.update();
+    }
+
+    static getEmulator(emu: DOSEMU) {
+        switch (emu) {
+            case DOSEMU.dosbox:
+                return new DOSBox();
+            case DOSEMU.auto:
+                return new AutoMode();
+            case DOSEMU.msdos:
+                return new MsdosPlayer();
+            default:
+                window.showWarningMessage('use dosbox as emulator')
+                return new DOSBox();
+        }
     }
 
     private update() {
         workspace.onDidChangeConfiguration((e) => {
             if (e.affectsConfiguration('masmtasm')) {
                 this._config = new Config(this.ctx);
-                this.dosbox = new AsmDOSBox(this._config);
-            }
-            if (e.affectsConfiguration('masmtasm.dosbox')) {
-                this.dosbox.update(workspace.getConfiguration('masmtasm.dosbox'));
             }
         });
     }
 
-    public async BoxHere(uri?: Uri, command?: string) {
+    /**open the dosbox and switch to the needed folder*/
+    public async BoxHere(uri?: Uri, emulator?: DOSEMU) {
+        //get the folder need to open
         let folder: Uri | undefined = undefined;
         if (uri) {
             folder = uri;
@@ -60,8 +88,14 @@ export class AsmAction implements Disposable {
                 }
             }
         }
-        if (folder) {
-            let output = await this.dosbox.BoxOpenFolder(folder, command);
+        //choose the emulator
+        let emu = this._emulator;
+        if (emulator) {
+            emu = AsmAction.getEmulator(emulator)
+        }
+        //open the emulator
+        if (folder && await emu.prepare(this._config)) {
+            let output = await emu.openEmu(folder);
             return output;
         }
         else {
@@ -69,14 +103,9 @@ export class AsmAction implements Disposable {
         }
     }
 
-    /**Do the operation according to the input.
-     * "opendosbox": open DOSBOX at a separated space;
-     * "here": open dosbox at the vscode editor file's folder;
-     * "run": compile and run the ASM code ;
-     * "debug": compile and debug the ASM code;
-     * @param command "opendosbox" or "run" or "debug" or "here"
-     */
+    /**Do the operation according to the input.*/
     public async runcode(command: ASMCMD, uri?: Uri) {
+        //get the target file
         let sourceFile = uri, output: any, doc: TextDocument | undefined;
         if (uri === undefined) {
             doc = window.activeTextEditor?.document;
@@ -87,46 +116,33 @@ export class AsmAction implements Disposable {
                 sourceFile = doc.uri;
             }
         }
-        if (sourceFile && await this._config.prepare()) {
+        //construct the source code file class
+        if (sourceFile && await this._emulator.prepare(this._config)) {
             let src = new SRCFILE(sourceFile);
-            if (this._config.Seperate) {
-                if (this._config.DOSemu === 'dosbox') {
-                    await src.copyto(this._config.Uris.workspace);
-                }
-                else {
-                    let path = this._config.getPlayerAction('workspace');
-                    let uri = Uri.file(path);
-                    await src.copyto(uri);
-                }
-            }
-            if (this._config.Clean) { await src.cleanDir(); }
             src.doc = doc ? doc : undefined;
-            let msg = { title: "", content: src.pathMessage() };
+            if (this._config.Seperate) {
+                await src.copyto(this._config.Uris.workspace);
+            }
+            if (this._config.Clean) {
+                await src.cleanDir();
+            }
+            let msgProcessor = (ASM: string) => {
+                if (src.doc) {
+                    let daig = this.landiag.ErrMsgProcess(ASM, src.doc, this.ASM);
+                    return daig?.flag === DIAGCODE.ok
+                }
+                return false;
+            }
             switch (command) {
                 case ASMCMD.OpenEmu:
-                    if (this._config.DOSemu === 'msdos player') {
-                        msg.title = localize("openemu.msdos", "\n[execute]Open cmd(add msdos to path)");
-                    }
-                    else {
-                        msg.title = localize("openemu.dosbox", "\n[execute]Open dosbox");
-                    }
+                    this._emulator.openEmu(src.folder);
                     break;
                 case ASMCMD.run:
-                    msg.title = localize("run.msg", "\n[execute]use {0} in {1} to Run ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
+                    output = await this._emulator.Run(src, msgProcessor);
                     break;
                 case ASMCMD.debug:
-                    msg.title = localize("debug.msg", "\n[execute]use {0} in {1} to Debug ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
+                    output = await this._emulator.Debug(src, msgProcessor);
                     break;
-            }
-            if (!src.dosboxFsReadable && this._config.DOSemu === 'dosbox') {
-                await src.copyto(this._config.Uris.workspace);
-                msg.content += `\ncopied as "${src.uri.fsPath}" for dosbox can only process short filename`;
-            }
-            logger(msg);
-            switch (command) {
-                case ASMCMD.OpenEmu: this.Openemu(src); break;
-                case ASMCMD.run: output = await this.RunDebug(src, true, this._config); break;
-                case ASMCMD.debug: output = await this.RunDebug(src, false, this._config); break;
             };
         }
         else {
@@ -135,132 +151,11 @@ export class AsmAction implements Disposable {
         return output;
     }
 
-    /**
-     * open the emulator
-     * @param src the source code file
-     */
-    private Openemu(src: SRCFILE) {
-        let openemumsg: string = "";
-        if (this._config.DOSemu === 'msdos player') {
-            MSDos.outTerminal(this._config);
-        }
-        else {
-            let cmd = this._config.getBoxAction("open", src);
-            this.dosbox.runDosbox(src, Array.isArray(cmd) ? cmd : []);
-        }
-        logger({
-            title: openemumsg,
-            content: '"' + src.folder.fsPath + '"'
-        });
-    }
-
-    /**
-     *  `msdos (player) mode`: use msdos for run and debug,but TASM debug command `TD` can only run in dosbox
-     *  `auto mode`: run in dosbox,`TD` in dosbox,MASM debug command `debug` in player 
-     * 
-     *  | feature | MASM run | MASM debug | TASM run | TASM TD |
-     *  | ------- | -------- | ---------- | -------- | ------- |
-     *  | msdos   | msdos    | msdos      | msdos    | dosbox  |
-     *  | auto    | dosbox   | msdos      | dosbox   | dosbox  |
-     */
-    public async RunDebug(src: SRCFILE, runOrDebug: boolean, conf: Config) {
-
-        //get the output of assembler
-        let asmlog: string | undefined = undefined;
-        if (conf.DOSemu === "dosbox") {
-            asmlog = await this.dosbox.runDosbox2(src, runOrDebug);
-        }
-        else if (conf.DOSemu === "auto" || conf.DOSemu === "msdos player") {
-            asmlog = await MSDos.runPlayer(src, this._config);
-        }
-
-        //process and output the output of the assembler
-        let diagCode: DIAGCODE | undefined = undefined;
-        if (asmlog && src.doc) {
-            let diag = this.landiag.ErrMsgProcess(asmlog, src.doc, conf.MASMorTASM);
-            diagCode = diag?.flag;
-            if (diag) {
-                if (diagCode === DIAGCODE.hasError) { OutChannel.show(true); }
-                logger({
-                    title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn),
-                    content: asmlog
-                });
-            }
-        }
-        //check whether the EXE file generated
-        let workFolder = await workspace.fs.readDirectory(src.folder);
-        let exeGenerated: boolean = inArrays(workFolder, [src.filename + ".exe", FileType.File], true);
-
-        //judge whether it is ok to continue
-        let goon: boolean = false;
-        //no exe finded
-        if (!exeGenerated) {
-            if (diagCode === DIAGCODE.hasError) {
-                let Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", conf.MASMorTASM);
-                window.showErrorMessage(Errmsg);
-            }
-            else {
-                let Errmsg = "EXE file generate failed";
-                logger({
-                    title: "[this should not happen]",
-                    content: "Can't generate .exe file but no error scaned"
-                });
-                window.showErrorMessage(Errmsg);
-            }
-        }
-        //exe finded. NOTE: the exe file may not be the one generated from source code
-        else if ((conf.DOSemu === "msdos player" || conf.DOSemu === "auto")) {
-            switch (diagCode) {
-                case DIAGCODE.hasWarn:
-                    let warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", conf.MASMorTASM);
-                    let Go_on = localize("runcode.continue", "continue");
-                    let Stop = localize("runcode.stop", "stop");
-                    let result = await window.showInformationMessage(warningmsgwindow, Go_on, Stop);
-                    if (result === Go_on) { goon = true; }
-                    break;
-                case DIAGCODE.ok:
-                    goon = true;
-                    break;
-            }
-        }
-
-        //continue if goon is true
-        if (goon) {
-            let viaPlayer: boolean = conf.DOSemu === "msdos player";
-            //use msdos for debug.exe when debugging code via MASM
-            if (conf.MASMorTASM === "MASM" && runOrDebug === false && conf.DOSemu === "auto") { viaPlayer = true; }
-            //use dosbox for TD.exe when debugging code with TASM
-            if (conf.MASMorTASM === "TASM" && runOrDebug === false && conf.DOSemu === "msdos player") { viaPlayer = false; }
-            if (viaPlayer) {
-                MSDos.runDebug(runOrDebug, this._config, src);
-            }
-            else {
-                if (!src.dosboxFsReadable) {
-                    await src.copyEXEto(this._config.Uris.workspace);
-                }
-                if (runOrDebug) {
-                    let run = this._config.getBoxAction('run', src);
-                    await this.dosbox.runDosbox(src, run, { exitwords: true });
-                }
-                else {
-                    asmlog = await this.dosbox.runDosbox2(src, runOrDebug);
-                }
-            }
-        }
-        return {
-            ASMmsg: asmlog,
-            diagCode: diagCode,
-            exeGen: exeGenerated
-        };
-    }
-
     public cleanalldiagnose() {
         this.landiag.cleandiagnose('both');
     }
     public dispose() {
         OutChannel.dispose();
-        MSDos.deactivate();
-        this.dosbox.dispose();
         this.cleanalldiagnose();
     }
     public get ASM() { return this._config.MASMorTASM; }

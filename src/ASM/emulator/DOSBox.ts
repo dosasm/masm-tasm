@@ -3,8 +3,9 @@ import { Disposable, Uri, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 import { Config, SRCFILE } from '../configration';
 import { writeBoxconfig } from './dosbox_conf';
-import { DOSBox } from './dosbox_core';
+import { DOSBox as dosbox_core } from './dosbox_core';
 import { logger, OutChannel } from '../outputChannel';
+import { EMURUN } from "../runcode";
 
 //the limit of commands can be exec in dosbox, over this limit the commands will be write to a file
 const DOSBOX_CMDS_LIMIT = 5;
@@ -16,7 +17,23 @@ const DELAY = (timeout: number) => new Promise((resolve, reject) => {
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export class AsmDOSBox extends DOSBox implements Disposable {
+export class DOSBox implements EMURUN {
+    prepare(conf: Config): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    openEmu(folder: Uri): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+    Debug(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+
+}
+
+export class AsmDOSBox extends dosbox_core implements Disposable {
     //private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
     private _BOXrun: string | undefined;
     private _conf: Config;

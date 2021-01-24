@@ -213,6 +213,137 @@
             "%dosasm.config.boxconsole.redirect-show%",
             "%dosasm.config.boxconsole.redirect%"
           ]
+        },
+        "masmtasm.dosbox.AsmConfig": {
+          "description": "The commands to use when in dosbox mode.\nThe extension will mount this folder to dosbox's disk C, the file's folder to disk D\nand a seperate space as dosbox's disk X,the extension will read file asm.log to process assembler's message",
+          "default": {
+            "open": [
+              "set path=c:\\masm;c:\\tasm"
+            ],
+            "masm": [
+              "set path=c:\\masm",
+              "masm ${filename}.ASM; >X:\\asm.log ",
+              "@type X:\\ASM.log",
+              "link ${filename}.OBJ; >X:\\link.log ",
+              "@type X:\\link.log"
+            ],
+            "tasm": [
+              "set path=c:\\tasm",
+              "tasm /zi ${filename}.ASM >X:\\asm.log ",
+              "@type X:\\ASM.log",
+              "tlink /v/3 ${filename}.obj >X:\\link.log ",
+              "@type X:\\link.log"
+            ],
+            "masm_debug": [
+              "c:\\masm\\debug ${filename}.exe"
+            ],
+            "tasm_debug": [
+              "c:\\tasm\\TD ${filename}.exe"
+            ],
+            "run": [
+              "@if not exist ${filename}.exe exit ",
+              "${filename}.exe",
+              "@echo (END)Here is the end of the program's output"
+            ],
+            "after_action": [
+              "@choice Do you need to keep the DOSBox",
+              "@IF ERRORLEVEL 2 exit",
+              "@IF ERRORLEVEL 1 echo on"
+            ]
+          },
+          "properties": {
+            "open": {
+              "description": "command exec when open dosbox",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "masm": {
+              "description": "The commands to exec for assembling and linking in dosbox when using masm",
+              "type": "array"
+            },
+            "tasm": {
+              "description": "The commands to exec for assembling and linking in dosbox when using tasm",
+              "type": "array"
+            },
+            "tasm_debug": {
+              "description": "The commands to exec for debuging in dosbox when using tasm",
+              "type:": "array"
+            },
+            "masm_debug": {
+              "description": "The commands to exec for debuging in dosbox when using masm",
+              "type:": "array"
+            },
+            "run": {
+              "description": "The command to run the generated file",
+              "type": "array"
+            },
+            "after_action": {
+              "description": "The commands to exec after run or debug\n when set `masmtasm.dosbox.run` as `choose`",
+              "type": "array"
+            }
+          },
+          "required": [
+            "open",
+            "masm",
+            "tasm",
+            "masm_debug",
+            "tasm_debug",
+            "run",
+            "after_action"
+          ]
+        },
+        "masmtasm.msdos.AsmConfig": {
+          "description": "the commands to use when in msdos player or auto mode",
+          "default": {
+            "workspace": "c:\\.dosasm",
+            "path": "${toolpath}\\player;${toolpath}\\masm;${toolpath}\\tasm;c:\\.dosasm\\tasm;c:\\.dosasm\\masm;",
+            "masm": "playerasm.bat \"${toolpath}\" MASM \"${fullname}\">msdos.log & type \"${toolpath}\\asm.log\"",
+            "tasm": "playerasm.bat \"${toolpath}\" TASM \"${fullname}\">msdos.log & type \"${toolpath}\\asm.log\"",
+            "masm_debug": "msdos -v5.0 debug ${filename}.exe",
+            "tasm_debug": null,
+            "run": "msdos ${filename}"
+          },
+          "properties": {
+            "workspace": {
+              "description": "The workspace when using seperate space",
+              "type": "string"
+            },
+            "path": {
+              "description": "The path needed to add to the environment value `PATH`",
+              "type": "string"
+            },
+            "masm": {
+              "description": "The commands to exec for assembling and linking in cmd when using masm",
+              "type": "string"
+            },
+            "tasm": {
+              "description": "The commands to exec for assembling and linking in cmd when using tasm",
+              "type": "string"
+            },
+            "tasm_debug": {
+              "description": "(Currently not support)The commands to exec for debuging in cmd when using tasm",
+              "type:": "string"
+            },
+            "masm_debug": {
+              "description": "The commands to exec for debuging in cmd when using masm",
+              "type:": "string"
+            },
+            "run": {
+              "description": "The command to run the generated file",
+              "type": "string"
+            }
+          },
+          "required": [
+            "workspace",
+            "path",
+            "masm",
+            "tasm",
+            "masm_debug",
+            "tasm_debug",
+            "run"
+          ]
         }
       }
     },
