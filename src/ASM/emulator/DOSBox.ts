@@ -21,11 +21,13 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export class DOSBox implements EMURUN {
     private _asmdosbox: AsmDOSBox;
+    forceCopy: boolean = false;
     constructor(conf: Config) {
         this._asmdosbox = new AsmDOSBox(conf);
     }
-    prepare(conf: Config): boolean {
+    prepare(conf: Config, src?: SRCFILE): boolean {
         this._asmdosbox = new AsmDOSBox(conf);
+        if (src) { this.forceCopy = !src.dosboxFsReadable };
         return true;
     }
     openEmu(folder: Uri): Promise<any> {

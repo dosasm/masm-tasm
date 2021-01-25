@@ -208,7 +208,7 @@ export class SRCFILE {
         return this.pathinfo().ext;
     }
     public get dosboxFsReadable() {
-        return this.filename.match(/^\w{1,8}$/);
+        return !!this.filename.match(/^\w{1,8}$/);
     }
     /**copy the source code file to another path*/
     public async copyto(uri: Uri) {

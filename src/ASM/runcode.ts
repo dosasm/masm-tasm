@@ -1,11 +1,11 @@
-import { Disposable, ExtensionContext, TextDocument, Uri, window, workspace } from 'vscode';
+import { Disposable, ExtensionContext, FileSystemError, TextDocument, Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 import { Config, DOSEMU, SRCFILE } from './configration';
 import { AssemblerDiag, DIAGCODE } from './diagnose/diagnose';
 import { AutoMode } from './emulator/auto-mode';
 import { DOSBox } from './emulator/dosbox';
 import { MsdosPlayer } from './emulator/msdos-player';
-import { OutChannel } from './outputChannel';
+import { logger, OutChannel } from './outputChannel';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -13,13 +13,17 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
-    prepare(conf: Config): Promise<boolean> | boolean;
+    prepare(conf: Config, src?: SRCFILE): Promise<boolean> | boolean;
     /**open dosbox need*/
     openEmu(folder: Uri): Promise<any> | any;
     /**run code*/
     Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any>;
     /**debug code*/
     Debug(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any>;
+    /**return a uri that needed to copy the file to instead of default one in extension globalstorage*/
+    copyUri?: Uri;
+    /**if true force to copy the sourcecode file to [workspcae](## workspace) */
+    forceCopy?: boolean;
 }
 
 /**the commands of action*/
@@ -114,14 +118,33 @@ export class AsmAction implements Disposable {
             src = new SRCFILE(window.activeTextEditor.document.uri)
         }
         //construct the source code file class
-        if (src && await this._emulator.prepare(this._config)) {
-            if (this._config.Seperate) {
-                await src.copyto(this._config.Uris.workspace);
+        if (src && await this._emulator.prepare(this._config, src)) {
+            const doc = await workspace.openTextDocument(src.uri);
+            if (doc.isDirty && this._config.savefirst) {
+                await doc.save();
+            }
+            //output the message of the command
+            let msg = { title: "", content: src.pathMessage() };
+            switch (command) {
+                case ASMCMD.OpenEmu:
+                    msg.title = localize("openemu.msg", "\n[execute]Open emulator and prepare environment");
+                    break;
+                case ASMCMD.run:
+                    msg.title = localize("run.msg", "\n[execute]use {0} in {1} to Run ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
+                    break;
+                case ASMCMD.debug:
+                    msg.title = localize("debug.msg", "\n[execute]use {0} in {1} to Debug ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
+                    break;
+            }
+            if (this._config.Seperate || this._emulator.forceCopy) {
+                let dst = this._emulator.copyUri === undefined ? this._config.Uris.workspace : this._emulator.copyUri;
+                await src.copyto(dst);
+                msg.content += `\ncopied as "${src.uri.fsPath}"`;
             }
             if (this._config.Clean) {
                 await src.cleanDir();
             }
-            let doc = await workspace.openTextDocument(src.uri);
+            logger(msg);
             const msgProcessor = (ASM: string) => {
                 let daig = this.landiag.ErrMsgProcess(ASM, doc, this.ASM);
                 return daig?.flag === DIAGCODE.ok
