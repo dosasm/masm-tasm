@@ -13,7 +13,7 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
-    prepare(conf: Config, src?: SRCFILE): Promise<boolean> | boolean;
+    prepare(conf: Config, opt?: { src?: SRCFILE, act?: ASMCMD }): Promise<boolean> | boolean;
     /**open dosbox need*/
     openEmu(folder: Uri): Promise<any> | any;
     /**run code*/
@@ -39,24 +39,22 @@ export enum ASMCMD {
 export class AsmAction implements Disposable {
     private ctx: ExtensionContext;
     private _config: Config;
-    private _emulator: EMURUN;
     private landiag: AssemblerDiag;
     constructor(context: ExtensionContext) {
         this.ctx = context;
         this._config = new Config(context);
         this.landiag = new AssemblerDiag();
-        this._emulator = AsmAction.getEmulator(this.emulator, this._config);
         this.update();
     }
 
-    static getEmulator(emu: DOSEMU, conf: Config) {
+    static getEmulator(emu: DOSEMU, conf: Config): EMURUN {
         switch (emu) {
             case DOSEMU.dosbox:
                 return new DOSBox(conf);
             case DOSEMU.auto:
                 return new AutoMode();
             case DOSEMU.msdos:
-                return new MsdosPlayer();
+                return new MsdosPlayer(conf);
             default:
                 window.showWarningMessage('use dosbox as emulator')
                 return new DOSBox(conf);
@@ -93,10 +91,8 @@ export class AsmAction implements Disposable {
             }
         }
         //choose the emulator
-        let emu = this._emulator;
-        if (emulator) {
-            emu = AsmAction.getEmulator(emulator, this._config)
-        }
+        let dosemu = emulator ? emulator : this._config.DOSemu;
+        let emu = AsmAction.getEmulator(dosemu, this._config);
         //open the emulator
         if (folder && await emu.prepare(this._config)) {
             let output = await emu.openEmu(folder);
@@ -109,6 +105,7 @@ export class AsmAction implements Disposable {
 
     /**Do the operation according to the input.*/
     public async runcode(command: ASMCMD, uri?: Uri) {
+        const emulator = AsmAction.getEmulator(this._config.DOSemu, this._config);
         //get the target file
         let src: SRCFILE | undefined, output: any, doc: TextDocument | undefined;
         if (uri) {
@@ -118,7 +115,7 @@ export class AsmAction implements Disposable {
             src = new SRCFILE(window.activeTextEditor.document.uri)
         }
         //construct the source code file class
-        if (src && await this._emulator.prepare(this._config, src)) {
+        if (src && await emulator.prepare(this._config, { src: src, act: command })) {
             const doc = await workspace.openTextDocument(src.uri);
             if (doc.isDirty && this._config.savefirst) {
                 await doc.save();
@@ -136,8 +133,8 @@ export class AsmAction implements Disposable {
                     msg.title = localize("debug.msg", "\n[execute]use {0} in {1} to Debug ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
                     break;
             }
-            if (this._config.Seperate || this._emulator.forceCopy) {
-                let dst = this._emulator.copyUri === undefined ? this._config.Uris.workspace : this._emulator.copyUri;
+            if (this._config.Seperate || emulator.forceCopy) {
+                let dst = emulator.copyUri === undefined ? this._config.Uris.workspace : emulator.copyUri;
                 await src.copyto(dst);
                 msg.content += `\ncopied as "${src.uri.fsPath}"`;
             }
@@ -151,13 +148,13 @@ export class AsmAction implements Disposable {
             }
             switch (command) {
                 case ASMCMD.OpenEmu:
-                    this._emulator.openEmu(src.folder);
+                    emulator.openEmu(src.folder);
                     break;
                 case ASMCMD.run:
-                    output = await this._emulator.Run(src, msgProcessor);
+                    output = await emulator.Run(src, msgProcessor);
                     break;
                 case ASMCMD.debug:
-                    output = await this._emulator.Debug(src, msgProcessor);
+                    output = await emulator.Debug(src, msgProcessor);
                     break;
             };
         }

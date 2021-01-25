@@ -25,9 +25,9 @@ export class DOSBox implements EMURUN {
     constructor(conf: Config) {
         this._asmdosbox = new AsmDOSBox(conf);
     }
-    prepare(conf: Config, src?: SRCFILE): boolean {
+    prepare(conf: Config, opt?: { src?: SRCFILE }): boolean {
         this._asmdosbox = new AsmDOSBox(conf);
-        if (src) { this.forceCopy = !src.dosboxFsReadable };
+        if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable };
         return true;
     }
     openEmu(folder: Uri): Promise<any> {
@@ -69,15 +69,6 @@ class BoxVSCodeConfig {
         console.log(a.masm);
         console.log(a.get('masm'))
         return this._target.get('AsmConfig') as DosboxAction
-    }
-    AsmConfigReplace(src?: SRCFILE, conf?: Config): DosboxAction {
-        let act = this.ASMconfig as any;
-        for (const key in act) {
-            for (const id in act[key]) {
-                act[key][id] = str_replacer(act[key][id], conf, src);
-            }
-        }
-        return act;
     }
     getAction(scope: string, replacer?: (str: string) => string) {
         let a = this._target.get('AsmConfig') as any;
