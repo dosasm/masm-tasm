@@ -1,9 +1,9 @@
 import { TextEncoder } from "util";
 import { Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
-import { Config, SRCFILE, str_replacer } from '../configration';
+import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
 import { logger, OutChannel } from '../outputChannel';
-import { EMURUN, MSGProcessor } from "../runcode";
+import { ASMPREPARATION, EMURUN, MSGProcessor } from "../runcode";
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox as dosbox_core, WINCONSOLEOPTION } from './dosbox_core';
 
@@ -18,30 +18,6 @@ const DELAY = (timeout: number) => new Promise((resolve, reject) => {
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
-export class DOSBox implements EMURUN {
-    private _asmdosbox: AsmDOSBox;
-    forceCopy: boolean = false;
-    constructor(conf: Config) {
-        this._asmdosbox = new AsmDOSBox(conf);
-    }
-    prepare(conf: Config, opt?: { src?: SRCFILE }): boolean {
-        this._asmdosbox = new AsmDOSBox(conf);
-        if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable };
-        return true;
-    }
-    openEmu(folder: Uri): Promise<any> {
-        return this._asmdosbox.runDosbox(folder);
-    }
-    async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        let asm = await this._asmdosbox.runDebug(src, true);
-        msgprocessor(asm, { preventWarn: true });
-    }
-    async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        let asm = await this._asmdosbox.runDebug(src, false);
-        msgprocessor(asm, { preventWarn: true });
-    }
-}
 
 class BoxVSCodeConfig {
     private get _target() {
@@ -70,19 +46,20 @@ class BoxVSCodeConfig {
         console.log(a.get('masm'))
         return this._target.get('AsmConfig') as DosboxAction
     }
-    getAction(scope: string, replacer?: (str: string) => string) {
+    getAction(scope: string) {
         let a = this._target.get('AsmConfig') as any;
         let key = scope.toLowerCase()
         let output = a[key];
         if (Array.isArray(output)) {
-            if (replacer) {
-                output = output.map(replacer)
+            if (this.replacer) {
+                output = output.map(this.replacer)
             }
             return output
         }
         window.showErrorMessage(`action ${key} hasn't been defined`)
         throw new Error(`action ${key} hasn't been defined`)
     }
+    replacer?: (str: string) => string
 }
 
 interface DosboxAction {
@@ -95,7 +72,7 @@ interface DosboxAction {
     after_action: string[];
 }
 
-class AsmDOSBox extends dosbox_core {
+export class DOSBox extends dosbox_core implements EMURUN {
     //private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
     private _BOXrun: string | undefined;
     private _conf: Config;
@@ -104,6 +81,7 @@ class AsmDOSBox extends dosbox_core {
         let vscConf = new BoxVSCodeConfig();
 
         super(conf.Uris.dosbox.fsPath, vscConf.command);
+        this.forceCopy = false;
         this._conf = conf;
         this.asmConfig = vscConf;
         //write the config file for extension
@@ -149,7 +127,24 @@ class AsmDOSBox extends dosbox_core {
             };
         }
     }
-
+    //implement the interface 
+    forceCopy: boolean;
+    prepare(opt?: ASMPREPARATION): boolean {
+        if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable };
+        this.asmConfig.replacer = (val: string) => str_replacer(val, this._conf, opt?.src)
+        return true;
+    }
+    openEmu(folder: Uri): Promise<any> {
+        return this.runDosbox(folder);
+    }
+    async Run(src: SRCFILE, msgprocessor?: MSGProcessor): Promise<any> {
+        let asm = await this.runDebug(src, true);
+        if (msgprocessor) { msgprocessor(asm, { preventWarn: true }); }
+    }
+    async Debug(src: SRCFILE, msgprocessor?: MSGProcessor): Promise<any> {
+        let asm = await this.runDebug(src, false);
+        if (msgprocessor) { msgprocessor(asm, { preventWarn: true }); }
+    }
     /**
      * A function to run or debug ASM codes in DOSBox
      * @param runOrDebug true for run ASM code,false for debug
@@ -160,19 +155,23 @@ class AsmDOSBox extends dosbox_core {
         let loguri = Uri.joinPath(this._conf.Uris.globalStorage, 'asm.log');
         let AsmMsg: string = "";
         let boxcmd: string[] = [];
-        let replacer = (str: string) => str_replacer(str, this._conf, src);
-        let asm = this.asmConfig.getAction(this._conf.MASMorTASM, replacer)//action[this._conf.MASMorTASM];
+        let asm = this.asmConfig.getAction(this._conf.MASMorTASM)//action[this._conf.MASMorTASM];
         boxcmd.push(...asm);
-        if (runOrDebug) {
-            boxcmd.push(...this.asmConfig.getAction('run', replacer));
-        }
-        else {
-            boxcmd.push(...this.asmConfig.getAction(this._conf.MASMorTASM + '_debug', replacer));
-        }
+        boxcmd.push(...this.runDebugCmd(runOrDebug, this._conf.MASMorTASM));
+
         this.runDosbox(src.folder, boxcmd, { exitwords: true });
         await DELAY(WAIT_AFTER_LAUNCH_DOSBOX);
         AsmMsg = (await workspace.fs.readFile(loguri)).toString();
         return AsmMsg;
+    }
+
+    public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
+        if (runOrDebug) {
+            return this.asmConfig.getAction('run');
+        }
+        else {
+            return this.asmConfig.getAction(ASM + '_debug');
+        }
     }
 
     /**open dosbox and do things about it

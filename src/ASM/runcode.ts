@@ -12,11 +12,11 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 /**message processor return true if no error message*/
 export type MSGProcessor = (message: string | { asm: string, link: string }, opt?: { preventWarn: boolean }) => Promise<boolean> | boolean;
-
+export type ASMPREPARATION = { src?: SRCFILE, act?: ASMCMD }
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
-    prepare(conf: Config, opt?: { src?: SRCFILE, act?: ASMCMD }): Promise<boolean> | boolean;
+    prepare(opt?: ASMPREPARATION): Promise<boolean> | boolean;
     /**open dosbox need*/
     openEmu(folder: Uri): Promise<any> | any;
     /**run code*/
@@ -55,7 +55,7 @@ export class AsmAction implements Disposable {
             case DOSEMU.dosbox:
                 return new DOSBox(conf);
             case DOSEMU.auto:
-                return new AutoMode();
+                return new AutoMode(conf);
             case DOSEMU.msdos:
                 return new MsdosPlayer(conf);
             default:
@@ -97,7 +97,7 @@ export class AsmAction implements Disposable {
         let dosemu = emulator ? emulator : this._config.DOSemu;
         let emu = AsmAction.getEmulator(dosemu, this._config);
         //open the emulator
-        if (folder && await emu.prepare(this._config)) {
+        if (folder && await emu.prepare()) {
             let output = await emu.openEmu(folder);
             return output;
         }
@@ -122,8 +122,8 @@ export class AsmAction implements Disposable {
         if (!src) {
             window.showErrorMessage('no source file specified');
         }
-        else if (!await emulator.prepare(this._config, { src: src, act: command })) {
-            console.warn(this._config.DOSemu + ' emulator cancelled');
+        else if (!await emulator.prepare({ src: src, act: command })) {
+            console.warn(this._config.DOSemu + ' emulator is not ready');
         }
         else {
             const doc = await workspace.openTextDocument(src.uri);

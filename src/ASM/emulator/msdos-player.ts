@@ -1,6 +1,6 @@
 import { workspace, window, Uri, Disposable, Terminal, commands } from 'vscode';
 import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
-import { ASMCMD, EMURUN, MSGProcessor } from '../runcode';
+import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { exec } from 'child_process';
 
 /**the config from VSCode settings `masmtasm.msdos`*/
@@ -40,7 +40,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
     forceCopy?: boolean;
     private _conf: Config;
     private _vscConf: MsdosVSCodeConfig;
-    private msdosTerminal: Terminal | undefined = undefined;
+    static msdosTerminal: Terminal | undefined = undefined;
     constructor(conf: Config) {
         this._conf = conf;
         this._vscConf = new MsdosVSCodeConfig();
@@ -48,17 +48,16 @@ export class MsdosPlayer implements EMURUN, Disposable {
         this.copyUri = ws ? Uri.file(ws) : undefined;
     }
 
-    prepare(conf: Config, opt: { act: ASMCMD, src: SRCFILE }): boolean {
-        if (conf.MASMorTASM === ASMTYPE.TASM && opt?.act === ASMCMD.debug) {
+    prepare(opt: ASMPREPARATION): boolean {
+        if (this._conf.MASMorTASM === ASMTYPE.TASM && opt?.act === ASMCMD.debug) {
             let msg = `disabled for tasm's TD is hardly runable in msdos`;
             window.showErrorMessage(msg);
             return false;
         }
-        this._conf = conf;
         this._vscConf.replacer = (
-            (val: string) => str_replacer(val, conf, opt.src)
+            (val: string) => str_replacer(val, this._conf, opt.src)
         )
-        this.forceCopy = opt.src.filename.includes(' ');
+        this.forceCopy = opt.src?.filename.includes(' ');
         return true;
     }
     openEmu(folder: Uri, command?: string): boolean {
@@ -95,21 +94,21 @@ export class MsdosPlayer implements EMURUN, Disposable {
     private outTerminal(command?: string) {
         let env: NodeJS.ProcessEnv = process.env;
         let envPath = env.PATH + ';' + this._vscConf.getAction('path');
-        if (this.msdosTerminal?.exitStatus || this.msdosTerminal === undefined) {
-            this.msdosTerminal = window.createTerminal({
+        if (MsdosPlayer.msdosTerminal?.exitStatus || MsdosPlayer.msdosTerminal === undefined) {
+            MsdosPlayer.msdosTerminal = window.createTerminal({
                 env: { PATH: envPath },
                 shellPath: "cmd.exe",
                 hideFromUser: false,
             });
         }
-        if (this.msdosTerminal) {
-            this.msdosTerminal.show();
+        if (MsdosPlayer.msdosTerminal) {
+            MsdosPlayer.msdosTerminal.show();
             if (command) {
-                this.msdosTerminal.sendText(command);
+                MsdosPlayer.msdosTerminal.sendText(command);
             }
         }
     }
-    private runPlayer(conf: Config): Promise<string> {
+    public runPlayer(conf: Config): Promise<string> {
         let command = this._vscConf.getAction(conf.MASMorTASM.toLowerCase() as 'masm' | 'tasm');
         return new Promise<string>(
             (resolve, reject) => {
@@ -144,6 +143,6 @@ export class MsdosPlayer implements EMURUN, Disposable {
         );
     }
     dispose() {
-        this.msdosTerminal?.dispose();
+        // MsdosPlayer.msdosTerminal?.dispose();
     }
 }
