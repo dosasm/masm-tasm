@@ -1,5 +1,5 @@
 import { workspace, window, Uri, Disposable, Terminal, commands } from 'vscode';
-import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
+import { ASMTYPE, Config, DOSEMU, SRCFILE, str_replacer } from '../configration';
 import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { exec } from 'child_process';
 
@@ -49,7 +49,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
     }
 
     prepare(opt: ASMPREPARATION): boolean {
-        if (this._conf.MASMorTASM === ASMTYPE.TASM && opt?.act === ASMCMD.debug) {
+        if (this._conf.MASMorTASM === ASMTYPE.TASM && opt?.act === ASMCMD.debug && this._conf.DOSemu === DOSEMU.msdos) {
             let msg = `disabled for tasm's TD is hardly runable in msdos`;
             window.showErrorMessage(msg);
             return false;
