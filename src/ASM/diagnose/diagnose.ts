@@ -67,8 +67,10 @@ export class AssemblerDiag {
             case 'MASM':
                 this._masmCollection.clear();
                 if (MASMorTASMorboth === 'MASM') { break; }
+                break;
             case 'TASM':
                 this._tasmCollection.clear();
+                break;
         }
     }
 };
