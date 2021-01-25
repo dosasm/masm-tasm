@@ -7,6 +7,13 @@ const packaged_Tools = "./tools";
 const fs = workspace.fs;
 const delExtList = [".exe", ".obj"];
 const DST_FILE_NAME = 'T';
+let allowedEMU = () => {
+    let emu = [DOSEMU.dosbox, DOSEMU.jsdos];
+    if (process.platform === 'win32') {
+        emu.push(DOSEMU.auto, DOSEMU.msdos);
+    }
+    return emu;
+}
 export const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
     let str: string = val;
     if (src) {
@@ -28,33 +35,31 @@ export const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
  * This class defines some settings and some uri to use
  */
 export class Config {
-    //basic settings
+    private _target = workspace.getConfiguration('masmtasm.ASM');
     /**if true,save file before assembling*/
-    public readonly savefirst: boolean;
+    public get savefirst() {
+        return this._target.get('savefirst');
+    };
     /**use MASM or TASM */
-    public readonly MASMorTASM: ASMTYPE;
+    public get MASMorTASM(): ASMTYPE {
+        return this._target.get('MASMorTASM') as ASMTYPE
+    };
     /**use dosbox or msdos as emulator */
-    public readonly DOSemu: DOSEMU;
+    public get DOSemu(): DOSEMU {
+        return validfy(this._target.get('emulator'), allowedEMU())
+    };
     //Uris and tools information
     public Uris: TOOLURIS;
-    public Seperate: boolean = false;
-    public Clean: boolean = true;
+    public get Seperate(): boolean { return this._target.get('ASM.seperateSpace') as boolean }
+    public get Clean(): boolean { return this._target.get('ASM.clean') as boolean }
     private readonly _exturi: Uri;
-    private _asmAction: any;
     private _toolpath: string | undefined;
     constructor(ctx: ExtensionContext) {
-        const configuration = workspace.getConfiguration('masmtasm');
-
-        let allowedEMU = [DOSEMU.dosbox];
-        if (process.platform === 'win32') {
-            allowedEMU.push(DOSEMU.auto, DOSEMU.msdos);
-        }
-
-        this.MASMorTASM = validfy(configuration.get('ASM.MASMorTASM'), [ASMTYPE.MASM, ASMTYPE.TASM]);
-        this.DOSemu = validfy(configuration.get('ASM.emulator'), allowedEMU);
-        this.Seperate = validfy(configuration.get('ASM.seperateSpace'), [false, true]);
-        this.Clean = validfy(configuration.get('ASM.clean'), [true, false]);
-        this.savefirst = validfy(configuration.get('ASM.savefirst'), [true, false]);
+        workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration('masmtasm')) {
+                this._target = workspace.getConfiguration('masmtasm.ASM');
+            }
+        });
         this._exturi = ctx.extensionUri;
         Uri.joinPath(this._exturi, './tools/');
         let globalStorageUri = ctx.globalStorageUri;
@@ -67,70 +72,12 @@ export class Config {
             workspace: Uri.joinPath(globalStorageUri, './workspace/'),
             dosbox: Uri.joinPath(this._exturi, './tools/dosbox/'),
             msdos: Uri.joinPath(this._exturi, './tools/player/'),
+            jsdos: Uri.joinPath(this._exturi, './tools/js-dos/'),
             globalStorage: globalStorageUri
         };
         fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
-        this._toolpath = configuration.get('ASM.toolspath');
+        this._toolpath = this._target.get('toolspath');
         logger({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
-    }
-    private async updateTools(uri: Uri) {
-        this._asmAction = await scanTools(uri, this._exturi);
-        this.Uris.tools = uri;
-        let UriChange: boolean = false;
-        const update = (key: string, target: 'msdos' | 'dosbox') => {
-            if (this._asmAction[key]) {
-                let u = Uri.joinPath(uri, this._asmAction[key]);
-                if (u.path !== this.Uris[target].path) {
-                    this.Uris[target] = u;
-                    UriChange = true;
-                }
-            }
-        }
-        update('dosboxFolder', 'dosbox');
-        update('msdosFolder', 'msdos');
-        if (UriChange) {
-            logger({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
-        }
-    }
-    public async prepare(): Promise<boolean> {
-        let ASMtoolsUri = Uri.joinPath(this._exturi, packaged_Tools);
-        if (this._toolpath) {
-            ASMtoolsUri = Uri.file(this._toolpath);
-        }
-        await this.updateTools(ASMtoolsUri);
-        let output: boolean = false;
-        switch (this.DOSemu) {
-            case DOSEMU.dosbox:
-                output = !!this._asmAction['dosbox'];
-                break;
-            case DOSEMU.msdos:
-            case DOSEMU.auto:
-                output = !!this._asmAction['msdos'];
-                break;
-        }
-        if (!output) {
-            window.showErrorMessage('Action undefined');
-        }
-        return output;
-    }
-    public getBoxAction(scope: string, src?: SRCFILE): string[] {
-        let obj = this._asmAction['dosbox'];
-        let boxcmd = obj[scope.toLowerCase()];
-        if (Array.isArray(boxcmd)) {
-            boxcmd = boxcmd.map(
-                (val) => str_replacer(val, this, src)
-            );
-            return boxcmd;
-        }
-        else {
-            return [];
-        }
-    }
-    public getPlayerAction(scope: string, src?: SRCFILE): string {
-        let obj = this._asmAction['msdos'];
-        let str = obj[scope.toLowerCase()];
-        str = str_replacer(str, this, src);
-        return str;
     }
     public get dosboxconfuri(): Uri {
         let uri = Uri.joinPath(this.Uris.globalStorage, 'VSC-ExtUse.conf');
@@ -155,6 +102,8 @@ interface TOOLURIS {
     dosbox: Uri,
     /**the folder for msdos player */
     msdos: Uri,
+    /**the folder for js dos */
+    jsdos: Uri,
     /**tools folder */
     tools: Uri,
     /**folder for masm tools */
@@ -172,7 +121,7 @@ export enum DOSEMU {
     dosbox = 'dosbox',
     msdos = 'msdos player',
     auto = 'auto',
-    jsdos = 'js-dos',
+    jsdos = 'jsdos',
 }
 
 

@@ -1,0 +1,10 @@
+{
+    "files": [
+        "extJs-dos.ts"
+    ],
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2019",
+        "removeComments": true
+    },
+}

@@ -31,6 +31,7 @@ const generateSrcLocBundle = () => {
 		.pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
 		.pipe(gulp.dest('dist'));
 };
+const buildnls = gulp.series(generateSrcLocBundle, generateAdditionalLocFiles)
 
 //package and publish
 const fs = require('fs');
@@ -69,9 +70,21 @@ const vscePackageTask = function () {
 	return vsce.createVSIX(getOption(true));
 };
 
+//copy files from jsdos
+const copyJsdos = function () {
+	return gulp.src(
+		[
+			'node_modules/_js-dos@6.22.59@js-dos/dist/wdosbox.js',
+			'node_modules/_js-dos@6.22.59@js-dos/dist/wdosbox.wasm.js',
+			'node_modules/_js-dos@6.22.59@js-dos/dist/js-dos.js'
+		]
+	).pipe(gulp.dest('tools/js-dos'))
+}
+
 gulp.task('clean', cleanTask);
-gulp.task('translations-generate', gulp.series(generateSrcLocBundle, generateAdditionalLocFiles));
-
+gulp.task('jsdos', copyJsdos);
+gulp.task('nls', buildnls);
 gulp.task('publish', gulp.series(cleanTask2, vscePublishTask));
-
 gulp.task('package', gulp.series(cleanTask2, vscePackageTask));
+
+gulp.task('default', gulp.parallel(copyJsdos, buildnls));

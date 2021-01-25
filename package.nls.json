@@ -9,6 +9,7 @@
 	"dosasm.config.masmortasm.enum1": "use MASM toolset, including masm.exe,link.exe,debug.exe...",
 	"dosasm.config.masmortasm.enum2": "use TASM toolset, including tasm.exe,tlink.exe,td.exe...",
 	"dosasm.config.emulator.description": "Use DOSBox or MSDOS-player as 16-bit emulator for windows",
+	"dosasm.config.emulator.jsdos": "Use jsdos(wdosbox)",
 	"dosasm.config.emulator.dosbox": "Use DOSBox,this may be more stable",
 	"dosasm.config.emulator.player": "Use MSDOS-player for most cases(use dosbox for TD),this may be more quiet",
 	"dosasm.config.emulator.auto": "Auto select: use MSDOS-player to compile,use dosbox to run，use dosbox for TD.exe,MSDOS player for debug.exe",

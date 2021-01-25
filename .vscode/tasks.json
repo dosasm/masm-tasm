@@ -33,7 +33,7 @@
 				"$tsc"
 			],
 			"label": "npm: compile-tsc",
-			"detail": "`tsc -p ./` using tsc to compile ts code",
+			"detail": "`tsc -p ./ && tsc -p ./tools/js-dos` using tsc to compile ts code",
 		},
 		{
 			"type": "npm",

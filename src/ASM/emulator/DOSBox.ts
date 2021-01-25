@@ -19,7 +19,7 @@ const DELAY = (timeout: number) => new Promise((resolve, reject) => {
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-class BoxVSCodeConfig {
+export class BoxVSCodeConfig {
     private get _target() {
         return workspace.getConfiguration('masmtasm.dosbox');
     };
@@ -39,14 +39,7 @@ class BoxVSCodeConfig {
         }
         return output;
     }
-    get ASMconfig(): DosboxAction {
-        let a = this._target.get('AsmConfig') as any;
-        console.log(a);
-        console.log(a.masm);
-        console.log(a.get('masm'))
-        return this._target.get('AsmConfig') as DosboxAction
-    }
-    getAction(scope: string) {
+    getAction(scope: keyof DosboxAction) {
         let a = this._target.get('AsmConfig') as any;
         let key = scope.toLowerCase()
         let output = a[key];
@@ -60,6 +53,25 @@ class BoxVSCodeConfig {
         throw new Error(`action ${key} hasn't been defined`)
     }
     replacer?: (str: string) => string
+    public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
+        if (runOrDebug) {
+            return this.getAction('run');
+        }
+        else {
+            switch (ASM) {
+                case ASMTYPE.MASM: return this.getAction('masm_debug');
+                case ASMTYPE.TASM: return this.getAction('tasm_debug');
+            }
+        }
+    }
+    public AsmLinkRunDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
+        let asmlink: string[];
+        switch (ASM) {
+            case ASMTYPE.MASM: asmlink = this.getAction('masm'); break;
+            case ASMTYPE.TASM: asmlink = this.getAction('tasm'); break;
+        }
+        return asmlink.concat(this.runDebugCmd(runOrDebug, ASM))
+    }
 }
 
 interface DosboxAction {
@@ -154,24 +166,10 @@ export class DOSBox extends dosbox_core implements EMURUN {
     public async runDebug(src: SRCFILE, runOrDebug: boolean) {
         let loguri = Uri.joinPath(this._conf.Uris.globalStorage, 'asm.log');
         let AsmMsg: string = "";
-        let boxcmd: string[] = [];
-        let asm = this.asmConfig.getAction(this._conf.MASMorTASM)//action[this._conf.MASMorTASM];
-        boxcmd.push(...asm);
-        boxcmd.push(...this.runDebugCmd(runOrDebug, this._conf.MASMorTASM));
-
-        this.runDosbox(src.folder, boxcmd, { exitwords: true });
+        this.runDosbox(src.folder, this.asmConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
         await DELAY(WAIT_AFTER_LAUNCH_DOSBOX);
         AsmMsg = (await workspace.fs.readFile(loguri)).toString();
         return AsmMsg;
-    }
-
-    public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
-        if (runOrDebug) {
-            return this.asmConfig.getAction('run');
-        }
-        else {
-            return this.asmConfig.getAction(ASM + '_debug');
-        }
     }
 
     /**open dosbox and do things about it

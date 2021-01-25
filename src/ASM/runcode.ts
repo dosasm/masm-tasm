@@ -4,6 +4,7 @@ import { Config, DOSEMU, SRCFILE } from './configration';
 import { AssemblerDiag, DIAGCODE } from './diagnose/diagnose';
 import { AutoMode } from './emulator/auto-mode';
 import { DOSBox } from './emulator/dosbox';
+import { JSDos } from './emulator/JS-Dos';
 import { MsdosPlayer } from './emulator/msdos-player';
 import { logger, OutChannel } from './outputChannel';
 
@@ -12,7 +13,7 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 /**message processor return true if no error message*/
 export type MSGProcessor = (message: string | { asm: string, link: string }, opt?: { preventWarn: boolean }) => Promise<boolean> | boolean;
-export type ASMPREPARATION = { src?: SRCFILE, act?: ASMCMD }
+export type ASMPREPARATION = { src: SRCFILE, act: ASMCMD }
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
@@ -47,7 +48,6 @@ export class AsmAction implements Disposable {
         this.ctx = context;
         this._config = new Config(context);
         this.landiag = new AssemblerDiag();
-        this.update();
     }
 
     static getEmulator(emu: DOSEMU, conf: Config): EMURUN {
@@ -58,18 +58,12 @@ export class AsmAction implements Disposable {
                 return new AutoMode(conf);
             case DOSEMU.msdos:
                 return new MsdosPlayer(conf);
+            case DOSEMU.jsdos:
+                return new JSDos(conf);
             default:
                 window.showWarningMessage('use dosbox as emulator')
                 return new DOSBox(conf);
         }
-    }
-
-    private update() {
-        workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration('masmtasm')) {
-                this._config = new Config(this.ctx);
-            }
-        });
     }
 
     /**open the dosbox and switch to the needed folder*/
@@ -157,6 +151,12 @@ export class AsmAction implements Disposable {
                     let msg = typeof (message) === 'string' ? message : message.asm;
                     let diag = this.landiag.ErrMsgProcess(msg, doc, this.ASM);
                     output.diaginfo = diag;
+                    if (diag) {
+                        logger({
+                            title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn),
+                            content: msg
+                        });
+                    }
                     switch (diag?.flag) {
                         case DIAGCODE.ok:
                             return true;
@@ -164,6 +164,7 @@ export class AsmAction implements Disposable {
                             return this.showWarnInfo()
                         case DIAGCODE.hasError:
                             this.showErrorInfo();
+                            OutChannel.show(true);
                             return false;
                     }
                     return false;
@@ -181,6 +182,7 @@ export class AsmAction implements Disposable {
             };
             //show information for diagnose
             output.diagCode = output.diaginfo?.flag;
+
         }
         return output;
     }

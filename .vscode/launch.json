@@ -31,18 +31,17 @@
 			],
 		},
 		{
-			"name": "Run Extension no nls",
+			"name": "Run Extension(tsc)",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"${workspaceFolder}/samples"
+				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: compile-dev"
+			"preLaunchTask": "npm: compile-tsc"
 		},
 		{
 			"name": "Extension Tests",

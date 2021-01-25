@@ -129,11 +129,13 @@
           "default": "dosbox",
           "description": "%dosasm.config.emulator.description%",
           "enum": [
+            "jsdos",
             "dosbox",
             "msdos player",
             "auto"
           ],
           "enumDescriptions": [
+            "%dosasm.config.emulator.jsdos%",
             "%dosasm.config.emulator.dosbox%",
             "%dosasm.config.emulator.player%",
             "%dosasm.config.emulator.auto%"
@@ -235,10 +237,10 @@
               "@type X:\\link.log"
             ],
             "masm_debug": [
-              "c:\\masm\\debug ${filename}.exe"
+              "if exist ${filename}.exe c:\\masm\\debug ${filename}.exe"
             ],
             "tasm_debug": [
-              "c:\\tasm\\TD ${filename}.exe"
+              "if exist ${filename}.exe c:\\tasm\\TD ${filename}.exe"
             ],
             "run": [
               "@if not exist ${filename}.exe exit ",
@@ -281,6 +283,61 @@
             },
             "after_action": {
               "description": "The commands to exec after run or debug\n when set `masmtasm.dosbox.run` as `choose`",
+              "type": "array"
+            }
+          },
+          "required": [
+            "open",
+            "masm",
+            "tasm",
+            "masm_debug",
+            "tasm_debug",
+            "run",
+            "after_action"
+          ]
+        },
+        "masmtasm.jsdos.AsmConfig": {
+          "description": "The commands to use when in dosbox mode.\nThe extension will mount this folder to dosbox's disk C, the file's folder to disk D\nand a seperate space as dosbox's disk X,the extension will read file asm.log to process assembler's message",
+          "default": {
+            "masm": [
+              "masm ${filename}.ASM;",
+              "link ${filename}.OBJ;"
+            ],
+            "tasm": [
+              "tasm /zi ${filename}.ASM",
+              "tlink /v/3 ${filename}.obj"
+            ],
+            "masm_debug": [
+              "if exist ${filename}.exe debug ${filename}.exe"
+            ],
+            "tasm_debug": [
+              "if exist ${filename}.exe TD ${filename}.exe"
+            ],
+            "run": [
+              "@if not exist ${filename}.exe exit ",
+              "${filename}.exe",
+              "@echo (END)Here is the end of the program's output"
+            ]
+          },
+          "properties": {
+            "masm": {
+              "description": "The commands to exec for assembling and linking in dosbox when using masm",
+              "type": "array"
+            },
+            "tasm": {
+              "description": "The commands to exec for assembling and linking in dosbox when using tasm",
+              "type": "array"
+            },
+            "tasm_debug": {
+              "description": "The commands to exec for debuging in dosbox when using tasm",
+              "type:": "array"
+            },
+            "masm_debug": {
+              "description": "The commands to exec for debuging in dosbox when using masm",
+              "type:": "array"
+            },
+            "run": {
+              "description": "The command to run the generated file",
               "type": "array"
             }
           },
@@ -379,10 +436,10 @@
     ]
   },
   "scripts": {
-    "compile": "npx gulp translations-generate && webpack --mode production --vscode-nls",
-    "compile-tsc": "tsc -p ./",
+    "compile": "gulp && webpack --mode production --vscode-nls && tsc -p ./tools/js-dos",
+    "compile-tsc": "tsc -p ./ && tsc -p ./tools/js-dos",
     "compile-dev": "webpack --mode development",
-    "compile-nls": "npx gulp translations-generate && webpack --mode development --vscode-nls",
+    "compile-nls": "gulp && webpack --mode development --vscode-nls",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
     "watch": "tsc -watch -p ./ --rootDir src",
@@ -404,6 +461,7 @@
     "gulp-filter": "^5.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
+    "js-dos": "^6.22.59",
     "jsonschema": "^1.4.0",
     "mocha": "^7.2.0",
     "ts-loader": "^7.0.5",
