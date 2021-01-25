@@ -1,5 +1,6 @@
 import { Config, SRCFILE } from '../configration';
-import { EMURUN } from '../runcode';
+import { EMURUN, MSGProcessor } from '../runcode';
+
 
 export class AutoMode implements EMURUN {
     prepare(conf: Config): Promise<boolean> {
@@ -8,10 +9,10 @@ export class AutoMode implements EMURUN {
     openEmu(): Promise<boolean> {
         throw new Error('Method not implemented.');
     }
-    Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
+    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
         throw new Error('Method not implemented.');
     }
-    Debug(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
+    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
         throw new Error('Method not implemented.');
     }
 

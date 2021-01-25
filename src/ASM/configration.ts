@@ -164,8 +164,8 @@ interface TOOLURIS {
 };
 
 export enum ASMTYPE {
-    MASM = 'masm',
-    TASM = 'tasm'
+    MASM = 'MASM',
+    TASM = 'TASM'
 }
 
 export enum DOSEMU {

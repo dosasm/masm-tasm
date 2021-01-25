@@ -10,6 +10,9 @@ import { logger, OutChannel } from './outputChannel';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
+/**message processor return true if no error message*/
+export type MSGProcessor = (message: string | { asm: string, link: string }, opt?: { preventWarn: boolean }) => Promise<boolean> | boolean;
+
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
@@ -17,9 +20,9 @@ export interface EMURUN {
     /**open dosbox need*/
     openEmu(folder: Uri): Promise<any> | any;
     /**run code*/
-    Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any>;
+    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any>;
     /**debug code*/
-    Debug(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any>;
+    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any>;
     /**return a uri that needed to copy the file to instead of default one in extension globalstorage*/
     copyUri?: Uri;
     /**if true force to copy the sourcecode file to [workspcae](## workspace) */
@@ -106,8 +109,9 @@ export class AsmAction implements Disposable {
     /**Do the operation according to the input.*/
     public async runcode(command: ASMCMD, uri?: Uri) {
         const emulator = AsmAction.getEmulator(this._config.DOSemu, this._config);
+        let output: any = {};
         //get the target file
-        let src: SRCFILE | undefined, output: any, doc: TextDocument | undefined;
+        let src: SRCFILE | undefined;
         if (uri) {
             src = new SRCFILE(uri);
         }
@@ -115,7 +119,13 @@ export class AsmAction implements Disposable {
             src = new SRCFILE(window.activeTextEditor.document.uri)
         }
         //construct the source code file class
-        if (src && await emulator.prepare(this._config, { src: src, act: command })) {
+        if (!src) {
+            window.showErrorMessage('no source file specified');
+        }
+        else if (!await emulator.prepare(this._config, { src: src, act: command })) {
+            console.warn(this._config.DOSemu + ' emulator cancelled');
+        }
+        else {
             const doc = await workspace.openTextDocument(src.uri);
             if (doc.isDirty && this._config.savefirst) {
                 await doc.save();
@@ -142,28 +152,52 @@ export class AsmAction implements Disposable {
                 await src.cleanDir();
             }
             logger(msg);
-            const msgProcessor = (ASM: string) => {
-                let daig = this.landiag.ErrMsgProcess(ASM, doc, this.ASM);
-                return daig?.flag === DIAGCODE.ok
-            }
+            const msgProcessor: MSGProcessor =
+                (message: string | { asm: string; link: string; }, opt?: { preventWarn: boolean }) => {
+                    let msg = typeof (message) === 'string' ? message : message.asm;
+                    let diag = this.landiag.ErrMsgProcess(msg, doc, this.ASM);
+                    output.diaginfo = diag;
+                    switch (diag?.flag) {
+                        case DIAGCODE.ok:
+                            return true;
+                        case DIAGCODE.hasWarn:
+                            return this.showWarnInfo()
+                        case DIAGCODE.hasError:
+                            this.showErrorInfo();
+                            return false;
+                    }
+                    return false;
+                }
             switch (command) {
                 case ASMCMD.OpenEmu:
-                    emulator.openEmu(src.folder);
+                    output.emulator = emulator.openEmu(src.folder);
                     break;
                 case ASMCMD.run:
-                    output = await emulator.Run(src, msgProcessor);
+                    output.emulator = await emulator.Run(src, msgProcessor);
                     break;
                 case ASMCMD.debug:
-                    output = await emulator.Debug(src, msgProcessor);
+                    output.emulator = await emulator.Debug(src, msgProcessor);
                     break;
             };
-        }
-        else {
-            window.showErrorMessage('no source file specified');
+            //show information for diagnose
+            output.diagCode = output.diaginfo?.flag;
         }
         return output;
     }
-
+    private async showWarnInfo() {
+        let warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", this.ASM);
+        let Go_on = localize("runcode.continue", "continue");
+        let Stop = localize("runcode.stop", "stop");
+        let result = await window.showInformationMessage(warningmsgwindow, Go_on, Stop);
+        if (result === Go_on) {
+            return true;
+        }
+        return false;
+    }
+    private async showErrorInfo() {
+        let Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", this._config.MASMorTASM);
+        await window.showErrorMessage(Errmsg);
+    }
     public cleanalldiagnose() {
         this.landiag.cleandiagnose('both');
     }

@@ -1,6 +1,6 @@
 import { workspace, window, Uri, Disposable, Terminal, commands } from 'vscode';
 import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
-import { ASMCMD, EMURUN } from '../runcode';
+import { ASMCMD, EMURUN, MSGProcessor } from '../runcode';
 import { exec } from 'child_process';
 
 class MsdosVSCodeConfig {
@@ -9,15 +9,16 @@ class MsdosVSCodeConfig {
     };
     getAction(scope: string) {
         let a = this._target.get('AsmConfig') as any;
-        let output = a[scope];
+        let key = scope.toLowerCase();
+        let output = a[key];
         if (typeof (output) === 'string') {
             if (this.replacer) {
                 output = this.replacer(output)
             }
             return output
         }
-        window.showErrorMessage(`action ${scope} hasn't been defined`)
-        throw new Error(`action ${scope} hasn't been defined`)
+        window.showErrorMessage(`action ${key} hasn't been defined`)
+        throw new Error(`action ${key} hasn't been defined`)
     }
     replacer: ((str: string) => string) | undefined = undefined;
 }
@@ -33,12 +34,15 @@ interface MsdosAction {
 
 export class MsdosPlayer implements EMURUN, Disposable {
     copyUri?: Uri;
+    forceCopy?: boolean;
     private _conf: Config;
     private _vscConf: MsdosVSCodeConfig;
     private msdosTerminal: Terminal | undefined = undefined;
     constructor(conf: Config) {
         this._conf = conf;
         this._vscConf = new MsdosVSCodeConfig();
+        let ws = this._vscConf.getAction('workspace');
+        this.copyUri = ws ? Uri.file(ws) : undefined;
     }
 
     prepare(conf: Config, opt: { act: ASMCMD, src: SRCFILE }): boolean {
@@ -51,6 +55,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
         this._vscConf.replacer = (
             (val: string) => str_replacer(val, conf, opt.src)
         )
+        this.forceCopy = opt.src.filename.includes(' ');
         return true;
     }
     openEmu(folder: Uri, command?: string): boolean {
@@ -66,17 +71,17 @@ export class MsdosPlayer implements EMURUN, Disposable {
         this.outTerminal(cmd.join(' & '))
         return true;
     }
-    async Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
-        let msg = await this.runPlayer(src, this._conf);
-        if (msgprocessor(msg)) {
+    async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
+        let msg = await this.runPlayer(this._conf);
+        if (await msgprocessor(msg)) {
             this.openEmu(src.folder, `${this._vscConf.getAction('run')}`)
             return 'command sended to terminal'
         }
         return;
     }
-    async Debug(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
-        let msg = await this.runPlayer(src, this._conf);
-        if (msgprocessor(msg)) {
+    async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
+        let msg = await this.runPlayer(this._conf);
+        if (await msgprocessor(msg)) {
             this.openEmu(src.folder, `${this._vscConf.getAction(this._conf.MASMorTASM + '_debug')}`)
             return 'command sended to terminal'
         }
@@ -100,8 +105,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
             }
         }
     }
-    private runPlayer(src: SRCFILE, conf: Config): Promise<string> {
-        let replacer = (val: string) => str_replacer(val, this._conf, src);
+    private runPlayer(conf: Config): Promise<string> {
         let command = this._vscConf.getAction(conf.MASMorTASM);
         return new Promise<string>(
             (resolve, reject) => {

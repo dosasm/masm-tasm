@@ -3,7 +3,7 @@ import { Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 import { Config, SRCFILE, str_replacer } from '../configration';
 import { logger, OutChannel } from '../outputChannel';
-import { EMURUN } from "../runcode";
+import { EMURUN, MSGProcessor } from "../runcode";
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox as dosbox_core, WINCONSOLEOPTION } from './dosbox_core';
 
@@ -33,13 +33,13 @@ export class DOSBox implements EMURUN {
     openEmu(folder: Uri): Promise<any> {
         return this._asmdosbox.runDosbox(folder);
     }
-    async Run(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
+    async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
         let asm = await this._asmdosbox.runDebug(src, true);
-        msgprocessor(asm);
+        msgprocessor(asm, { preventWarn: true });
     }
-    async Debug(src: SRCFILE, msgprocessor: (ASM: string, link?: string) => boolean): Promise<any> {
+    async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
         let asm = await this._asmdosbox.runDebug(src, false);
-        msgprocessor(asm);
+        msgprocessor(asm, { preventWarn: true });
     }
 }
 
@@ -72,15 +72,16 @@ class BoxVSCodeConfig {
     }
     getAction(scope: string, replacer?: (str: string) => string) {
         let a = this._target.get('AsmConfig') as any;
-        let output = a[scope];
+        let key = scope.toLowerCase()
+        let output = a[key];
         if (Array.isArray(output)) {
             if (replacer) {
                 output = output.map(replacer)
             }
             return output
         }
-        window.showErrorMessage(`action ${scope} hasn't been defined`)
-        throw new Error(`action ${scope} hasn't been defined`)
+        window.showErrorMessage(`action ${key} hasn't been defined`)
+        throw new Error(`action ${key} hasn't been defined`)
     }
 }
 
