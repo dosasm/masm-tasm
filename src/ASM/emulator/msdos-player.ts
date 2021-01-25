@@ -3,11 +3,12 @@ import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
 import { ASMCMD, EMURUN, MSGProcessor } from '../runcode';
 import { exec } from 'child_process';
 
+/**the config from VSCode settings `masmtasm.msdos`*/
 class MsdosVSCodeConfig {
     private get _target() {
         return workspace.getConfiguration('masmtasm.msdos');
     };
-    getAction(scope: string) {
+    getAction(scope: MsdosActionKey) {
         let a = this._target.get('AsmConfig') as any;
         let key = scope.toLowerCase();
         let output = a[key];
@@ -31,6 +32,8 @@ interface MsdosAction {
     masm_debug: string;
     run: string;
 }
+
+type MsdosActionKey = keyof MsdosAction;
 
 export class MsdosPlayer implements EMURUN, Disposable {
     copyUri?: Uri;
@@ -82,7 +85,8 @@ export class MsdosPlayer implements EMURUN, Disposable {
     async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
         let msg = await this.runPlayer(this._conf);
         if (await msgprocessor(msg)) {
-            this.openEmu(src.folder, `${this._vscConf.getAction(this._conf.MASMorTASM + '_debug')}`)
+            let act = this._vscConf.getAction('masm_debug');
+            this.openEmu(src.folder, `${act}`)
             return 'command sended to terminal'
         }
         return;
@@ -106,7 +110,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
         }
     }
     private runPlayer(conf: Config): Promise<string> {
-        let command = this._vscConf.getAction(conf.MASMorTASM);
+        let command = this._vscConf.getAction(conf.MASMorTASM.toLowerCase() as 'masm' | 'tasm');
         return new Promise<string>(
             (resolve, reject) => {
                 let timeout: number = 3000;
