@@ -14,12 +14,12 @@ class MsdosVSCodeConfig {
         let output = a[key];
         if (typeof (output) === 'string') {
             if (this.replacer) {
-                output = this.replacer(output)
+                output = this.replacer(output);
             }
-            return output
+            return output;
         }
-        window.showErrorMessage(`action ${key} hasn't been defined`)
-        throw new Error(`action ${key} hasn't been defined`)
+        window.showErrorMessage(`action ${key} hasn't been defined`);
+        throw new Error(`action ${key} hasn't been defined`);
     }
     replacer: ((str: string) => string) | undefined = undefined;
 }
@@ -56,7 +56,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
         }
         this._vscConf.replacer = (
             (val: string) => str_replacer(val, this._conf, opt.src)
-        )
+        );
         this.forceCopy = opt.src?.filename.includes(' ');
         return true;
     }
@@ -66,18 +66,18 @@ export class MsdosPlayer implements EMURUN, Disposable {
         let cmd = [
             `${disk}`,
             `cd ${folder.fsPath}`,
-        ]
+        ];
         if (command) {
             cmd.push(command);
         }
-        this.outTerminal(cmd.join(' & '))
+        this.outTerminal(cmd.join(' & '));
         return true;
     }
     async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
         let msg = await this.runPlayer(this._conf);
         if (await msgprocessor(msg)) {
-            this.openEmu(src.folder, `${this._vscConf.getAction('run')}`)
-            return 'command sended to terminal'
+            this.openEmu(src.folder, `${this._vscConf.getAction('run')}`);
+            return 'command sended to terminal';
         }
         return;
     }
@@ -85,8 +85,8 @@ export class MsdosPlayer implements EMURUN, Disposable {
         let msg = await this.runPlayer(this._conf);
         if (await msgprocessor(msg)) {
             let act = this._vscConf.getAction('masm_debug');
-            this.openEmu(src.folder, `${act}`)
-            return 'command sended to terminal'
+            this.openEmu(src.folder, `${act}`);
+            return 'command sended to terminal';
         }
         return;
     }

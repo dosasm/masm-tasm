@@ -13,7 +13,7 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 /**message processor return true if no error message*/
 export type MSGProcessor = (message: string | { asm: string, link: string }, opt?: { preventWarn: boolean }) => Promise<boolean> | boolean;
-export type ASMPREPARATION = { src: SRCFILE, act: ASMCMD }
+export type ASMPREPARATION = { src: SRCFILE, act: ASMCMD };
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
@@ -61,7 +61,7 @@ export class AsmAction implements Disposable {
             case DOSEMU.jsdos:
                 return new JSDos(conf);
             default:
-                window.showWarningMessage('use dosbox as emulator')
+                window.showWarningMessage('use dosbox as emulator');
                 return new DOSBox(conf);
         }
     }
@@ -110,7 +110,7 @@ export class AsmAction implements Disposable {
             src = new SRCFILE(uri);
         }
         else if (window.activeTextEditor?.document) {
-            src = new SRCFILE(window.activeTextEditor.document.uri)
+            src = new SRCFILE(window.activeTextEditor.document.uri);
         }
         //construct the source code file class
         if (!src) {
@@ -161,14 +161,14 @@ export class AsmAction implements Disposable {
                         case DIAGCODE.ok:
                             return true;
                         case DIAGCODE.hasWarn:
-                            return this.showWarnInfo()
+                            return this.showWarnInfo();
                         case DIAGCODE.hasError:
                             this.showErrorInfo();
                             OutChannel.show(true);
                             return false;
                     }
                     return false;
-                }
+                };
             switch (command) {
                 case ASMCMD.OpenEmu:
                     output.emulator = emulator.openEmu(src.folder);

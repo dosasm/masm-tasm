@@ -62,7 +62,7 @@ export class DOSBox {
             param.push(...opt.param);
         }
         if (boxcmd.length > 0) {
-            let mapper = (val: string) => `-c "${val}"`
+            let mapper = (val: string) => `-c "${val}"`;
             param.push(...boxcmd.map(mapper));
         }
         return this.cp_run(preOpen + this._core + ' ' + param.join(" "));

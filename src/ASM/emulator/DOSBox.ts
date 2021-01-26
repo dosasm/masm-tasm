@@ -14,7 +14,7 @@ const WAIT_AFTER_LAUNCH_DOSBOX = 8000;
 const DOSBOX_CONF_FILENAME = 'VSC-ExtUse.conf';
 const DELAY = (timeout: number) => new Promise((resolve, reject) => {
     setTimeout(resolve, timeout);
-})
+});
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -24,13 +24,13 @@ export class BoxVSCodeConfig {
         return workspace.getConfiguration('masmtasm.dosbox');
     };
     get config(): Object | undefined {
-        return this._target.get('config')
+        return this._target.get('config');
     }
     get run(): string | undefined {
-        return this._target.get('run')
+        return this._target.get('run');
     }
     get console() {
-        return this._target.get('console')
+        return this._target.get('console');
     }
     get command(): string | undefined {
         let output = this._target.get('command');
@@ -41,18 +41,18 @@ export class BoxVSCodeConfig {
     }
     getAction(scope: keyof DosboxAction) {
         let a = this._target.get('AsmConfig') as any;
-        let key = scope.toLowerCase()
+        let key = scope.toLowerCase();
         let output = a[key];
         if (Array.isArray(output)) {
             if (this.replacer) {
-                output = output.map(this.replacer)
+                output = output.map(this.replacer);
             }
-            return output
+            return output;
         }
-        window.showErrorMessage(`action ${key} hasn't been defined`)
-        throw new Error(`action ${key} hasn't been defined`)
+        window.showErrorMessage(`action ${key} hasn't been defined`);
+        throw new Error(`action ${key} hasn't been defined`);
     }
-    replacer?: (str: string) => string
+    replacer?: (str: string) => string;
     public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
         if (runOrDebug) {
             return this.getAction('run');
@@ -70,7 +70,7 @@ export class BoxVSCodeConfig {
             case ASMTYPE.MASM: asmlink = this.getAction('masm'); break;
             case ASMTYPE.TASM: asmlink = this.getAction('tasm'); break;
         }
-        return asmlink.concat(this.runDebugCmd(runOrDebug, ASM))
+        return asmlink.concat(this.runDebugCmd(runOrDebug, ASM));
     }
 }
 
@@ -142,8 +142,8 @@ export class DOSBox extends dosbox_core implements EMURUN {
     //implement the interface 
     forceCopy: boolean;
     prepare(opt?: ASMPREPARATION): boolean {
-        if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable };
-        this.asmConfig.replacer = (val: string) => str_replacer(val, this._conf, opt?.src)
+        if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable; };
+        this.asmConfig.replacer = (val: string) => str_replacer(val, this._conf, opt?.src);
         return true;
     }
     openEmu(folder: Uri): Promise<any> {
@@ -212,7 +212,7 @@ export class DOSBox extends dosbox_core implements EMURUN {
                 return ['pause', 'exit'];
             case "choose":
             default:
-                return this.asmConfig.getAction('after_action')
+                return this.asmConfig.getAction('after_action');
         }
     }
 }

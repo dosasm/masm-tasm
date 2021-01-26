@@ -2,7 +2,7 @@ import { languages, DiagnosticCollection, TextDocument, Diagnostic, Range, Diagn
 import { masmDiagnose } from './diagnoseMASM';
 import { tasmDiagnose } from './diagnoseTASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
-import { ASMTYPE } from '../configration'
+import { ASMTYPE } from '../configration';
 
 export enum DIAGCODE {
     /**no error and warning information */

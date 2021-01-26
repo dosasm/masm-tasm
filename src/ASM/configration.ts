@@ -13,7 +13,7 @@ let allowedEMU = () => {
         emu.push(DOSEMU.auto, DOSEMU.msdos);
     }
     return emu;
-}
+};
 export const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
     let str: string = val;
     if (src) {
@@ -42,16 +42,16 @@ export class Config {
     };
     /**use MASM or TASM */
     public get MASMorTASM(): ASMTYPE {
-        return this._target.get('MASMorTASM') as ASMTYPE
+        return this._target.get('MASMorTASM') as ASMTYPE;
     };
     /**use dosbox or msdos as emulator */
     public get DOSemu(): DOSEMU {
-        return validfy(this._target.get('emulator'), allowedEMU())
+        return validfy(this._target.get('emulator'), allowedEMU());
     };
     //Uris and tools information
     public Uris: TOOLURIS;
-    public get Seperate(): boolean { return this._target.get('ASM.seperateSpace') as boolean }
-    public get Clean(): boolean { return this._target.get('ASM.clean') as boolean }
+    public get Seperate(): boolean { return this._target.get('ASM.seperateSpace') as boolean; }
+    public get Clean(): boolean { return this._target.get('ASM.clean') as boolean; }
     private readonly _exturi: Uri;
     private _toolpath: string | undefined;
     constructor(ctx: ExtensionContext) {

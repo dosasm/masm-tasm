@@ -2,7 +2,7 @@ import { Uri } from 'vscode';
 import { ASMTYPE, Config, SRCFILE } from '../configration';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { DOSBox } from './DOSBox';
-import { MsdosPlayer } from './msdos-player'
+import { MsdosPlayer } from './msdos-player';
 
 export class AutoMode implements EMURUN {
     private _dosbox: DOSBox;
@@ -27,7 +27,7 @@ export class AutoMode implements EMURUN {
     async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
         let msg = await this._msdos.runPlayer(this._conf);
         if (await msgprocessor(msg)) {
-            await this._dosbox.Run(src)
+            await this._dosbox.Run(src);
         }
         return;
     }

@@ -11,16 +11,16 @@ class JSdosVSCodeConfig {
     };
     getAction(scope: "masm" | "tasm" | "tasm_debug" | "masm_debug" | "run") {
         let a = this._target.get('AsmConfig') as any;
-        let key = scope.toLowerCase()
+        let key = scope.toLowerCase();
         let output = a[key];
         if (Array.isArray(output)) {
             if (this.replacer) {
-                output = output.map(this.replacer)
+                output = output.map(this.replacer);
             }
-            return output
+            return output;
         }
-        window.showErrorMessage(`action ${key} hasn't been defined`)
-        throw new Error(`action ${key} hasn't been defined`)
+        window.showErrorMessage(`action ${key} hasn't been defined`);
+        throw new Error(`action ${key} hasn't been defined`);
     }
     replacer?: ((str: string) => string) | undefined;
     public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
@@ -40,23 +40,23 @@ class JSdosVSCodeConfig {
             case ASMTYPE.MASM: asmlink = this.getAction('masm'); break;
             case ASMTYPE.TASM: asmlink = this.getAction('tasm'); break;
         }
-        return asmlink.concat(this.runDebugCmd(runOrDebug, ASM))
+        return asmlink.concat(this.runDebugCmd(runOrDebug, ASM));
     }
 }
 
 export class JSDos implements EMURUN {
     private _conf: Config;
     private _VscConf: JSdosVSCodeConfig;
-    private _wsrc?: SRCFILE
+    private _wsrc?: SRCFILE;
     constructor(conf: Config) {
         this._conf = conf;
         this._VscConf = new JSdosVSCodeConfig();
     }
     prepare(opt: ASMPREPARATION): boolean | Promise<boolean> {
         JsdosPanel.createOrShow(this._conf.Uris.jsdos);
-        let filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T"
+        let filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
         let v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
-        this._wsrc = new SRCFILE(v)
+        this._wsrc = new SRCFILE(v);
         this._VscConf.replacer = (val) => str_replacer(val, this._conf, this._wsrc);
         return true;
     }
@@ -68,17 +68,17 @@ export class JSDos implements EMURUN {
         throw new Error('Method not implemented.');
     }
     Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        return this.runDebug(true, src, msgprocessor)
+        return this.runDebug(true, src, msgprocessor);
     }
     Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        return this.runDebug(false, src, msgprocessor)
+        return this.runDebug(false, src, msgprocessor);
     }
     public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor) {
         let filearray = await fs.readFile(src.uri);
         if (JsdosPanel.currentPanel && this._wsrc) {
             let opt = {
                 writes: [{ path: this._wsrc.uri.fsPath, body: filearray.toString() }]
-            }
+            };
             let p = JsdosPanel.currentPanel.launchJsdos(opt);
             await p.ready;
             let cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
@@ -172,14 +172,14 @@ class JsdosPanel {
                         console.log(message.text);
                         this.WdosboxStdoutAppend(message.text);
                         if (this.WdosboxStdout.includes('exit\n')) {
-                            JsdosPanel.currentPanel?.dispose()
+                            JsdosPanel.currentPanel?.dispose();
                         };
                         this.ListenWdosboxStdout(message.text);
                         break;
                     case 'jsdosStatus':
                         this.jsdosStatus = message.text;
                         if (this.jsdosStatus === 'running') {
-                            this.JSDOSready()
+                            this.JSDOSready();
                         }
                         break;
                     case 'wdosbox console stdout':
@@ -202,27 +202,27 @@ class JsdosPanel {
             (resolve, reject) => {
                 this.ListenWdosboxStdout = (val: string) => {
                     resolve(val);
-                    this.ListenWdosboxStdout = (val: string) => { }
-                }
+                    this.ListenWdosboxStdout = (val: string) => { };
+                };
             }
-        )
+        );
     }
-    public ListenWdosboxStdout = (val: string) => { }
-    public JSDOSready = () => { }
+    public ListenWdosboxStdout = (val: string) => { };
+    public JSDOSready = () => { };
     public launchJsdos(opt?: { writes: JSDOSCREATEFILE[] }): { ready: Promise<boolean> } {
-        let msg: any = { command: 'launch' }
+        let msg: any = { command: 'launch' };
         if (opt) {
             msg = {
                 command: 'launch_wait_fs',
                 text: opt
-            }
+            };
         }
         this._panel.webview.postMessage(msg);
         return {
             ready: new Promise(
-                (resolve, reject) => { this.JSDOSready = () => { resolve(true) } }
+                (resolve, reject) => { this.JSDOSready = () => { resolve(true); }; }
             )
-        }
+        };
     }
 
     public sendCmd(cmds: string[]): boolean {
@@ -230,11 +230,11 @@ class JsdosPanel {
             let msg: any = {
                 command: 'execCommand',
                 commands: cmds
-            }
+            };
             this._panel.webview.postMessage(msg);
             return true;
         }
-        console.warn(`cancell send command for wdosbox is not ready status:${this.jsdosStatus} `)
+        console.warn(`cancell send command for wdosbox is not ready status:${this.jsdosStatus} `);
         return false;
     }
 
@@ -304,7 +304,7 @@ class JsdosPanel {
   <script src="${jsdosUri}"></script>
   <script src="${ExtJsdosUri}"></script>
   <script>jsdos2('${wdosboxUri}', '${AsmToolUri}')</script>
-</body>`
+</body>`;
     }
 }
 
