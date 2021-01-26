@@ -12,6 +12,8 @@ const DOSBOX_CMDS_LIMIT = 5;
 //the time interval between launch dosbox and read asmlog file
 const WAIT_AFTER_LAUNCH_DOSBOX = 8000;
 const DOSBOX_CONF_FILENAME = 'VSC-ExtUse.conf';
+const ASM_LOG_FILE = 'ASM.LOG';
+const LINK_LOG_FILE = 'LINK.LOG';
 const DELAY = (timeout: number) => new Promise((resolve, reject) => {
     setTimeout(resolve, timeout);
 });
@@ -163,13 +165,17 @@ export class DOSBox extends dosbox_core implements EMURUN {
      * @param file the Uri of the file
      * @returns the Assembler's output
      */
-    public async runDebug(src: SRCFILE, runOrDebug: boolean) {
-        let loguri = Uri.joinPath(this._conf.Uris.globalStorage, 'asm.log');
-        let AsmMsg: string = "";
+    public async runDebug(src: SRCFILE, runOrDebug: boolean): Promise<{ asm: string, link: string }> {
+        let asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, ASM_LOG_FILE);
+        let linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, LINK_LOG_FILE);
+        let Msg;
         this.runDosbox(src.folder, this.asmConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
         await DELAY(WAIT_AFTER_LAUNCH_DOSBOX);
-        AsmMsg = (await workspace.fs.readFile(loguri)).toString();
-        return AsmMsg;
+        Msg = {
+            asm: (await workspace.fs.readFile(asmloguri)).toString(),
+            link: (await workspace.fs.readFile(asmloguri)).toString()
+        };
+        return Msg;
     }
 
     /**open dosbox and do things about it

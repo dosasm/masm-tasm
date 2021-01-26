@@ -3,7 +3,7 @@ import * as nls from 'vscode-nls';
 import { Config, DOSEMU, SRCFILE } from './configration';
 import { AssemblerDiag, DIAGCODE } from './diagnose/diagnose';
 import { AutoMode } from './emulator/auto-mode';
-import { DOSBox } from './emulator/dosbox';
+import { DOSBox } from './emulator/DOSBox';
 import { JSDos } from './emulator/JS-Dos';
 import { MsdosPlayer } from './emulator/msdos-player';
 import { Logger } from './outputChannel';
