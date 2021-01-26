@@ -4,55 +4,59 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import { DIAGCODE } from '../../ASM/diagnose/diagnose';
+import { DOSEMU, ASMTYPE } from '../../ASM/configration';
 // import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
-	test('open dosbox test', function (done) {
-		vscode.commands.executeCommand('masm-tasm.dosboxhere', undefined, 'exit').then(
-			(val) => {
-				assert.ok((val as any).exitcode === 0, 'start code success');
-				done();
-			}
-		);
-	});
+
 	testAsmCode('1.asm', DIAGCODE.ok);
 	testAsmCode('1err.asm', DIAGCODE.hasError);
 	//testAsmCode('2.asm', 0, false);
 });
 
 //1err.asm
-async function testAsmCode(file: string, diagcode: DIAGCODE) {
+function testAsmCode(file: string, diagcode: DIAGCODE) {
 	const MASMorTASM = [
-		"MASM",
-		"TASM",
+		ASMTYPE.MASM,
+		ASMTYPE.TASM,
 	];
-	const emulator: string[] = ["dosbox"];
+	const emulator = [DOSEMU.jsdos, DOSEMU.dosbox];
 	if (process.platform === 'win32') {
-		emulator.push("msdos player", "auto");
+		emulator.push(DOSEMU.msdos, DOSEMU.auto);
 	}
-	const fn = () => {
+	const testfile = async function (asm: ASMTYPE, emu: DOSEMU) {
+		test(`run ${asm} via ${emu} ${diagcode}`, async function () {
+			let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
+			await vscode.commands.executeCommand('vscode.open', samplefile);
+
+			await vscode.workspace.getConfiguration('masmtasm').update(
+				"dosbox.run", "exit"
+			);
+			await vscode.workspace.getConfiguration('masmtasm').update(
+				"ASM.emulator", emu
+			);
+			await vscode.workspace.getConfiguration('masmtasm').update(
+				"ASM.MASMorTASM", asm
+			);
+			let vscodecmds = await vscode.commands.getCommands(true);
+			let cmd = 'masm-tasm.runASM';
+			if (vscodecmds.includes(cmd)) {
+				let a = (await vscode.commands.executeCommand(cmd) as any);
+				assert.ok(a.diagCode === diagcode);
+				return a;
+			} else {
+				console.error('no command' + cmd);
+			}
+			return null;
+		});
+	};
+	suite(`test file ${file}`, () => {
 		for (let emu of emulator) {
 			for (let asm of MASMorTASM) {
-				test(`run ${asm} via ${emu} ${diagcode}`, async function () {
-					await vscode.workspace.getConfiguration('masmtasm').update(
-						"dosbox.run", "exit"
-					);
-					await vscode.workspace.getConfiguration('masmtasm').update(
-						"ASM.emulator", emu
-					);
-					await vscode.workspace.getConfiguration('masmtasm').update(
-						"ASM.MASMorTASM", asm
-					);
-					let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
-					await vscode.commands.executeCommand('vscode.open', samplefile);
-					let a = (await vscode.commands.executeCommand('masm-tasm.runASM') as any);
-					assert.ok(a.diagCode === diagcode);
-					return a;
-				});
+				testfile(asm, emu);
 			}
 		}
-	};
-	suite(`test file ${file}`, fn);
+	});
 }
 

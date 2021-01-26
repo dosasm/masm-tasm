@@ -83,7 +83,6 @@ export class JSDos implements EMURUN {
                 writes: [{ path: this._wsrc.uri.fsPath, body: filearray.toString() }]
             };
             let p = JsdosPanel.currentPanel.launchJsdos(opt);
-            await p.ready;
             let cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
             JsdosPanel.currentPanel.sendCmd(cmds);
             let msg = await JsdosPanel.currentPanel.getStdout();
@@ -173,7 +172,7 @@ class JsdosPanel {
             message => {
                 switch (message.command) {
                     case 'stdoutData':
-                        console.log(message.text);
+                        // console.log(message.text);
                         this.WdosboxStdoutAppend(message.text);
                         if (this.WdosboxStdout.includes('exit\n')) {
                             JsdosPanel.currentPanel?.dispose();
@@ -205,8 +204,10 @@ class JsdosPanel {
         return new Promise(
             (resolve, reject) => {
                 this.ListenWdosboxStdout = (val: string) => {
-                    resolve(val);
-                    this.ListenWdosboxStdout = (val: string) => { };
+                    if (val.includes('ASM') || val.includes('Assembler')) {
+                        resolve(val);
+                        this.ListenWdosboxStdout = (val: string) => { };
+                    }
                 };
             }
         );
@@ -224,13 +225,13 @@ class JsdosPanel {
         this._panel.webview.postMessage(msg);
         return {
             ready: new Promise(
-                (resolve, reject) => { this.JSDOSready = () => { resolve(true); }; }
+                (resolve) => { this.JSDOSready = () => { resolve(true); this.JSDOSready = () => { }; }; }
             )
         };
     }
 
     public sendCmd(cmds: string[]): boolean {
-        if (this.jsdosStatus === 'running') {
+        if (this.jsdosStatus !== 'exit') {
             let msg: any = {
                 command: 'execCommand',
                 commands: cmds
@@ -238,7 +239,7 @@ class JsdosPanel {
             this._panel.webview.postMessage(msg);
             return true;
         }
-        console.warn(`cancel send command for wdosbox is not ready status:${this.jsdosStatus} `);
+        console.warn(`cancel send command for wdosbox has exit (${this.jsdosStatus}) `);
         return false;
     }
 

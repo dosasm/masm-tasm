@@ -1,3 +1,4 @@
+import { Cipher } from 'crypto';
 import * as jsdos from 'js-dos';
 import { DosCommandInterface } from 'js-dos/dist/typescript/js-dos-ci';
 import { DosFS } from 'js-dos/dist/typescript/js-dos-fs';
@@ -14,6 +15,7 @@ class VSCJSDOS {
     ci?: DosCommandInterface;
     /**currently usable in `fs` status */
     fs?: DosFS;
+    cmdQueue = ["set path=c:\\asm\\masm;c:\\asm\\tasm", "mkdir code", "cd code"];
     updateStatus(status: 'preparing' | 'fs' | 'main' | 'running' | 'exit') {
         this.status = status;
         //📤 send status message from webview to extension
@@ -66,8 +68,9 @@ function jsdos2(wdosboxUrl: string, toolszip: string): VSCJSDOS {
         }
         vscJsdos.updateStatus('main');
         vscJsdos.ci = await main(
-            ["-c", "set path=c:\\asm\\masm;c:\\asm\\tasm", "-c", "mkdir code", "-c", "cd code"]
+            []
         );
+        vscJsdos.ci.shell(...vscJsdos.cmdQueue);
         vscJsdos.updateStatus('running');
         //📤 send the wdosbox's stdout from webview to extension
         let stdout = "";
@@ -106,6 +109,8 @@ function jsdos2(wdosboxUrl: string, toolszip: string): VSCJSDOS {
             case 'execCommand':
                 if (vscJsdos.status === 'running') {
                     vscJsdos.ci.shell(...message.commands);
+                } else {
+                    vscJsdos.cmdQueue.push(...message.commands);
                 }
                 break;
             case 'launch':
