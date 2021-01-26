@@ -127,7 +127,7 @@ export class DOSBox extends dosbox_core implements EMURUN {
                     content: message
                 });
                 if (vscConf.console === 'redirect(show)') {
-                    Logger.OutChannel.show();
+                    Logger.OutChannel.show(true);
                 }
                 else if (vscConf.console === 'redirect(hide)') {
                     Logger.OutChannel.hide();

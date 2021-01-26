@@ -102,7 +102,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
             });
         }
         if (MsdosPlayer.msdosTerminal) {
-            MsdosPlayer.msdosTerminal.show();
+            MsdosPlayer.msdosTerminal.show(true);
             if (command) {
                 MsdosPlayer.msdosTerminal.sendText(command);
             }
