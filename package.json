@@ -296,8 +296,12 @@
             "after_action"
           ]
         },
+        "masmtasm.jsdos.wdosbox": {
+          "markdownDescription": "The extension packaged the as default variant. We can use different version. See [js-dos-622-faq-changing-dosbox-variant](https://js-dos.com/#js-dos-622-faq-changing-dosbox-variant)",
+          "type": "string"
+        },
         "masmtasm.jsdos.AsmConfig": {
-          "description": "The commands to use when in dosbox mode.\nThe extension will mount this folder to dosbox's disk C, the file's folder to disk D\nand a seperate space as dosbox's disk X,the extension will read file asm.log to process assembler's message",
+          "description": "The commands to use when in wdosbox(jsdos mode).\n",
           "default": {
             "masm": [
               "masm ${filename}.ASM;",

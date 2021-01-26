@@ -9,6 +9,9 @@ class JSdosVSCodeConfig {
     private get _target() {
         return vscode.workspace.getConfiguration('masmtasm.jsdos');
     };
+    public get wdosbox() {
+        return this._target.get("wdosbox") as string;
+    }
     getAction(scope: "masm" | "tasm" | "tasm_debug" | "masm_debug" | "run") {
         let a = this._target.get('AsmConfig') as any;
         let key = scope.toLowerCase();
@@ -54,6 +57,7 @@ export class JSDos implements EMURUN {
     }
     prepare(opt: ASMPREPARATION): boolean | Promise<boolean> {
         JsdosPanel.createOrShow(this._conf.Uris.jsdos);
+        JsdosPanel.wDOSBoxpath = this._VscConf.wdosbox;
         let filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
         let v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
         this._wsrc = new SRCFILE(v);
@@ -61,7 +65,6 @@ export class JSDos implements EMURUN {
         return true;
     }
     openEmu(folder: vscode.Uri) {
-        JsdosPanel.createOrShow(this._conf.Uris.jsdos);
         if (JsdosPanel.currentPanel) {
             JsdosPanel.currentPanel.launchJsdos();
         }
@@ -112,6 +115,7 @@ class JsdosPanel {
     private _disposables: vscode.Disposable[] = [];
 
     public jsdosStatus?: string;
+    public static wDOSBoxpath?: string;
 
     public static createOrShow(jsdosUri: vscode.Uri) {
 
@@ -147,7 +151,7 @@ class JsdosPanel {
         this._jsdosUri = extensionUri;
 
         // Set the webview's initial html content
-        this._update();
+        // this._update();
 
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel is closed programatically
@@ -234,7 +238,7 @@ class JsdosPanel {
             this._panel.webview.postMessage(msg);
             return true;
         }
-        console.warn(`cancell send command for wdosbox is not ready status:${this.jsdosStatus} `);
+        console.warn(`cancel send command for wdosbox is not ready status:${this.jsdosStatus} `);
         return false;
     }
 
@@ -265,9 +269,20 @@ class JsdosPanel {
         const ExtJsdosOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'extJs-dos.js');
         // And the uri we use to load this script in the webview
         const jsdosUri = webview.asWebviewUri(jsdosOnDisk);
-        const wdosboxUri = webview.asWebviewUri(wdosboxOnDisk);
+        let wdosboxUri = webview.asWebviewUri(wdosboxOnDisk);
         const AsmToolUri = webview.asWebviewUri(AsmToolOnDisk);
         const ExtJsdosUri = webview.asWebviewUri(ExtJsdosOnDisk);
+        if (JsdosPanel.wDOSBoxpath) {
+            let uri: Uri;
+            if (JsdosPanel.wDOSBoxpath.includes('https')) {
+                uri = Uri.parse(JsdosPanel.wDOSBoxpath.trim());
+            } else {
+                uri = Uri.joinPath(Uri.parse('https://js-dos.com/6.22/current/'), JsdosPanel.wDOSBoxpath.trim());
+            }
+            wdosboxUri = uri;
+        }
+
+
 
         // // Local path to css styles
         // const styleResetPath = vscode.Uri.joinPath(this._jsdosUri, 'media', 'reset.css');
@@ -285,25 +300,13 @@ class JsdosPanel {
 <head>
   <meta charset="utf-8">
   <title>js-dos 6.22, ASM</title>
-  <style>
-    html,
-    body,
-    canvas,
-    .dosbox-container {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-  </style>
 </head>
 
 <body>
   <canvas id="jsdos"></canvas>
   <script src="${jsdosUri}"></script>
   <script src="${ExtJsdosUri}"></script>
-  <script>jsdos2('${wdosboxUri}', '${AsmToolUri}')</script>
+  <script>window.vd=jsdos2('${wdosboxUri}', '${AsmToolUri}')</script>
 </body>`;
     }
 }

@@ -8,20 +8,19 @@ const vscode = acquireVsCodeApi();
 
 class VSCJSDOS {
     /**the status of wdosbox
-     * TODO: figure out when the wdosbox exit
-     */
-    status: 'preparing' | 'fs' | 'main' | 'running' | 'exit'
+     * TODO: figure out when the wdosbox exit*/
+    status: 'preparing' | 'fs' | 'main' | 'running' | 'exit';
     /**currently usable in `running` status */
-    ci?: DosCommandInterface
+    ci?: DosCommandInterface;
     /**currently usable in `fs` status */
-    fs?: DosFS
+    fs?: DosFS;
     updateStatus(status: 'preparing' | 'fs' | 'main' | 'running' | 'exit') {
         this.status = status;
         //📤 send status message from webview to extension
         vscode.postMessage({
             command: 'jsdosStatus',
             text: status
-        })
+        });
     }
 }
 
@@ -30,8 +29,9 @@ export type ReadyOption = {
     commands?: string[]
 };
 
-function jsdos2(wdosboxUrl: string, toolszip: string) {
-    var vscJsdos: VSCJSDOS = new VSCJSDOS;
+function jsdos2(wdosboxUrl: string, toolszip: string): VSCJSDOS {
+    console.log('start jsdos2');
+    let vscJsdos: VSCJSDOS = new VSCJSDOS;
     vscJsdos.updateStatus('preparing');
 
     let canvas = document.getElementById("jsdos") as HTMLCanvasElement;
@@ -53,9 +53,8 @@ function jsdos2(wdosboxUrl: string, toolszip: string) {
                 text: message
             });
         },
-    }
+    };
     const dosReady = async (fs: DosFS, main: jsdos.DosMainFn, opt?: ReadyOption) => {
-        (window as any).vscJsdos = vscJsdos;
         vscJsdos.updateStatus('fs');
         await fs.extractAll([
             { url: toolszip, mountPoint: "/asm" }]
@@ -76,7 +75,7 @@ function jsdos2(wdosboxUrl: string, toolszip: string) {
             (data) => {
                 stdout += data;
                 if (data === '\n\r\n') {
-                    console.log(stdout)
+                    console.log(stdout);
                 }
             }
         );
@@ -93,7 +92,7 @@ function jsdos2(wdosboxUrl: string, toolszip: string) {
                 length = stdout.length;
             },
             880
-        )
+        );
     };
     //📥 receive message from extension Handle the message inside the webview
     window.addEventListener('message', event => {
@@ -106,7 +105,7 @@ function jsdos2(wdosboxUrl: string, toolszip: string) {
                 break;
             case 'execCommand':
                 if (vscJsdos.status === 'running') {
-                    vscJsdos.ci.shell(...message.commands)
+                    vscJsdos.ci.shell(...message.commands);
                 }
                 break;
             case 'launch':
@@ -117,5 +116,6 @@ function jsdos2(wdosboxUrl: string, toolszip: string) {
                 break;
         }
     });
+    return vscJsdos;
 }
 
