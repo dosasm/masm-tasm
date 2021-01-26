@@ -87,7 +87,7 @@ export class JSDos implements EMURUN {
             let cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
             JsdosPanel.currentPanel.sendCmd(cmds);
             let msg = await JsdosPanel.currentPanel.getStdout();
-            msgprocessor(msg, { preventWarn: true });
+            await msgprocessor(msg, { preventWarn: true });
         }
     }
     copyUri?: vscode.Uri | undefined;

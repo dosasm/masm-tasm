@@ -6,7 +6,7 @@ import { AutoMode } from './emulator/auto-mode';
 import { DOSBox } from './emulator/dosbox';
 import { JSDos } from './emulator/JS-Dos';
 import { MsdosPlayer } from './emulator/msdos-player';
-import { logger, OutChannel } from './outputChannel';
+import { Logger } from './outputChannel';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -145,14 +145,14 @@ export class AsmAction implements Disposable {
             if (this._config.Clean) {
                 await src.cleanDir();
             }
-            logger(msg);
+            Logger.send(msg);
             const msgProcessor: MSGProcessor =
                 (message: string | { asm: string; link: string; }, opt?: { preventWarn: boolean }) => {
                     let msg = typeof (message) === 'string' ? message : message.asm;
                     let diag = this.landiag.ErrMsgProcess(msg, doc, this.ASM);
                     output.diaginfo = diag;
                     if (diag) {
-                        logger({
+                        Logger.send({
                             title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn),
                             content: msg
                         });
@@ -164,7 +164,7 @@ export class AsmAction implements Disposable {
                             return this.showWarnInfo();
                         case DIAGCODE.hasError:
                             this.showErrorInfo();
-                            OutChannel.show(true);
+                            Logger.OutChannel.show(true);
                             return false;
                     }
                     return false;
@@ -204,7 +204,7 @@ export class AsmAction implements Disposable {
         this.landiag.cleandiagnose('both');
     }
     public dispose() {
-        OutChannel.dispose();
+        Logger.OutChannel.dispose();
         this.cleanalldiagnose();
     }
     public get ASM() { return this._config.MASMorTASM; }

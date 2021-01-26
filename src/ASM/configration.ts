@@ -1,6 +1,5 @@
 import { ExtensionContext, FileType, TextDocument, Uri, window, workspace } from 'vscode';
-import { scanTools } from './conf_tools';
-import { logger } from './outputChannel';
+import { Logger } from './outputChannel';
 import { inArrays, validfy } from './util';
 
 const packaged_Tools = "./tools";
@@ -77,7 +76,7 @@ export class Config {
         };
         fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
         this._toolpath = this._target.get('toolspath');
-        logger({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
+        Logger.send({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
     }
     public get dosboxconfuri(): Uri {
         let uri = Uri.joinPath(this.Uris.globalStorage, 'VSC-ExtUse.conf');

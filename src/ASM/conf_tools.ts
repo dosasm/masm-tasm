@@ -1,6 +1,6 @@
 import { workspace, Uri, window } from 'vscode';
 import { Validator } from 'jsonschema';
-import { logger } from './outputChannel';
+import { Logger } from './outputChannel';
 
 const fs = workspace.fs;
 const CONF_FILE_NAME = './asmAction.json';
@@ -21,7 +21,7 @@ export async function scanTools(uri: Uri, extUri: Uri): Promise<ToolsConfig> {
             return json;
         }
         else {
-            logger({
+            Logger.send({
                 title: `[invalid Tool Conf] ${fileuri.fsPath}`,
                 content: r.errors.toString()
             });

@@ -2,7 +2,7 @@ import { TextEncoder } from "util";
 import { Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
-import { logger, OutChannel } from '../outputChannel';
+import { Logger } from '../outputChannel';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from "../runcode";
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox as dosbox_core, WINCONSOLEOPTION } from './dosbox_core';
@@ -120,19 +120,19 @@ export class DOSBox extends dosbox_core implements EMURUN {
 
         if (this.redirect) {
             this.stdoutHander = (message: string, text: string, code: number) => {
-                logger({
+                Logger.send({
                     title: localize('dosbox.console.stdout', '[dosbox console stdout] No.{0}', code.toString()),
                     content: message
                 });
                 if (vscConf.console === 'redirect(show)') {
-                    OutChannel.show();
+                    Logger.OutChannel.show();
                 }
                 else if (vscConf.console === 'redirect(hide)') {
-                    OutChannel.hide();
+                    Logger.OutChannel.hide();
                 }
             };
             this.stderrHander = (message: string, text: string, code: number) => {
-                logger({
+                Logger.send({
                     title: localize('dosbox.console.stderr', '[dosbox console stderr] No.{0}', code.toString()),
                     content: message
                 });
