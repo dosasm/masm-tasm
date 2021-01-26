@@ -74,9 +74,9 @@ const vscePackageTask = function () {
 const copyJsdos = function () {
 	return gulp.src(
 		[
-			'node_modules/_js-dos@6.22.59@js-dos/dist/wdosbox.js',
-			'node_modules/_js-dos@6.22.59@js-dos/dist/wdosbox.wasm.js',
-			'node_modules/_js-dos@6.22.59@js-dos/dist/js-dos.js'
+			'node_modules/js-dos/dist/wdosbox.js',
+			'node_modules/js-dos/dist/wdosbox.wasm.js',
+			'node_modules/js-dos/dist/js-dos.js'
 		]
 	).pipe(gulp.dest('tools/js-dos'))
 }
