@@ -1,12 +1,12 @@
 import { TextEncoder } from "util";
-import { Uri, window, workspace } from 'vscode';
+import { FileType, Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
 import { Logger } from '../outputChannel';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from "../runcode";
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox as dosbox_core, WINCONSOLEOPTION } from './dosbox_core';
-
+const fs = workspace.fs;
 //the limit of commands can be exec in dosbox, over this limit the commands will be write to a file
 const DOSBOX_CMDS_LIMIT = 5;
 //the time interval between launch dosbox and read asmlog file
@@ -152,12 +152,16 @@ export class DOSBox extends dosbox_core implements EMURUN {
         return this.runDosbox(folder);
     }
     async Run(src: SRCFILE, msgprocessor?: MSGProcessor): Promise<any> {
-        let asm = await this.runDebug(src, true);
+        let { all, race } = await this.runDebug(src, true);
+        let asm = await race;
         if (msgprocessor) { msgprocessor(asm, { preventWarn: true }); }
+        await all;
     }
     async Debug(src: SRCFILE, msgprocessor?: MSGProcessor): Promise<any> {
-        let asm = await this.runDebug(src, false);
+        let { all, race } = await this.runDebug(src, true);
+        let asm = await race;
         if (msgprocessor) { msgprocessor(asm, { preventWarn: true }); }
+        await all;
     }
     /**
      * A function to run or debug ASM codes in DOSBox
@@ -165,17 +169,46 @@ export class DOSBox extends dosbox_core implements EMURUN {
      * @param file the Uri of the file
      * @returns the Assembler's output
      */
-    public async runDebug(src: SRCFILE, runOrDebug: boolean): Promise<{ asm: string, link: string }> {
+    public async runDebug(src: SRCFILE, runOrDebug: boolean) {
         let asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, ASM_LOG_FILE);
         let linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, LINK_LOG_FILE);
-        let Msg;
-        this.runDosbox(src.folder, this.asmConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
-        await DELAY(WAIT_AFTER_LAUNCH_DOSBOX);
-        Msg = {
-            asm: (await workspace.fs.readFile(asmloguri)).toString(),
-            link: (await workspace.fs.readFile(asmloguri)).toString()
+        let dirs = await fs.readDirectory(this._conf.Uris.globalStorage);
+        for (const dir of dirs) {
+            if (dir[0] === ASM_LOG_FILE && dir[1] === FileType.File) { fs.delete(asmloguri); }
+            if (dir[0] === LINK_LOG_FILE && dir[1] === FileType.File) { fs.delete(linkloguri); }
+        }
+
+        const readMsg = async (): Promise<{ asm: string; link: string; }> => {
+            let asm = (await fs.readFile(asmloguri)).toString();
+            let link = (await fs.readFile(linkloguri)).toString();
+            return { asm, link };
         };
-        return Msg;
+        const exitRead: Promise<{ asm: string; link: string; }> = new Promise(
+            async (resolve, reject) => {
+                await this.runDosbox(src.folder, this.asmConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
+                let msg = await readMsg();
+                if (msg.asm.trim().length === 0) {
+                    reject('empty log');
+                } else {
+                    resolve(msg);
+                }
+            }
+        );
+        const delayRead: Promise<{ asm: string; link: string; }> = new Promise(
+            async (resolve, reject) => {
+                await DELAY(WAIT_AFTER_LAUNCH_DOSBOX);
+                let msg = await readMsg();
+                if (msg.asm.trim().length === 0) {
+                    reject('empty log');
+                } else {
+                    resolve(msg);
+                }
+
+            }
+        );
+        const all = Promise.all([exitRead, delayRead]);
+        const race = Promise.race([exitRead, delayRead]);
+        return { all, race };
     }
 
     /**open dosbox and do things about it
@@ -200,7 +233,7 @@ export class DOSBox extends dosbox_core implements EMURUN {
             let omit = boxcmd.slice(DOSBOX_CMDS_LIMIT - 1);
             let unit8 = new TextEncoder().encode(omit.join('\n'));
             let dst = Uri.joinPath(this._conf.Uris.globalStorage, 'more.bat');
-            await workspace.fs.writeFile(dst, unit8);
+            await fs.writeFile(dst, unit8);
             boxcmd.splice(DOSBOX_CMDS_LIMIT - 1, omit.length);
             boxcmd.push('@x:\\more.bat');
         }
