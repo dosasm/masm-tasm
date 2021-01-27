@@ -30,9 +30,10 @@ class VSCJSDOS {
         console.log(this);
     }
 }
-let vscJsdos: VSCJSDOS = new VSCJSDOS();
+
 
 function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
+    let vscJsdos: VSCJSDOS = new VSCJSDOS();
     console.log('start jsdos2');
     vscJsdos.updateStatus('preparing');
 
@@ -64,6 +65,7 @@ function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
                 stdout += data;
                 if (stdout === 'exit\n') {
                     vscJsdos.updateStatus('exit');
+                    alert('wdosbox may has been exit');
                 }
             }
         );
