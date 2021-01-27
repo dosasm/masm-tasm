@@ -289,13 +289,11 @@ class JsdosPanel {
 
 
 
-        // // Local path to css styles
-        // const styleResetPath = vscode.Uri.joinPath(this._jsdosUri, 'media', 'reset.css');
-        // const stylesPathMainPath = vscode.Uri.joinPath(this._jsdosUri, 'media', 'vscode.css');
+        // Local path to css styles
+        const stylePath = vscode.Uri.joinPath(this._jsdosUri, 'extJs-dos.js');
 
-        // // Uri to load styles into webview
-        // const stylesResetUri = webview.asWebviewUri(styleResetPath);
-        // const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+        // Uri to load styles into webview
+        const stylesUri = webview.asWebviewUri(stylePath);
 
         // Use a nonce to only allow specific scripts to be run
         const nonce = getNonce();
@@ -305,8 +303,8 @@ class JsdosPanel {
 <head>
   <meta charset="utf-8">
   <title>js-dos 6.22, ASM</title>
+  <link href="${stylesUri}" rel="stylesheet">
 </head>
-
 <body>
   <canvas id="jsdos"></canvas>
   <script src="${jsdosUri}"></script>
