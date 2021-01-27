@@ -61,7 +61,7 @@ export class JSDos implements EMURUN {
         this._VscConf = new JSdosVSCodeConfig();
     }
     async prepare(opt: ASMPREPARATION): Promise<boolean> {
-        let resourcesUri = Uri.joinPath(this._conf.Uris.jsdos, 'resources')
+        let resourcesUri = Uri.joinPath(this._conf.Uris.jsdos, 'resources');
         JsdosPanel.createOrShow(resourcesUri);
         JsdosPanel.wDOSBoxpath = this._VscConf.wdosbox;
         let filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
