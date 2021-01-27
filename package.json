@@ -440,10 +440,10 @@
     ]
   },
   "scripts": {
+    "clean": "gulp clean",
     "compile": "gulp && webpack --mode production --vscode-nls && tsc -p ./tools/js-dos",
-    "compile-tsc": "tsc -p ./ && tsc -p ./tools/js-dos",
-    "compile-dev": "webpack --mode development",
-    "compile-nls": "gulp && webpack --mode development --vscode-nls",
+    "compile-dev": "gulp && webpack --mode development --vscode-nls && tsc -p ./tools/js-dos",
+    "compile-tsc": "tsc -p src/ && tsc -p ./tools/js-dos",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
     "watch": "tsc -watch -p ./ --rootDir src",

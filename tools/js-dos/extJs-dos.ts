@@ -1,7 +1,7 @@
-import { Cipher } from 'crypto';
 import * as jsdos from 'js-dos';
 import { DosCommandInterface } from 'js-dos/dist/typescript/js-dos-ci';
 import { DosFS } from 'js-dos/dist/typescript/js-dos-fs';
+import { ReadyOption } from '../../src/ASM/emulator/JS-Dos';
 declare function acquireVsCodeApi();
 declare const Dos: jsdos.DosFactory;
 
@@ -23,17 +23,13 @@ class VSCJSDOS {
             command: 'jsdosStatus',
             text: status
         });
+        console.log(this);
     }
 }
-
-export type ReadyOption = {
-    writes?: { path: string, body: ArrayBuffer | Uint8Array | string }[],
-    commands?: string[]
-};
+let vscJsdos: VSCJSDOS = new VSCJSDOS();
 
 function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
     console.log('start jsdos2');
-    let vscJsdos: VSCJSDOS = new VSCJSDOS;
     vscJsdos.updateStatus('preparing');
 
     const dosReady = async (fs: DosFS, main: jsdos.DosMainFn, opt?: ReadyOption) => {
@@ -62,8 +58,8 @@ function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
         vscJsdos.ci.listenStdout(
             (data) => {
                 stdout += data;
-                if (data === '\n\r\n') {
-                    console.log(stdout);
+                if (stdout === 'exit\n') {
+                    vscJsdos.updateStatus('exit');
                 }
             }
         );
@@ -120,10 +116,11 @@ function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
                 }
                 break;
             case 'launch':
-                Dos(canvas, option).ready(dosReady);
-                break;
-            case 'launch_wait_fs':
-                try { Dos(canvas, option).ready((f, m) => dosReady(f, m, message.text)); }
+                try {
+                    vscJsdos = new VSCJSDOS();
+                    Dos(canvas, option)
+                        .ready((f, m) => dosReady(f, m, message.text));
+                }
                 catch (e) { console.error(e); }
                 break;
         }

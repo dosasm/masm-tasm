@@ -3,6 +3,10 @@ import { Uri, window } from 'vscode';
 import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { compressAsmTools } from './js-dos_zip';
+export interface ReadyOption {
+    writes: { path: string, body: ArrayBuffer | Uint8Array | string }[],
+    commands: string[]
+};
 
 const fs = vscode.workspace.fs;
 
@@ -64,11 +68,14 @@ export class JSDos implements EMURUN {
         this._wsrc = new SRCFILE(v);
         this._VscConf.replacer = (val) => str_replacer(val, this._conf, this._wsrc);
         await compressAsmTools(this._conf.Uris.tools, this._conf.Uris.jsdos);
+        let filearray = await fs.readFile(opt.src.uri);
+        this._launch.writes.push({ path: this._wsrc.uri.fsPath, body: filearray.toString() });
         return true;
     }
+    private _launch: ReadyOption = { writes: [], commands: [] };
     openEmu(folder: vscode.Uri) {
         if (JsdosPanel.currentPanel) {
-            JsdosPanel.currentPanel.launchJsdos();
+            JsdosPanel.currentPanel.launchJsdos(this._launch);
         }
         throw new Error('Method not implemented.');
     }
@@ -81,10 +88,7 @@ export class JSDos implements EMURUN {
     public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor) {
         let filearray = await fs.readFile(src.uri);
         if (JsdosPanel.currentPanel && this._wsrc) {
-            let opt = {
-                writes: [{ path: this._wsrc.uri.fsPath, body: filearray.toString() }]
-            };
-            let p = JsdosPanel.currentPanel.launchJsdos(opt);
+            let p = JsdosPanel.currentPanel.launchJsdos(this._launch);
             let cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
             JsdosPanel.currentPanel.sendCmd(cmds);
             let msg = await JsdosPanel.currentPanel.getStdout();
@@ -216,20 +220,13 @@ class JsdosPanel {
     }
     public ListenWdosboxStdout = (val: string) => { };
     public JSDOSready = () => { };
-    public launchJsdos(opt?: { writes: JSDOSCREATEFILE[] }): { ready: Promise<boolean> } {
-        let msg: any = { command: 'launch' };
-        if (opt) {
-            msg = {
-                command: 'launch_wait_fs',
-                text: opt
-            };
-        }
-        this._panel.webview.postMessage(msg);
-        return {
-            ready: new Promise(
-                (resolve) => { this.JSDOSready = () => { resolve(true); this.JSDOSready = () => { }; }; }
-            )
+    public launchJsdos(opt?: ReadyOption) {
+        let msg: any = {
+            command: 'launch',
+            text: opt
         };
+        this._panel.webview.postMessage(msg);
+        return;
     }
 
     public sendCmd(cmds: string[]): boolean {

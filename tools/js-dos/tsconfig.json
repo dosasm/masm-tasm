@@ -3,8 +3,11 @@
         "extJs-dos.ts"
     ],
     "compilerOptions": {
+        "lib": [
+            "DOM"
+        ],
         "module": "commonjs",
-        "target": "es2019",
+        "target": "es6",
         "removeComments": true
-    },
+    }
 }

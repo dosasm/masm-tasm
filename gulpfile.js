@@ -9,7 +9,7 @@ const filter = require('gulp-filter');
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const nls = require('vscode-nls-dev');
-const tsProject = ts.createProject('./tsconfig.json', { rootDir: '.' });
+const tsProject = ts.createProject('./src/tsconfig.json');
 const languages = [
 	{ id: "zh-cn", folderName: "chs", transifexId: "zh-hans" }];
 const generateAdditionalLocFiles = () => {

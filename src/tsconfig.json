@@ -1,16 +1,13 @@
 {
 	"include": [
-		"src/**/*.ts"
+		"**/*.ts"
 	],
 	"compilerOptions": {
 		"module": "commonjs",
-		"target": "es6",
-		"outDir": "dist",
-		"lib": [
-			"es6"
-		],
+		"target": "es2017",
+		"outDir": "../dist",
 		"sourceMap": true,
-		"rootDir": "src",
+		"rootDir": "../",
 		"removeComments": true,
 		"strict": true, /* enable all strict type-checking options */
 		/* Additional Checks */
