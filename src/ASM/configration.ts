@@ -13,6 +13,17 @@ let allowedEMU = () => {
     }
     return emu;
 };
+
+/**### the string replacer 
+ * 
+ * |string|replace to|
+ * |------|----------|
+ * |`${filename}`|the filename of the source code file like `hello`|
+ * |`${fullname}`|the fullname of the source code file like`c:\asm\hello.asm`|
+ * |`${fileFolder}`|the folder path of the source code file like `c:\asm`|
+ * |`${fileDisk}`|the file disk of the source code file like `c`|
+ * |`${toolpath}`|the folder path of the asm tools including *MASM* and *TASM* folder|
+ */
 export const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
     let str: string = val;
     if (src) {
@@ -31,7 +42,8 @@ export const str_replacer = (val: string, conf?: Config, src?: SRCFILE) => {
 };
 
 /**class for configurations
- * This class defines some settings and some uri to use
+ * This class defines some settings from VSCode configuration id `masmtasm.ASM`
+ * and some uris to use
  */
 export class Config {
     private _target = workspace.getConfiguration('masmtasm.ASM');
@@ -111,11 +123,21 @@ interface TOOLURIS {
     tasm?: Uri
 };
 
+/**use MASM or TASM
+ * - MASM: including masm.exe,link.exe,debug.exe
+ * - TASM: including tasm.exe,tlink.exe,TD.exe
+ */
 export enum ASMTYPE {
     MASM = 'MASM',
     TASM = 'TASM'
 }
 
+/**the emulator for the 16bit DOS environment
+ * - `dosbox` is the most famous one
+ * - `msdos`( player) is designed for running in windows cmd
+ * - `jsdos` is designed for runing in browser
+ * - `auto` is a mode to partly solve the problem of TD's hardly running in msdos
+ */
 export enum DOSEMU {
     dosbox = 'dosbox',
     msdos = 'msdos player',
