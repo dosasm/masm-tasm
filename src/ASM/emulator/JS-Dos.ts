@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Uri, window } from 'vscode';
 import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
+import { compressAsmTools } from './js-dos_zip';
 
 const fs = vscode.workspace.fs;
 
@@ -55,13 +56,14 @@ export class JSDos implements EMURUN {
         this._conf = conf;
         this._VscConf = new JSdosVSCodeConfig();
     }
-    prepare(opt: ASMPREPARATION): boolean | Promise<boolean> {
+    async prepare(opt: ASMPREPARATION): Promise<boolean> {
         JsdosPanel.createOrShow(this._conf.Uris.jsdos);
         JsdosPanel.wDOSBoxpath = this._VscConf.wdosbox;
         let filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
         let v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
         this._wsrc = new SRCFILE(v);
         this._VscConf.replacer = (val) => str_replacer(val, this._conf, this._wsrc);
+        await compressAsmTools(this._conf.Uris.tools, this._conf.Uris.jsdos);
         return true;
     }
     openEmu(folder: vscode.Uri) {
@@ -99,7 +101,7 @@ interface JSDOSCREATEFILE {
 }
 
 /**
- * Manages cat coding webview panels
+ * Manages Js-dos webview panels
  */
 class JsdosPanel {
     /**
@@ -128,7 +130,7 @@ class JsdosPanel {
         const panel = vscode.window.createWebviewPanel(
             JsdosPanel.viewType,
             'jsdos wdosbox',
-            vscode.ViewColumn.One,
+            vscode.ViewColumn.Beside,
             {
                 // Enable javascript in the webview
                 enableScripts: true,
@@ -266,12 +268,14 @@ class JsdosPanel {
         // Local path to main script run in the webview
         const jsdosOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'js-dos.js');
         const wdosboxOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'wdosbox.js');
-        const AsmToolOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'tools.zip');
+        const MasmToolOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'masm.zip');
+        const TasmToolOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'tasm.zip');
         const ExtJsdosOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'extJs-dos.js');
         // And the uri we use to load this script in the webview
         const jsdosUri = webview.asWebviewUri(jsdosOnDisk);
         let wdosboxUri = webview.asWebviewUri(wdosboxOnDisk);
-        const AsmToolUri = webview.asWebviewUri(AsmToolOnDisk);
+        const MasmToolUri = webview.asWebviewUri(MasmToolOnDisk);
+        const TasmToolUri = webview.asWebviewUri(TasmToolOnDisk);
         const ExtJsdosUri = webview.asWebviewUri(ExtJsdosOnDisk);
         if (JsdosPanel.wDOSBoxpath) {
             let uri: Uri;
@@ -307,7 +311,7 @@ class JsdosPanel {
   <canvas id="jsdos"></canvas>
   <script src="${jsdosUri}"></script>
   <script src="${ExtJsdosUri}"></script>
-  <script>window.vd=jsdos2('${wdosboxUri}', '${AsmToolUri}')</script>
+  <script>jsdos2('${wdosboxUri}', ['${MasmToolUri}','${TasmToolUri}'])</script>
 </body>`;
     }
 }

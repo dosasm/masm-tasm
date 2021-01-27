@@ -217,7 +217,7 @@
           ]
         },
         "masmtasm.dosbox.AsmConfig": {
-          "description": "The commands to use when in dosbox mode.\nThe extension will mount this folder to dosbox's disk C, the file's folder to disk D\nand a seperate space as dosbox's disk X,the extension will read file asm.log to process assembler's message",
+          "markdownDescription": "The commands to use when in dosbox mode.\nThe extension will mount this folder to dosbox's disk C, the file's folder to disk D\nand a seperate space as dosbox's disk X,the extension will read file asm.log to process assembler's message",
           "default": {
             "open": [
               "set path=c:\\masm;c:\\tasm"
@@ -454,12 +454,14 @@
     "package": "gulp package"
   },
   "devDependencies": {
+    "@types/archiver": "^5.1.0",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.13.38",
     "@types/vscode": "^1.44.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
+    "archiver": "^5.2.0",
     "del": "^4.1.1",
     "eslint": "^6.8.0",
     "glob": "^7.1.6",
@@ -486,6 +488,5 @@
     "url": "https://github.com/xsro/masm-tasm/issues",
     "email": "xsro@foxmail.com"
   },
-  "license": "MIT",
-  "dependencies": {}
+  "license": "MIT"
 }

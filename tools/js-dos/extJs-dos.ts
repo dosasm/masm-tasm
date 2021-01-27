@@ -15,7 +15,7 @@ class VSCJSDOS {
     ci?: DosCommandInterface;
     /**currently usable in `fs` status */
     fs?: DosFS;
-    cmdQueue = ["set path=c:\\asm\\masm;c:\\asm\\tasm", "mkdir code", "cd code"];
+    cmdQueue = ["set path=c:\\asm\\dir0;c:\\asm\\dir1", "mkdir code", "cd code"];
     updateStatus(status: 'preparing' | 'fs' | 'main' | 'running' | 'exit') {
         this.status = status;
         //📤 send status message from webview to extension
@@ -31,47 +31,32 @@ export type ReadyOption = {
     commands?: string[]
 };
 
-function jsdos2(wdosboxUrl: string, toolszip: string): VSCJSDOS {
+function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
     console.log('start jsdos2');
     let vscJsdos: VSCJSDOS = new VSCJSDOS;
     vscJsdos.updateStatus('preparing');
 
-    let canvas = document.getElementById("jsdos") as HTMLCanvasElement;
-    let option = {
-        wdosboxUrl: wdosboxUrl,
-        cycles: 1000,
-        autolock: false,
-        //📤 send the wdosbox console's stdout from webview to extension
-        log: (message: string) => {
-            vscode.postMessage({
-                command: 'wdosbox console stdout',
-                text: message
-            });
-        },
-        //📤 send the wdosbox console's stderr from webview to extension
-        onerror: (message: string) => {
-            vscode.postMessage({
-                command: 'wdosbox console stderr',
-                text: message
-            });
-        },
-    };
     const dosReady = async (fs: DosFS, main: jsdos.DosMainFn, opt?: ReadyOption) => {
+        //0️⃣fileSystem: prepare files
         vscJsdos.updateStatus('fs');
-        await fs.extractAll([
-            { url: toolszip, mountPoint: "/asm" }]
-        );
         if (Array.isArray(opt?.writes)) {
             for (const w of opt.writes) {
                 fs.createFile(w.path, w.body);
             }
         }
-        vscJsdos.updateStatus('main');
-        vscJsdos.ci = await main(
-            []
+        let zips = toolszip.map(
+            (val, idx) => { return { url: val, mountPoint: "/asm/dir" + idx.toString() }; }
         );
-        vscJsdos.ci.shell(...vscJsdos.cmdQueue);
+        console.log(zips);
+        await fs.extractAll(zips).catch((r) => { console.error(r); });
+        //1️⃣main: get the command interface to control wdosbox
+        vscJsdos.updateStatus('main');
+        let params = opt?.commands ? opt.commands : [];
+        vscJsdos.ci = await main(params);
+        //2️⃣running: the wdosbox is running and can be controlled with `ci`
         vscJsdos.updateStatus('running');
+        vscJsdos.ci.shell(...vscJsdos.cmdQueue);
+
         //📤 send the wdosbox's stdout from webview to extension
         let stdout = "";
         vscJsdos.ci.listenStdout(
@@ -97,6 +82,27 @@ function jsdos2(wdosboxUrl: string, toolszip: string): VSCJSDOS {
             880
         );
     };
+
+    const canvas = document.getElementById("jsdos") as HTMLCanvasElement;
+    const option = {
+        wdosboxUrl: wdosboxUrl,
+        cycles: 1000,
+        autolock: false,
+        //📤 send the wdosbox console's stdout from webview to extension
+        log: (message: string) => {
+            vscode.postMessage({
+                command: 'wdosbox console stdout',
+                text: message
+            });
+        },
+        //📤 send the wdosbox console's stderr from webview to extension
+        onerror: (message: string) => {
+            vscode.postMessage({
+                command: 'wdosbox console stderr',
+                text: message
+            });
+        },
+    };
     //📥 receive message from extension Handle the message inside the webview
     window.addEventListener('message', event => {
         const message = event.data; // The JSON data extension sent
@@ -117,7 +123,8 @@ function jsdos2(wdosboxUrl: string, toolszip: string): VSCJSDOS {
                 Dos(canvas, option).ready(dosReady);
                 break;
             case 'launch_wait_fs':
-                Dos(canvas, option).ready((f, m) => dosReady(f, m, message.text));
+                try { Dos(canvas, option).ready((f, m) => dosReady(f, m, message.text)); }
+                catch (e) { console.error(e); }
                 break;
         }
     });
