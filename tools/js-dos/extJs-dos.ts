@@ -1,9 +1,13 @@
 import * as jsdos from 'js-dos';
 import { DosCommandInterface } from 'js-dos/dist/typescript/js-dos-ci';
 import { DosFS } from 'js-dos/dist/typescript/js-dos-fs';
-import { ReadyOption } from '../../src/ASM/emulator/JS-Dos';
 declare function acquireVsCodeApi();
 declare const Dos: jsdos.DosFactory;
+
+interface ReadyOption {
+    writes: { path: string, body: ArrayBuffer | Uint8Array | string }[],
+    commands: string[]
+};
 
 const vscode = acquireVsCodeApi();
 

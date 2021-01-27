@@ -1,11 +1,14 @@
 {
   "name": "js-dos",
-  "version": "1.0.0",
   "description": "resources to use in vscode webview",
   "main": "null",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "msedge test.html",
+    "build":"gulp && tsc -p ./"
   },
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "js-dos": "^6.22.59",
+    "typescript": "^3.9.7"
+  }
 }

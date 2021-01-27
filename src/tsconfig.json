@@ -7,7 +7,7 @@
 		"target": "es2017",
 		"outDir": "../dist",
 		"sourceMap": true,
-		"rootDir": "../",
+		"rootDir": ".",
 		"removeComments": true,
 		"strict": true, /* enable all strict type-checking options */
 		/* Additional Checks */

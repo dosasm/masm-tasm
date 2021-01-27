@@ -441,9 +441,10 @@
   },
   "scripts": {
     "clean": "gulp clean",
-    "compile": "gulp && webpack --mode production --vscode-nls && tsc -p ./tools/js-dos",
-    "compile-dev": "gulp && webpack --mode development --vscode-nls && tsc -p ./tools/js-dos",
-    "compile-tsc": "tsc -p src/ && tsc -p ./tools/js-dos",
+    "jsdos": "cd tools/js-dos && npm run build && cd ../..",
+    "compile": "gulp && webpack --mode production --vscode-nls && npm run jsdos",
+    "compile-dev": "gulp && webpack --mode development --vscode-nls && npm run jsdos",
+    "compile-tsc": "tsc -p src/ && npm run jsdos",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
     "watch": "tsc -watch -p ./ --rootDir src",
@@ -469,7 +470,6 @@
     "gulp-filter": "^5.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
-    "js-dos": "^6.22.59",
     "mocha": "^7.2.0",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.7",
@@ -488,5 +488,6 @@
     "url": "https://github.com/xsro/masm-tasm/issues",
     "email": "xsro@foxmail.com"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {}
 }

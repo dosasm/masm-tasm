@@ -195,7 +195,7 @@ export class DOSBox extends dosbox_core implements EMURUN {
 
         if (more) { boxcmd.push(...more); }
         if (opt?.exitwords) { boxcmd.push(...this.boxruncmd); }
-        console.log(boxcmd);
+        //Logger.log(boxcmd);
         if (boxcmd.length > DOSBOX_CMDS_LIMIT) {
             let omit = boxcmd.slice(DOSBOX_CMDS_LIMIT - 1);
             let unit8 = new TextEncoder().encode(omit.join('\n'));

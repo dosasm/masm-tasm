@@ -1,4 +1,7 @@
 {
+    "include": [
+        "./**/*.ts"
+    ],
     "files": [
         "extJs-dos.ts"
     ],
@@ -6,6 +9,7 @@
         "lib": [
             "DOM"
         ],
+        "outDir": "resources",
         "module": "commonjs",
         "target": "es6",
         "removeComments": true

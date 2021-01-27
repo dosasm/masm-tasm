@@ -9,7 +9,7 @@ const filter = require('gulp-filter');
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const nls = require('vscode-nls-dev');
-const tsProject = ts.createProject('./src/tsconfig.json');
+const tsProject = ts.createProject('./src/tsconfig.json', { rootDir: '../' });
 const languages = [
 	{ id: "zh-cn", folderName: "chs", transifexId: "zh-hans" }];
 const generateAdditionalLocFiles = () => {
@@ -70,21 +70,9 @@ const vscePackageTask = function () {
 	return vsce.createVSIX(getOption(true));
 };
 
-//copy files from jsdos
-const copyJsdos = function () {
-	return gulp.src(
-		[
-			'node_modules/js-dos/dist/wdosbox.js',
-			'node_modules/js-dos/dist/wdosbox.wasm.js',
-			'node_modules/js-dos/dist/js-dos.js'
-		]
-	).pipe(gulp.dest('tools/js-dos'))
-}
-
 gulp.task('clean', cleanTask);
-gulp.task('jsdos', copyJsdos);
 gulp.task('nls', buildnls);
 gulp.task('publish', gulp.series(cleanTask2, vscePublishTask));
 gulp.task('package', gulp.series(cleanTask2, vscePackageTask));
 
-gulp.task('default', gulp.parallel(copyJsdos, buildnls));
+gulp.task('default', buildnls);

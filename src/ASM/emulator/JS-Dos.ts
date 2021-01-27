@@ -61,13 +61,14 @@ export class JSDos implements EMURUN {
         this._VscConf = new JSdosVSCodeConfig();
     }
     async prepare(opt: ASMPREPARATION): Promise<boolean> {
-        JsdosPanel.createOrShow(this._conf.Uris.jsdos);
+        let resourcesUri = Uri.joinPath(this._conf.Uris.jsdos, 'resources')
+        JsdosPanel.createOrShow(resourcesUri);
         JsdosPanel.wDOSBoxpath = this._VscConf.wdosbox;
         let filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
         let v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
         this._wsrc = new SRCFILE(v);
         this._VscConf.replacer = (val) => str_replacer(val, this._conf, this._wsrc);
-        await compressAsmTools(this._conf.Uris.tools, this._conf.Uris.jsdos);
+        await compressAsmTools(this._conf.Uris.tools, resourcesUri);
         let filearray = await fs.readFile(opt.src.uri);
         this._launch.writes.push({ path: this._wsrc.uri.fsPath, body: filearray.toString() });
         return true;
@@ -151,9 +152,9 @@ class JsdosPanel {
         JsdosPanel.currentPanel = new JsdosPanel(panel, extensionUri);
     }
 
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    private constructor(panel: vscode.WebviewPanel, resourcesUri: vscode.Uri) {
         this._panel = panel;
-        this._jsdosUri = extensionUri;
+        this._jsdosUri = resourcesUri;
 
         // Set the webview's initial html content
         // this._update();
