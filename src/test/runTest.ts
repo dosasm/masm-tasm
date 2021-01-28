@@ -15,13 +15,14 @@ async function main() {
 		const sampleFolder = path.resolve(__dirname, '../../samples');
 		const launchArgs: string[] = [sampleFolder];
 
+		const DELAY = (timeout: number) => new Promise((resolve) => { setTimeout(resolve, timeout); });
 		// Download VS Code, unzip it and run the integration test
 		await runTests({ extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await runTests({ version: '1.47.0', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await runTests({ version: '1.48.0', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await runTests({ version: '1.49.0', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await runTests({ version: '1.50.0', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await runTests({ version: '1.51.0', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		await DELAY(2000);
+		//test in version September 2020 (version 1.50) https://code.visualstudio.com/updates/v1_50
+		await runTests({ version: '1.50.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		//test in version March 2020 (version 1.44) https://code.visualstudio.com/updates/v1_44
+		await runTests({ version: '1.44.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
 	} catch (err) {
 		console.error('Failed to run tests');
 		process.exit(1);

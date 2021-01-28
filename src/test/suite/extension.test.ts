@@ -23,15 +23,16 @@ suite('Extension Test Suite', function () {
 			DOSEMU.msdos,
 			DOSEMU.auto
 		);
-	}
-	try {
-		let msg = execSync('dosbox -version', { encoding: 'utf8' });
-		if (msg.includes('version') && process.platform !== 'win32') {
-			emulator.push(DOSEMU.dosbox);
+	} else {
+		try {
+			let msg = execSync('dosbox -version', { encoding: 'utf8' });
+			if (msg.includes('version')) {
+				emulator.push(DOSEMU.dosbox);
+			}
 		}
-	}
-	catch (e) {
-		console.warn(e);
+		catch (e) {
+			console.warn('disable dosbox test for no dosbox installed');
+		}
 	}
 	const filelist: [string, DIAGCODE][] = [
 		['1.asm', DIAGCODE.ok],
