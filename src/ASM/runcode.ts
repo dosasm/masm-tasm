@@ -103,7 +103,7 @@ export class AsmAction implements Disposable {
     /**Do the operation according to the input.*/
     public async runcode(command: ASMCMD, uri?: Uri) {
         const emulator = AsmAction.getEmulator(this._config.DOSemu, this._config);
-        let output: any = {};
+        let output: any = { diagCode: DIAGCODE.null };
         //get the target file
         let src: SRCFILE | undefined;
         if (uri) {
@@ -149,19 +149,26 @@ export class AsmAction implements Disposable {
             const msgProcessor: MSGProcessor =
                 (message: string | { asm: string; link: string; }, opt?: { preventWarn: boolean }) => {
                     let msg = typeof (message) === 'string' ? message : message.asm;
+                    output.message = message;
                     let diag = this.landiag.ErrMsgProcess(msg, doc, this.ASM);
                     output.diaginfo = diag;
+                    output.diagCode = diag?.code;
                     if (diag) {
                         Logger.send({
                             title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn),
                             content: msg
                         });
                     }
-                    switch (diag?.flag) {
+                    switch (diag?.code) {
                         case DIAGCODE.ok:
                             return true;
                         case DIAGCODE.hasWarn:
-                            return this.showWarnInfo();
+                            if (opt?.preventWarn) {
+                                return false;
+                            }
+                            else {
+                                return this.showWarnInfo();
+                            }
                         case DIAGCODE.hasError:
                             this.showErrorInfo();
                             Logger.OutChannel.show(true);
@@ -180,9 +187,6 @@ export class AsmAction implements Disposable {
                     output.emulator = await emulator.Debug(src, msgProcessor);
                     break;
             };
-            //show information for diagnose
-            output.diagCode = output.diaginfo?.flag;
-
         }
         return output;
     }

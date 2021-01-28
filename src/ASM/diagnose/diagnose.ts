@@ -5,6 +5,8 @@ import { getInternetlink } from './diagnoseMasm-error-list';
 import { ASMTYPE } from '../configration';
 
 export enum DIAGCODE {
+    /**null*/
+    null = -1,
     /**no error and warning information */
     ok,
     /**has error information */
@@ -46,12 +48,12 @@ export class AssemblerDiag {
                 return undefined;
         }
         if (diag) {
-            diag.flag = DIAGCODE.ok;
+            diag.code = DIAGCODE.ok;
             if (diag.error !== 0) {
-                diag.flag = DIAGCODE.hasError;
+                diag.code = DIAGCODE.hasError;
             }
             else if (diag.warn !== 0) {
-                diag.flag = DIAGCODE.hasWarn;
+                diag.code = DIAGCODE.hasWarn;
             }
             return diag;
         }
@@ -75,7 +77,7 @@ export class AssemblerDiag {
     }
 };
 interface DIAGINFO {
-    flag?: DIAGCODE,
+    code?: DIAGCODE,
     error: number,
     warn: number,
     diagnotics?: Diagnostic[]

@@ -7,26 +7,40 @@ import { DIAGCODE } from '../../ASM/diagnose/diagnose';
 import { DOSEMU, ASMTYPE } from '../../ASM/configration';
 // import * as myExtension from '../../extension';
 
-suite('Extension Test Suite', () => {
+suite('Extension Test Suite', function () {
 	vscode.window.showInformationMessage('Start all tests.');
-
-	testAsmCode('1.asm', DIAGCODE.ok);
-	testAsmCode('1err.asm', DIAGCODE.hasError);
-	//testAsmCode('2.asm', 0, false);
-});
-
-//1err.asm
-function testAsmCode(file: string, diagcode: DIAGCODE) {
 	const MASMorTASM = [
 		ASMTYPE.MASM,
 		ASMTYPE.TASM,
 	];
-	const emulator = [DOSEMU.jsdos, DOSEMU.dosbox];
+	const emulator: DOSEMU[] = [
+		DOSEMU.jsdos,
+		DOSEMU.dosbox
+	];
 	if (process.platform === 'win32') {
-		emulator.push(DOSEMU.msdos, DOSEMU.auto);
+		emulator.push(
+			DOSEMU.msdos,
+			DOSEMU.auto
+		);
 	}
-	const testfile = async function (asm: ASMTYPE, emu: DOSEMU) {
-		test(`run ${asm} via ${emu} ${diagcode}`, async function () {
+	const filelist: [string, DIAGCODE][] = [
+		['1.asm', DIAGCODE.ok],
+		['1err.asm', DIAGCODE.hasError]
+	];
+	for (const file of filelist) {
+		for (const emu of emulator) {
+			for (const asm of MASMorTASM) {
+				testAsmCode(file[0], file[1], emu, asm);
+			}
+		}
+	}
+});
+
+function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE) {
+	test(`test file ${file} in ${emu} use ${asm} want ${DIAGCODE[diagcode]} ${diagcode}`,
+		async function () {
+			this.slow(30000);
+			//open test file. NOTE: the extension will be activated when open .asm file
 			let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
 			await vscode.commands.executeCommand('vscode.open', samplefile);
 
@@ -41,22 +55,10 @@ function testAsmCode(file: string, diagcode: DIAGCODE) {
 			);
 			let vscodecmds = await vscode.commands.getCommands(true);
 			let cmd = 'masm-tasm.runASM';
-			if (vscodecmds.includes(cmd)) {
-				let a = (await vscode.commands.executeCommand(cmd) as any);
-				assert.ok(a.diagCode === diagcode);
-				return a;
-			} else {
-				console.error('no command' + cmd);
-			}
-			return null;
+			let a = (await vscode.commands.executeCommand(cmd) as any);
+			assert.ok(vscodecmds.includes(cmd));//assert the extension activated and command contributed
+			assert.strictEqual(DIAGCODE[a.diagCode], DIAGCODE[diagcode]);//error message processed
+			;
 		});
-	};
-	suite(`test file ${file}`, () => {
-		for (let emu of emulator) {
-			for (let asm of MASMorTASM) {
-				testfile(asm, emu);
-			}
-		}
-	});
 }
 
