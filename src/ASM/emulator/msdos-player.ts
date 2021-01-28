@@ -74,7 +74,7 @@ export class MsdosPlayer implements EMURUN, Disposable {
         return true;
     }
     async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        let msg = await this.runPlayer(this._conf);
+        let msg = await this.runPlayer(this._conf).catch((e) => { throw new Error(e); });
         if (await msgprocessor(msg)) {
             this.openEmu(src.folder, `${this._vscConf.getAction('run')}`);
             return 'command sended to terminal';
@@ -116,14 +116,17 @@ export class MsdosPlayer implements EMURUN, Disposable {
                 let child = exec(
                     command,
                     {
-                        cwd: conf.Uris.tools.fsPath, timeout: timeout
+                        cwd: conf.Uris.tools.fsPath, timeout
                     },
                     (error, stdout, stderr) => {
+                        if (stderr) {
+                            console.warn({ stderr, stdout, command });
+                        }
                         if (error) {
                             (error as any).note = "exec msdos player error";
                             reject(error);
                         }
-                        else {
+                        else if (stdout.length > 0) {
                             resolve(stdout);
                         }
                     }
@@ -132,7 +135,6 @@ export class MsdosPlayer implements EMURUN, Disposable {
                     if (code === null) {
                         child.kill();
                         window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nCommand: ${command}`);
-                        //console.log(child);
                     }
                     else if (code !== 0) {
                         let msg = `Use playerasm.bat Failed\t exitcode${code}\t\n  command:${command}`;
