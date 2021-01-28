@@ -39,7 +39,7 @@ suite('Extension Test Suite', function () {
 		['1err.asm', DIAGCODE.hasError]
 	];
 	for (const file of filelist) {
-		for (const emu of emulator) {
+		for (const emu of emulator.sort(function () { return .5 - Math.random(); })) {
 			for (const asm of MASMorTASM) {
 				testAsmCode(file[0], file[1], emu, asm);
 			}
@@ -50,8 +50,8 @@ suite('Extension Test Suite', function () {
 function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE) {
 	test(`test file ${file} in ${emu} use ${asm} want ${DIAGCODE[diagcode]} ${diagcode}`,
 		async function () {
-			this.timeout('60s');
-			this.slow('1s');
+			this.timeout('120s');
+			this.slow('10s');
 			//open test file. NOTE: the extension will be activated when open .asm file
 			let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
 			await vscode.commands.executeCommand('vscode.open', samplefile);
