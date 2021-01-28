@@ -15,7 +15,7 @@
   ],
   "icon": "dosboxasm.png",
   "engines": {
-    "vscode": "^1.44.0"
+    "vscode": "^1.49.0"
   },
   "categories": [
     "Programming Languages",

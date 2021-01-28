@@ -23,14 +23,6 @@ async function main() {
 		await runTests({ version: '1.50.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
 		await DELAY(20000);
 		await runTests({ version: '1.49.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await DELAY(20000);
-		await runTests({ version: '1.48.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await DELAY(20000);
-		await runTests({ version: '1.47.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await DELAY(20000);
-		await runTests({ version: '1.46.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await DELAY(20000);
-		await runTests({ version: '1.45.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
 	} catch (err) {
 		console.error('Failed to run tests');
 		process.exit(1);
