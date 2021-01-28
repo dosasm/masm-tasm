@@ -50,7 +50,8 @@ suite('Extension Test Suite', function () {
 function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE) {
 	test(`test file ${file} in ${emu} use ${asm} want ${DIAGCODE[diagcode]} ${diagcode}`,
 		async function () {
-			this.timeout('35s');
+			this.timeout('60s');
+			this.slow('1s');
 			//open test file. NOTE: the extension will be activated when open .asm file
 			let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
 			await vscode.commands.executeCommand('vscode.open', samplefile);
