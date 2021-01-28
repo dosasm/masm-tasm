@@ -18,11 +18,19 @@ async function main() {
 		const DELAY = (timeout: number) => new Promise((resolve) => { setTimeout(resolve, timeout); });
 		// Download VS Code, unzip it and run the integration test
 		await runTests({ extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await DELAY(2000);
+		await DELAY(20000);
 		//test in version September 2020 (version 1.50) https://code.visualstudio.com/updates/v1_50
 		await runTests({ version: '1.50.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		//test in version March 2020 (version 1.44) https://code.visualstudio.com/updates/v1_44
-		await runTests({ version: '1.44.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		await DELAY(20000);
+		await runTests({ version: '1.49.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		await DELAY(20000);
+		await runTests({ version: '1.48.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		await DELAY(20000);
+		await runTests({ version: '1.47.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		await DELAY(20000);
+		await runTests({ version: '1.46.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		await DELAY(20000);
+		await runTests({ version: '1.45.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
 	} catch (err) {
 		console.error('Failed to run tests');
 		process.exit(1);
