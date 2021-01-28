@@ -24,19 +24,15 @@ suite('Extension Test Suite', function () {
 			DOSEMU.auto
 		);
 	}
-	setup(
-		() => {
-			try {
-				let msg = execSync('dosbox -version', { encoding: 'utf8' });
-				if (msg.includes('version') && process.platform !== 'win32') {
-					emulator.push(DOSEMU.dosbox);
-				}
-			}
-			catch (e) {
-
-			}
+	try {
+		let msg = execSync('dosbox -version', { encoding: 'utf8' });
+		if (msg.includes('version') && process.platform !== 'win32') {
+			emulator.push(DOSEMU.dosbox);
 		}
-	);
+	}
+	catch (e) {
+		console.warn(e);
+	}
 	const filelist: [string, DIAGCODE][] = [
 		['1.asm', DIAGCODE.ok],
 		['1err.asm', DIAGCODE.hasError]
