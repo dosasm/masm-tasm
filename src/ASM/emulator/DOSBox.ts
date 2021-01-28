@@ -222,7 +222,7 @@ export class DOSBox extends dosbox_core implements EMURUN {
         boxcmd.push(
             `@mount c \\\"${this._conf.Uris.tools.fsPath}\\\"`,//mount the tools folder as disk C
             `@mount d \\\"${folder.fsPath}\\\"`,//mount the folder of source file as disk D
-            `@mount X \\\"${this._conf.Uris.globalStorage.fsPath}\\\"`,//mount a seperate space as X for the extension to read logs
+            `@mount X \\\"${this._conf.Uris.globalStorage.fsPath}\\\"`,//mount a separate space as X for the extension to read logs
             "d:"//switch to the disk of source code file
         );
 

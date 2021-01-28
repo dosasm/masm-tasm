@@ -28,6 +28,6 @@
 	"dosasm.config.boxconfig.description": "dosbox的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox官网的说明](https://www.dosbox.com/wiki/Dosbox.conf),如果需要设置AUTOEXEC,可以使用格式如`\"AUTOEXEC\":\"echo hi\\ndir\"`",
 	"dosasm.config.hover": "是否显示悬浮提示(hover)，可能需要重启vscode来应用变更",
 	"dosasm.config.PLF": "使用提供大纲，跳到定义，查找引用等programmatic features",
-	"dosasm.config.seperateSpace": "使用独立的文件夹来操作，插件会将源代码文件复制到一个独立的文件夹来操作，在使用dosbox时，插件会自动根据文件名选择是否要复制，这个功能可以保持工作区整洁，但是对多文件的汇编会无能为力",
+	"dosasm.config.separateSpace": "使用独立的文件夹来操作，插件会将源代码文件复制到一个独立的文件夹来操作，在使用dosbox时，插件会自动根据文件名选择是否要复制，这个功能可以保持工作区整洁，但是对多文件的汇编会无能为力",
 	"dosasm.config.clean": "在执行操作前清理可能会干扰的文件，包括同名的exe文件和obj文件"
 }

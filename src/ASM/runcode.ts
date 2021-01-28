@@ -137,7 +137,7 @@ export class AsmAction implements Disposable {
                     msg.title = localize("debug.msg", "\n[execute]use {0} in {1} to Debug ASM code file:", this._config.MASMorTASM, this._config.DOSemu);
                     break;
             }
-            if (this._config.Seperate || emulator.forceCopy) {
+            if (this._config.Separate || emulator.forceCopy) {
                 let dst = emulator.copyUri === undefined ? this._config.Uris.workspace : emulator.copyUri;
                 await src.copyto(dst);
                 msg.content += `\ncopied as "${src.uri.fsPath}"`;

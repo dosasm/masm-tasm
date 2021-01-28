@@ -141,10 +141,10 @@
             "%dosasm.config.emulator.auto%"
           ]
         },
-        "masmtasm.ASM.seperateSpace": {
+        "masmtasm.ASM.separateSpace": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "%dosasm.config.seperateSpace%"
+          "markdownDescription": "%dosasm.config.separateSpace%"
         },
         "masmtasm.ASM.clean": {
           "type": "boolean",
@@ -217,7 +217,7 @@
           ]
         },
         "masmtasm.dosbox.AsmConfig": {
-          "markdownDescription": "The commands to use when in dosbox mode.\nThe extension will mount this folder to dosbox's disk C, the file's folder to disk D\nand a seperate space as dosbox's disk X,the extension will read file asm.log to process assembler's message",
+          "markdownDescription": "The commands to use when in dosbox mode.\nThe extension will mount this folder to dosbox's disk C, the file's folder to disk D\nand a separate space as dosbox's disk X,the extension will read file asm.log to process assembler's message",
           "default": {
             "open": [
               "set path=c:\\masm;c:\\tasm"
@@ -368,7 +368,7 @@
           },
           "properties": {
             "workspace": {
-              "description": "The workspace when using seperate space",
+              "description": "The workspace when using separate space",
               "type": "string"
             },
             "path": {

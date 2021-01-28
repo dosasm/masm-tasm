@@ -61,7 +61,7 @@ export class Config {
     };
     //Uris and tools information
     public Uris: TOOLURIS;
-    public get Seperate(): boolean { return this._target.get('ASM.seperateSpace') as boolean; }
+    public get Separate(): boolean { return this._target.get('ASM.separateSpace') as boolean; }
     public get Clean(): boolean { return this._target.get('ASM.clean') as boolean; }
     private readonly _exturi: Uri;
     private _toolpath: string | undefined;
@@ -105,7 +105,7 @@ use MSdos - player from folder: ${conf.Uris.msdos.fsPath}
 }
 
 interface TOOLURIS {
-    /**the seperate workspace to use*/
+    /**the separate workspace to use*/
     workspace: Uri,
     /**global storage uri */
     globalStorage: Uri
