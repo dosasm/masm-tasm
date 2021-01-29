@@ -29,9 +29,9 @@
 	"config.boxconfig.description": "dosbox的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox官网的说明](https://www.dosbox.com/wiki/Dosbox.conf),如果需要设置AUTOEXEC,可以使用格式如`\"AUTOEXEC\":\"echo hi\\ndir\"`",
 	"config.hover": "是否显示悬浮提示(hover)，可能需要重启vscode来应用变更",
 	"config.PLF": "使用提供大纲，跳到定义，查找引用等programmatic features",
-	"config.separateSpace": "总是使用独立的文件夹来操作，插件会将源代码文件复制到一个独立的文件夹来操作，默认当插件认为模拟器文件系统可能不支持需操作文件路径时启用，设置为true表示总是启用",
+	"config.separateSpace": "总是使用独立的文件夹来进行操作，插件会将源代码文件复制到一个独立的文件夹来操作。当插件认为模拟器文件系统可能不支持需操作文件路径时会自动进行进行复制，设置为true表示总是进行复制",
 	"config.clean": "在执行操作前清理可能会干扰的文件，包括同名的exe文件和obj文件",
 	"config.jsdos.viewColumn": "在哪个位置展示用于运行JS-Dos的webview [ViewColumn](https://code.visualstudio.com/api/references/vscode-api#ViewColumn)",
 	"config.jsdos.viewColumn.Active": "当前位置",
-	"config.jsdos.viewColumn.Besides": "侧边位置位置"
+	"config.jsdos.viewColumn.Besides": "侧边位置"
 }

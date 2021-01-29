@@ -227,11 +227,11 @@
           ],
           "enumDescriptions": [
             "%config.jsdos.viewColumn.Active%",
-            "%config.jsdos.viewColumn%.Besides"
+            "%config.jsdos.viewColumn.Besides%"
           ]
         },
         "masmtasm.jsdos.wdosbox": {
-          "markdownDescription": "The extension packaged the as default variant. We can use different version. See [js-dos-622-faq-changing-dosbox-variant](https://js-dos.com/#js-dos-622-faq-changing-dosbox-variant)",
+          "markdownDescription": "The extension packaged the wdosbox.js as default variant. We can use different variant but make sure console programs/shell is usable. See [js-dos-622-faq-changing-dosbox-variant](https://js-dos.com/#js-dos-622-faq-changing-dosbox-variant)",
           "type": "string"
         },
         "masmtasm.dosbox.more": {
