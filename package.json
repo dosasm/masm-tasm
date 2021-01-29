@@ -460,8 +460,8 @@
     "lint-fix": "eslint src --ext ts --fix",
     "pretest": "npm run compile-tsc && npm run jsdos",
     "test": "node ./dist/test/runTest.js",
-    "vscode:prepublish": "npm run compile",
-    "publish": "gulp publish",
+    "vscode:prepublish": "gulp clean && npm run compile",
+    "publish": "vsce publish",
     "package": "gulp package"
   },
   "devDependencies": {
