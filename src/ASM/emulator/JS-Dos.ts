@@ -189,6 +189,7 @@ class JsdosPanel {
                 switch (message.command) {
                     case 'stdoutData':
                         // console.log(message.text);
+                        this.allWdosboxStdout.push(message.text);
                         this.WdosboxStdoutAppend(message.text);
                         if (this.WdosboxStdout.includes('exit\n')) {
                             JsdosPanel.currentPanel?.dispose();
@@ -198,13 +199,21 @@ class JsdosPanel {
                         }
                         break;
                     case 'jsdosStatus':
-                        this.jsdosStatus = message.text;
-                        if (this.jsdosStatus === 'running' && this.JSDOSready !== undefined) {
-                            this.JSDOSready();
+                        this.jsdosStatus = message.text as 'preparing' | 'fs' | 'main' | 'running' | 'exit';
+                        switch (this.jsdosStatus) {
+                            case 'preparing':
+                            case 'fs':
+                            case 'main':
+                                this.WdosboxStdout = "";
+                                break;
+                            case 'running':
+                                if (this.JSDOSready !== undefined) {
+                                    this.JSDOSready();
+                                }
+                            case 'exit':
                         }
                         break;
                     case 'wdosbox console stdout':
-
                         break;
                 }
             },
@@ -212,8 +221,10 @@ class JsdosPanel {
             this._disposables
         );
     }
-
+    /**record message from one wdosbox progress*/
     public WdosboxStdout = "";
+    /**record all message from this pannel */
+    public allWdosboxStdout: string[] = [];
     public WdosboxStdoutAppend(str: string): void {
         const output = this.WdosboxStdout + str;
         this.WdosboxStdout = output;

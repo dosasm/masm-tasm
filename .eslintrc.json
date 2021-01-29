@@ -25,6 +25,7 @@
         "test/**/index.ts",
         "test/**/runTest.ts",
         "node_modules",
-        "**/*.js"
+        "**/*.js",
+        "tools"
     ]
 }
