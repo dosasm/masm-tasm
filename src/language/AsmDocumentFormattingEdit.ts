@@ -3,8 +3,8 @@ import { getDocInfo, linetype, Asmline } from "./scanDoc";
 //TODO: offer different operation for different vscode.FormattingOptions
 export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
     provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.TextEdit[] {
-        let textedits: vscode.TextEdit[] = [];
-        let docinfo = getDocInfo(document);
+        const textedits: vscode.TextEdit[] = [];
+        const docinfo = getDocInfo(document);
         if (docinfo.tree) {
             docinfo.tree.forEach(
                 (item) => {
@@ -16,21 +16,21 @@ export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
     }
 }
 function formateline(beg: number, end: number, asmline: Asmline[], document: vscode.TextDocument, formator: vscode.TextEdit[]): vscode.TextEdit[] {
-    let namesize: number = 0, optsize: number = 0, oprsize: number = 0,
+    let namesize = 0, optsize = 0, oprsize = 0,
         str: string | undefined = undefined, r: vscode.Range, i: number;
     //scan the asmlines for information
     for (i = beg; i < end; i++) {
-        let item = asmline[i];
+        const item = asmline[i];
         if (item.name) { namesize = item.name.length > namesize ? item.name.length : namesize; }//find the maxlength of label name or variabel name
         if (item.operator) { optsize = item.operator.length > optsize ? item.operator.length : optsize; }//find the maxlength of operator 
         if (item.operand) { oprsize = item.operand.length > oprsize ? item.operand.length : oprsize; }//find the maxlength of operand
     }
     for (i = beg; i < end; i++) {
         str = undefined;
-        let item = asmline[i];
+        const item = asmline[i];
         if (item.type === linetype.label || item.type === linetype.variable) {
             str = "\t";
-            let length: number = 0;
+            let length = 0;
             if (item.name?.length) { length = item.name.length; }
             if (item.type === linetype.label && item.name) { str += item.name + ":"; }
             else if (item.type === linetype.variable && item.name) { str += item.name + " "; }
@@ -55,7 +55,7 @@ function formateline(beg: number, end: number, asmline: Asmline[], document: vsc
         }
         else if (item.main) {
             str = item.main.replace(/\s+/, " ");
-            let length: number = namesize + 1 + optsize + 1 + oprsize - str.length;
+            const length: number = namesize + 1 + optsize + 1 + oprsize - str.length;
             if (item.comment) {
                 for (let i = 0; i < length; i++) { str += " "; }//后补充空格
                 str += "\t\t" + item.comment;

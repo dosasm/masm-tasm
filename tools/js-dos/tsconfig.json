@@ -1,0 +1,18 @@
+{
+    "include": [
+        "./**/*.ts"
+    ],
+    "files": [
+        "extJs-dos.ts"
+    ],
+    "compilerOptions": {
+        "lib": [
+            "DOM"
+        ],
+        "sourceMap": true,
+        "outDir": "resources",
+        "module": "commonjs",
+        "target": "es6",
+        "removeComments": true
+    }
+}

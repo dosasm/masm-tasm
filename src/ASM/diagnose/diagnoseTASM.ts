@@ -1,32 +1,33 @@
 import { Diagnostic, TextDocument, DiagnosticCollection, DiagnosticSeverity } from "vscode";
-import { ASMdiagnostic } from './diagnose';
+import { ASMdiagnostic, DIAGINFO } from './diagnose';
 /**
  * Process the output of TASM assembler
  * @param TASMmsg the output of TASM
  * @param doc the doc of the source codes
  * @param collection the  DiagnosticCollection for assign
  */
-export function tasmDiagnose(TASMmsg: string, doc: TextDocument, collection: DiagnosticCollection) {
+export function tasmDiagnose(TASMmsg: string, doc: TextDocument, collection: DiagnosticCollection): DIAGINFO {
     const diagnostics: Diagnostic[] = [];
-    const tasm = /\s*\*+(Error|Warning|Fatal)\*+\s+(T.ASM)\((\d+)\)\s+(.*)/;
-    const tasmMacro = /\s*\*+(Error|Warning|Fatal)\*+\s+(T.ASM)\((\d+)\) (.*)\((\d+)\)\s+(.*)/;
+    const tasm = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*.ASM)\((\d+)\)\s+(.*)/;
+    const tasmMacro = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*.ASM)\((\d+)\) (.*)\((\d+)\)\s+(.*)/;
+    let error = 0, warn = 0;
     const severity = (str: string): DiagnosticSeverity | undefined => {
         switch (str) {
             case 'Error':
             case 'Fatal':
-                count_error++;
+                error++;
                 return DiagnosticSeverity.Error;
             case 'Warning':
-                count_warn++;
+                warn++;
                 return DiagnosticSeverity.Warning;
         }
     };
-    let count_error: number = 0, count_warn: number = 0;
-    let allmsg = TASMmsg.split('\n');
+
+    const allmsg = TASMmsg.split('\n');
     allmsg.forEach(
-        (value, index) => {
+        (value) => {
             let RegExec = tasmMacro.exec(value);
-            let diag: ASMdiagnostic = new ASMdiagnostic();
+            const diag: ASMdiagnostic = new ASMdiagnostic();
             let VSCdiag: Diagnostic | undefined;
             if (RegExec) {
                 diag.severity = severity(RegExec[1]);
@@ -54,11 +55,7 @@ export function tasmDiagnose(TASMmsg: string, doc: TextDocument, collection: Dia
         }
     );
     collection.set(doc.uri, diagnostics);
-    return {
-        error: count_error,
-        warn: count_warn,
-        diagnotics: diagnostics
-    };
+    return { error, warn, diagnostics };
 }
 
 

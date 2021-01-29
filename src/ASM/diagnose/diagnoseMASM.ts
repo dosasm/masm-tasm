@@ -1,28 +1,28 @@
 import { TextDocument, DiagnosticCollection, Diagnostic, DiagnosticSeverity } from "vscode";
-import { ASMdiagnostic } from './diagnose';
-export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: DiagnosticCollection) {
-    let diagnostics: Diagnostic[] = [];
-    let count_error: number = 0, count_warn: number = 0;
+import { ASMdiagnostic, DIAGINFO } from './diagnose';
+export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: DiagnosticCollection): DIAGINFO {
+    const diagnostics: Diagnostic[] = [];
+    let error = 0, warn = 0;
     const severity = (str: string): DiagnosticSeverity | undefined => {
         switch (str) {
             case 'error':
             case 'fatal error':
-                count_error++;
+                error++;
                 return DiagnosticSeverity.Error;
             case 'warning':
-                count_warn++;
+                warn++;
                 return DiagnosticSeverity.Warning;
         }
     };
     //.ASM(1): fatal error A1000: cannot open file : mac.inc
-    const masm = new RegExp(/(?=\n)T.ASM\((\d+)\):(.*)(?=\nT.ASM)/, 's');
+    //const masm = new RegExp(/(?=\n)T.ASM\((\d+)\):(.*)(?=\nT.ASM)/, 's');
     const masm0 = /\((\d+)\): (error|warning|fatal error)\s+([A-Z]\d+):\s+(.*)/;
     //const masml = /\s*T.ASM\((\d+)\): Out of memory/g;
-    let allmsg = MASMmsg.split('\nT.ASM');
+    const allmsg = MASMmsg.split('\nT.ASM');
     allmsg.forEach(
-        (value, index, array) => {
+        (value) => {
             let RegExec = masm0.exec(value);
-            let diag: ASMdiagnostic = new ASMdiagnostic();
+            const diag: ASMdiagnostic = new ASMdiagnostic();
             if (RegExec) {
                 diag.line = parseInt(RegExec[1]);
                 diag.severity = severity(RegExec[2]);
@@ -35,7 +35,7 @@ export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: Dia
                 diag.macro.name = RegExec[1];
                 diag.macro.line = parseInt(RegExec[2]);
             }
-            let diagnostic: Diagnostic | undefined = diag.toVscDiagnostic(doc);
+            const diagnostic: Diagnostic | undefined = diag.toVscDiagnostic(doc);
             if (diagnostic) {
                 diagnostic.source = "MASM6.11";
                 diagnostics.push(diagnostic);
@@ -43,9 +43,5 @@ export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: Dia
         }
     );
     collection.set(doc.uri, diagnostics);
-    return {
-        error: count_error,
-        warn: count_warn,
-        diagnotics: diagnostics
-    };
+    return { error, warn, diagnostics };
 }

@@ -7,24 +7,26 @@
 			"type": "npm",
 			"script": "compile",
 			"problemMatcher": [
-				"$tsc"
+				"$tsc",
+				"$gulp-tsc"
 			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"label": "npm: compile",
-			"detail": "gulp translations-generate && webpack --mode production --vscode-nls"
+			"detail": "gulp && webpack --mode production --vscode-nls && npm run jsdos",
 		},
 		{
 			"type": "npm",
 			"script": "compile-dev",
 			"group": "build",
 			"problemMatcher": [
-				"$tsc"
+				"$tsc",
+				"$gulp-tsc"
 			],
 			"label": "npm: compile-dev",
-			"detail": "webpack --mode development"
+			"detail": "gulp && webpack --mode development --vscode-nls && npm run jsdos",
 		},
 		{
 			"type": "npm",
@@ -33,7 +35,7 @@
 				"$tsc"
 			],
 			"label": "npm: compile-tsc",
-			"detail": "`tsc -p ./` using tsc to compile ts code",
+			"detail": "tsc -p src/",
 		},
 		{
 			"type": "npm",
@@ -44,7 +46,7 @@
 				"reveal": "never"
 			},
 			"label": "npm: watch",
-			"detail": "tsc -watch -p ./"
+			"detail": "tsc -watch -p src/"
 		},
 		{
 			"type": "npm",

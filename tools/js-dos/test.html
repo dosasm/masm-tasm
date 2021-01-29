@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>js-dos 6.22, ASM</title>
+  <link href="./resources/extJs-dos.css" rel="stylesheet">
+  <script>
+    window.acquireVsCodeApi = () => { return { postMessage: (msg) => { console.log(msg) } }; };
+  </script>
+</head>
+
+<body>
+  <canvas id="jsdos"></canvas>
+  <script src="./resources/js-dos.js"></script>
+  <script src="./resources/extJs-dos.js"></script>
+  <script>
+    //prepare wdosbox
+    jsdos2('./resources/wdosbox.js', ['https://js-dos.com/6.22/current/test/digger.zip']);
+    //launch
+    setTimeout(
+      () => {
+        let event = new Event('message');
+        event.data = { command: 'launch' }
+        window.dispatchEvent(event)
+      },
+      1000
+    )
+  </script>
+</body>

@@ -1,7 +1,7 @@
-# DOS assembly (MASM/TASM) via DOSBox(and msdos-player)
+# DOS assembly (MASM/TASM) via DOSBox
 
-[Chinese](doc/chs/README.md)|[English](README.md)|
-[中文 in gitee](https://gitee.com/dosasm/masm-tasm/tree/main/doc/chs)|
+[Chinese](README.zh.md)|[English](README.md)|
+[中文 in gitee](https://gitee.com/dosasm/masm-tasm/)|
 [more versions](https://github.com/xsro/masm-tasm/releases)
 
 Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSBox and the course *principles& peripheral technology of microprocessor*.
@@ -9,9 +9,10 @@ Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSB
 - (**Language Support**) Offer *grammar*,basic *outline* view,*hover*,*code formate* support for DOS assembly language
 - **Run and debug** assembly with right click on the VSCode editor panel. You can choose using MASM or TASM in the preference-settings.
 - **Diagnose**: process the output of ASM tools and display them in VSCode
-- **For windows**, all needed tools have been packaged in the extension.Just install and enjoy!
-- [For other systems](#for-other-system): you need to install DOSBox first
-- Note: this extension is built for assembly in DOS, so may not works well with assembly for win32 or assembly with not just one file
+- (suitable for all OS) use JS-Dos to run your asm program in VSCode webview
+- **For windows**, also support use DOSBox and [MSDOS player](http://takeda-toshiya.my.coocan.jp/msdos). All needed tools have been packaged in the extension. Just install and enjoy!
+- [For other systems](#for-other-system): also support DOSBox. You need to install [DOSBox](https://www.dosbox.com) first
+- Note: this extension is built for assembly in DOS, so it not works well with assembly for win32
 
 ## Demo
 
@@ -23,13 +24,14 @@ Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSB
 
 when you are editing `assembly` files ,you can right click at the editor panel,then you will see several choices listed below:
 
-1. **Open Emulator**: Open the dosbox, prepare the environment(copy file to dosbox's D:\ and add tools to path)(For msdos player mode,this will open a cmd terminal)
+1. **Open Emulator**: Open the dosbox, prepare the environment
 2. **Run ASM code**: Assemble,link and Run the program
 3. **Debug ASM code**: Assemble,link and Debug the program
 
 **NOTE**:
 
-- The extension will copy your file in active editor to the extension's `workspace` folder and do operations. - Default is using `DOSBox` and `TASM`,you can change them in `preference->settings` like the second gif(using MASM via msdos-palyer).
+- If your files path is not workable for emulator. The extension will copy your file in active editor to a separate workspace and operate it there.
+- Default is using `DOSBox` and `TASM`,you can change them in `preference->settings` like the second gif(using MASM via msdos player).
 - If you use `include` to include another file or use `extern`, please use `dosbox here`(see demo2)
 
 ### Demo 2: Open dosbox and type the command you need
@@ -38,8 +40,8 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 | -------------------------------------- | -------------------------------------------------------------------------------- |
 | ![Open in Dosbox](pics/opendosbox.gif) | [![pacman](pics/demo_pacman.gif)](https://github.com/dpisdaniel/assembly-pacman) |
 
-- Command "`Open Emulator`": Your file will be copied as `D:\T.ASM` in DOSBox. (The extension will copy your file to work space and mount this space to DOSbox disk `D:`)
-- Command "`Doxbox here`": The extension will mount your active editor file's folder directly to dosbox's disk `E:`.
+- Editor Command "`Open Emulator`":Open emulator at your file's folder. If your file's path is not readable for DOS emulator, your file will be copied as `T.ASM` in DOS emulator. (For DOSBox, copy your file to work space folder and mount this folder to DOSBox disk `D:`)
+- Command "`Doxbox here`": The extension will Open DOSBox and mount your active editor file's folder directly to DOSBox 's disk `D:` with no path-checking.
 - some ASM commands you may need: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
 - Some interesting assembly codes you may need: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
 
@@ -53,9 +55,9 @@ The extension offer some programmatic features like "hover","formate","jump to d
 
 ## For other system
 
-The extension is packaged with needed [tools](doc/Toolspath.md) for windows inside while **other OS** users *should* make sure DOSBox can be opened by shell command.We can download DOSBox from its website:[DOSBox](https://www.dosbox.com)
+The extension is packaged with needed [tools](doc/Toolspath.md) for windows inside while **other OS** users *should* make sure DOSBox can be opened by shell command. We can download DOSBox from its website:[DOSBox](https://www.dosbox.com)
 
-For MacOS (Darwin),the extension will use command `open -a DOSBox --args` to open DOSBox. So you need to 
+For MacOS (Darwin),the extension will use command `open -a DOSBox --args` to open DOSBox. So you need to:
 
 1. download dmg file from [DOSBox's website](https://www.dosbox.com)
 2. Double-click the `.DMG` file to mount it. A new Finder window showing its contents should appear.
@@ -75,46 +77,71 @@ You can also use the setting ID `masmtasm.dosbox.command` to set your command fo
 for more,please see the `preference->settings`
 
 - `masmtasm.ASM.MASMorTASM` use *MASM* or *TASM* assembler in DOS emulator to run and debug assembly
-- `masmtasm.ASM.emulator` use dosbox or msdos-player as DOS emulator
+- `masmtasm.ASM.emulator` choose DOS emulator
+  - `jsdos` (recommend) run in JS-DOS in VSCode's webview
   - `DOSBox` (default) more stable
-  - `msdos-player`quiet, it runs in command prompt(CMD).  So it cannot support GUI like `TD.exe`
-  - `auto` auto select
+  - `msdos player`quiet, it runs in command prompt(CMD).  So it cannot support GUI like `TD.exe`
+  - `auto` use DOSBox and msdos player
     1. use msdos-player to compile and link
     2. use DOSBox to run
     3. use msdos-player for MASM(debug)
     4. use DOSBox for TASM(TD)
 - `masmtasm.ASM.savefirst`  save file first before using
 - `masmtasm.dosbox.run`：what to do after run your code in DOSBox
-- `masmtasm.ASM.toolspath`: use tools from this path, see [Toolpath](doc/Toolspath.md)
-- `masmtasm.dosbox.config`: set the dosbox configuration. The setting will be write to a `.conf` file which will be used by the DOSBox launched by the extension. Set the config like below:
+- `masmtasm.ASM.toolspath`: (usually do not need it) use tools from this path, see [about-tools](#about-tools)
+- `masmtasm.dosbox.config`: set the DOSBox configuration. The setting will be write to a `.conf` file which will be used by the DOSBox launched by the extension. Set the configuration like below:
 
 ```jsonc
-"masmtasm.dosbox.config": {
+{
+  "masmtasm.dosbox.config": {
         "SDL.windowresolution": "1024x640",//set the size of the dosbox window
         "SDL.output": "opengl"
     },
+    
+"masmtasm.ASM.toolspath": "E:\\tools"//set the custom ASM tools
+}
 ```
 
-### About use of DOSBox
+### About DOSBox 's disk
 
 The extension will mount some folder to DOSBox 's disk. Please don't modify them.
 
-| in DOSBox | real path in the computor                                              |
-| --------- | ---------------------------------------------------------------------- |
-| C:        | the path of tools folder                                               |
-| D:        | the path of the work space                                             |
-| E:        | the path of the editor file's folder(when using command `dosbox here`) |
+| in DOSBox | real path in the computer  |
+| --------- | -------------------------- |
+| C:        | the path of tools folder   |
+| D:        | the path of the work space |
 
 ## known issues
 
 - lack of support of assembly in not just one file
 
+## About tools
+
+### How the extension use tools
+
+The extension will use the tools in the extension's folder `tools`. If defined the setting `masmtasm.ASM.toolspath`, the extension will use ASM tools in this folder instead. This may cause problem
+
+See [built-in-tools](tools/README.md)
+
+### where-are-extensions-installed
+
+According to [VSCode-doc](https://code.visualstudio.com/docs/editor/extension-gallery#_where-are-extensions-installed), the extension will be installed in following folder:
+
+- Windows `%USERPROFILE%\.vscode\extensions`
+- mac-OS `~/.vscode/extensions`
+- Linux `~/.vscode/extensions`
+
+### use your tools
+
+if you want to use your tools of assembler, please paste your path to the setting `masmtasm.ASM.toolspath`, your files should follow the structure like [tools](tools/)
+
 ## Docs & Thanks & Licenses
 
-- Thanks to my teacher and girlfriend. Hope 2020 and the coming 2021 happy and worthy
+- Thanks to my teacher *Han*. Hope 2020 and the coming 2021 happy and worthy
+- inspired by [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code)
+- Thanks to excellent DOS emulator: [dosbox](https://www.dosbox.com), [caiiiycuk](https://github.com/caiiiycuk)'s [js dos](https://js-dos.com/) and [caiiiycuk](https://github.com/caiiiycuk)'s [msdos player](http://takeda-toshiya.my.coocan.jp/msdos)
 - Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) 's extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086),[blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) for ASM language information
-- Thanks to [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code)
-- Using [msdos player](http://takeda-toshiya.my.coocan.jp/msdos),[dosbox](https://www.dosbox.com) as DOS environment emulator
+
 - Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help
 - [THANKS](doc/Thanks.md)
 - [some infomation :wiki](https://github.com/xsro/masm-tasm/wiki)

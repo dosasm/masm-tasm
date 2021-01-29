@@ -2,6 +2,14 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
+## 0.8.0
+
+- 重构代码，增加对jsdos的支持，可以在webview中查看程序运行效果，jsdos使用的wdosbox目前看来可能不稳定，插件对其适配也可能有不足之处。
+- 美化输出面板格式
+- 优先不进行文件的复制过程，当插件认为文件的路径不符合DOSBox等模拟器的文件系统要求时，进行复制操作。
+
+![jsdos demo](pics/demo_jsdos.gif)
+
 ## 0.7.0
 
 - 升级msdos player到 4/10/2020 i486 x86 version
@@ -9,7 +17,7 @@
 
 ## 0.6.0/0.6.1/0.6.2
 
-- 通过终端命令`open -a DOSBox --args `支持在MAC（darwin）中打开dosbox
+- 通过终端命令`open -a DOSBox --args <dosbox args>`支持在MAC（darwin）中打开dosbox
 - 支持通过设置`masmtasm.dosbox.command`自定义用来打开DOSBox的命令
 - 0.6.1
   - 修复[#10](https://github.com/xsro/masm-tasm/issues/10) 中`jle`和`jge`两条指令的悬浮提示错误
@@ -29,7 +37,7 @@
 
 ### 0.4.0
 
-- fix [#6](https://github.com/xsro/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题 
+- fix [#6](https://github.com/xsro/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题
   - 假如文件languageID是assembly,masm,tasm时插件会激活
 - 增加一个设置选项`masmtasm.language.Hover`以决定是否显示悬浮提示Hover
 

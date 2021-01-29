@@ -1,0 +1,14 @@
+{
+  "name": "js-dos",
+  "description": "resources to use in vscode webview",
+  "main": "null",
+  "scripts": {
+    "test": "msedge test.html",
+    "build": "gulp && tsc -p ./ --sourceMap false"
+  },
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "js-dos": "^6.22.59",
+    "typescript": "^3.9.7"
+  }
+}

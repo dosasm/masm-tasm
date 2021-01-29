@@ -9,7 +9,7 @@ const filter = require('gulp-filter');
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const nls = require('vscode-nls-dev');
-const tsProject = ts.createProject('./tsconfig.json', { rootDir: '.' });
+const tsProject = ts.createProject('./src/tsconfig.json', { rootDir: '../' });
 const languages = [
 	{ id: "zh-cn", folderName: "chs", transifexId: "zh-hans" }];
 const generateAdditionalLocFiles = () => {
@@ -31,6 +31,7 @@ const generateSrcLocBundle = () => {
 		.pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
 		.pipe(gulp.dest('dist'));
 };
+const buildnls = gulp.series(generateSrcLocBundle, generateAdditionalLocFiles)
 
 //package and publish
 const fs = require('fs');
@@ -70,8 +71,8 @@ const vscePackageTask = function () {
 };
 
 gulp.task('clean', cleanTask);
-gulp.task('translations-generate', gulp.series(generateSrcLocBundle, generateAdditionalLocFiles));
-
+gulp.task('nls', buildnls);
 gulp.task('publish', gulp.series(cleanTask2, vscePublishTask));
-
 gulp.task('package', gulp.series(cleanTask2, vscePackageTask));
+
+gulp.task('default', buildnls);
