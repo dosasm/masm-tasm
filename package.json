@@ -13,7 +13,7 @@
     "masm",
     "x86"
   ],
-  "icon": "dosboxasm.png",
+  "icon": "resources/dosboxasm.png",
   "engines": {
     "vscode": "^1.49.0"
   },
