@@ -232,12 +232,16 @@ class JsdosPanel {
     public getStdout(): Promise<string> {
         return new Promise(
             (resolve, reject) => {
-                this.ListenWdosboxStdout = (val: string): void => {
+                this.ListenWdosboxStdout = (): void => {
+                    const val = this.WdosboxStdout;
                     if (val.includes('ASM') || val.includes('Assembler')) {
                         resolve(val);
                         this.ListenWdosboxStdout = undefined;
                     }
                 };
+                setTimeout(
+                    () => { reject(this.WdosboxStdout); }, 100000
+                );
             }
         );
     }

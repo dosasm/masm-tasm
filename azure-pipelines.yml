@@ -43,6 +43,8 @@ steps:
     echo ">>> install npm packages"
     npm i && cd tools/js-dos && npm i && cd ../.. 
     echo ">>> installed npm packages"
+    echo ">>> run eslint"
+    npm run lint
     echo ">>> Run sample integration test"
     npm run test
   displayName: Run Tests
