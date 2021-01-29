@@ -42,7 +42,7 @@ export class BoxVSCodeConfig {
         return output;
     }
     getAction(scope: keyof DosboxAction): string[] {
-        const a = this._target.get('AsmConfig') as DosboxAction;
+        const a = this._target.get('more') as DosboxAction;
         let output = a[scope];
         if (Array.isArray(output)) {
             if (this.replacer) {

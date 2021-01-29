@@ -9,7 +9,7 @@ class MsdosVSCodeConfig {
         return workspace.getConfiguration('masmtasm.msdos');
     };
     getAction(scope: MsdosActionKey): string {
-        const a = this._target.get('AsmConfig') as { [id: string]: string };
+        const a = this._target.get('more') as { [id: string]: string };
         const key = scope.toLowerCase();
         let output = a[key];
         if (typeof (output) === 'string') {

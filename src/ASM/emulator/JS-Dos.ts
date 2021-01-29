@@ -3,23 +3,26 @@ import { Uri, window } from 'vscode';
 import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { compressAsmTools } from './js-dos_zip';
-export interface ReadyOption {
-    writes: { path: string; body: ArrayBuffer | Uint8Array | string }[];
-    commands: string[];
-};
 
 const fs = vscode.workspace.fs;
 
+interface JsdosAsmConfig {
+    "masm": string[]; "tasm": string[]; "tasm_debug": string[]; "masm_debug": string[]; "run": string[];
+}
+
 class JSdosVSCodeConfig {
-    private get _target(): vscode.WorkspaceConfiguration {
+    private static get _target(): vscode.WorkspaceConfiguration {
         return vscode.workspace.getConfiguration('masmtasm.jsdos');
     };
-    public get wdosbox(): string {
-        return this._target.get("wdosbox") as string;
+    public static get viewColumn(): vscode.ViewColumn {
+        return JSdosVSCodeConfig._target.get("viewColumn") as vscode.ViewColumn;
     }
-    getAction(scope: "masm" | "tasm" | "tasm_debug" | "masm_debug" | "run"): string[] {
-        const a = this._target.get('AsmConfig') as { [id: string]: string };
-        const key = scope.toLowerCase();
+    public get wdosbox(): string {
+        return JSdosVSCodeConfig._target.get("wdosbox") as string;
+    }
+    getAction(scope: keyof JsdosAsmConfig): string[] {
+        const a = JSdosVSCodeConfig._target.get('more') as JsdosAsmConfig;
+        const key = scope;
         const output = a[key];
         if (Array.isArray(output)) {
             if (this.replacer) {
@@ -50,6 +53,15 @@ class JSdosVSCodeConfig {
         return asmlink.concat(this.runDebugCmd(runOrDebug, ASM));
     }
 }
+
+interface JSDOSCREATEFILE {
+    path: string;
+    body: ArrayBuffer | Uint8Array | string;
+}
+interface ReadyOption {
+    writes: JSDOSCREATEFILE[];
+    commands: string[];
+};
 
 export class JSDos implements EMURUN {
     private _conf: Config;
@@ -99,11 +111,6 @@ export class JSDos implements EMURUN {
     forceCopy?: boolean | undefined;
 }
 
-interface JSDOSCREATEFILE {
-    path: string;
-    body: ArrayBuffer | Uint8Array | string;
-}
-
 /**
  * Manages Js-dos webview panels
  */
@@ -134,7 +141,10 @@ class JsdosPanel {
         const panel = vscode.window.createWebviewPanel(
             JsdosPanel.viewType,
             'jsdos wdosbox',
-            vscode.ViewColumn.Beside,
+            {
+                viewColumn: JSdosVSCodeConfig.viewColumn,
+                preserveFocus: true
+            },
             {
                 // Enable javascript in the webview
                 enableScripts: true,
