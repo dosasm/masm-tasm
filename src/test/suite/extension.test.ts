@@ -1,3 +1,4 @@
+
 import * as assert from 'assert';
 import { execSync } from 'child_process';
 
@@ -6,6 +7,7 @@ import { execSync } from 'child_process';
 import * as vscode from 'vscode';
 import { DIAGCODE } from '../../ASM/diagnose/diagnose';
 import { DOSEMU, ASMTYPE } from '../../ASM/configration';
+import { RUNCODEINFO } from '../../ASM/runcode';
 // import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', function () {
@@ -25,7 +27,7 @@ suite('Extension Test Suite', function () {
 		);
 	} else {
 		try {
-			let msg = execSync('dosbox -version', { encoding: 'utf8' });
+			const msg = execSync('dosbox -version', { encoding: 'utf8' });
 			if (msg.includes('version')) {
 				emulator.push(DOSEMU.dosbox);
 			}
@@ -39,7 +41,7 @@ suite('Extension Test Suite', function () {
 		['1err.asm', DIAGCODE.hasError]
 	];
 	for (const file of filelist) {
-		for (const emu of emulator.sort(function () { return .5 - Math.random(); })) {
+		for (const emu of emulator) {
 			for (const asm of MASMorTASM) {
 				testAsmCode(file[0], file[1], emu, asm);
 			}
@@ -47,13 +49,13 @@ suite('Extension Test Suite', function () {
 	}
 });
 
-function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE) {
+function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE): void {
 	test(`test file ${file} in ${emu} use ${asm} want ${DIAGCODE[diagcode]} ${diagcode}`,
 		async function () {
 			this.timeout('120s');
 			this.slow('10s');
 			//open test file. NOTE: the extension will be activated when open .asm file
-			let samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
+			const samplefile = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/' + file);
 			await vscode.commands.executeCommand('vscode.open', samplefile);
 
 			await vscode.workspace.getConfiguration('masmtasm').update(
@@ -65,9 +67,9 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE
 			await vscode.workspace.getConfiguration('masmtasm').update(
 				"ASM.MASMorTASM", asm
 			);
-			let vscodecmds = await vscode.commands.getCommands(true);
-			let cmd = 'masm-tasm.runASM';
-			let a = (await vscode.commands.executeCommand(cmd) as any);
+			const vscodecmds = await vscode.commands.getCommands(true);
+			const cmd = 'masm-tasm.runASM';
+			const a = (await vscode.commands.executeCommand(cmd) as RUNCODEINFO);
 			assert.ok(vscodecmds.includes(cmd));//assert the extension activated and command contributed
 			assert.strictEqual(DIAGCODE[a.diagCode], DIAGCODE[diagcode]);//error message processed
 			;

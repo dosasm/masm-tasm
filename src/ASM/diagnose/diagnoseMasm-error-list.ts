@@ -27,8 +27,8 @@ const list = [
  * @param str the code of the error information
  */
 export function getInternetlink(str: string): string | undefined {
-    for (let val of list) {
-        for (let code of val.codes) {
+    for (const val of list) {
+        for (const code of val.codes) {
             if (str.toLowerCase() === code) {
                 return `${link}ml-${val.type}-${code}`;
             }

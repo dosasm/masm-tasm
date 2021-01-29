@@ -1,37 +1,36 @@
 import * as vscode from 'vscode';
 import { Uri, window } from 'vscode';
-import { ASMTYPE, Config, SRCFILE, str_replacer } from '../configration';
+import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { compressAsmTools } from './js-dos_zip';
 export interface ReadyOption {
-    writes: { path: string, body: ArrayBuffer | Uint8Array | string }[],
-    commands: string[]
+    writes: { path: string; body: ArrayBuffer | Uint8Array | string }[];
+    commands: string[];
 };
 
 const fs = vscode.workspace.fs;
 
 class JSdosVSCodeConfig {
-    private get _target() {
+    private get _target(): vscode.WorkspaceConfiguration {
         return vscode.workspace.getConfiguration('masmtasm.jsdos');
     };
-    public get wdosbox() {
+    public get wdosbox(): string {
         return this._target.get("wdosbox") as string;
     }
-    getAction(scope: "masm" | "tasm" | "tasm_debug" | "masm_debug" | "run") {
-        let a = this._target.get('AsmConfig') as any;
-        let key = scope.toLowerCase();
-        let output = a[key];
+    getAction(scope: "masm" | "tasm" | "tasm_debug" | "masm_debug" | "run"): string[] {
+        const a = this._target.get('AsmConfig') as { [id: string]: string };
+        const key = scope.toLowerCase();
+        const output = a[key];
         if (Array.isArray(output)) {
             if (this.replacer) {
-                output = output.map(this.replacer);
+                return output.map(this.replacer);
             }
-            return output;
         }
         window.showErrorMessage(`action ${key} hasn't been defined`);
         throw new Error(`action ${key} hasn't been defined`);
     }
     replacer?: ((str: string) => string) | undefined;
-    public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
+    public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE): string[] {
         if (runOrDebug) {
             return this.getAction('run');
         }
@@ -42,7 +41,7 @@ class JSdosVSCodeConfig {
             }
         }
     }
-    public AsmLinkRunDebugCmd(runOrDebug: boolean, ASM: ASMTYPE) {
+    public AsmLinkRunDebugCmd(runOrDebug: boolean, ASM: ASMTYPE): string[] {
         let asmlink: string[];
         switch (ASM) {
             case ASMTYPE.MASM: asmlink = this.getAction('masm'); break;
@@ -61,38 +60,38 @@ export class JSDos implements EMURUN {
         this._VscConf = new JSdosVSCodeConfig();
     }
     async prepare(opt: ASMPREPARATION): Promise<boolean> {
-        let resourcesUri = Uri.joinPath(this._conf.Uris.jsdos, 'resources');
+        const resourcesUri = Uri.joinPath(this._conf.Uris.jsdos, 'resources');
         JsdosPanel.createOrShow(resourcesUri);
         JsdosPanel.wDOSBoxpath = this._VscConf.wdosbox;
-        let filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
-        let v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
+        const filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
+        const v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
         this._wsrc = new SRCFILE(v);
-        this._VscConf.replacer = (val) => str_replacer(val, this._conf, this._wsrc);
+        this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, this._wsrc);
         await compressAsmTools(this._conf.Uris.tools, resourcesUri);
-        let filearray = await fs.readFile(opt.src.uri);
+        const filearray = await fs.readFile(opt.src.uri);
         this._launch.writes.push({ path: this._wsrc.uri.fsPath, body: filearray.toString() });
         return true;
     }
     private _launch: ReadyOption = { writes: [], commands: [] };
-    openEmu(folder: vscode.Uri) {
+    openEmu(folder: vscode.Uri): void {
         if (JsdosPanel.currentPanel) {
             JsdosPanel.currentPanel.launchJsdos(this._launch);
         }
         throw new Error('Method not implemented.');
     }
-    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
+    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<void> {
         return this.runDebug(true, src, msgprocessor);
     }
-    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
+    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<void> {
         return this.runDebug(false, src, msgprocessor);
     }
-    public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor) {
-        let filearray = await fs.readFile(src.uri);
+    public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor): Promise<void> {
+        const filearray = await fs.readFile(src.uri);
         if (JsdosPanel.currentPanel && this._wsrc) {
-            let p = JsdosPanel.currentPanel.launchJsdos(this._launch);
-            let cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
+            const p = JsdosPanel.currentPanel.launchJsdos(this._launch);
+            const cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
             JsdosPanel.currentPanel.sendCmd(cmds);
-            let msg = await JsdosPanel.currentPanel.getStdout();
+            const msg = await JsdosPanel.currentPanel.getStdout();
             await msgprocessor(msg, { preventWarn: true });
         }
     }
@@ -101,8 +100,8 @@ export class JSDos implements EMURUN {
 }
 
 interface JSDOSCREATEFILE {
-    path: string,
-    body: ArrayBuffer | Uint8Array | string
+    path: string;
+    body: ArrayBuffer | Uint8Array | string;
 }
 
 /**
@@ -123,7 +122,7 @@ class JsdosPanel {
     public jsdosStatus?: string;
     public static wDOSBoxpath?: string;
 
-    public static createOrShow(jsdosUri: vscode.Uri) {
+    public static createOrShow(jsdosUri: vscode.Uri): void {
 
         // If we already have a panel, show it.
         if (JsdosPanel.currentPanel) {
@@ -148,7 +147,7 @@ class JsdosPanel {
         JsdosPanel.currentPanel = new JsdosPanel(panel, jsdosUri);
     }
 
-    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri): void {
         JsdosPanel.currentPanel = new JsdosPanel(panel, extensionUri);
     }
 
@@ -184,11 +183,13 @@ class JsdosPanel {
                         if (this.WdosboxStdout.includes('exit\n')) {
                             JsdosPanel.currentPanel?.dispose();
                         };
-                        this.ListenWdosboxStdout(message.text);
+                        if (this.ListenWdosboxStdout !== undefined) {
+                            this.ListenWdosboxStdout(message.text);
+                        }
                         break;
                     case 'jsdosStatus':
                         this.jsdosStatus = message.text;
-                        if (this.jsdosStatus === 'running') {
+                        if (this.jsdosStatus === 'running' && this.JSDOSready !== undefined) {
                             this.JSDOSready();
                         }
                         break;
@@ -202,37 +203,36 @@ class JsdosPanel {
         );
     }
 
-    public WdosboxStdout: string = "";
-    public WdosboxStdoutAppend(str: string) {
-        let output = this.WdosboxStdout + str;
+    public WdosboxStdout = "";
+    public WdosboxStdoutAppend(str: string): void {
+        const output = this.WdosboxStdout + str;
         this.WdosboxStdout = output;
     }
     public getStdout(): Promise<string> {
         return new Promise(
             (resolve, reject) => {
-                this.ListenWdosboxStdout = (val: string) => {
+                this.ListenWdosboxStdout = (val: string): void => {
                     if (val.includes('ASM') || val.includes('Assembler')) {
                         resolve(val);
-                        this.ListenWdosboxStdout = (val: string) => { };
+                        this.ListenWdosboxStdout = undefined;
                     }
                 };
             }
         );
     }
-    public ListenWdosboxStdout = (val: string) => { };
-    public JSDOSready = () => { };
-    public launchJsdos(opt?: ReadyOption) {
-        let msg: any = {
+    public ListenWdosboxStdout: ((val: string) => void) | undefined = undefined;
+    public JSDOSready: (() => void) | undefined = undefined;
+    public launchJsdos(opt?: ReadyOption): void {
+        const msg = {
             command: 'launch',
             text: opt
         };
         this._panel.webview.postMessage(msg);
-        return;
     }
 
     public sendCmd(cmds: string[]): boolean {
         if (this.jsdosStatus !== 'exit') {
-            let msg: any = {
+            const msg = {
                 command: 'execCommand',
                 commands: cmds
             };
@@ -243,7 +243,7 @@ class JsdosPanel {
         return false;
     }
 
-    public dispose() {
+    public dispose(): void {
         JsdosPanel.currentPanel = undefined;
 
         // Clean up our resources
@@ -257,12 +257,12 @@ class JsdosPanel {
         }
     }
 
-    private _update() {
+    private _update(): void {
         const webview = this._panel.webview;
         this._panel.webview.html = this._getHtmlForWebview(webview);
     }
 
-    private _getHtmlForWebview(webview: vscode.Webview) {
+    private _getHtmlForWebview(webview: vscode.Webview): string {
         // Local path to main script run in the webview
         const jsdosOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'js-dos.js');
         const wdosboxOnDisk = vscode.Uri.joinPath(this._jsdosUri, 'wdosbox.js');
@@ -312,7 +312,7 @@ class JsdosPanel {
     }
 }
 
-function getNonce() {
+function getNonce(): string {
     let text = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < 32; i++) {

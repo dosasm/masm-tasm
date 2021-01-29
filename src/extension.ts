@@ -7,7 +7,7 @@ import { AsmCommands } from './ASM/main';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): void {
 	console.log(localize("activate.hello", 'Congratulations, your extension "masm-tasm" is now active!'));
 	//provide programmaic language features like hover,references,outline(symbol)
 	provider(context);
@@ -16,6 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
+export function deactivate(): void {
 	console.log('extension deactivated');
 }

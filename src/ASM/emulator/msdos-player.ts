@@ -1,16 +1,16 @@
-import { workspace, window, Uri, Disposable, Terminal, commands } from 'vscode';
-import { ASMTYPE, Config, DOSEMU, SRCFILE, str_replacer } from '../configration';
+import { workspace, window, Uri, Disposable, Terminal, commands, WorkspaceConfiguration } from 'vscode';
+import { ASMTYPE, Config, DOSEMU, SRCFILE, settingsStrReplacer } from '../configration';
 import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { exec } from 'child_process';
 
 /**the config from VSCode settings `masmtasm.msdos`*/
 class MsdosVSCodeConfig {
-    private get _target() {
+    private get _target(): WorkspaceConfiguration {
         return workspace.getConfiguration('masmtasm.msdos');
     };
-    getAction(scope: MsdosActionKey) {
-        let a = this._target.get('AsmConfig') as any;
-        let key = scope.toLowerCase();
+    getAction(scope: MsdosActionKey): string {
+        const a = this._target.get('AsmConfig') as { [id: string]: string };
+        const key = scope.toLowerCase();
         let output = a[key];
         if (typeof (output) === 'string') {
             if (this.replacer) {
@@ -35,7 +35,7 @@ interface MsdosAction {
 
 type MsdosActionKey = keyof MsdosAction;
 
-export class MsdosPlayer implements EMURUN, Disposable {
+export class MsdosPlayer implements EMURUN {
     copyUri?: Uri;
     forceCopy?: boolean;
     private _conf: Config;
@@ -44,26 +44,26 @@ export class MsdosPlayer implements EMURUN, Disposable {
     constructor(conf: Config) {
         this._conf = conf;
         this._vscConf = new MsdosVSCodeConfig();
-        let ws = this._vscConf.getAction('workspace');
+        const ws = this._vscConf.getAction('workspace');
         this.copyUri = ws ? Uri.file(ws) : undefined;
     }
 
     prepare(opt: ASMPREPARATION): boolean {
         if (this._conf.MASMorTASM === ASMTYPE.TASM && opt?.act === ASMCMD.debug && this._conf.DOSemu === DOSEMU.msdos) {
-            let msg = `disabled for tasm's TD is hardly runable in msdos`;
+            const msg = `disabled for tasm's TD is hardly runable in msdos`;
             window.showErrorMessage(msg);
             return false;
         }
         this._vscConf.replacer = (
-            (val: string) => str_replacer(val, this._conf, opt.src)
+            (val: string): string => settingsStrReplacer(val, this._conf, opt.src)
         );
         this.forceCopy = opt.src?.filename.includes(' ');
         return true;
     }
     openEmu(folder: Uri, command?: string): boolean {
-        let re = folder.fsPath.match(/([a-zA-Z]):/);
-        let disk = re ? `${re[1]}:` : ``;
-        let cmd = [
+        const re = folder.fsPath.match(/([a-zA-Z]):/);
+        const disk = re ? `${re[1]}:` : ``;
+        const cmd = [
             `${disk}`,
             `cd ${folder.fsPath}`,
         ];
@@ -73,27 +73,27 @@ export class MsdosPlayer implements EMURUN, Disposable {
         this.outTerminal(cmd.join(' & '));
         return true;
     }
-    async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        let msg = await this.runPlayer(this._conf).catch((e) => { throw new Error(e); });
+    async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<boolean> {
+        const msg = await this.runPlayer(this._conf).catch((e) => { throw new Error(e); });
         if (await msgprocessor(msg)) {
             this.openEmu(src.folder, `${this._vscConf.getAction('run')}`);
-            return 'command sended to terminal';
+            return true;//'command sended to terminal'
         }
-        return;
+        return false;
     }
-    async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        let msg = await this.runPlayer(this._conf);
+    async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<boolean> {
+        const msg = await this.runPlayer(this._conf);
         if (await msgprocessor(msg)) {
-            let act = this._vscConf.getAction('masm_debug');
+            const act = this._vscConf.getAction('masm_debug');
             this.openEmu(src.folder, `${act}`);
-            return 'command sended to terminal';
+            return true;
         }
-        return;
+        return false;
     }
 
-    private outTerminal(command?: string) {
-        let env: NodeJS.ProcessEnv = process.env;
-        let envPath = env.PATH + ';' + this._vscConf.getAction('path');
+    private outTerminal(command?: string): void {
+        const env: NodeJS.ProcessEnv = process.env;
+        const envPath = env.PATH + ';' + this._vscConf.getAction('path');
         if (MsdosPlayer.msdosTerminal?.exitStatus || MsdosPlayer.msdosTerminal === undefined) {
             MsdosPlayer.msdosTerminal = window.createTerminal({
                 env: { PATH: envPath },
@@ -109,11 +109,11 @@ export class MsdosPlayer implements EMURUN, Disposable {
         }
     }
     public runPlayer(conf: Config): Promise<string> {
-        let command = this._vscConf.getAction(conf.MASMorTASM.toLowerCase() as 'masm' | 'tasm');
+        const command = this._vscConf.getAction(conf.MASMorTASM.toLowerCase() as 'masm' | 'tasm');
         return new Promise<string>(
             (resolve, reject) => {
-                let timeout: number = 3000;
-                let child = exec(
+                const timeout = 3000;
+                const child = exec(
                     command,
                     {
                         cwd: conf.Uris.tools.fsPath, timeout
@@ -123,7 +123,6 @@ export class MsdosPlayer implements EMURUN, Disposable {
                             console.warn({ stderr, stdout, command });
                         }
                         if (error) {
-                            (error as any).note = "exec msdos player error";
                             reject(error);
                         }
                         else if (stdout.length > 0) {
@@ -137,14 +136,14 @@ export class MsdosPlayer implements EMURUN, Disposable {
                         window.showErrorMessage(`Run playerasm.bat timeout after ${timeout}ms\t\nCommand: ${command}`);
                     }
                     else if (code !== 0) {
-                        let msg = `Use playerasm.bat Failed\t exitcode${code}\t\n  command:${command}`;
+                        const msg = `Use playerasm.bat Failed\t exitcode${code}\t\n  command:${command}`;
                         window.showErrorMessage(msg);
                     }
                 });
             }
         );
     }
-    dispose() {
-        // MsdosPlayer.msdosTerminal?.dispose();
+    static dispose(): void {
+        MsdosPlayer.msdosTerminal?.dispose();
     }
 }

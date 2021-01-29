@@ -3,7 +3,7 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function isNumberStr(str: string): boolean {
-	let a = str.match(/([01]+[Bb]|[0-7]+[Qq]|[0-9][0-9A-Fa-f]*[Hh]|[0-9]+[Dd]?)/);
+	const a = str.match(/([01]+[Bb]|[0-7]+[Qq]|[0-9][0-9A-Fa-f]*[Hh]|[0-9]+[Dd]?)/);
 	if (a && a[0] === str) { return true; }
 	return false;
 }
@@ -63,24 +63,24 @@ const asciiname: string[] = [
 	"~",
 	"DEL" + localize("ascii.DEL", "(Delete)"),
 ];
-export function getNumMsg(word: string) {
-	let base: number = word.endsWith('h') ? 16 : word.endsWith('q') ? 8 : word.endsWith('b') ? 2 : 10;
-	let value: number = Number.parseInt(word, base);
-	let hex = localize("num.hex", "Hexadecimal  Number");
-	let oct = localize("num.oct", "Octal  Number");
-	let dec = localize("num.dec", "Decimal  Number");
-	let bin = localize("num.bin", "Binary  Number");
+export function getNumMsg(word: string): string {
+	const base: number = word.endsWith('h') ? 16 : word.endsWith('q') ? 8 : word.endsWith('b') ? 2 : 10;
+	const value: number = Number.parseInt(word, base);
+	const hex = localize("num.hex", "Hexadecimal  Number");
+	const oct = localize("num.oct", "Octal  Number");
+	const dec = localize("num.dec", "Decimal  Number");
+	const bin = localize("num.bin", "Binary  Number");
 	let s = "(" + (base === 16 ? hex : base === 8 ? oct : base === 10 ? dec : bin) + ") " + word + ":\n\n";
 	s += " `DEC`: " + value.toString(10) + "D\n\n";
 	s += " `HEX`: " + value.toString(16) + "H\n\n";
 	s += " `OCT`: " + value.toString(8) + "Q\n\n";
 	s += " `BIN`: " + value.toString(2) + "B\n\n";
-	let a = asciiname[value];
+	const a = asciiname[value];
 	if (a) { s += " `ASCII`: " + a; }
 	return s;
 }
-export function getcharMsg(char: string) {
-	let value = char.charCodeAt(0);
+export function getcharMsg(char: string): string {
+	const value = char.charCodeAt(0);
 	let s = "(ASCII) '" + char + "'\n\n";
 	s += " `DEC`: " + value.toString(10) + "D\n\n";
 	s += " `HEX`: " + value.toString(16) + "H\n\n";
@@ -94,7 +94,7 @@ export enum KeywordType {
 export function getType(type: KeywordType | string): string {
 	let itsType;
 	if (typeof (type) === 'string') {
-		for (let key in KeywordType) {
+		for (const key in KeywordType) {
 			if (key === type) {
 				itsType = KeywordType[key];
 			}

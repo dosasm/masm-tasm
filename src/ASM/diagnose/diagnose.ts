@@ -63,7 +63,7 @@ export class AssemblerDiag {
      * clean the diagnoses
      * @param MASMorTASMorboth 
      */
-    public cleandiagnose(MASMorTASMorboth: string) {
+    public cleandiagnose(MASMorTASMorboth: string): void {
         switch (MASMorTASMorboth) {
             case 'both':
             case 'MASM':
@@ -76,11 +76,13 @@ export class AssemblerDiag {
         }
     }
 };
-interface DIAGINFO {
-    code?: DIAGCODE,
-    error: number,
-    warn: number,
-    diagnotics?: Diagnostic[]
+
+/**the information of diagnostics */
+export interface DIAGINFO {
+    code?: DIAGCODE;
+    error: number;
+    warn: number;
+    diagnostics?: Diagnostic[];
 }
 export class ASMdiagnostic {
     line?: number;
@@ -88,10 +90,10 @@ export class ASMdiagnostic {
     severity?: DiagnosticSeverity;
     source?: string;
     macro: {
-        name?: string,
-        uri?: Uri
-        line?: number//1-base
-        local?: boolean
+        name?: string;
+        uri?: Uri;
+        line?: number;//1-base
+        local?: boolean;
     };
     code?: string;
     constructor() {
@@ -106,7 +108,7 @@ export class ASMdiagnostic {
                 this.severity
             );
             if (this.code) {
-                let link: string | undefined = getInternetlink(this.code);
+                const link: string | undefined = getInternetlink(this.code);
                 if (link) {
                     diag.code = {
                         value: this.code,
@@ -116,7 +118,7 @@ export class ASMdiagnostic {
             }
             if (this.macro.line && this.macro.name && this.macro.uri) {
                 let macroLocation: Location;
-                let line = lineMacro2DOC(doc.getText(), this.macro.name, this.macro.line, this.macro.local);
+                const line = lineMacro2DOC(doc.getText(), this.macro.name, this.macro.line, this.macro.local);
                 if (line) {
                     if (this.macro.uri === doc.uri) {
                         macroLocation = new Location(doc.uri, doc.lineAt(line).range);
@@ -153,8 +155,8 @@ export class ASMdiagnostic {
  * @returns 0base line number in doc
  */
 function lineMacro2DOC(text: string, macroName: string, macroLine: number, local?: boolean): number | undefined {
-    let textarr: string[] = text.split("\n");
-    let macro = new RegExp(`\\s*${macroName}\\s+(macro|MACRO)`);
+    const textarr: string[] = text.split("\n");
+    const macro = new RegExp(`\\s*${macroName}\\s+(macro|MACRO)`);
     let docMacroLine: number | undefined = undefined;
     textarr.forEach(
         (value, index, array) => {

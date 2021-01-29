@@ -28,16 +28,16 @@ export class DOSBox {
     public readonly _cwd?: string;//the cwd for child_process, usually as the folder of dosbox
     protected confFile: Uri | undefined = undefined;
     protected console: WINCONSOLEOPTION = WINCONSOLEOPTION.noconsole;
-    public get redirect() {
+    public get redirect(): boolean {
         if (process.platform === 'win32') {
             return this.console === WINCONSOLEOPTION.noconsole;
         }
         return true;
     }
-    private _stdout: string = "";
-    private _stderr: string = "";
-    private _count: number = 0;
-    constructor(cwd?: string, core: string = 'dosbox') {
+    private _stdout = "";
+    private _stderr = "";
+    private _count = 0;
+    constructor(cwd?: string, core = 'dosbox') {
         if (core) {
             this._core = core;
         }
@@ -46,9 +46,9 @@ export class DOSBox {
         }
         this._cwd = cwd;
     }
-    public run(boxcmd: string[], opt?: DOSBoxOption) {
-        let preOpen = opt?.preOpen ? opt?.preOpen : "";
-        let param = [];
+    public run(boxcmd: string[], opt?: DOSBoxOption): Promise<DOSBoxStd> {
+        const preOpen = opt?.preOpen ? opt?.preOpen : "";
+        const param = [];
         if (this.console === WINCONSOLEOPTION.noconsole) {
             param.push('-noconsole');
         }
@@ -62,10 +62,10 @@ export class DOSBox {
             param.push(...opt.param);
         }
         if (boxcmd.length > 0) {
-            let mapper = (val: string) => `-c "${val}"`;
+            const mapper = (val: string): string => `-c "${val}"`;
             param.push(...boxcmd.map(mapper));
         }
-        return this.cp_run(preOpen + this._core + ' ' + param.join(" "));
+        return this.runViaChildProcess(preOpen + this._core + ' ' + param.join(" "));
     }
     public stdoutHander: (message: string, text: string, No: number) => void = (message: string) => {
         console.log('stdout message', message);
@@ -73,11 +73,10 @@ export class DOSBox {
     public stderrHander: (message: string, text: string, No: number) => void = (message: string) => {
         console.log('stderr message', message);
     };
-    private cp_run(command: string, ignoreWinStd?: boolean): Promise<DOSBoxStd> {
+    private runViaChildProcess(command: string, ignoreWinStd?: boolean): Promise<DOSBoxStd> {
         //console.log(command);
         this._count++;
-        let execOption: ExecOptions = { cwd: this._cwd };
-        let output: DOSBoxStd = {
+        const output: DOSBoxStd = {
             flag: BoxStdNOTE.normal,
             stdout: "",
             stderr: '',
@@ -85,45 +84,48 @@ export class DOSBox {
         };
         return new Promise(
             (resolve, reject) => {
-                const callback = (error: any, stdout: string, stderr: string) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    else if (process.platform === 'win32' && this.redirect && this._cwd && ignoreWinStd !== true) {
-                        winReadConsole(this._cwd).then(
-                            (value) => {
-                                if (value) {
-                                    output.stderr = value.stderr;
-                                    output.stdout = value.stdout;
-                                    resolve(output);
-                                    this.stderrHander(value.stderr, value.stderr, this._count);
-                                    this.stdoutHander(value.stdout, value.stdout, this._count);
-                                }
-                            });
-                    }
-                    else {
-                        output.stdout = stdout;
-                        output.stderr = stderr;
-                        if (process.platform === 'win32') {
-                            if (this.redirect === false) {
-                                output.flag = BoxStdNOTE.winNonoconsole;
-                            }
-                            else if (this._cwd === undefined) {
-                                output.flag = BoxStdNOTE.noCwd;
-                            }
-                            // else if (ignoreWinStd === false) {
-                            //     output.flag = BoxStdNOTE.winCancelled;
-                            // }
-                            else if (ignoreWinStd === true) {
-                                output.flag = BoxStdNOTE.winCancelledByUser;
-                            }
-
+                const child = exec(
+                    command,
+                    {
+                        cwd: this._cwd,
+                    },
+                    (error, stdout, stderr): void => {
+                        if (error) {
+                            reject(error);
                         }
-                        resolve(output);
-                    }
-                };
+                        else if (process.platform === 'win32' && this.redirect && this._cwd && ignoreWinStd !== true) {
+                            winReadConsole(this._cwd).then(
+                                (value) => {
+                                    if (value) {
+                                        output.stderr = value.stderr;
+                                        output.stdout = value.stdout;
+                                        resolve(output);
+                                        this.stderrHander(value.stderr, value.stderr, this._count);
+                                        this.stdoutHander(value.stdout, value.stdout, this._count);
+                                    }
+                                });
+                        }
+                        else {
+                            output.stdout = stdout;
+                            output.stderr = stderr;
+                            if (process.platform === 'win32') {
+                                if (this.redirect === false) {
+                                    output.flag = BoxStdNOTE.winNonoconsole;
+                                }
+                                else if (this._cwd === undefined) {
+                                    output.flag = BoxStdNOTE.noCwd;
+                                }
+                                // else if (ignoreWinStd === false) {
+                                //     output.flag = BoxStdNOTE.winCancelled;
+                                // }
+                                else if (ignoreWinStd === true) {
+                                    output.flag = BoxStdNOTE.winCancelledByUser;
+                                }
 
-                let child = exec(command, execOption, callback);
+                            }
+                            resolve(output);
+                        }
+                    });
 
                 child.on('exit', (code) => {
                     output.exitcode = code;
@@ -163,43 +165,40 @@ enum BoxStdNOTE {
     normal
 }
 
-async function winReadConsole(folder: string) {
-    let cwd = Uri.file(folder);
-    let fs = workspace.fs;
-    if (process.platform === 'win32') {
-        let dirs = await fs.readDirectory(cwd);
-        let output = { stdout: "", stderr: "" };
+async function winReadConsole(folder: string): Promise<{ stdout: string; stderr: string }> {
+    const cwd = Uri.file(folder);
+    const fs = workspace.fs;
+    const dirs = await fs.readDirectory(cwd);
+    const output = { stdout: "", stderr: "" };
 
-        if (inArrays(dirs, ['stderr.txt', FileType.File])) {
-            output.stderr = (await fs.readFile(Uri.joinPath(cwd, 'stderr.txt'))).toString();
-        }
-        if (inArrays(dirs, ['stdout.txt', FileType.File])) {
-            output.stdout = (await fs.readFile(Uri.joinPath(cwd, 'stdout.txt'))).toString();
-        }
-        return output;
+    if (inArrays(dirs, ['stderr.txt', FileType.File])) {
+        output.stderr = (await fs.readFile(Uri.joinPath(cwd, 'stderr.txt'))).toString();
     }
-    return;
+    if (inArrays(dirs, ['stdout.txt', FileType.File])) {
+        output.stdout = (await fs.readFile(Uri.joinPath(cwd, 'stdout.txt'))).toString();
+    }
+    return output;
 }
 interface DOSBoxOption {
     /**
      * the command may be need to exec before open dosbox*/
-    preOpen?: string,
-    confFile?: string,
-    param?: string[]
+    preOpen?: string;
+    confFile?: string;
+    param?: string[];
 }
 
-interface DOSBoxStd {
+export interface DOSBoxStd {
     stdout: string;
     stderr: string;
     flag: BoxStdNOTE;
-    exitcode: number | null | undefined
+    exitcode: number | null | undefined;
 }
 
 
 /**default command for open dosbox */
 function OpenDosboxCmd(boxconsole?: WINCONSOLEOPTION): string {
     //command for open dosbox
-    let command: string = "dosbox";
+    let command = "dosbox";
     //for windows,using different command according to dosbox's path and the choice of the console window
     switch (process.platform) {
         case 'win32':

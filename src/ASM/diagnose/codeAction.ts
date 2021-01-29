@@ -12,12 +12,13 @@ export class SeeinCPPDOCS implements vscode.CodeActionProvider {
         // for each diagnostic entry that has the matching `code`, create a code action command
         return context.diagnostics
             .filter(diagnostic => this.isObjCode(diagnostic.code))
-            .map(diagnostic => this.createCommandCodeAction(diagnostic.code as { value: string | number; target: vscode.Uri; }));
+            .map(diagnostic => this.createCommandCodeAction(diagnostic.code as { value: string | number; target: vscode.Uri }));
     }
-    private isObjCode(code: string | number | { value: string | number; target: vscode.Uri; } | undefined): boolean {
-        return 'target' in (code as any);
+    private isObjCode(code: string | number | { value: string | number; target: vscode.Uri } | undefined): boolean {
+        if (typeof code === 'object') { return 'target' in code; }
+        return false;
     }
-    private createCommandCodeAction(code: { value: string | number; target: vscode.Uri; }): vscode.CodeAction {
+    private createCommandCodeAction(code: { value: string | number; target: vscode.Uri }): vscode.CodeAction {
         const action = new vscode.CodeAction('See in msvc', vscode.CodeActionKind.QuickFix);
         action.command = {
             command: "vscode.open",

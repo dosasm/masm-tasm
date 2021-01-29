@@ -9,7 +9,7 @@ const fs = workspace.fs;
  * @param src the folder of files
  * @param dst the destination path
  */
-function compress(src: string, dst: string) {
+function compress(src: string, dst: string): void {
 
     // create a file to stream archive data to.
     const output = createWriteStream(dst);
@@ -32,7 +32,7 @@ function compress(src: string, dst: string) {
     });
 
     // good practice to catch warnings (ie stat failures and other non-blocking errors)
-    archive.on('warning', function (err: any) {
+    archive.on('warning', function (err: { code: string }) {
         if (err.code === 'ENOENT') {
             // log warning
         } else {
@@ -42,7 +42,7 @@ function compress(src: string, dst: string) {
     });
 
     // good practice to catch this error explicitly
-    archive.on('error', function (err: any) {
+    archive.on('error', function (err: unknown) {
         throw err;
     });
 
@@ -62,8 +62,8 @@ function compress(src: string, dst: string) {
  * @param uri the folder contains subfolder `masm` and `tasm`
  * @param dst the destination folder,will create `masm.zip` and `tasm.zip` in this folder
  */
-export async function compressAsmTools(uri: Uri, dst: Uri) {
-    let dirs = await fs.readDirectory(dst);
+export async function compressAsmTools(uri: Uri, dst: Uri): Promise<void> {
+    const dirs = await fs.readDirectory(dst);
     if (dirs.some(val => val[0] === 'masm.zip' && val[1] === FileType.File)) {
 
     } else {

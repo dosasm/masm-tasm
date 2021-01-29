@@ -17,26 +17,26 @@ export class AutoMode implements EMURUN {
     }
     prepare(opt: ASMPREPARATION): boolean {
         this.copyUri = this._msdos.copyUri;
-        let output = this._dosbox.prepare(opt) && this._msdos.prepare(opt);
+        const output = this._dosbox.prepare(opt) && this._msdos.prepare(opt);
         this.forceCopy = this._msdos.forceCopy || this._dosbox.forceCopy;
         return output;
     }
-    openEmu(folder: Uri) {
+    openEmu(folder: Uri): Promise<unknown> {
         return this._dosbox.openEmu(folder);
     }
-    async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
-        let msg = await this._msdos.runPlayer(this._conf);
+    async Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown> {
+        const msg = await this._msdos.runPlayer(this._conf);
         if (await msgprocessor(msg)) {
             await this._dosbox.Run(src);
         }
         return;
     }
-    async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any> {
+    async Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown> {
         if (this._conf.MASMorTASM === ASMTYPE.MASM) {
             return this._msdos.Debug(src, msgprocessor);
         }
         else {
-            let msg = await this._msdos.runPlayer(this._conf);
+            const msg = await this._msdos.runPlayer(this._conf);
             if (await msgprocessor(msg)) {
                 this._dosbox.Debug(src);
             }

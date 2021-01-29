@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { runTests } from 'vscode-test';
 
-async function main() {
+async function main(): Promise<void> {
 	try {
 		// The folder containing the Extension Manifest package.json
 		// Passed to `--extensionDevelopmentPath`
@@ -15,7 +15,7 @@ async function main() {
 		const sampleFolder = path.resolve(__dirname, '../../samples');
 		const launchArgs: string[] = [sampleFolder];
 
-		const DELAY = (timeout: number) => new Promise((resolve) => { setTimeout(resolve, timeout); });
+		const DELAY = (timeout: number): Promise<undefined> => new Promise((resolve) => { setTimeout(resolve, timeout); });
 		// Download VS Code, unzip it and run the integration test
 		await runTests({ extensionDevelopmentPath, extensionTestsPath, launchArgs });
 		await DELAY(20000);

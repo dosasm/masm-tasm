@@ -5,9 +5,9 @@ import { ASMTYPE, DOSEMU } from './configration';
 
 /**register commands for run and debug the code
  *  in dosbox or msdos-player by TASM ot MASM */
-export function AsmCommands(context: vscode.ExtensionContext) {
-    let asm = new AsmAction(context);
-    let commands = [
+export function AsmCommands(context: vscode.ExtensionContext): void {
+    const asm = new AsmAction(context);
+    const commands = [
         vscode.commands.registerCommand('masm-tasm.openEmulator', (uri?: vscode.Uri) => {
             return asm.runcode(ASMCMD.OpenEmu, uri);
         }),
@@ -32,6 +32,5 @@ export function AsmCommands(context: vscode.ExtensionContext) {
         );
     }
     context.subscriptions.push(...commands);
-    return commands;
 }
 

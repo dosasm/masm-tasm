@@ -1,7 +1,7 @@
-import { Disposable, ExtensionContext, FileSystemError, TextDocument, Uri, window, workspace } from 'vscode';
+import { Disposable, ExtensionContext, Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
-import { Config, DOSEMU, SRCFILE } from './configration';
-import { AssemblerDiag, DIAGCODE } from './diagnose/diagnose';
+import { ASMTYPE, Config, DOSEMU, SRCFILE } from './configration';
+import { AssemblerDiag, DIAGCODE, DIAGINFO } from './diagnose/diagnose';
 import { AutoMode } from './emulator/auto-mode';
 import { DOSBox } from './emulator/DOSBox';
 import { JSDos } from './emulator/JS-Dos';
@@ -11,30 +11,38 @@ import { Logger } from './outputChannel';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
+/**the commands of action*/
+export enum ASMCMD {
+    OpenEmu,
+    debug,
+    run
+}
+
+export type ASSEMBLERMSG = string | { asm: string; link: string };
 /**message processor return true if no error message*/
-export type MSGProcessor = (message: string | { asm: string, link: string }, opt?: { preventWarn: boolean }) => Promise<boolean> | boolean;
-export type ASMPREPARATION = { src: SRCFILE, act: ASMCMD };
+export type MSGProcessor = (message: ASSEMBLERMSG, opt?: { preventWarn: boolean }) => Promise<boolean> | boolean;
+export type ASMPREPARATION = { src: SRCFILE; act: ASMCMD };
 /**interface for emulator */
 export interface EMURUN {
     /**some process needed to do before action*/
     prepare(opt?: ASMPREPARATION): Promise<boolean> | boolean;
     /**open dosbox need*/
-    openEmu(folder: Uri): Promise<any> | any;
+    openEmu(folder: Uri): Promise<unknown> | unknown;
     /**run code*/
-    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any>;
+    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown>;
     /**debug code*/
-    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<any>;
+    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown>;
     /**return a uri that needed to copy the file to instead of default one in extension globalstorage*/
     copyUri?: Uri;
     /**if true force to copy the sourcecode file to [workspcae](## workspace) */
     forceCopy?: boolean;
 }
 
-/**the commands of action*/
-export enum ASMCMD {
-    OpenEmu,
-    debug,
-    run
+export interface RUNCODEINFO {
+    diagCode: DIAGCODE;
+    message?: ASSEMBLERMSG;
+    diagnose?: DIAGINFO;
+    emulator?: unknown;
 }
 
 /**class for actions of ASM
@@ -67,7 +75,7 @@ export class AsmAction implements Disposable {
     }
 
     /**open the dosbox and switch to the needed folder*/
-    public async BoxHere(uri?: Uri, emulator?: DOSEMU) {
+    public async BoxHere(uri?: Uri, emulator?: DOSEMU): Promise<unknown> {
         //get the folder need to open
         let folder: Uri | undefined = undefined;
         if (uri) {
@@ -82,17 +90,17 @@ export class AsmAction implements Disposable {
                     folder = workspace.workspaceFolders[0].uri;
                 }
                 else if (workspace.workspaceFolders.length > 1) {
-                    let a = await window.showWorkspaceFolderPick();
+                    const a = await window.showWorkspaceFolderPick();
                     if (a) { folder = a.uri; }
                 }
             }
         }
         //choose the emulator
-        let dosemu = emulator ? emulator : this._config.DOSemu;
-        let emu = AsmAction.getEmulator(dosemu, this._config);
+        const dosemu = emulator ? emulator : this._config.DOSemu;
+        const emu = AsmAction.getEmulator(dosemu, this._config);
         //open the emulator
         if (folder && await emu.prepare()) {
-            let output = await emu.openEmu(folder);
+            const output = await emu.openEmu(folder);
             return output;
         }
         else {
@@ -101,9 +109,9 @@ export class AsmAction implements Disposable {
     }
 
     /**Do the operation according to the input.*/
-    public async runcode(command: ASMCMD, uri?: Uri) {
+    public async runcode(command: ASMCMD, uri?: Uri): Promise<RUNCODEINFO> {
         const emulator = AsmAction.getEmulator(this._config.DOSemu, this._config);
-        let output: any = { diagCode: DIAGCODE.null };
+        const output: RUNCODEINFO = { diagCode: DIAGCODE.null };
         //get the target file
         let src: SRCFILE | undefined;
         if (uri) {
@@ -125,7 +133,7 @@ export class AsmAction implements Disposable {
                 await doc.save();
             }
             //output the message of the command
-            let msg = { title: "", content: src.pathMessage() };
+            const msg = { title: "", content: src.pathMessage() };
             switch (command) {
                 case ASMCMD.OpenEmu:
                     msg.title = localize("openemu.msg", "\n[execute]Open emulator and prepare environment");
@@ -138,7 +146,7 @@ export class AsmAction implements Disposable {
                     break;
             }
             if (this._config.Separate || emulator.forceCopy) {
-                let dst = emulator.copyUri === undefined ? this._config.Uris.workspace : emulator.copyUri;
+                const dst = emulator.copyUri === undefined ? this._config.Uris.workspace : emulator.copyUri;
                 await src.copyto(dst);
                 msg.content += `\ncopied as "${src.uri.fsPath}"`;
             }
@@ -147,12 +155,12 @@ export class AsmAction implements Disposable {
             }
             Logger.send(msg);
             const msgProcessor: MSGProcessor =
-                (message: string | { asm: string; link: string; }, opt?: { preventWarn: boolean }) => {
-                    let msg = typeof (message) === 'string' ? message : message.asm;
+                (message: string | { asm: string; link: string }, opt?: { preventWarn: boolean }) => {
+                    const msg = typeof (message) === 'string' ? message : message.asm;
                     output.message = message;
-                    let diag = this.landiag.ErrMsgProcess(msg, doc, this.ASM);
-                    output.diaginfo = diag;
-                    output.diagCode = diag?.code;
+                    const diag = this.landiag.ErrMsgProcess(msg, doc, this.ASM);
+                    output.diagnose = diag;
+                    if (diag?.code !== undefined) { output.diagCode = diag?.code; }
                     if (diag) {
                         Logger.send({
                             title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn),
@@ -190,29 +198,29 @@ export class AsmAction implements Disposable {
         }
         return output;
     }
-    private async showWarnInfo() {
-        let warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", this.ASM);
-        let Go_on = localize("runcode.continue", "continue");
-        let Stop = localize("runcode.stop", "stop");
-        let result = await window.showInformationMessage(warningmsgwindow, Go_on, Stop);
-        if (result === Go_on) {
+    private async showWarnInfo(): Promise<boolean> {
+        const warningmsgwindow = localize("runcode.warn", "{0} Warning,successfully generate .exe file,but assembler has some warning message", this.ASM);
+        const Continue = localize("runcode.continue", "continue");
+        const Stop = localize("runcode.stop", "stop");
+        const result = await window.showInformationMessage(warningmsgwindow, Continue, Stop);
+        if (result === Continue) {
             return true;
         }
         return false;
     }
-    private async showErrorInfo() {
-        let Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", this._config.MASMorTASM);
+    private async showErrorInfo(): Promise<void> {
+        const Errmsg = localize("runcode.error", "{0} Error,Can't generate .exe file\nSee Output panel for information", this._config.MASMorTASM);
         await window.showErrorMessage(Errmsg);
     }
-    public cleanalldiagnose() {
+    public cleanalldiagnose(): void {
         this.landiag.cleandiagnose('both');
     }
-    public dispose() {
+    public dispose(): void {
         Logger.OutChannel.dispose();
         this.cleanalldiagnose();
     }
-    public get ASM() { return this._config.MASMorTASM; }
-    public get emulator() { return this._config.DOSemu; }
+    public get ASM(): ASMTYPE { return this._config.MASMorTASM; }
+    public get emulator(): DOSEMU { return this._config.DOSemu; }
 }
 
 

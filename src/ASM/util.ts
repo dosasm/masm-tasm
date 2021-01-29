@@ -18,7 +18,7 @@ export function inArrays(data: [string, FileType][], arr: [string, FileType], ig
  * make sure value in the list
  */
 export function validfy<T>(value: T | undefined, list: T[]): T {
-    for (let val of list) {
+    for (const val of list) {
         if (value === val) {
             return value;
         }
