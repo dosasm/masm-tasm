@@ -51,7 +51,7 @@ steps:
 
 - bash: |
     echo ">>> Publish"
-    gulp publish
+    npm run publish
   displayName: Publish
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'), eq(variables['Agent.OS'], 'Linux'))
   env:
