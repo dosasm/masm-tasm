@@ -1,17 +1,18 @@
 import { FileType } from 'vscode';
 
-/**check the file(dir) in folder or not */
-export function inArrays(data: [string, FileType][], arr: [string, FileType], ignoreCase?: boolean): boolean {
-    let ignore: boolean = process.platform === "win32";
-    if (ignoreCase) {
-        ignore = ignoreCase;
+/**check whether the entry is in directory or not
+ * @param dirinfo the entris of one directory
+ * @param entry the entry to find
+ * @param ignoreCase ignore Case or not,default is true in win32 and false for other
+ */
+export function inDirectory(dirinfo: [string, FileType][], entry: [string, FileType], ignoreCase: boolean = process.platform === "win32"): [string, FileType] | undefined {
+    for (const d of dirinfo) {
+        const filecheck = ignoreCase ? d[0].toLowerCase() === d[0].toLowerCase() : d[0] === d[0];
+        if (filecheck && d[1] === d[1]) {
+            return d;
+        }
     }
-    if (ignore) {
-        return data.some(e => e[0].toLowerCase() === arr[0].toLowerCase() && e[1] === arr[1]);
-    }
-    else {
-        return data.some(e => e.every((o, i) => Object.is(arr[i], o)));
-    }
+    return;
 };
 
 /**

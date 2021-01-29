@@ -1,6 +1,6 @@
 import { ExtensionContext, FileType, TextDocument, Uri, workspace } from 'vscode';
 import { Logger } from './outputChannel';
-import { inArrays, validfy } from './util';
+import { inDirectory, validfy } from './util';
 import * as nls from 'vscode-nls';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
@@ -206,12 +206,12 @@ export class SRCFILE {
         const dirs: [string, FileType][] = await fs.readDirectory(uri);
         const delList = delExtList.map((val) => this.filename + val);
         for (const value of delList) {
-            if (inArrays(dirs, [value, FileType.File])) {
-                await fs.delete(Uri.joinPath(uri, value), { recursive: false, useTrash: false });
+            const del = inDirectory(dirs, [value, FileType.File]);
+            if (del) {
+                await fs.delete(Uri.joinPath(uri, del[0]), { recursive: false, useTrash: false });
                 return;
             }
         }
-
     }
     /**copy the source code file and the generated exe file to another path*/
     public async copyEXEto(uri: Uri): Promise<void> {

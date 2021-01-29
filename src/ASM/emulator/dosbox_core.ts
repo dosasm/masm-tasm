@@ -1,6 +1,6 @@
 import { exec, ExecOptions } from 'child_process';
 import { window, WorkspaceConfiguration, workspace, Uri, FileType } from 'vscode';
-import { inArrays } from '../util';
+import { inDirectory } from '../util';
 
 /**defines the option to do with dosbox's console message **in windows system**.
  * - For **windows**, if in **noconsole** mode,the dosbox will redirect the console message to files in the *dosbox.exe*'s folder.
@@ -166,17 +166,21 @@ enum BoxStdNOTE {
     normal
 }
 
+/**read the dosbox's console std information for win32
+ * @param folder the folder to store stdout and stderr, usually the folder of dosbox.exe
+ */
 async function winReadConsole(folder: string): Promise<{ stdout: string; stderr: string }> {
     const cwd = Uri.file(folder);
     const fs = workspace.fs;
     const dirs = await fs.readDirectory(cwd);
     const output = { stdout: "", stderr: "" };
-
-    if (inArrays(dirs, ['stderr.txt', FileType.File])) {
-        output.stderr = (await fs.readFile(Uri.joinPath(cwd, 'stderr.txt'))).toString();
+    let file = inDirectory(dirs, ['stderr.txt', FileType.File]);
+    if (file) {
+        output.stderr = (await fs.readFile(Uri.joinPath(cwd, file[0]))).toString();
     }
-    if (inArrays(dirs, ['stdout.txt', FileType.File])) {
-        output.stdout = (await fs.readFile(Uri.joinPath(cwd, 'stdout.txt'))).toString();
+    file = inDirectory(dirs, ['stdout.txt', FileType.File]);
+    if (file) {
+        output.stdout = (await fs.readFile(Uri.joinPath(cwd, file[0]))).toString();
     }
     return output;
 }

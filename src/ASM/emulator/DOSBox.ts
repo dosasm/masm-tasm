@@ -1,9 +1,12 @@
+import { rejects } from "assert";
+import { resolve } from "path";
 import { TextEncoder } from "util";
 import { FileType, Uri, window, workspace, WorkspaceConfiguration } from 'vscode';
 import * as nls from 'vscode-nls';
 import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
 import { Logger } from '../outputChannel';
 import { ASMPREPARATION, ASSEMBLERMSG, EMURUN, MSGProcessor } from "../runcode";
+import { inDirectory } from "../util";
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox as dosboxCore, WINCONSOLEOPTION, DOSBoxStd } from './dosbox_core';
 const fs = workspace.fs;
@@ -12,8 +15,8 @@ const DOSBOX_CMDS_LIMIT = 5;
 //the time interval between launch dosbox and read asmlog file
 const WAIT_AFTER_LAUNCH_DOSBOX = 8000;
 const DOSBOX_CONF_FILENAME = 'VSC-ExtUse.conf';
-const ASM_LOG_FILE = 'ASM.LOG';
-const LINK_LOG_FILE = 'LINK.LOG';
+const ASM_LOG_FILE = 'ASM.log';
+const LINK_LOG_FILE = 'LINK.log';
 const DELAY = (timeout: number): Promise<void> => new Promise((resolve, reject) => {
     setTimeout(resolve, timeout);
 });
@@ -169,57 +172,54 @@ export class DOSBox extends dosboxCore implements EMURUN {
      * @param file the Uri of the file
      * @returns the Assembler's output
      */
-    public async runDebug(src: SRCFILE, runOrDebug: boolean): Promise<{ all: Promise<ASSEMBLERMSG[]>; race: Promise<ASSEMBLERMSG> }> {
-        const asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, ASM_LOG_FILE);
-        const linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, LINK_LOG_FILE);
+    public async runDebug(src: SRCFILE, runOrDebug: boolean): Promise<{ all: Promise<ASSEMBLERMSG | undefined>; race: Promise<ASSEMBLERMSG> }> {
+        let asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, ASM_LOG_FILE);
+        let linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, LINK_LOG_FILE);
         const dirs = await fs.readDirectory(this._conf.Uris.globalStorage);
-        for (const dir of dirs) {
-            if (dir[0] === ASM_LOG_FILE && dir[1] === FileType.File) { fs.delete(asmloguri); }
-            if (dir[0] === LINK_LOG_FILE && dir[1] === FileType.File) { fs.delete(linkloguri); }
-        }
+        if (inDirectory(dirs, [ASM_LOG_FILE, FileType.File])) { fs.delete(asmloguri); }
+        if (inDirectory(dirs, [LINK_LOG_FILE, FileType.File])) { fs.delete(linkloguri); }
 
         const readMsg = async (): Promise<undefined | { asm: string; link: string }> => {
-            try {
-                const dirs = await fs.readDirectory(this._conf.Uris.globalStorage);
-                let flag = false;
-                for (const dir of dirs) {
-                    if (dir[0] === ASM_LOG_FILE && dir[1] === FileType.File) { flag = true; }
-                    if (dir[0] === LINK_LOG_FILE && dir[1] === FileType.File) { flag = true; }
+            const dirs = await fs.readDirectory(this._conf.Uris.globalStorage);
+            const asmlog = inDirectory(dirs, [ASM_LOG_FILE, FileType.File]);
+            const linklog = inDirectory(dirs, [LINK_LOG_FILE, FileType.File]);
+            if (asmlog && linklog) {
+                asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, asmlog[0]);
+                linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, linklog[0]);
+                const asm = (await fs.readFile(asmloguri)).toString();
+                const link = (await fs.readFile(linkloguri)).toString();
+                if (asm.trim().length > 0) {
+                    return { asm, link };
                 }
-                if (flag) {
-                    const asm = (await fs.readFile(asmloguri)).toString();
-                    const link = (await fs.readFile(linkloguri)).toString();
-                    if (asm.trim().length > 0) {
-                        return { asm, link };
-                    }
-                }
-                return;
             }
-            catch (e) {
-                console.warn(e);
-            }
-            return {
-                asm: "",
-                link: ""
-            };
+            return undefined;
         };
-        const exitRead: Promise<{ asm: string; link: string }> = new Promise(
+        const exitRead: Promise<{ asm: string; link: string } | undefined> = new Promise(
             async (resolve) => {
                 await this.runDosbox(src.folder, this.asmConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
                 const msg = await readMsg();
-                if (msg) { resolve(msg); }
+                resolve(msg);
             }
         );
-        const delayRead: Promise<{ asm: string; link: string }> = new Promise(
-            async (resolve) => {
+        const race: Promise<{ asm: string; link: string }> = new Promise(
+            async (resolve, reject) => {
                 await DELAY(WAIT_AFTER_LAUNCH_DOSBOX);
-                const msg = await readMsg();
-                if (msg) { resolve(msg); }
+                let msg = await readMsg();
+                if (msg) {
+                    resolve(msg);
+                } else {
+                    msg = await exitRead;
+                    if (msg) {
+                        resolve(msg);
+                    }
+                    else {
+                        reject('no log readed');
+                    }
+                }
+
             }
         );
-        const all = Promise.all([exitRead, delayRead]);
-        const race = Promise.race([exitRead, delayRead]);
-        return { all, race };
+        return { all: exitRead, race };
     }
 
     /**open dosbox and do things about it

@@ -91,14 +91,13 @@ export class JSDos implements EMURUN {
         }
         throw new Error('Method not implemented.');
     }
-    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<void> {
+    Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<string> {
         return this.runDebug(true, src, msgprocessor);
     }
-    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<void> {
+    Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<string> {
         return this.runDebug(false, src, msgprocessor);
     }
-    public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor): Promise<void> {
-        const filearray = await fs.readFile(src.uri);
+    public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor): Promise<string> {
         if (JsdosPanel.currentPanel && this._wsrc) {
             const p = JsdosPanel.currentPanel.launchJsdos(this._launch);
             const cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
@@ -106,6 +105,7 @@ export class JSDos implements EMURUN {
             const msg = await JsdosPanel.currentPanel.getStdout();
             await msgprocessor(msg, { preventWarn: true });
         }
+        return JSON.stringify([JsdosPanel.currentPanel, this._wsrc]);
     }
     copyUri?: vscode.Uri | undefined;
     forceCopy?: boolean | undefined;
