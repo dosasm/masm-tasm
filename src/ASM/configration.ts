@@ -1,6 +1,10 @@
 import { ExtensionContext, FileType, TextDocument, Uri, workspace } from 'vscode';
 import { Logger } from './outputChannel';
 import { inArrays, validfy } from './util';
+import * as nls from 'vscode-nls';
+
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 interface TOOLURIS {
     /**the separate workspace to use*/
@@ -137,19 +141,20 @@ export class Config {
         };
         fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
         this._toolpath = this._target.get('toolspath');
-        Logger.send({ title: `[Config] ${new Date().toLocaleString()}`, content: Config.printConfig(this) });
+        this.printToChannel();
     }
     public get dosboxconfuri(): Uri {
         const uri = Uri.joinPath(this.Uris.globalStorage, 'VSC-ExtUse.conf');
         return uri;
     }
-    static printConfig(conf: Config): string {
-        const output = `
-workspace: ${conf.Uris.workspace.fsPath}
-use DOSBox from folder: ${conf.Uris.dosbox.fsPath}
-use MSdos - player from folder: ${conf.Uris.msdos.fsPath}
-        `;
-        return output;
+    public printToChannel(): void {
+        Logger.send(
+            {
+                title: localize('config.title', "[Config] {0}", new Date().toLocaleString()),
+                content: localize('config.content', 'default workspace:"{0}"\nuse tools from "{1}"',
+                    this.Uris.workspace.fsPath, this.Uris.tools.fsPath)
+            }
+        );
     }
 }
 

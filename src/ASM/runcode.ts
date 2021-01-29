@@ -148,7 +148,7 @@ export class AsmAction implements Disposable {
             if (this._config.Separate || emulator.forceCopy) {
                 const dst = emulator.copyUri === undefined ? this._config.Uris.workspace : emulator.copyUri;
                 await src.copyto(dst);
-                msg.content += `\ncopied as "${src.uri.fsPath}"`;
+                msg.content += localize('copy.msg', `\ncopied as "{0}"`, src.uri.fsPath);
             }
             if (this._config.Clean) {
                 await src.cleanDir();
