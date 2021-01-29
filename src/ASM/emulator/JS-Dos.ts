@@ -210,6 +210,7 @@ class JsdosPanel {
                                 if (this.JSDOSready !== undefined) {
                                     this.JSDOSready();
                                 }
+                                break;
                             case 'exit':
                         }
                         break;
