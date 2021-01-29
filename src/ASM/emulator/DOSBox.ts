@@ -92,30 +92,31 @@ export class DOSBox extends dosboxCore implements EMURUN {
     private asmConfig: BoxVSCodeConfig;
     constructor(conf: Config) {
         const vscConf = new BoxVSCodeConfig();
-
-        super(conf.Uris.dosbox.fsPath, vscConf.command);
+        let boxconsole: WINCONSOLEOPTION | undefined = undefined;
+        if (vscConf.command === undefined || vscConf.command.length === 0) {
+            switch (vscConf.console) {
+                case "min":
+                    boxconsole = WINCONSOLEOPTION.min;
+                    break;
+                case "normal":
+                    boxconsole = WINCONSOLEOPTION.normal;
+                    break;
+                case "noconsole":
+                case "redirect(show)":
+                case "redirect":
+                default:
+                    boxconsole = WINCONSOLEOPTION.noconsole;
+                    break;
+            }
+        }
+        super(conf.Uris.dosbox.fsPath, vscConf.command, boxconsole);
         this.forceCopy = false;
         this._conf = conf;
         this.asmConfig = vscConf;
         //write the config file for extension
         this.confFile = Uri.joinPath(conf.Uris.globalStorage, DOSBOX_CONF_FILENAME);
         writeBoxconfig(conf.dosboxconfuri, vscConf.config);
-        if (vscConf.command === undefined) {
-            switch (vscConf.console) {
-                case "min":
-                    this.console = WINCONSOLEOPTION.min;
-                    break;
-                case "normal":
-                    this.console = WINCONSOLEOPTION.normal;
-                    break;
-                case "noconsole":
-                case "redirect(show)":
-                case "redirect":
-                default:
-                    this.console = WINCONSOLEOPTION.noconsole;
-                    break;
-            }
-        }
+
 
         this._BOXrun = vscConf.run;
 

@@ -27,7 +27,7 @@ export class DOSBox {
     public readonly _core: string;//the core command for run dosbox
     public readonly _cwd?: string;//the cwd for child_process, usually as the folder of dosbox
     protected confFile: Uri | undefined = undefined;
-    protected console: WINCONSOLEOPTION = WINCONSOLEOPTION.noconsole;
+    protected console: WINCONSOLEOPTION;
     public get redirect(): boolean {
         if (process.platform === 'win32') {
             return this.console === WINCONSOLEOPTION.noconsole;
@@ -37,14 +37,15 @@ export class DOSBox {
     private _stdout = "";
     private _stderr = "";
     private _count = 0;
-    constructor(cwd?: string, core = 'dosbox') {
-        if (core) {
+    constructor(cwd?: string, core?: string, winconsole?: WINCONSOLEOPTION) {
+        if (core && core.length > 0) {
             this._core = core;
         }
         else {
-            this._core = OpenDosboxCmd(this.console);
+            this._core = OpenDosboxCmd(winconsole);
         }
         this._cwd = cwd;
+        this.console = winconsole ? winconsole : WINCONSOLEOPTION.noconsole;
     }
     public run(boxcmd: string[], opt?: DOSBoxOption): Promise<DOSBoxStd> {
         const preOpen = opt?.preOpen ? opt?.preOpen : "";
