@@ -40,13 +40,22 @@ suite('Extension Test Suite', function () {
 		['1.asm', DIAGCODE.ok],
 		['1err.asm', DIAGCODE.hasError]
 	];
+	function shuffle<T>(arr: T[]): T[] {
+		for (let i = 1; i < arr.length; i++) {
+			const random = Math.floor(Math.random() * (i + 1));
+			[arr[i], arr[random]] = [arr[random], arr[i]];
+		}
+		return arr;
+	}
+	const args: [string, DIAGCODE, DOSEMU, ASMTYPE][] = [];
 	for (const file of filelist) {
 		for (const emu of emulator) {
 			for (const asm of MASMorTASM) {
-				testAsmCode(file[0], file[1], emu, asm);
+				args.push([file[0], file[1], emu, asm]);
 			}
 		}
 	}
+	shuffle(args).forEach((val) => { testAsmCode(...val); });
 });
 
 function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE): void {
@@ -71,7 +80,7 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE
 			const cmd = 'masm-tasm.runASM';
 			const a = (await vscode.commands.executeCommand(cmd) as RUNCODEINFO);
 			assert.ok(vscodecmds.includes(cmd));//assert the extension activated and command contributed
-			assert.strictEqual(DIAGCODE[a.diagCode], DIAGCODE[diagcode]);//error message processed
+			assert.strictEqual(DIAGCODE[a.diagCode], DIAGCODE[diagcode], JSON.stringify(a, null, 4));//error message processed
 			;
 		});
 }
