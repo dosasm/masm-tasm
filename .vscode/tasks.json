@@ -15,7 +15,7 @@
 				"isDefault": true
 			},
 			"label": "npm: compile",
-			"detail": "gulp && webpack --mode production --vscode-nls && tsc -p ./tools/js-dos"
+			"detail": "gulp && webpack --mode production --vscode-nls && npm run jsdos",
 		},
 		{
 			"type": "npm",
@@ -26,7 +26,7 @@
 				"$gulp-tsc"
 			],
 			"label": "npm: compile-dev",
-			"detail": "gulp && webpack --mode development --vscode-nls && tsc -p ./tools/js-dos"
+			"detail": "gulp && webpack --mode development --vscode-nls && npm run jsdos",
 		},
 		{
 			"type": "npm",
@@ -35,7 +35,7 @@
 				"$tsc"
 			],
 			"label": "npm: compile-tsc",
-			"detail": "tsc -p src/ && tsc -p ./tools/js-dos",
+			"detail": "tsc -p src/",
 		},
 		{
 			"type": "npm",
