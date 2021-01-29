@@ -18,7 +18,7 @@ src/**
 **/webpack.config.js
 # doc pic license samples
 doc/
-**/**.md
+*/**.md
 pics/
 LICENSE
 samples/
