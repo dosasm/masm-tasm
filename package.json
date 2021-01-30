@@ -461,7 +461,7 @@
     "pretest": "npm run compile-tsc && npm run jsdos",
     "test": "node ./dist/test/runTest.js",
     "vscode:prepublish": "gulp clean && npm run compile",
-    "publish": "vsce publish",
+    "publish": "vsce publish  --baseContentUrl https://github.com/xsro/masm-tasm/blob/main/ --baseImagesUrl https://github.com/xsro/masm-tasm/raw/main/ ",
     "package": "gulp package"
   },
   "devDependencies": {

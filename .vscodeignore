@@ -10,7 +10,7 @@ src/**
 **/*.map
 **/*.ts
 **/node_modules
-**.gitignore
+**/.gitignore
 **/azure-pipelines.yml
 **/tsconfig.json
 **/.eslintrc.json
