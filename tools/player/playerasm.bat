@@ -25,17 +25,17 @@ goto end
     mkdir c:\.dosasm\masm\                    >%TOOLS%\msdos.log
     copy "%~f1\masm\*.*" c:\.dosasm\masm\     >%TOOLS%\msdos.log
     set path=%PATH%;c:\.dosasm\masm\;         >%TOOLS%\msdos.log
-    masm %filename%;                          >%TOOLS%\ASM.log       
+    masm %filename%;                          >%TOOLS%\ASM.LOG       
     if not exist %filename%.obj goto end      >%TOOLS%\msdos.log
-    msdos link %filename%;                    >%TOOLS%\link.log 
+    msdos link %filename%;                    >%TOOLS%\LINK.LOG 
     goto end
 :tasm
     mkdir c:\.dosasm\tasm\                    >%TOOLS%\msdos.log
     copy "%~f1\tasm\*.*" c:\.dosasm\tasm\     >%TOOLS%\msdos.log
     set path=%PATH%;c:\.dosasm\tasm\;         >%TOOLS%\msdos.log
-    msdos -e tasm /zi %filename%              >%TOOLS%\ASM.log
+    msdos -e tasm /zi %filename%              >%TOOLS%\ASM.LOG
     if not exist %filename%.obj goto end      >%TOOLS%\msdos.log
-    msdos -e tlink /v/3 %filename%            >%TOOLS%\link.log
+    msdos -e tlink /v/3 %filename%            >%TOOLS%\LINK.LOG
 :RUN
 
 goto end
@@ -44,4 +44,4 @@ goto end
 goto end
 :end
 ::print message
-type %TOOLS%\ASM.log
+type %TOOLS%\ASM.LOG

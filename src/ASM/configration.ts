@@ -209,9 +209,9 @@ export class SRCFILE {
             const del = inDirectory(dirs, [value, FileType.File]);
             if (del) {
                 await fs.delete(Uri.joinPath(uri, del[0]), { recursive: false, useTrash: false });
-                return;
             }
         }
+        return;
     }
     /**copy the source code file and the generated exe file to another path*/
     public async copyEXEto(uri: Uri): Promise<void> {

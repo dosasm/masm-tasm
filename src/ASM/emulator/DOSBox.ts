@@ -15,8 +15,8 @@ const DOSBOX_CMDS_LIMIT = 5;
 //the time interval between launch dosbox and read asmlog file
 const WAIT_AFTER_LAUNCH_DOSBOX = 8000;
 const DOSBOX_CONF_FILENAME = 'VSC-ExtUse.conf';
-const ASM_LOG_FILE = 'ASM.log';
-const LINK_LOG_FILE = 'LINK.log';
+const ASM_LOG_FILE = 'ASM.LOG';
+const LINK_LOG_FILE = 'LINK.LOG';
 const DELAY = (timeout: number): Promise<void> => new Promise((resolve, reject) => {
     setTimeout(resolve, timeout);
 });
@@ -173,19 +173,27 @@ export class DOSBox extends dosboxCore implements EMURUN {
      * @returns the Assembler's output
      */
     public async runDebug(src: SRCFILE, runOrDebug: boolean): Promise<{ all: Promise<ASSEMBLERMSG | undefined>; race: Promise<ASSEMBLERMSG> }> {
-        let asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, ASM_LOG_FILE);
-        let linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, LINK_LOG_FILE);
+        //clean logs file for asm and link
         const dirs = await fs.readDirectory(this._conf.Uris.globalStorage);
-        if (inDirectory(dirs, [ASM_LOG_FILE, FileType.File])) { fs.delete(asmloguri); }
-        if (inDirectory(dirs, [LINK_LOG_FILE, FileType.File])) { fs.delete(linkloguri); }
-
+        let dir = inDirectory(dirs, [ASM_LOG_FILE, FileType.File]);
+        if (dir) {
+            const asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, dir[0]);
+            fs.delete(asmloguri);
+        }
+        dir = inDirectory(dirs, [LINK_LOG_FILE, FileType.File]);
+        if (dir) {
+            const asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, dir[0]);
+            fs.delete(asmloguri);
+        }
+        //launch dosbox and read logs
+        /**read logs file and make sure asm log is not empty*/
         const readMsg = async (): Promise<undefined | { asm: string; link: string }> => {
             const dirs = await fs.readDirectory(this._conf.Uris.globalStorage);
             const asmlog = inDirectory(dirs, [ASM_LOG_FILE, FileType.File]);
             const linklog = inDirectory(dirs, [LINK_LOG_FILE, FileType.File]);
             if (asmlog && linklog) {
-                asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, asmlog[0]);
-                linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, linklog[0]);
+                const asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, asmlog[0]);
+                const linkloguri = Uri.joinPath(this._conf.Uris.globalStorage, linklog[0]);
                 const asm = (await fs.readFile(asmloguri)).toString();
                 const link = (await fs.readFile(linkloguri)).toString();
                 if (asm.trim().length > 0) {
@@ -194,6 +202,7 @@ export class DOSBox extends dosboxCore implements EMURUN {
             }
             return undefined;
         };
+        /**read logs after DOSBox exit*/
         const exitRead: Promise<{ asm: string; link: string } | undefined> = new Promise(
             async (resolve) => {
                 await this.runDosbox(src.folder, this.asmConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
@@ -201,6 +210,10 @@ export class DOSBox extends dosboxCore implements EMURUN {
                 resolve(msg);
             }
         );
+        /**read logs at two time 
+         * 1. WAIT_AFTER_LAUNCH_DOSBOX ms after launch DOSBox
+         * 2. after DOSBox exit
+         */
         const race: Promise<{ asm: string; link: string }> = new Promise(
             async (resolve, reject) => {
                 await DELAY(WAIT_AFTER_LAUNCH_DOSBOX);

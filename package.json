@@ -235,24 +235,24 @@
           "type": "string"
         },
         "masmtasm.dosbox.more": {
-          "markdownDescription": "The commands to use when in dosbox mode.\n\nThe extension will mount tools folder to dosbox's disk C, the file's folder to disk D\nand a separate space as dosbox's disk X,the extension will read file x:\\asm.log to process assembler's message",
+          "markdownDescription": "The commands to use when in dosbox mode.\n\nThe extension will mount tools folder to dosbox's disk C, the file's folder to disk D\nand a separate space as dosbox's disk X,the extension will read file X:\\ASM.LOG to process assembler's message",
           "default": {
             "open": [
               "set path=c:\\masm;c:\\tasm"
             ],
             "masm": [
               "set path=c:\\masm",
-              "masm ${filename}.ASM; >X:\\asm.log ",
-              "@type X:\\ASM.log",
-              "link ${filename}.OBJ; >X:\\link.log ",
-              "@type X:\\link.log"
+              "masm ${filename}.ASM; >X:\\ASM.LOG ",
+              "@type X:\\ASM.LOG",
+              "link ${filename}.OBJ; >X:\\LINK.LOG ",
+              "@type X:\\LINK.LOG"
             ],
             "tasm": [
               "set path=c:\\tasm",
-              "tasm /zi ${filename}.ASM >X:\\asm.log ",
-              "@type X:\\ASM.log",
-              "tlink /v/3 ${filename}.obj >X:\\link.log ",
-              "@type X:\\link.log"
+              "tasm /zi ${filename}.ASM >X:\\ASM.LOG ",
+              "@type X:\\ASM.LOG",
+              "tlink /v/3 ${filename}.obj >X:\\LINK.LOG ",
+              "@type X:\\LINK.LOG"
             ],
             "masm_debug": [
               "if exist ${filename}.exe c:\\masm\\debug ${filename}.exe"
