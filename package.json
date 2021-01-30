@@ -293,7 +293,7 @@
               "type:": "array"
             },
             "run": {
-              "description": "The command to run the generated file",
+              "description": "The commands to run the generated file",
               "type": "array"
             },
             "after_action": {
@@ -314,6 +314,11 @@
         "masmtasm.jsdos.more": {
           "description": "The commands to use when in wdosbox(jsdos mode).",
           "default": {
+            "open": [
+              "set path=c:\\asm\\dir0;c:\\asm\\dir1",
+              "mkdir code",
+              "cd code"
+            ],
             "masm": [
               "masm ${filename}.ASM;",
               "link ${filename}.OBJ;"
@@ -335,24 +340,28 @@
             ]
           },
           "properties": {
+            "open": {
+              "description": "The commands to exec when open JSdos webview",
+              "type": "array"
+            },
             "masm": {
-              "description": "The commands to exec for assembling and linking in dosbox when using masm",
+              "description": "The commands to exec for assembling and linking in Wdosbox when using masm",
               "type": "array"
             },
             "tasm": {
-              "description": "The commands to exec for assembling and linking in dosbox when using tasm",
+              "description": "The commands to exec for assembling and linking in Wdosbox when using tasm",
               "type": "array"
             },
             "tasm_debug": {
-              "description": "The commands to exec for debuging in dosbox when using tasm",
+              "description": "The commands to exec for debuging in Wdosbox when using tasm",
               "type:": "array"
             },
             "masm_debug": {
-              "description": "The commands to exec for debuging in dosbox when using masm",
+              "description": "The commands to exec for debuging in Wdosbox when using masm",
               "type:": "array"
             },
             "run": {
-              "description": "The command to run the generated file",
+              "description": "The commands to run the generated file",
               "type": "array"
             }
           },
@@ -362,8 +371,7 @@
             "tasm",
             "masm_debug",
             "tasm_debug",
-            "run",
-            "after_action"
+            "run"
           ]
         },
         "masmtasm.msdos.more": {

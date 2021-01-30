@@ -1,3 +1,4 @@
+import { EFAULT } from 'constants';
 import * as vscode from 'vscode';
 import { Uri, window } from 'vscode';
 import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
@@ -7,7 +8,8 @@ import { compressAsmTools } from './js-dos_zip';
 const fs = vscode.workspace.fs;
 
 interface JsdosAsmConfig {
-    "masm": string[]; "tasm": string[]; "tasm_debug": string[]; "masm_debug": string[]; "run": string[];
+    "open": string[]; "masm": string[]; "tasm": string[];
+    "run": string[]; "masm_debug": string[]; "tasm_debug": string[];
 }
 
 class JSdosVSCodeConfig {
@@ -58,9 +60,14 @@ interface JSDOSCREATEFILE {
     path: string;
     body: ArrayBuffer | Uint8Array | string;
 }
+/**the interface send to wdosbox to laungh dosbox */
 interface ReadyOption {
+    /**the file need to write */
     writes: JSDOSCREATEFILE[];
-    commands: string[];
+    /**the comands send to wdosbox option */
+    options: string[];
+    /**the commands send to wdosbox's shell after launch*/
+    shellcmds: string[];
 };
 
 export class JSDos implements EMURUN {
@@ -82,14 +89,24 @@ export class JSDos implements EMURUN {
         await compressAsmTools(this._conf.Uris.tools, resourcesUri);
         const filearray = await fs.readFile(opt.src.uri);
         this._launch.writes.push({ path: this._wsrc.uri.fsPath, body: filearray.toString() });
+        this._launch.shellcmds.push(...this._VscConf.getAction('open'));
         return true;
     }
-    private _launch: ReadyOption = { writes: [], commands: [] };
-    openEmu(folder: vscode.Uri): void {
+    private _launch: ReadyOption = { writes: [], options: [], shellcmds: [] };
+    async openEmu(folder: vscode.Uri): Promise<void> {
         if (JsdosPanel.currentPanel) {
+            const entries = await fs.readDirectory(folder);
+            for (const e of entries) {
+                if (e[1] === vscode.FileType.File) {
+                    const arr = await fs.readFile(Uri.joinPath(folder, e[0]));
+                    this._launch.writes.push({
+                        path: `/code/all/${e[0]}`,
+                        body: arr.toString()
+                    });
+                }
+            }
             JsdosPanel.currentPanel.launchJsdos(this._launch);
         }
-        throw new Error('Method not implemented.');
     }
     Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<string> {
         return this.runDebug(true, src, msgprocessor);
@@ -99,9 +116,9 @@ export class JSDos implements EMURUN {
     }
     public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor): Promise<string> {
         if (JsdosPanel.currentPanel && this._wsrc) {
-            const p = JsdosPanel.currentPanel.launchJsdos(this._launch);
             const cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
-            JsdosPanel.currentPanel.sendCmd(cmds);
+            this._launch.shellcmds.push(...cmds);
+            JsdosPanel.currentPanel.launchJsdos(this._launch);
             const msg = await JsdosPanel.currentPanel.getStdout();
             await msgprocessor(msg, { preventWarn: true });
         }

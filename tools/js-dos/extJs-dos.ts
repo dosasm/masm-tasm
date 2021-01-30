@@ -4,9 +4,18 @@ import { DosFS } from 'js-dos/dist/typescript/js-dos-fs';
 declare function acquireVsCodeApi();
 declare const Dos: jsdos.DosFactory;
 
+interface JSDOSCREATEFILE {
+    path: string;
+    body: ArrayBuffer | Uint8Array | string;
+}
+/**the interface send to wdosbox to laungh dosbox */
 interface ReadyOption {
-    writes: { path: string, body: ArrayBuffer | Uint8Array | string }[],
-    commands: string[]
+    /**the file need to write */
+    writes: JSDOSCREATEFILE[];
+    /**the comands send to wdosbox option */
+    options: string[];
+    /**the commands send to wdosbox's shell after launch*/
+    shellcmds: string[];
 };
 
 const vscode = acquireVsCodeApi();
@@ -19,7 +28,7 @@ class VSCJSDOS {
     ci?: DosCommandInterface;
     /**currently usable in `fs` status */
     fs?: DosFS;
-    cmdQueue = ["set path=c:\\asm\\dir0;c:\\asm\\dir1", "mkdir code", "cd code"];
+    cmdQueue = [];
     updateStatus(status: 'preparing' | 'fs' | 'main' | 'running' | 'exit') {
         this.status = status;
         //📤 send status message from webview to extension
@@ -38,6 +47,7 @@ function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
     vscJsdos.updateStatus('preparing');
 
     const dosReady = async (fs: DosFS, main: jsdos.DosMainFn, opt?: ReadyOption) => {
+        console.log(opt);
         //0️⃣fileSystem: prepare files
         vscJsdos.updateStatus('fs');
         if (Array.isArray(opt?.writes)) {
@@ -52,10 +62,11 @@ function jsdos2(wdosboxUrl: string, toolszip: string[]): VSCJSDOS {
         await fs.extractAll(zips).catch((r) => { console.error(r); });
         //1️⃣main: get the command interface to control wdosbox
         vscJsdos.updateStatus('main');
-        let params = opt?.commands ? opt.commands : [];
-        vscJsdos.ci = await main(params);
+        const options = opt ? opt.options : [];
+        vscJsdos.ci = await main(options);
         //2️⃣running: the wdosbox is running and can be controlled with `ci`
         vscJsdos.updateStatus('running');
+        vscJsdos.cmdQueue.push(...opt?.shellcmds);
         vscJsdos.ci.shell(...vscJsdos.cmdQueue);
 
         //📤 send the wdosbox's stdout from webview to extension

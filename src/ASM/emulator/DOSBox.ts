@@ -25,6 +25,17 @@ const DELAY = (timeout: number): Promise<void> => new Promise((resolve, reject) 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
+/**interface for configurations from vscode settings */
+interface DosboxAction {
+    open: string[];
+    masm: string[];
+    tasm: string[];
+    tasm_debug: string[];
+    masm_debug: string[];
+    run: string[];
+    after_action: string[];
+}
+
 /**class for configurations from VSCode settings */
 class BoxVSCodeConfig {
     private get _target(): WorkspaceConfiguration {
@@ -78,17 +89,6 @@ class BoxVSCodeConfig {
         }
         return asmlink.concat(this.runDebugCmd(runOrDebug, ASM));
     }
-}
-
-/**interface for configurations from vscode settings */
-interface DosboxAction {
-    open: string[];
-    masm: string[];
-    tasm: string[];
-    tasm_debug: string[];
-    masm_debug: string[];
-    run: string[];
-    after_action: string[];
 }
 
 export class DOSBox extends dosboxCore implements EMURUN {
@@ -155,7 +155,8 @@ export class DOSBox extends dosboxCore implements EMURUN {
         return true;
     }
     openEmu(folder: Uri): Promise<unknown> {
-        return this.runDosbox(folder);
+        const commands = this.vscConfig.getAction('open');
+        return this.runDosbox(folder, commands);
     }
     async Run(src: SRCFILE, msgprocessor?: MSGProcessor): Promise<void> {
         const { all, race } = await this.runDebug(src, true);
