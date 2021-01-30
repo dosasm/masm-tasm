@@ -1,5 +1,3 @@
-import { rejects } from "assert";
-import { resolve } from "path";
 import { TextEncoder } from "util";
 import { FileType, Uri, window, workspace, WorkspaceConfiguration } from 'vscode';
 import * as nls from 'vscode-nls';
@@ -92,7 +90,7 @@ export class DOSBox extends dosboxCore implements EMURUN {
     //private dosboxChannel: OutputChannel = window.createOutputChannel('DOSBox console');
     private _BOXrun: string | undefined;
     private _conf: Config;
-    private asmConfig: BoxVSCodeConfig;
+    private vscConfig: BoxVSCodeConfig;
     constructor(conf: Config) {
         const vscConf = new BoxVSCodeConfig();
         let boxconsole: WINCONSOLEOPTION | undefined = undefined;
@@ -115,11 +113,9 @@ export class DOSBox extends dosboxCore implements EMURUN {
         super(conf.Uris.dosbox.fsPath, vscConf.command, boxconsole);
         this.forceCopy = false;
         this._conf = conf;
-        this.asmConfig = vscConf;
+        this.vscConfig = vscConf;
         //write the config file for extension
         this.confFile = Uri.joinPath(conf.Uris.globalStorage, DOSBOX_CONF_FILENAME);
-        writeBoxconfig(conf.dosboxconfuri, vscConf.config);
-
 
         this._BOXrun = vscConf.run;
 
@@ -146,9 +142,10 @@ export class DOSBox extends dosboxCore implements EMURUN {
     }
     //implement the interface 
     forceCopy: boolean;
-    prepare(opt?: ASMPREPARATION): boolean {
+    async prepare(opt?: ASMPREPARATION): Promise<boolean> {
+        await writeBoxconfig(this._conf.dosboxconfuri, this.vscConfig.config);
         if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable; };
-        this.asmConfig.replacer = (val: string): string => settingsStrReplacer(val, this._conf, opt?.src);
+        this.vscConfig.replacer = (val: string): string => settingsStrReplacer(val, this._conf, opt?.src);
         return true;
     }
     openEmu(folder: Uri): Promise<unknown> {
@@ -178,12 +175,12 @@ export class DOSBox extends dosboxCore implements EMURUN {
         let dir = inDirectory(dirs, [ASM_LOG_FILE, FileType.File]);
         if (dir) {
             const asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, dir[0]);
-            fs.delete(asmloguri);
+            await fs.delete(asmloguri);
         }
         dir = inDirectory(dirs, [LINK_LOG_FILE, FileType.File]);
         if (dir) {
             const asmloguri = Uri.joinPath(this._conf.Uris.globalStorage, dir[0]);
-            fs.delete(asmloguri);
+            await fs.delete(asmloguri);
         }
         //launch dosbox and read logs
         /**read logs file and make sure asm log is not empty*/
@@ -205,7 +202,7 @@ export class DOSBox extends dosboxCore implements EMURUN {
         /**read logs after DOSBox exit*/
         const exitRead: Promise<{ asm: string; link: string } | undefined> = new Promise(
             async (resolve) => {
-                await this.runDosbox(src.folder, this.asmConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
+                await this.runDosbox(src.folder, this.vscConfig.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM), { exitwords: true });
                 const msg = await readMsg();
                 resolve(msg);
             }
@@ -275,7 +272,7 @@ export class DOSBox extends dosboxCore implements EMURUN {
                 return ['pause', 'exit'];
             case "choose":
             default:
-                return this.asmConfig.getAction('after_action');
+                return this.vscConfig.getAction('after_action');
         }
     }
 }
