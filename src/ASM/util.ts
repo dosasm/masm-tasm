@@ -7,8 +7,8 @@ import { FileType } from 'vscode';
  */
 export function inDirectory(dirinfo: [string, FileType][], entry: [string, FileType], ignoreCase: boolean = process.platform === "win32"): [string, FileType] | undefined {
     for (const d of dirinfo) {
-        const filecheck = ignoreCase ? d[0].toLowerCase() === d[0].toLowerCase() : d[0] === d[0];
-        if (filecheck && d[1] === d[1]) {
+        const filecheck = ignoreCase ? d[0].toLowerCase() === entry[0].toLowerCase() : d[0] === entry[0];
+        if (filecheck && d[1] === entry[1]) {
             return d;
         }
     }

@@ -1,8 +1,9 @@
 import { TextEncoder } from "util";
 import { FileSystem, workspace, Uri } from "vscode";
+const fs: FileSystem = workspace.fs;
 
 function writefile(Uri: Uri, Content: string): Thenable<void> {
-    const fs: FileSystem = workspace.fs;
+
     return fs.writeFile(Uri, new TextEncoder().encode(Content));
 }
 

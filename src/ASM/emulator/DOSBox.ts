@@ -8,12 +8,15 @@ import { inDirectory } from "../util";
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox as dosboxCore, WINCONSOLEOPTION, DOSBoxStd } from './dosbox_core';
 const fs = workspace.fs;
-//the limit of commands can be exec in dosbox, over this limit the commands will be write to a file
+/**the limit of commands can be exec in dosbox, over this limit the commands will be write to a file*/
 const DOSBOX_CMDS_LIMIT = 5;
-//the time interval between launch dosbox and read asmlog file
+/**the time interval between launch dosbox and read asmlog file*/
 const WAIT_AFTER_LAUNCH_DOSBOX = 8000;
+/**the file name of dosbox conf file for use */
 const DOSBOX_CONF_FILENAME = 'VSC-ExtUse.conf';
+/**the file name of log of assembler */
 const ASM_LOG_FILE = 'ASM.LOG';
+/**the file name of log of linker */
 const LINK_LOG_FILE = 'LINK.LOG';
 const DELAY = (timeout: number): Promise<void> => new Promise((resolve, reject) => {
     setTimeout(resolve, timeout);
@@ -22,7 +25,8 @@ const DELAY = (timeout: number): Promise<void> => new Promise((resolve, reject) 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export class BoxVSCodeConfig {
+/**class for configurations from VSCode settings */
+class BoxVSCodeConfig {
     private get _target(): WorkspaceConfiguration {
         return workspace.getConfiguration('masmtasm.dosbox');
     };
@@ -76,6 +80,7 @@ export class BoxVSCodeConfig {
     }
 }
 
+/**interface for configurations from vscode settings */
 interface DosboxAction {
     open: string[];
     masm: string[];
@@ -114,8 +119,6 @@ export class DOSBox extends dosboxCore implements EMURUN {
         this.forceCopy = false;
         this._conf = conf;
         this.vscConfig = vscConf;
-        //write the config file for extension
-        this.confFile = Uri.joinPath(conf.Uris.globalStorage, DOSBOX_CONF_FILENAME);
 
         this._BOXrun = vscConf.run;
 
@@ -143,7 +146,10 @@ export class DOSBox extends dosboxCore implements EMURUN {
     //implement the interface 
     forceCopy: boolean;
     async prepare(opt?: ASMPREPARATION): Promise<boolean> {
-        await writeBoxconfig(this._conf.dosboxconfuri, this.vscConfig.config);
+        //write the config file for extension
+        this.confFile = Uri.joinPath(this._conf.Uris.globalStorage, DOSBOX_CONF_FILENAME);
+        await writeBoxconfig(this.confFile, this.vscConfig.config);
+
         if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable; };
         this.vscConfig.replacer = (val: string): string => settingsStrReplacer(val, this._conf, opt?.src);
         return true;
