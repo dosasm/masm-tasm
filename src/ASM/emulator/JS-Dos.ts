@@ -233,10 +233,9 @@ class JsdosPanel {
     public getStdout(): Promise<string> {
         return new Promise(
             (resolve, reject) => {
-                this.ListenWdosboxStdout = (): void => {
-                    const val = this.WdosboxStdout;
-                    if (val.includes('ASM') || val.includes('Assembler')) {
-                        resolve(val);
+                this.ListenWdosboxStdout = (val: string): void => {
+                    if (this.WdosboxStdout.includes('Assembling')) {
+                        resolve(this.WdosboxStdout + val);
                         this.ListenWdosboxStdout = undefined;
                     }
                 };
@@ -246,6 +245,7 @@ class JsdosPanel {
             }
         );
     }
+    /**listener called when has wdosbox shell stdout received after update WdosboxStdout */
     public ListenWdosboxStdout: ((val: string) => void) | undefined = undefined;
     public JSDOSready: (() => void) | undefined = undefined;
     public launchJsdos(opt?: ReadyOption): void {
