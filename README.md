@@ -16,6 +16,10 @@ Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSB
 
 ## Demo
 
+Now the extension supports using JSDos to run wdosbox in VSCode's Webview.
+
+![jsdos demo](pics/demo_jsdos.gif)
+
 ### Demo 1: Run and Debug Assembly
 
 | using TASM via DOSBox                          | using MASM via msdos-player                         |
@@ -97,10 +101,21 @@ for more,please see the `preference->settings`
         "SDL.windowresolution": "1024x640",//set the size of the dosbox window
         "SDL.output": "opengl"
     },
-    
-"masmtasm.ASM.toolspath": "E:\\tools"//set the custom ASM tools
+  "masmtasm.ASM.toolspath": "E:\\tools"//set the custom ASM tools
 }
 ```
+
+### string replacer
+
+the string replacer for settings `masmtasm.dosbox.more`,`masmtasm.jsdos.more`,`masmtasm.msdos.more`.Extension will replace these strings to relavant value.
+
+| string          | replace to                                                          |
+| --------------- | ------------------------------------------------------------------- |
+| `${fullname}`   | the fullname of the source code file like`c:\asm\hello.asm`         |
+| `${filename}`   | the filename of the source code file like `hello`                   |
+| `${fileFolder}` | the folder path of the source code file like `c:\asm`               |
+| `${fileDisk}`   | the file disk of the source code file like `c`                      |
+| `${toolpath}`   | the folder path of the asm tools including *MASM* and *TASM* folder |
 
 ### About DOSBox 's disk
 

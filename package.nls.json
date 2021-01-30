@@ -33,5 +33,8 @@
 	"config.clean": "clean related files before action",
 	"config.jsdos.viewColumn": "the view Column where the jsdos webview will create. See [ViewColumn](https://code.visualstudio.com/api/references/vscode-api#ViewColumn)",
 	"config.jsdos.viewColumn.Active": "Active panel",
-	"config.jsdos.viewColumn.Besides": "Besides panel"
+	"config.jsdos.viewColumn.Besides": "Besides panel",
+	"config.dosbox.more": "The commands to use when in dosbox mode.\n\n- The extension will mount tools folder to dosbox's disk C, the file's folder to disk D\n- a separate space as dosbox's disk X,the extension will read file X:\\ASM.LOG to process assembler's message\n",
+	"config.jsdos.more": "The commands to use when in wdosbox(jsdos mode)",
+	"config.msdos.more": "The commands to use when in msdos player or auto mode"
 }

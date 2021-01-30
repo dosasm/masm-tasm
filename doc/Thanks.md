@@ -5,7 +5,6 @@
 - [#6](https://github.com/xsro/masm-tasm/issues/6): [my-vegatable-has-exploded](https://github.com/my-vegatable-has-exploded)
 - [#10](https://github.com/xsro/masm-tasm/issues/10): [lllsy12138](https://github.com/lllsy12138)
 
-
 ## licence and info
 
 - MS DOS player:[license](license_msdos_player/)

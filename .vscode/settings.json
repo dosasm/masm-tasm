@@ -8,5 +8,8 @@
     },
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
     "typescript.tsc.autoDetect": "off",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "markdownlint.config": {
+        "MD033": false
+    }
 }

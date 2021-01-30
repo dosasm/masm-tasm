@@ -33,5 +33,8 @@
 	"config.clean": "在执行操作前清理可能会干扰的文件，包括同名的exe文件和obj文件",
 	"config.jsdos.viewColumn": "在哪个位置展示用于运行JS-Dos的webview [ViewColumn](https://code.visualstudio.com/api/references/vscode-api#ViewColumn)",
 	"config.jsdos.viewColumn.Active": "当前位置",
-	"config.jsdos.viewColumn.Besides": "侧边位置"
+	"config.jsdos.viewColumn.Besides": "侧边位置",
+	"config.dosbox.more": "在DOSBox中使用的命令\n\n- 插件会自动将汇编工具文件夹挂载到`C`盘, 文件所在文件夹挂载到D盘\n- 并挂载一个独立的文件夹到X盘,并获取文件`X:\\ASM.LOG`来处理汇编器输出\n",
+	"config.jsdos.more": "在wDOSBox(JSDOS)中需要执行的命令，插件会读取dosbox的标准输出",
+	"config.msdos.more": "在msdos中需要执行的命令，其实是在cmd中执行，插件会读取cmd的标准输出"
 }

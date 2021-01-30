@@ -7,8 +7,7 @@
 - 重构代码，增加对jsdos的支持，可以在webview中查看程序运行效果，jsdos使用的wdosbox目前看来可能不稳定，插件对其适配也可能有不足之处。
 - 美化输出面板格式
 - 优先不进行文件的复制过程，当插件认为文件的路径不符合DOSBox等模拟器的文件系统要求时，进行复制操作。
-
-![jsdos demo](pics/demo_jsdos.gif)
+- (0.8.1)修复问题
 
 ## 0.7.0
 
@@ -75,16 +74,7 @@ DEMO `dosbox here`:(代码来自[dpisdaniel/assembly-pacman](https://github.com/
 - [x] DOS 汇编基本的语法支持
 - [x] vscode 界面的大纲视图的简单实现
 
-汇编语言支持的symbol大概有以下几种，但是vscode的[SymbolKind](https://code.visualstudio.com/api/references/vscode-api#SymbolKind)却与它们不对应，我决定做以下对应
-
-| assembly symbol | vscode symbol | 汇编关键字 | vscode关键字 |
-| --------------- | ------------- | ---------- | ------------ |
-| macro           | Module        | 宏         | 模块         |
-| segment         | Class         | 段         | 类           |
-| procedure       | Function      | 子程序     | 函数         |
-| struct          | Struct        | 结构体     | 结构体       |
-| label           | Key           | 标号       | 键           |
-| variable        | Variable      | 变量       | 变量         |
+汇编语言支持的symbol大概有以下几种，但是vscode的[SymbolKind](https://code.visualstudio.com/api/references/vscode-api#SymbolKind)却与它们不对应，我决定做一些[对应](doc/Notes.md#1)
 
 ### 0.1.4
 

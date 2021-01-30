@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "keywords": [
     "dosbox",
     "16位",
@@ -235,7 +235,7 @@
           "type": "string"
         },
         "masmtasm.dosbox.more": {
-          "markdownDescription": "The commands to use when in dosbox mode.\n\nThe extension will mount tools folder to dosbox's disk C, the file's folder to disk D\nand a separate space as dosbox's disk X,the extension will read file X:\\ASM.LOG to process assembler's message",
+          "markdownDescription": "%config.dosbox.more%",
           "default": {
             "open": [
               "set path=c:\\masm;c:\\tasm"
@@ -312,7 +312,7 @@
           ]
         },
         "masmtasm.jsdos.more": {
-          "description": "The commands to use when in wdosbox(jsdos mode).",
+          "markdownDescription": "%config.jsdos.more%",
           "default": {
             "open": [
               "set path=c:\\asm\\dir0;c:\\asm\\dir1",
@@ -375,7 +375,7 @@
           ]
         },
         "masmtasm.msdos.more": {
-          "description": "the commands to use when in msdos player or auto mode",
+          "description": "%config.msdos.more%",
           "default": {
             "workspace": "c:\\.dosasm",
             "path": "${toolpath}\\player;${toolpath}\\masm;${toolpath}\\tasm;c:\\.dosasm\\tasm;c:\\.dosasm\\masm;",

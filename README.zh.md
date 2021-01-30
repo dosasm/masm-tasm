@@ -14,7 +14,11 @@
 
 ## :rocket:DEMO示例
 
-### Demo 1: 运行调试代码
+现在插件支持使用JSdos作为模拟器，直接在webview中运行wdosbox
+
+![jsdos demo](pics/demo_jsdos.gif)
+
+### Demo 1:running:: 运行调试代码
 
 | 调用DOSBox运行TASM                                | 调用msdos-player运行MASM                               |
 | ------------------------------------------------- | ------------------------------------------------------ |
@@ -31,7 +35,7 @@
 - 如果文件路径对于DOS模拟器来说难以访问，那么插件会把此时编辑器里面的文件**复制**到独立的工作文件，并在这个文件夹中操作文件。如果文件中有相互依赖的关系，如使用了`include`或`extern`这将造成一些困扰
 - 然后，插件会根据`首选项-设置`中的设置，调用DOS环境模拟器使用MASM/TASM来进行相应的操作，默认情况下插件使用 `DOSBox` 和 `TASM`，可以在设置中修改这些选项。
 
-### Demo 2: 打开DOSBox手动输入命令
+### Demo 2:computer:: 打开DOSBox手动输入命令
 
 | `Open DOSBox`                          | `Dosbox here`                                                                    |
 | -------------------------------------- | -------------------------------------------------------------------------------- |
@@ -42,7 +46,7 @@
 - 汇编常用命令: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
 - 有些有趣的汇编代码: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
 
-### Demo 3: 代码格式化与错误输出
+### Demo 3:flashlight:： 代码格式化与错误输出
 
 | 格式化代码                                                  | 错误信息输出                                |
 | ----------------------------------------------------------- | ------------------------------------------- |
@@ -91,6 +95,18 @@ dosbox #打开dosbox，假如成功打开dosbox则安装成功，那么插件插
   "masmtasm.ASM.toolspath": "E:\\tools"//设置自定义的汇编工具地址，将读取此路径下的masm文件夹和tasm文件夹
 }
 ```
+
+### 设置中的变量替换
+
+设置中`masmtasm.dosbox.more`,`masmtasm.jsdos.more`,`masmtasm.msdos.more`支持的变量字符串替换
+
+| 字符            | 会被插件替换为                                  |
+| --------------- | ----------------------------------------------- |
+| `${fullname}`   | 完整路径名，如`c:\asm\hello.asm`                |
+| `${filename}`   | 文件名，如`hello`                               |
+| `${fileFolder}` | 文件所在文件夹的路径，如`c:\asm`                |
+| `${fileDisk}`   | 文件所在盘，如`c`                               |
+| `${toolpath}`   | 汇编工具地址，通常为插件安装目录下的tools文件夹 |
 
 ## :cd:插件调用dosbox时会挂载哪些目录
 
