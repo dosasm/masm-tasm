@@ -3,7 +3,7 @@
 	"editor.runAsm": "运行当前程序(汇编+链接+运行)",
 	"editor.debugAsm": "调试当前程序(汇编+链接+调试)",
 	"command.cleanalldianose": "MASM/TASM: 清除MASM/TASM的所有问题信息",
-	"command.dosboxhere": "MASM/TASM: 打开DOSBox，并配置相关环境",
+	"command.dosboxhere": "DOSBox here: 打开DOSBox，并配置相关环境",
 	"config.toolspath.mddescription": "自定义的汇编目录，用来替换插件自带的工具集",
 	"config.masmortasm.description": "使用MASM还是TASM作为汇编工具",
 	"config.masmortasm.enum1": "使用MASM汇编工具集，包括masm.exe,link.exe,debug.exe...",

@@ -48,16 +48,18 @@ export class MsdosPlayer implements EMURUN {
         this.copyUri = ws ? Uri.file(ws) : undefined;
     }
 
-    prepare(opt: ASMPREPARATION): boolean {
-        if (this._conf.MASMorTASM === ASMTYPE.TASM && opt?.act === ASMCMD.debug && this._conf.DOSemu === DOSEMU.msdos) {
-            const msg = `disabled for tasm's TD is hardly runable in msdos`;
-            window.showErrorMessage(msg);
-            return false;
+    prepare(opt?: ASMPREPARATION): boolean {
+        if (opt) {
+            if (this._conf.MASMorTASM === ASMTYPE.TASM && opt.act === ASMCMD.debug && this._conf.DOSemu === DOSEMU.msdos) {
+                const msg = `disabled for tasm's TD is hardly runable in msdos`;
+                window.showErrorMessage(msg);
+                return false;
+            }
+            this.forceCopy = opt.src.filename.includes(' ');
         }
         this._vscConf.replacer = (
-            (val: string): string => settingsStrReplacer(val, this._conf, opt.src)
+            (val: string): string => settingsStrReplacer(val, this._conf, opt ? opt.src : undefined)
         );
-        this.forceCopy = opt.src?.filename.includes(' ');
         return true;
     }
     openEmu(folder: Uri, command?: string): boolean {

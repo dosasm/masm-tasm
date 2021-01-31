@@ -77,20 +77,24 @@ export class JSDos implements EMURUN {
         this._conf = conf;
         this._VscConf = new JSdosVSCodeConfig();
     }
-    async prepare(opt: ASMPREPARATION): Promise<boolean> {
+    async prepare(opt?: ASMPREPARATION): Promise<boolean> {
         const resourcesUri = Uri.joinPath(this._conf.Uris.jsdos, 'resources');
         JsdosPanel.createOrShow(resourcesUri);
         JsdosPanel.wDOSBoxpath = this._VscConf.wdosbox;
-        const filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
-        const v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
-        this._wsrc = new SRCFILE(v);
-        this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, this._wsrc);
-        await compressAsmTools(this._conf.Uris.tools, resourcesUri);
-        const filearray = await fs.readFile(opt.src.uri);
-        this._launch.writes.push({ path: this._wsrc.uri.fsPath, body: filearray.toString() });
+        if (opt) {
+            //write source code file and save its path in wdosbox
+            const filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
+            const v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
+            this._wsrc = new SRCFILE(v);
+            this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, this._wsrc);
+            const filearray = await fs.readFile(opt.src.uri);
+            this._launch.writes.push({ path: this._wsrc.uri.fsPath, body: filearray.toString() });
+        }
         this._launch.shellcmds.push(...this._VscConf.getAction('open'));
+        await compressAsmTools(this._conf.Uris.tools, resourcesUri);
         return true;
     }
+
     private _launch: ReadyOption = { writes: [], options: [], shellcmds: [] };
     async openEmu(folder: vscode.Uri): Promise<void> {
         if (JsdosPanel.currentPanel) {

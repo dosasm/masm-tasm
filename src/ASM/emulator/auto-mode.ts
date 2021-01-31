@@ -15,7 +15,7 @@ export class AutoMode implements EMURUN {
         this._dosbox = new DOSBox(conf);
         this._msdos = new MsdosPlayer(conf);
     }
-    prepare(opt: ASMPREPARATION): boolean {
+    prepare(opt?: ASMPREPARATION): boolean {
         this.copyUri = this._msdos.copyUri;
         const output = this._dosbox.prepare(opt) && this._msdos.prepare(opt);
         this.forceCopy = this._msdos.forceCopy || this._dosbox.forceCopy;

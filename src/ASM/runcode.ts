@@ -96,7 +96,7 @@ export class AsmAction implements Disposable {
             }
         }
         //choose the emulator
-        const dosemu = emulator ? emulator : this._config.DOSemu;
+        const dosemu = emulator ? emulator : DOSEMU.dosbox;
         const emu = AsmAction.getEmulator(dosemu, this._config);
         //open the emulator
         if (folder && await emu.prepare()) {

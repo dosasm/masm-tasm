@@ -1,5 +1,5 @@
 import { TextEncoder } from "util";
-import { FileType, Uri, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { FileType, Uri, workspace, WorkspaceConfiguration } from 'vscode';
 import * as nls from 'vscode-nls';
 import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
 import { Logger } from '../outputChannel';
@@ -66,8 +66,7 @@ class BoxVSCodeConfig {
             }
             return output;
         }
-        window.showErrorMessage(`action ${scope} hasn't been defined`);
-        throw new Error(`action ${scope} hasn't been defined`);
+        throw new Error(`action ${scope} is undefined or not a array`);
     }
     replacer?: (str: string) => string;
     public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE): string[] {
@@ -149,9 +148,10 @@ export class DOSBox extends dosboxCore implements EMURUN {
         //write the config file for extension
         this.confFile = Uri.joinPath(this._conf.Uris.globalStorage, DOSBOX_CONF_FILENAME);
         await writeBoxconfig(this.confFile, this.vscConfig.config);
-
-        if (opt?.src) { this.forceCopy = !opt?.src.dosboxFsReadable; };
-        this.vscConfig.replacer = (val: string): string => settingsStrReplacer(val, this._conf, opt?.src);
+        if (opt) {
+            this.forceCopy = !opt.src.dosboxFsReadable;
+        };
+        this.vscConfig.replacer = (val: string): string => settingsStrReplacer(val, this._conf, opt ? opt.src : undefined);
         return true;
     }
     openEmu(folder: Uri): Promise<unknown> {
