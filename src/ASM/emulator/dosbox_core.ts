@@ -1,5 +1,5 @@
-import { exec, ExecOptions } from 'child_process';
-import { window, WorkspaceConfiguration, workspace, Uri, FileType } from 'vscode';
+import { exec } from 'child_process';
+import { FileType, Uri, window, workspace } from 'vscode';
 import { inDirectory } from '../util';
 
 /**defines the option to do with dosbox's console message **in windows system**.

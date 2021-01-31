@@ -1,7 +1,7 @@
-import { workspace, window, Uri, Disposable, Terminal, commands, WorkspaceConfiguration } from 'vscode';
-import { ASMTYPE, Config, DOSEMU, SRCFILE, settingsStrReplacer } from '../configration';
-import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { exec } from 'child_process';
+import { Terminal, Uri, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { ASMTYPE, Config, DOSEMU, settingsStrReplacer, SRCFILE } from '../configration';
+import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 
 /**the config from VSCode settings `masmtasm.msdos`*/
 class MsdosVSCodeConfig {

@@ -1,7 +1,6 @@
-import { EFAULT } from 'constants';
 import * as vscode from 'vscode';
 import { Uri, window } from 'vscode';
-import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
+import { ASMTYPE, Config, settingsStrReplacer, SRCFILE } from '../configration';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
 import { compressAsmTools } from './js-dos_zip';
 
@@ -191,7 +190,7 @@ class JsdosPanel {
 
         // Update the content based on view changes
         this._panel.onDidChangeViewState(
-            e => {
+            () => {
                 if (this._panel.visible) {
                     this._update();
                 }
@@ -336,8 +335,6 @@ class JsdosPanel {
         // Uri to load styles into webview
         const stylesUri = webview.asWebviewUri(stylePath);
 
-        // Use a nonce to only allow specific scripts to be run
-        const nonce = getNonce();
         return `<!doctype html>
 <html lang="en">
 
@@ -355,11 +352,3 @@ class JsdosPanel {
     }
 }
 
-function getNonce(): string {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-}

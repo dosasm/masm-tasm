@@ -1,8 +1,8 @@
-import { languages, DiagnosticCollection, TextDocument, Diagnostic, Range, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Uri, Location } from 'vscode';
-import { masmDiagnose } from './diagnoseMASM';
-import { tasmDiagnose } from './diagnoseTASM';
-import { getInternetlink } from './diagnoseMasm-error-list';
+import { Diagnostic, DiagnosticCollection, DiagnosticRelatedInformation, DiagnosticSeverity, languages, Location, TextDocument, Uri } from 'vscode';
 import { ASMTYPE } from '../configration';
+import { masmDiagnose } from './diagnoseMASM';
+import { getInternetlink } from './diagnoseMasm-error-list';
+import { tasmDiagnose } from './diagnoseTASM';
 
 export enum DIAGCODE {
     /**null*/
@@ -84,6 +84,40 @@ export interface DIAGINFO {
     warn: number;
     diagnostics?: Diagnostic[];
 }
+
+/**
+ * change the line number in macro to the line number in its doc
+ * Note: it seems the line of the definition of macro is 0
+ * but for TASM `Local` must be the next line of macro
+ * and if it has `local` command, the line of `LOCAL` is 0
+ * @param text the content of the source code
+ * @param macroLine the line number in the macro
+ * @param macroName the name of the macro
+ * @param local if true, the Local of the command will be view as 0
+ * @returns 0base line number in doc
+ */
+function lineMacro2DOC(text: string, macroName: string, macroLine: number, local?: boolean): number | undefined {
+    const textarr: string[] = text.split("\n");
+    const macro = new RegExp(`\\s*${macroName}\\s+(macro|MACRO)`);
+    let docMacroLine: number | undefined = undefined;
+    textarr.forEach(
+        (value, index, array) => {
+            if (value.match(macro)) {
+                docMacroLine = index;
+                if (local && array[index + 1].match(/LOCAL|local/)) {
+                    docMacroLine = index + 1;
+                }
+            };
+        }
+    );
+    if (docMacroLine) {
+        return docMacroLine + macroLine;
+    }
+    else {
+        console.error("can't get the MACRO information");
+    }
+}
+
 export class ASMdiagnostic {
     line?: number;
     message?: string;
@@ -141,37 +175,5 @@ export class ASMdiagnostic {
             return true;
         }
         return false;
-    }
-}
-/**
- * change the line number in macro to the line number in its doc
- * Note: it seems the line of the definition of macro is 0
- * but for TASM `Local` must be the next line of macro
- * and if it has `local` command, the line of `LOCAL` is 0
- * @param text the content of the source code
- * @param macroLine the line number in the macro
- * @param macroName the name of the macro
- * @param local if true, the Local of the command will be view as 0
- * @returns 0base line number in doc
- */
-function lineMacro2DOC(text: string, macroName: string, macroLine: number, local?: boolean): number | undefined {
-    const textarr: string[] = text.split("\n");
-    const macro = new RegExp(`\\s*${macroName}\\s+(macro|MACRO)`);
-    let docMacroLine: number | undefined = undefined;
-    textarr.forEach(
-        (value, index, array) => {
-            if (value.match(macro)) {
-                docMacroLine = index;
-                if (local && array[index + 1].match(/LOCAL|local/)) {
-                    docMacroLine = index + 1;
-                }
-            };
-        }
-    );
-    if (docMacroLine) {
-        return docMacroLine + macroLine;
-    }
-    else {
-        console.error("can't get the MACRO information");
     }
 }

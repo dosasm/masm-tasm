@@ -5,8 +5,7 @@ import { AsmHoverProvider } from './AsmHover';
 import { AsmReferenceProvider } from './AsmReference';
 
 class AsmDefProvider implements vscode.DefinitionProvider {
-	provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.Definition {
-		let output: vscode.Location | undefined;
+	provideDefinition(document: vscode.TextDocument, position: vscode.Position): vscode.Definition {
 		const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
 		const docinfo = getDocInfo(document);//scan thdocumente 
 		const wordo = document.getText(range);
@@ -19,7 +18,7 @@ class AsmDefProvider implements vscode.DefinitionProvider {
 }
 
 class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
-	provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.DocumentSymbol[] {
+	provideDocumentSymbols(document: vscode.TextDocument): vscode.DocumentSymbol[] {
 		const sym = getDocInfo(document).tree;
 		if (sym) {
 			return sym;
@@ -40,6 +39,5 @@ export function provider(context: vscode.ExtensionContext): void {
 		context.subscriptions.push(vscode.languages.registerReferenceProvider("assembly", new AsmReferenceProvider()));
 		context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider("assembly", new AsmDocFormat()));
 	}
-
 }
 

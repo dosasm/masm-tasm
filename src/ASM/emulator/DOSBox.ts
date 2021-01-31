@@ -18,7 +18,7 @@ const DOSBOX_CONF_FILENAME = 'VSC-ExtUse.conf';
 const ASM_LOG_FILE = 'ASM.LOG';
 /**the file name of log of linker */
 const LINK_LOG_FILE = 'LINK.LOG';
-const DELAY = (timeout: number): Promise<void> => new Promise((resolve, reject) => {
+const DELAY = (timeout: number): Promise<void> => new Promise((resolve) => {
     setTimeout(resolve, timeout);
 });
 

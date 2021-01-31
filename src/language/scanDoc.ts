@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { getType, KeywordType } from './wordinfo';
-const count = 0;
+
 let _docinfo: DocInfo | undefined = undefined;
 let _docstr: string | undefined;
 //TODO: scan relative files
@@ -335,7 +335,7 @@ function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
             else if (item.kind === SymbolVSCfy(KeywordType.Segment)) {
                 let symbol2: vscode.DocumentSymbol | undefined;
                 item.children.forEach(
-                    (item2, index, array) => {
+                    (item2) => {
                         for (i = item2.range.start.line; i <= item2.range.end.line; i++) {
                             const symbol3 = asmlines[i].varlabelsymbol();
                             asmlines[i].treeUsed = true;

@@ -8,7 +8,7 @@ export class SeeinCPPDOCS implements vscode.CodeActionProvider {
         vscode.CodeActionKind.QuickFix
     ];
 
-    provideCodeActions(document: vscode.TextDocument, range: vscode.Range | vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): vscode.CodeAction[] {
+    provideCodeActions(document: vscode.TextDocument, range: vscode.Range | vscode.Selection, context: vscode.CodeActionContext): vscode.CodeAction[] {
         // for each diagnostic entry that has the matching `code`, create a code action command
         return context.diagnostics
             .filter(diagnostic => this.isObjCode(diagnostic.code))

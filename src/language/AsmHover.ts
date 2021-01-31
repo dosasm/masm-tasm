@@ -9,7 +9,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
     constructor(uri: vscode.Uri) {
         this.hoverDict = new HoverDICT(uri);
     }
-    async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Hover> {
+    async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover> {
         let output: vscode.MarkdownString = new vscode.MarkdownString();
         const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
         const docinfo = getDocInfo(document); //scan the document
