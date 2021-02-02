@@ -59,8 +59,8 @@
         {
             "name": "int",
             "syntax": "int [interruptIndex]",
-            "chs": "软件中断指令（中断调用指令），[常见中断表]( https://github.com/xsro/masm-tasm/wiki/interrupt)",
-            "info": "Interrupt call see [list]( https://github.com/xsro/masm-tasm/wiki/interrupt_en)"
+            "chs": "软件中断指令（中断调用指令），[常见中断表](https://gitee.com/dosasm/masm-tasm/wikis/Interrupt-list)",
+            "info": "Interrupt call see [list](https://github.com/xsro/masm-tasm/wiki/Interrupt-list-en)"
         },
         {
             "name": "into",
