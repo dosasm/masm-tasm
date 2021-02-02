@@ -61,18 +61,14 @@ export class AssemblerDiag {
     }
     /**
      * clean the diagnoses
-     * @param MASMorTASMorboth 
+     * @param ASM sepecify which ASM diagnositics to clear, if undefined, clear both MASM and TASM diagnositcs
      */
-    public cleandiagnose(MASMorTASMorboth: string): void {
-        switch (MASMorTASMorboth) {
-            case 'both':
-            case 'MASM':
-                this._masmCollection.clear();
-                if (MASMorTASMorboth === 'MASM') { break; }
-                break;
-            case 'TASM':
-                this._tasmCollection.clear();
-                break;
+    public cleandiagnose(ASM?: ASMTYPE): void {
+        if (ASM === undefined || ASM === ASMTYPE.MASM) {
+            this._masmCollection.clear();
+        }
+        if (ASM === undefined || ASM === ASMTYPE.TASM) {
+            this._tasmCollection.clear();
         }
     }
 };

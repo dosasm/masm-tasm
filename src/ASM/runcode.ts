@@ -213,7 +213,7 @@ export class AsmAction implements Disposable {
         await window.showErrorMessage(Errmsg);
     }
     public cleanalldiagnose(): void {
-        this.landiag.cleandiagnose('both');
+        this.landiag.cleandiagnose();
     }
     public dispose(): void {
         Logger.OutChannel.dispose();
