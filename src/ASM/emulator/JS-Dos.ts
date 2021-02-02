@@ -87,8 +87,14 @@ export class JSDos implements EMURUN {
             const v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
             this._wsrc = new SRCFILE(v);
             this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, this._wsrc);
-            const filearray = await fs.readFile(opt.src.uri);
-            this._launch.writes.push({ path: this._wsrc.uri.fsPath, body: filearray.toString() });
+            const doc = await vscode.workspace.openTextDocument(opt.src.uri);
+            let eol = "";
+            switch (doc.eol) {
+                case vscode.EndOfLine.CRLF: eol = '\r\n'; break;
+                case vscode.EndOfLine.LF: eol = '\n'; break;
+            }
+            const body = doc.getText().replace(/^\s*;.*$/gm, eol);
+            this._launch.writes.push({ path: this._wsrc.uri.fsPath, body });
         }
         this._launch.shellcmds.push(...this._VscConf.getAction('open'));
         await compressAsmTools(this._conf.Uris.tools, resourcesUri);
@@ -253,9 +259,9 @@ class JsdosPanel {
     public getStdout(): Promise<string> {
         return new Promise(
             (resolve, reject) => {
-                this.ListenWdosboxStdout = (val: string): void => {
+                this.ListenWdosboxStdout = (): void => {
                     if (this.WdosboxStdout.includes('Assembling')) {
-                        resolve(this.WdosboxStdout + val);
+                        resolve(this.WdosboxStdout);
                         this.ListenWdosboxStdout = undefined;
                     }
                 };
