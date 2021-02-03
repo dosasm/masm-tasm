@@ -16,7 +16,7 @@ Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSB
 
 ## Demo
 
-Now the extension supports using JSDos to run wdosbox in VSCode's Webview.
+Now the extension supports using JSDos to run wdosbox in VSCode's Webview. Change the `masmtasm.ASM.emulator` in settings to *jsdos* to try it.
 
 ![jsdos demo](pics/demo_jsdos.gif)
 

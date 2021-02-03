@@ -14,7 +14,7 @@
 
 ## :rocket:DEMO示例
 
-现在插件支持使用JSdos作为模拟器，直接在webview中运行wdosbox
+现在插件支持使用JSdos作为模拟器，直接在webview中运行wdosbox。可以在设置中将`masmtasm.ASM.emulator`修改为jsdos体验。
 
 ![jsdos demo](pics/demo_jsdos.gif)
 
