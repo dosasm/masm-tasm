@@ -244,14 +244,14 @@
               "set path=c:\\masm",
               "masm ${filename}.ASM; >X:\\ASM.LOG ",
               "@type X:\\ASM.LOG",
-              "link ${filename}.OBJ; >X:\\LINK.LOG ",
+              "if exist ${filename}.OBJ link ${filename}.OBJ; >X:\\LINK.LOG ",
               "@type X:\\LINK.LOG"
             ],
             "tasm": [
               "set path=c:\\tasm",
               "tasm /zi ${filename}.ASM >X:\\ASM.LOG ",
               "@type X:\\ASM.LOG",
-              "tlink /v/3 ${filename}.obj >X:\\LINK.LOG ",
+              "if exist ${filename}.OBJ tlink /v/3 ${filename}.obj >X:\\LINK.LOG ",
               "@type X:\\LINK.LOG"
             ],
             "masm_debug": [
@@ -321,11 +321,11 @@
             ],
             "masm": [
               "masm ${filename}.ASM;",
-              "link ${filename}.OBJ;"
+              "if exist ${filename}.OBJ link ${filename}.OBJ;"
             ],
             "tasm": [
               "tasm /zi ${filename}.ASM",
-              "tlink /v/3 ${filename}.obj"
+              "if exist ${filename}.OBJ tlink /v/3 ${filename}.obj"
             ],
             "masm_debug": [
               "if exist ${filename}.exe debug ${filename}.exe"
