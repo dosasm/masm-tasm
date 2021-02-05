@@ -165,7 +165,7 @@ export class DOSBox extends dosboxCore implements EMURUN {
         await all;
     }
     async Debug(src: SRCFILE, msgprocessor?: MSGProcessor): Promise<void> {
-        const { all, race } = await this.runDebug(src, true);
+        const { all, race } = await this.runDebug(src, false);
         const asm = await race;
         if (msgprocessor) { msgprocessor(asm, { preventWarn: true }); }
         await all;
