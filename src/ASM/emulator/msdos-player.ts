@@ -128,7 +128,7 @@ export class MsdosPlayer implements EMURUN {
                     },
                     (error, stdout, stderr) => {
                         if (stderr) {
-                            console.warn({ stderr, stdout, command });
+                            console.warn(`stderr: ${stderr}`);
                         }
                         if (error) {
                             reject(error);

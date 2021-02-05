@@ -49,7 +49,7 @@ export enum DOSEMU {
 
 const packagedTools = "./tools";
 const fs = workspace.fs;
-const delExtList = [".exe", ".obj"];
+const delExtList = [".exe", ".obj", ".com"];
 const DST_FILE_NAME = 'T';
 const allowedEMU = (): DOSEMU[] => {
     const emu = [DOSEMU.dosbox, DOSEMU.jsdos];
