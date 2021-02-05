@@ -9,17 +9,23 @@ class MsdosVSCodeConfig {
         return workspace.getConfiguration('masmtasm.msdos');
     };
     getAction(scope: MsdosActionKey): string {
+        const id = 'masmtasm.msdos.more';
         const a = this._target.get('more') as { [id: string]: string };
-        const key = scope.toLowerCase();
-        let output = a[key];
-        if (typeof (output) === 'string') {
-            if (this.replacer) {
-                output = this.replacer(output);
+        if (a === null || a === undefined) {
+            window.showErrorMessage(`${a} is not allowed in ${id}`);
+        } else {
+            let output = a[scope];
+            if (typeof (output) === 'string') {
+                if (this.replacer) {
+                    output = this.replacer(output);
+                }
+                return output;
             }
-            return output;
+            else {
+                window.showErrorMessage(`action ${scope} is undefined or not a array in ${id}`);
+            }
         }
-        window.showErrorMessage(`action ${key} hasn't been defined`);
-        throw new Error(`action ${key} hasn't been defined`);
+        throw new Error(`no ${scope} in ${id}:${JSON.stringify(a)}`);
     }
     replacer: ((str: string) => string) | undefined = undefined;
 }

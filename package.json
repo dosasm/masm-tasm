@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "keywords": [
     "dosbox",
     "16位",
@@ -300,16 +300,7 @@
               "description": "The commands to exec after run or debug\n when set `masmtasm.dosbox.run` as `choose`",
               "type": "array"
             }
-          },
-          "required": [
-            "open",
-            "masm",
-            "tasm",
-            "masm_debug",
-            "tasm_debug",
-            "run",
-            "after_action"
-          ]
+          }
         },
         "masmtasm.jsdos.more": {
           "markdownDescription": "%config.jsdos.more%",
@@ -364,15 +355,7 @@
               "description": "The commands to run the generated file",
               "type": "array"
             }
-          },
-          "required": [
-            "open",
-            "masm",
-            "tasm",
-            "masm_debug",
-            "tasm_debug",
-            "run"
-          ]
+          }
         },
         "masmtasm.msdos.more": {
           "description": "%config.msdos.more%",
@@ -414,15 +397,7 @@
               "description": "The command to run the generated file",
               "type": "string"
             }
-          },
-          "required": [
-            "workspace",
-            "path",
-            "masm",
-            "tasm",
-            "masm_debug",
-            "run"
-          ]
+          }
         }
       }
     },

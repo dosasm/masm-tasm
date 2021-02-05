@@ -22,16 +22,22 @@ class JSdosVSCodeConfig {
         return JSdosVSCodeConfig._target.get("wdosbox") as string;
     }
     getAction(scope: keyof JsdosAsmConfig): string[] {
+        const id = 'masmtasm.jsdos.more';
         const a = JSdosVSCodeConfig._target.get('more') as JsdosAsmConfig;
-        const key = scope;
-        const output = a[key];
-        if (Array.isArray(output)) {
-            if (this.replacer) {
-                return output.map(this.replacer);
+        if (a === null || a === undefined) {
+            window.showErrorMessage(`${a} is not allowed in ${id}`);
+        } else {
+            let output = a[scope];
+            if (Array.isArray(output)) {
+                if (this.replacer) {
+                    output = output.map(this.replacer);
+                }
+                return output;
+            } else {
+                window.showErrorMessage(`action ${scope} is undefined or not a array in ${id}`);
             }
         }
-        window.showErrorMessage(`action ${key} hasn't been defined`);
-        throw new Error(`action ${key} hasn't been defined`);
+        throw new Error(`no ${scope} in ${id}:${JSON.stringify(a)}`);
     }
     replacer?: ((str: string) => string) | undefined;
     public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE): string[] {

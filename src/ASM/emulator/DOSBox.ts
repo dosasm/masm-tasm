@@ -1,5 +1,5 @@
 import { TextEncoder } from "util";
-import { FileType, Uri, workspace, WorkspaceConfiguration } from 'vscode';
+import { FileType, Uri, workspace, WorkspaceConfiguration, window } from 'vscode';
 import * as nls from 'vscode-nls';
 import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
 import { Logger } from '../outputChannel';
@@ -58,15 +58,23 @@ class BoxVSCodeConfig {
         return output;
     }
     getAction(scope: keyof DosboxAction): string[] {
+        const id = 'masmtasm.dosbox.more';
         const a = this._target.get('more') as DosboxAction;
-        let output = a[scope];
-        if (Array.isArray(output)) {
-            if (this.replacer) {
-                output = output.map(this.replacer);
+        if (a === null || a === undefined) {
+            window.showErrorMessage(`${a} is not allowed in ${id}`);
+        } else {
+            let output = a[scope];
+            if (Array.isArray(output)) {
+                if (this.replacer) {
+                    output = output.map(this.replacer);
+                }
+                return output;
             }
-            return output;
+            else {
+                window.showErrorMessage(`action ${scope} is undefined or not a array in ${id}`);
+            }
         }
-        throw new Error(`action ${scope} is undefined or not a array`);
+        throw new Error(`no ${scope} in ${id}:${JSON.stringify(a)}`);
     }
     replacer?: (str: string) => string;
     public runDebugCmd(runOrDebug: boolean, ASM: ASMTYPE): string[] {
@@ -155,8 +163,7 @@ export class DOSBox extends dosboxCore implements EMURUN {
         return true;
     }
     openEmu(folder: Uri): Promise<unknown> {
-        const commands = this.vscConfig.getAction('open');
-        return this.runDosbox(folder, commands);
+        return this.runDosbox(folder, []);
     }
     async Run(src: SRCFILE, msgprocessor?: MSGProcessor): Promise<void> {
         const { all, race } = await this.runDebug(src, true);
@@ -246,14 +253,13 @@ export class DOSBox extends dosboxCore implements EMURUN {
      * @param more The commands needed to exec in dosbox
      */
     public async runDosbox(folder: Uri, more?: string[], opt?: { exitwords: boolean }): Promise<DOSBoxStd> {
-        const boxcmd: string[] = [];
+        const boxcmd: string[] = this.vscConfig.getAction('open');
         boxcmd.push(
             `@mount c \\\"${this._conf.Uris.tools.fsPath}\\\"`,//mount the tools folder as disk C
             `@mount d \\\"${folder.fsPath}\\\"`,//mount the folder of source file as disk D
             `@mount X \\\"${this._conf.Uris.globalStorage.fsPath}\\\"`,//mount a separate space as X for the extension to read logs
             "d:"//switch to the disk of source code file
         );
-
         if (more) { boxcmd.push(...more); }
         if (opt?.exitwords) { boxcmd.push(...this.boxruncmd); }
         //Logger.log(boxcmd);
