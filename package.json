@@ -326,8 +326,7 @@
             ],
             "run": [
               "@if not exist ${filename}.exe exit ",
-              "${filename}.exe",
-              "@echo (END)Here is the end of the program's output"
+              "${filename}.exe"
             ]
           },
           "properties": {
