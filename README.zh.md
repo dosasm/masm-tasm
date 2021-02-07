@@ -146,7 +146,7 @@ VSCode文档中关于插件安装路径的说明[VSCode-doc](https://code.visual
 
 - 感谢南邮韩老师的《微型计算机原理与接口技术》课程
 - 该插件受[Woodykaixa](https://github.com/Woodykaixa)的 [masm-code](https://github.com/Woodykaixa/masm-code)启发
-- 插件通过[DOSBox](https://www.dosbox.com)、[caiiiycuk](https://github.com/caiiiycuk)的[JS DOS](https://js-dos.com/) 和[MSDOS player](http://takeda-toshiya.my.coocan.jp/msdos)和模拟DOS环境
+- 插件通过[DOSBox](https://www.dosbox.com)、[caiiiycuk](https://github.com/caiiiycuk)的[JS DOS](https://js-dos.com/) 和[MSDOS player](http://takeda-toshiya.my.coocan.jp/msdos)模拟DOS环境
 - 插件使用了[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)的[Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)中的汇编语法信息
 - 一些[相关信息](doc/license_and_info.md)和[鸣谢](doc/Thanks.md)
 - gitee 上的一些笔记和代码: [笔记](https://dosasm.gitee.io/),[代码](https://gitee.com/dosasm/asmcodes)

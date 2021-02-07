@@ -154,9 +154,8 @@ if you want to use your tools of assembler, please paste your path to the settin
 
 - Thanks to my teacher *Han*. Hope 2020 and the coming 2021 happy and worthy
 - inspired by [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code)
-- Thanks to excellent DOS emulator: [dosbox](https://www.dosbox.com), [caiiiycuk](https://github.com/caiiiycuk)'s [js dos](https://js-dos.com/) and [caiiiycuk](https://github.com/caiiiycuk)'s [msdos player](http://takeda-toshiya.my.coocan.jp/msdos)
+- Thanks to excellent DOS emulator: [dosbox](https://www.dosbox.com), [caiiiycuk](https://github.com/caiiiycuk)'s [js dos](https://js-dos.com/) and [msdos player](http://takeda-toshiya.my.coocan.jp/msdos)
 - Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) 's extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086),[blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) for ASM language information
-
 - Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help
 - [THANKS](doc/Thanks.md)
 - [some infomation :wiki](https://github.com/xsro/masm-tasm/wiki)
