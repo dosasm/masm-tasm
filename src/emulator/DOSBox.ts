@@ -1,10 +1,10 @@
 import { TextEncoder } from "util";
 import { FileType, Uri, workspace, WorkspaceConfiguration, window } from 'vscode';
 import * as nls from 'vscode-nls';
-import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../configration';
-import { Logger } from '../outputChannel';
-import { ASMPREPARATION, ASSEMBLERMSG, EMURUN, MSGProcessor } from "../runcode";
-import { inDirectory } from "../util";
+import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../ASM/configration';
+import { Logger } from '../ASM/outputChannel';
+import { ASMPREPARATION, ASSEMBLERMSG, EMURUN, MSGProcessor } from "../ASM/runcode";
+import { inDirectory } from "../ASM/util";
 import { writeBoxconfig } from './dosbox_conf';
 import { DOSBox as dosboxCore, WINCONSOLEOPTION, DOSBoxStd } from './dosbox_core';
 const fs = workspace.fs;

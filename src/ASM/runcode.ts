@@ -2,10 +2,10 @@ import { Disposable, ExtensionContext, Uri, window, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 import { ASMTYPE, Config, DOSEMU, SRCFILE } from './configration';
 import { AssemblerDiag, DIAGCODE, DIAGINFO } from './diagnose/diagnose';
-import { AutoMode } from './emulator/auto-mode';
-import { DOSBox } from './emulator/DOSBox';
-import { JSDos } from './emulator/JS-Dos';
-import { MsdosPlayer } from './emulator/msdos-player';
+import { AutoMode } from '../emulator/auto-mode';
+import { DOSBox } from '../emulator/DOSBox';
+import { JSDos } from '../emulator/JS-Dos';
+import { MsdosPlayer } from '../emulator/msdos-player';
 import { Logger } from './outputChannel';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();

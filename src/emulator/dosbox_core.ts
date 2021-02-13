@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { FileType, Uri, window, workspace } from 'vscode';
-import { inDirectory } from '../util';
+import { inDirectory } from '../ASM/util';
 
 /**defines the option to do with dosbox's console message **in windows system**.
  * - For **windows**, if in **noconsole** mode,the dosbox will redirect the console message to files in the *dosbox.exe*'s folder.

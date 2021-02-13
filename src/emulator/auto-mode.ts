@@ -1,6 +1,6 @@
 import { Uri } from 'vscode';
-import { ASMTYPE, Config, SRCFILE } from '../configration';
-import { ASMPREPARATION, EMURUN, MSGProcessor } from '../runcode';
+import { ASMTYPE, Config, SRCFILE } from '../ASM/configration';
+import { ASMPREPARATION, EMURUN, MSGProcessor } from '../ASM/runcode';
 import { DOSBox } from './DOSBox';
 import { MsdosPlayer } from './msdos-player';
 

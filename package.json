@@ -306,8 +306,7 @@
           "markdownDescription": "%config.jsdos.more%",
           "default": {
             "open": [
-              "set path=c:\\asm\\dir0;c:\\asm\\dir1",
-              "mkdir code",
+              "set path=c:\\asm\\masm;c:\\asm\\tasm",
               "cd code"
             ],
             "masm": [
@@ -325,8 +324,7 @@
               "if exist ${filename}.exe TD ${filename}.exe"
             ],
             "run": [
-              "@if not exist ${filename}.exe exit ",
-              "${filename}.exe"
+              "if exist ${filename}.exe ${filename}.exe"
             ]
           },
           "properties": {

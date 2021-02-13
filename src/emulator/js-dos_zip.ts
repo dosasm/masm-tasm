@@ -57,7 +57,7 @@ function compress(src: string, dst: string): void {
     archive.finalize();
 }
 
-/**compress the subfolder `masm` and `tasm` form **uri** to **dst**
+/**compress the subfolder `masm` and `tasm` from **uri** to **dst**
  * as two zips
  * @param uri the folder contains subfolder `masm` and `tasm`
  * @param dst the destination folder,will create `masm.zip` and `tasm.zip` in this folder
