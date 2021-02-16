@@ -47,7 +47,7 @@ const config = {
         }]
     },
     optimization: {
-        minimize: true
+        minimize: process.argv.includes('--mode production')
     },
     stats: {
         warnings: false
