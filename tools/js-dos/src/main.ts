@@ -155,7 +155,7 @@ class VSCJSDOS {
 
 declare function acquireVsCodeApi();
 (function () {
-    console.log('nihao')
+    console.time('connect')
     let vscode = undefined;
     //try to get the vscode API
     try { vscode = acquireVsCodeApi(); } catch (e) { console.log(`no vscode api`) }// (window as any).acquireVsCodeApi ? (window as any).acquireVsCodeApi() : undefined;
@@ -206,7 +206,7 @@ declare function acquireVsCodeApi();
             case "message received":
                 switch (message.text) {
                     case 'listenning Commands':
-                        console.log('connected')
+                        console.timeEnd('connect')
                         if (jsdosReadyPost) {
                             clearInterval(jsdosReadyPost);
                         }
