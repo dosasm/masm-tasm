@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import { Terminal, Uri, window, workspace, WorkspaceConfiguration } from 'vscode';
 import { ASMTYPE, Config, DOSEMU, settingsStrReplacer, SRCFILE } from '../ASM/configration';
-import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../ASM/runcode';
+import { ASMCMD, ASMPREPARATION, ASSEMBLERMSG, EMURUN, MSGProcessor } from '../ASM/runcode';
 
 /**the config from VSCode settings `masmtasm.msdos`*/
 class MsdosVSCodeConfig {
@@ -42,6 +42,20 @@ interface MsdosAction {
 type MsdosActionKey = keyof MsdosAction;
 
 export class MsdosPlayer implements EMURUN {
+    static getASMmessage(val: string): ASSEMBLERMSG {
+        const asm = /\s*===ASM message===([\s\S]*?)===ASM END===\s*/;
+        const lnk = /\s*===LINK message===([\s\S]*?)===LINK END===\s*/;
+        const asmre = asm.exec(val);
+        const lnkre = lnk.exec(val);
+        if (asmre && lnkre && asmre[1] && lnkre[1]) {
+            return {
+                asm: asmre[1],
+                link: lnkre[1]
+            };
+        }
+        console.error('no message scaned', val);
+        return val;
+    }
     copyUri?: Uri;
     forceCopy?: boolean;
     private _conf: Config;
@@ -116,9 +130,9 @@ export class MsdosPlayer implements EMURUN {
             }
         }
     }
-    public runPlayer(conf: Config): Promise<string> {
+    public runPlayer(conf: Config): Promise<ASSEMBLERMSG> {
         const command = this._vscConf.getAction(conf.MASMorTASM.toLowerCase() as 'masm' | 'tasm');
-        return new Promise<string>(
+        return new Promise<ASSEMBLERMSG>(
             (resolve, reject) => {
                 const timeout = 3000;
                 const child = exec(
@@ -134,7 +148,7 @@ export class MsdosPlayer implements EMURUN {
                             reject(error);
                         }
                         else if (stdout.length > 0) {
-                            resolve(stdout);
+                            resolve(MsdosPlayer.getASMmessage(stdout));
                         }
                     }
                 );

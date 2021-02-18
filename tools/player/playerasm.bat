@@ -43,5 +43,12 @@ goto end
 
 goto end
 :end
-::print message
-type %TOOLS%\ASM.LOG
+::print message use this form to help extension to process
+::currently only process ASM message
+@echo ===ASM message===
+@type %TOOLS%\ASM.LOG
+@echo ===ASM END===
+
+@echo ===LINK message===
+@type %TOOLS%\LINK.LOG
+@echo ===LINK END===
