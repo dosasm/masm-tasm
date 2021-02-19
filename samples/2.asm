@@ -11,5 +11,7 @@ main proc far
 	     mov dx,offset msg
 	     int 21h
 	     hlt
+	     MOV AH,4CH
+	     INT 21H          	;BACK TO DOS
 main endp
 end main
