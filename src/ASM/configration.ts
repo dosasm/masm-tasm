@@ -1,7 +1,7 @@
-import { ExtensionContext, FileType, TextDocument, Uri, workspace } from 'vscode';
+import { ExtensionContext, FileType, TextDocument, Uri, window, workspace } from 'vscode';
+import * as nls from 'vscode-nls';
 import { Logger } from './outputChannel';
 import { inDirectory, validfy } from './util';
-import * as nls from 'vscode-nls';
 
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -116,19 +116,17 @@ export class Config {
     public get Separate(): boolean { return this._target.get('ASM.separateSpace') as boolean; }
     public get Clean(): boolean { return this._target.get('ASM.clean') as boolean; }
     private readonly _exturi: Uri;
-    private _toolpath: string | undefined;
+    private _statusBar = window.createStatusBarItem();
     constructor(ctx: ExtensionContext) {
         workspace.onDidChangeConfiguration((e) => {
-            if (e.affectsConfiguration('masmtasm')) {
-                this._target = workspace.getConfiguration('masmtasm.ASM');
+            if (e.affectsConfiguration('masmtasm.ASM')) {
+                this.update();
             }
         });
+        this.update();
         this._exturi = ctx.extensionUri;
 
-        let globalStorageUri = ctx.globalStorageUri;
-        if (globalStorageUri === undefined) {
-            globalStorageUri = Uri.file(ctx.globalStoragePath);//for vscode like 1.44 the global storage Uri API is undenfined
-        }
+        const globalStorageUri = ctx.globalStorageUri;
         const toolsUri = this.toolspath ? this.toolspath : Uri.joinPath(this._exturi, packagedTools);
         //the tools' Uri
         this.Uris = {
@@ -140,9 +138,15 @@ export class Config {
             globalStorage: globalStorageUri
         };
         fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
-        this._toolpath = this._target.get('toolspath');
         this.printToChannel();
     }
+    private update(): void {
+        this._target = workspace.getConfiguration('masmtasm.ASM');
+        this._statusBar.text = `${this.DOSemu} ${this.MASMorTASM}`;
+        this._statusBar.show();
+        this._statusBar.command = 'masmtasm.updateEmuASM';
+    }
+
     public get dosboxconfuri(): Uri {
         const uri = Uri.joinPath(this.Uris.globalStorage, 'VSC-ExtUse.conf');
         return uri;
