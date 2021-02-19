@@ -39,7 +39,7 @@ suite('Extension Test Suite', function () {
 	const filelist: [string, DIAGCODE][] = [
 		['1.asm', DIAGCODE.ok],
 		['2.asm', DIAGCODE.ok],
-		['1err.asm', DIAGCODE.hasError]
+		['3中文路径hasError.asm', DIAGCODE.hasError]
 	];
 	function shuffle<T>(arr: T[]): T[] {
 		for (let i = 1; i < arr.length; i++) {
@@ -81,7 +81,8 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE
 
 			//assert message processed
 			const result = (await vscode.commands.executeCommand(cmd) as RUNCODEINFO);
-			assert.ok(result.message, JSON.stringify(result.message));
+			const asmMessage = JSON.stringify(result.message);
+			assert.ok(asmMessage.includes('Assembling'), asmMessage);
 			assert.strictEqual(DIAGCODE[result.diagCode], DIAGCODE[diagcode], JSON.stringify(result, null, 4));
 		});
 }

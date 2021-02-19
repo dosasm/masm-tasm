@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { Uri, window } from 'vscode';
 import { ASMTYPE, Config, settingsStrReplacer, SRCFILE } from '../ASM/configration';
-import { ASMPREPARATION, EMURUN, MSGProcessor } from '../ASM/runcode';
+import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../ASM/runcode';
 import { compressAsmTools, compressDir } from './js-dos_zip';
 import { JsdosPanel, LaunchOption } from './js-dos_Panel';
 
@@ -69,13 +69,13 @@ export class JSDos implements EMURUN {
     private _wsrc?: SRCFILE;
     private _launch: LaunchOption = { extracts: [], writes: [], options: [], shellcmds: [] };
     private _resourcesUri: Uri;
+    forceCopy?: boolean;
 
     constructor(conf: Config) {
         this._conf = conf;
         this._VscConf = new JSdosVSCodeConfig();
         this.jsdosFolder = conf.Uris.jsdos;
         this._resourcesUri = Uri.joinPath(conf.Uris.globalStorage, 'jsdos');
-
     }
 
     private async copyDir(folder: Uri): Promise<void> {
@@ -104,7 +104,8 @@ export class JSDos implements EMURUN {
         return;
     }
 
-    async prepare(opt?: ASMPREPARATION): Promise<boolean> {
+    async prepare(opt: ASMPREPARATION): Promise<boolean> {
+        this.forceCopy = !opt.src.dosboxFsReadable && opt.act !== ASMCMD.OpenEmu;
         await fs.createDirectory(this._resourcesUri);
         await fs.createDirectory(Uri.joinPath(this._resourcesUri, 'codes'));
         JsdosPanel.createOrShow(this.jsdosFolder, this._resourcesUri);
@@ -119,8 +120,6 @@ export class JSDos implements EMURUN {
         }
 
         if (opt) {
-            const v = Uri.joinPath(Uri.file('/code/'), `${opt.src.filename}.${opt.src.extname}`);
-            this._wsrc = new SRCFILE(v);
             this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, this._wsrc);
         }
 
@@ -145,19 +144,23 @@ export class JSDos implements EMURUN {
         return this.runDebug(false, src, msgprocessor);
     }
     public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown> {
-        if (JsdosPanel.currentPanel && this._wsrc) {
+        if (JsdosPanel.currentPanel) {
+            const v = Uri.joinPath(Uri.file('/code/'), `${src.filename}.${src.extname}`);
+            this._wsrc = new SRCFILE(v);
+            await this.copyDir(src.folder);
+
             const cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
             this._launch.shellcmds.push(...cmds);
-            await this.copyDir(src.folder);
+
             await JsdosPanel.currentPanel.launchJsdos(this._launch);
             const msg = await JsdosPanel.currentPanel.getStdout();
+            //console.log(this._launch);
+
             await msgprocessor(msg, { preventWarn: true });
-            return [JsdosPanel.currentPanel?.jsdosStatus, JsdosPanel.currentPanel?.allWdosboxStdout, this._wsrc];
+            return [this._launch.writes.map(val => val.path), JsdosPanel.currentPanel?.allWdosboxStdout, this._wsrc];
         }
         throw new Error(`no currentPanel`);//[ ,JsdosPanel.currentPanel?.jsdosStatus, JsdosPanel.currentPanel?.allWdosboxStdout, this._wsrc];
     }
-    copyUri?: vscode.Uri | undefined;
-    forceCopy?: boolean | undefined;
 }
 
 
