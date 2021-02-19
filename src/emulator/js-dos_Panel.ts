@@ -39,14 +39,10 @@ export class JsdosPanel {
 
     public static readonly viewType = 'Jsdos wdosbox';
 
-    private readonly _panel: vscode.WebviewPanel;
-    private readonly jsdosFolder: vscode.Uri;
-    private _disposables: vscode.Disposable[] = [];
 
-    public jsdosStatus: JSDosSTATUS | boolean = false;
     public static wDOSBoxpath?: string;
 
-    public static createOrShow(jsdosUri: vscode.Uri): void {
+    public static createOrShow(jsdosUri: vscode.Uri, resources: vscode.Uri): void {
 
         // If we already have a panel, show it.
         if (JsdosPanel.currentPanel) {
@@ -67,7 +63,7 @@ export class JsdosPanel {
                 enableScripts: true,
 
                 // And restrict the webview to only loading content from our extension's `media` directory.
-                localResourceRoots: [jsdosUri]
+                localResourceRoots: [jsdosUri, resources]
             }
         );
 
@@ -78,6 +74,10 @@ export class JsdosPanel {
         JsdosPanel.currentPanel = new JsdosPanel(panel, extensionUri);
     }
 
+    private readonly _panel: vscode.WebviewPanel;
+    private _disposables: vscode.Disposable[] = [];
+
+    public jsdosStatus: JSDosSTATUS | boolean = false;
     /**record all message from this pannel */
     public allWdosboxStdout: string[] = [];
     public get wDosboxStdout(): string {
@@ -90,9 +90,8 @@ export class JsdosPanel {
     /**called when JSDos is ready */
     public wDOSBoxReady: (() => void) | undefined = undefined;
 
-    private constructor(panel: vscode.WebviewPanel, resourcesUri: vscode.Uri) {
+    private constructor(panel: vscode.WebviewPanel, private readonly jsdosFolder: vscode.Uri) {
         this._panel = panel;
-        this.jsdosFolder = resourcesUri;
 
         // Set the webview's initial html content
         this._update();

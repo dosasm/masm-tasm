@@ -57,6 +57,10 @@ function compress(src: string, dst: string): void {
     archive.finalize();
 }
 
+export function compressDir(srcDir: Uri, dstFile: Uri): void {
+    compress(srcDir.fsPath, dstFile.fsPath);
+}
+
 /**compress the subfolder `masm` and `tasm` from **uri** to **dst**
  * as two zips
  * @param uri the folder contains subfolder `masm` and `tasm`
@@ -67,15 +71,11 @@ export async function compressAsmTools(uri: Uri, dst: Uri): Promise<void> {
     if (dirs.some(val => val[0] === 'masm.zip' && val[1] === FileType.File)) {
 
     } else {
-        compress(
-            Uri.joinPath(uri, 'masm').fsPath,
-            Uri.joinPath(dst, 'masm.zip').fsPath);
+        compressDir(Uri.joinPath(uri, 'masm'), Uri.joinPath(dst, 'masm.zip'));
     }
     if (dirs.some(val => val[0] === 'tasm.zip' && val[1] === FileType.File)) {
 
     } else {
-        compress(
-            Uri.joinPath(uri, 'tasm').fsPath,
-            Uri.joinPath(dst, 'tasm.zip').fsPath);
+        compressDir(Uri.joinPath(uri, 'tasm'), Uri.joinPath(dst, 'tasm.zip'));
     }
 }

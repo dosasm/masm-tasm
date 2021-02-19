@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Uri, window } from 'vscode';
 import { ASMTYPE, Config, settingsStrReplacer, SRCFILE } from '../ASM/configration';
 import { ASMPREPARATION, EMURUN, MSGProcessor } from '../ASM/runcode';
-import { compressAsmTools } from './js-dos_zip';
+import { compressAsmTools, compressDir } from './js-dos_zip';
 import { JsdosPanel, LaunchOption } from './js-dos_Panel';
 
 const fs = vscode.workspace.fs;
@@ -68,15 +68,46 @@ export class JSDos implements EMURUN {
     private _VscConf: JSdosVSCodeConfig;
     private _wsrc?: SRCFILE;
     private _launch: LaunchOption = { extracts: [], writes: [], options: [], shellcmds: [] };
+    private _resourcesUri: Uri;
 
     constructor(conf: Config) {
         this._conf = conf;
         this._VscConf = new JSdosVSCodeConfig();
         this.jsdosFolder = conf.Uris.jsdos;
+        this._resourcesUri = Uri.joinPath(conf.Uris.globalStorage, 'jsdos');
+
+    }
+
+    private async copyDir(folder: Uri): Promise<void> {
+        const entries = await fs.readDirectory(folder);
+        for (const e of entries) {
+            if (e[1] === vscode.FileType.File) {
+                const file = Uri.joinPath(folder, e[0]);
+                //TODO: find out files are binary file or text
+                if (['.asm', '.ASM', '.inc', '.INC'].some(val => e[0].includes(val))) {
+                    const doc = await vscode.workspace.openTextDocument(file);
+                    const body = doc.getText().split('\n').map(val => val.replace(/^\s*;.*/, "")).join('\n');
+                    this._launch.writes.push({ path: `/code/${e[0]}`, body });
+                }
+                else {
+                    const body = await fs.readFile(file);
+                    this._launch.writes.push({ path: `/code/${e[0]}`, body });
+                }
+            }
+            else if (e[1] === vscode.FileType.Directory && e[0].match(/[\w\.]+/)) {
+                const dstFile = Uri.joinPath(this._resourcesUri, `/codes/${e[0]}.zip`);
+                const srcFolder = Uri.joinPath(folder, e[0]);
+                compressDir(srcFolder, dstFile);
+                this._launch.extracts.push([dstFile, `/code/${e[0]}`]);
+            }
+        }
+        return;
     }
 
     async prepare(opt?: ASMPREPARATION): Promise<boolean> {
-        JsdosPanel.createOrShow(this.jsdosFolder);
+        await fs.createDirectory(this._resourcesUri);
+        await fs.createDirectory(Uri.joinPath(this._resourcesUri, 'codes'));
+        JsdosPanel.createOrShow(this.jsdosFolder, this._resourcesUri);
         if (this._VscConf.wdosbox) {
             let uri: Uri;
             if (this._VscConf.wdosbox.includes('https')) {
@@ -88,38 +119,22 @@ export class JSDos implements EMURUN {
         }
 
         if (opt) {
-            //write source code file and save its path in wdosbox
-            const filename = opt.src?.dosboxFsReadable ? opt.src.filename : "T";
-            const v = Uri.joinPath(Uri.file('/code/'), `${filename}.${opt.src.extname}`);
-            //
+            const v = Uri.joinPath(Uri.file('/code/'), `${opt.src.filename}.${opt.src.extname}`);
             this._wsrc = new SRCFILE(v);
             this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, this._wsrc);
-
-            const doc = await vscode.workspace.openTextDocument(opt.src.uri);
-            const body = doc.getText().split('\n').map(val => val.replace(/^\s*;.*/, "")).join('\n');
-            this._launch.writes.push({ path: this._wsrc.uri.fsPath, body });
         }
 
         this._launch.shellcmds.push(...this._VscConf.getAction('open'));
-        await compressAsmTools(this._conf.Uris.tools, this._conf.Uris.jsdos);
+        await compressAsmTools(this._conf.Uris.tools, this._resourcesUri);
         this._launch.extracts.push(
-            [Uri.joinPath(this.jsdosFolder, 'tasm.zip'), '/ASM/TASM'],
-            [Uri.joinPath(this.jsdosFolder, 'masm.zip'), '/ASM/MASM']
+            [Uri.joinPath(this._resourcesUri, 'tasm.zip'), '/ASM/TASM'],
+            [Uri.joinPath(this._resourcesUri, 'masm.zip'), '/ASM/MASM']
         );
         return true;
     }
     async openEmu(folder: vscode.Uri): Promise<void> {
         if (JsdosPanel.currentPanel) {
-            const entries = await fs.readDirectory(folder);
-            for (const e of entries) {
-                if (e[1] === vscode.FileType.File) {
-                    const arr = await fs.readFile(Uri.joinPath(folder, e[0]));
-                    this._launch.writes.push({
-                        path: `/code/all/${e[0]}`,
-                        body: arr.toString()
-                    });
-                }
-            }
+            await this.copyDir(folder);
             await JsdosPanel.currentPanel.launchJsdos(this._launch);
         }
     }
@@ -133,6 +148,7 @@ export class JSDos implements EMURUN {
         if (JsdosPanel.currentPanel && this._wsrc) {
             const cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
             this._launch.shellcmds.push(...cmds);
+            await this.copyDir(src.folder);
             await JsdosPanel.currentPanel.launchJsdos(this._launch);
             const msg = await JsdosPanel.currentPanel.getStdout();
             await msgprocessor(msg, { preventWarn: true });

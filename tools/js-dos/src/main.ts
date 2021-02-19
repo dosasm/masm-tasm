@@ -116,7 +116,7 @@ class VSCJSDOS {
                                 }
                             }
                         );
-                        await fs.extractAll(zips)
+                        await fs.extractAll(zips).catch(r => console.error(r))
                     }
 
                     //1️⃣main: get the command interface to control wdosbox
