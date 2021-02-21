@@ -2,6 +2,10 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
+## 0.9.0
+
+- 悬浮提示信息：增加从[felixcloutier(https://www.felixcloutier.com/x86/)、[msvc](https://docs.microsoft.com/cpp/assembler/masm/）中加载信息
+
 ## 0.8.0
 
 - 重构代码，增加对jsdos的支持，可以在webview中查看程序运行效果，jsdos使用的wdosbox目前看来可能不稳定，插件对其适配也可能有不足之处。

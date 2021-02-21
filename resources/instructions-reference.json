@@ -1,6 +1,6 @@
 {
 	"title": "x86 and amd64 instruction reference",
-	"from": "felixcloutier.com/x86/",
+	"from": "https://www.felixcloutier.com/x86/",
 	"linkprefix": "https://www.felixcloutier.com/x86/",
 	"sections": [
 		"Core Instructions",
@@ -9,269 +9,8 @@
 		"VMX Instructions",
 		"Xeon Phi™ Instructions"
 	],
-	"build": "2021-02-21T07:14:33.615Z",
+	"build": "2021-02-22T12:12:19.405Z",
 	"collection": [
-		[
-			0,
-			[
-				"loopnz",
-				"loopne"
-			],
-			"- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** zero flag is not 1",
-			null,
-			{}
-		],
-		[
-			0,
-			[
-				"loopz",
-				"loope"
-			],
-			"- decrease `CX`\n\n- Jumps to a label if cx is not 0 **and** Zero flag is 1",
-			null,
-			{}
-		],
-		[
-			0,
-			"wrt",
-			"(Not supported)",
-			null,
-			{}
-		],
-		[
-			0,
-			"c",
-			"(Not supported)",
-			null,
-			{}
-		],
-		[
-			0,
-			"req",
-			"(Not supported)",
-			null,
-			{}
-		],
-		[
-			0,
-			"jecxz",
-			"jump if ecx is 0",
-			null,
-			{
-				"zh-cn": "假如ECX寄存器为0跳转"
-			}
-		],
-		[
-			0,
-			"jcxz",
-			"jump if cx is 0",
-			null,
-			{
-				"zh-cn": "假如CX寄存器为0跳转"
-			}
-		],
-		[
-			0,
-			"jle",
-			"jump if less or equals (Signed)",
-			null,
-			{
-				"zh-cn": "（有符号数）小于或等于时跳转"
-			}
-		],
-		[
-			0,
-			"jl",
-			"jump if less (Singed)",
-			null,
-			{
-				"zh-cn": "（有符号数）小于时跳转"
-			}
-		],
-		[
-			0,
-			"jge",
-			"jump if greater or equals (Signed)",
-			null,
-			{
-				"zh-cn": "（有符号数）大于或等于时跳转"
-			}
-		],
-		[
-			0,
-			"jg",
-			"jump if greater (Singed)",
-			null,
-			{
-				"zh-cn": "（有符号数）大于时跳转"
-			}
-		],
-		[
-			0,
-			[
-				"jnc",
-				"jnb",
-				"jae"
-			],
-			"jump if greater or equals(Unsigned)\n\njump if carry flag off",
-			null,
-			{
-				"zh-cn": "（无符号数）不小于跳转"
-			}
-		],
-		[
-			0,
-			[
-				"jc",
-				"jb",
-				"jnae"
-			],
-			"jump if less (Unsinged)\n\njump if carry flag on",
-			null,
-			{
-				"zh-cn": "（无符号数）小于跳转"
-			}
-		],
-		[
-			0,
-			[
-				"jna",
-				"jbe"
-			],
-			"jump if less or equal(Unsinged)",
-			null,
-			{
-				"zh-cn": "（无符号数）不大于跳转"
-			}
-		],
-		[
-			0,
-			[
-				"ja",
-				"jnbe"
-			],
-			"jump if greater (Unsinged)",
-			null,
-			{
-				"zh-cn": "（无符号数）大于跳转"
-			}
-		],
-		[
-			0,
-			"jno",
-			"jump if Overflow flag off",
-			null,
-			{
-				"zh-cn": "假如o标为0跳转"
-			}
-		],
-		[
-			0,
-			"jo",
-			"jump if Overflow flag on",
-			null,
-			{
-				"zh-cn": "假如o标为1跳转"
-			}
-		],
-		[
-			0,
-			[
-				"jnp",
-				"jpo"
-			],
-			"jump if parity flag off",
-			null,
-			{
-				"zh-cn": "假如p标为0跳转"
-			}
-		],
-		[
-			0,
-			[
-				"jp",
-				"jpe"
-			],
-			"jump if parity flag on",
-			null,
-			{
-				"zh-cn": "假如p标为1跳转"
-			}
-		],
-		[
-			0,
-			"jns",
-			"jump if sign flag off",
-			null,
-			{
-				"zh-cn": "假如s标为0跳转"
-			}
-		],
-		[
-			0,
-			"js",
-			"jump if sign flag on",
-			null,
-			{
-				"zh-cn": "假如s标为1跳转"
-			}
-		],
-		[
-			0,
-			[
-				"jnz",
-				"jne"
-			],
-			"jump if zero flag off\n\njump if not equal",
-			null,
-			{
-				"zh-cn": "假如z标为0跳转\n\n不相等时跳转"
-			}
-		],
-		[
-			0,
-			[
-				"jz",
-				"je"
-			],
-			"jump if zero flag on\n\njump if equal",
-			null,
-			{
-				"zh-cn": "假如z标为1跳转\n\n相等时跳转"
-			}
-		],
-		[
-			0,
-			"popfw",
-			"pops flag data to the stack",
-			null,
-			{}
-		],
-		[
-			0,
-			"pushfw",
-			"pushes flag data to the stack",
-			null,
-			{}
-		],
-		[
-			0,
-			"abs",
-			"Turns the value to a positive value. (Not supported)",
-			null,
-			{
-				"zh-cn": "取绝对值(Not supported)"
-			}
-		],
-		[
-			0,
-			"int",
-			"Interrupt call see [list](https://github.com/xsro/masm-tasm/wiki/Interrupt-list-en)",
-			null,
-			{
-				"zh-cn": "软件中断指令（中断调用指令），[常见中断表](https://gitee.com/dosasm/masm-tasm/wikis/Interrupt-list)"
-			}
-		],
 		[
 			0,
 			"AAA",
@@ -312,10 +51,7 @@
 			0,
 			"ADD",
 			"Add",
-			"ADD.html",
-			{
-				"zh-cn": "将第二个操作数加到第一个操作数."
-			}
+			"ADD.html"
 		],
 		[
 			0,
@@ -399,10 +135,7 @@
 			0,
 			"AND",
 			"Logical AND",
-			"AND.html",
-			{
-				"zh-cn": "与操作."
-			}
+			"AND.html"
 		],
 		[
 			0,
@@ -588,10 +321,7 @@
 			0,
 			"CALL",
 			"Call Procedure",
-			"CALL.html",
-			{
-				"zh-cn": "调用子程序"
-			}
+			"CALL.html"
 		],
 		[
 			0,
@@ -651,10 +381,7 @@
 			0,
 			"CLI",
 			"Clear Interrupt Flag",
-			"CLI.html",
-			{
-				"zh-cn": "设置i标为0"
-			}
+			"CLI.html"
 		],
 		[
 			0,
@@ -684,10 +411,7 @@
 			0,
 			"CMP",
 			"Compare Two Operands",
-			"CMP.html",
-			{
-				"zh-cn": "比较2个操作数"
-			}
+			"CMP.html"
 		],
 		[
 			0,
@@ -951,10 +675,7 @@
 			0,
 			"DEC",
 			"Decrement by 1",
-			"DEC.html",
-			{
-				"zh-cn": "操作数减1."
-			}
+			"DEC.html"
 		],
 		[
 			0,
@@ -1008,10 +729,7 @@
 			0,
 			"ENTER",
 			"Make Stack Frame for Procedure Parameters",
-			"ENTER.html",
-			{
-				"zh-cn": "Create dynamic and nested stack 创建动态嵌套堆栈"
-			}
+			"ENTER.html"
 		],
 		[
 			0,
@@ -1611,19 +1329,13 @@
 			0,
 			"IN",
 			"Input from Port",
-			"IN.html",
-			{
-				"zh-cn": "从端口读取数据"
-			}
+			"IN.html"
 		],
 		[
 			0,
 			"INC",
 			"Increment by 1",
-			"INC.html",
-			{
-				"zh-cn": "操作数加1."
-			}
+			"INC.html"
 		],
 		[
 			0,
@@ -1701,10 +1413,7 @@
 			0,
 			"IRET",
 			"Interrupt Return",
-			"IRET:IRETD.html",
-			{
-				"zh-cn": "中断返回指令，从堆栈中依次弹出3个字，分别装入IP、CS和FLAG标志寄存器"
-			}
+			"IRET:IRETD.html"
 		],
 		[
 			0,
@@ -1716,10 +1425,7 @@
 			0,
 			"JMP",
 			"Jump",
-			"JMP.html",
-			{
-				"zh-cn": "跳转到给定标号的指令"
-			}
+			"JMP.html"
 		],
 		[
 			0,
@@ -2270,8 +1976,20 @@
 		[
 			0,
 			"MOV",
-			"- Move [link](https://www.felixcloutier.com/x86/MOV.html)\n- Move to/from Control Registers[link](https://www.felixcloutier.com/x86/MOV-1.html)\n- Move to/from Debug Registers[link](https://www.felixcloutier.com/x86/MOV-2.html)",
-			null
+			"Move",
+			"MOV.html"
+		],
+		[
+			0,
+			"MOV",
+			"Move to/from Control Registers",
+			"MOV-1.html"
+		],
+		[
+			0,
+			"MOV",
+			"Move to/from Debug Registers",
+			"MOV-2.html"
 		],
 		[
 			0,
@@ -2589,10 +2307,7 @@
 			0,
 			"OR",
 			"Logical Inclusive OR",
-			"OR.html",
-			{
-				"zh-cn": "或操作."
-			}
+			"OR.html"
 		],
 		[
 			0,
@@ -2610,10 +2325,7 @@
 			0,
 			"OUT",
 			"Output to Port",
-			"OUT.html",
-			{
-				"zh-cn": "向端口写数据"
-			}
+			"OUT.html"
 		],
 		[
 			0,
@@ -3555,10 +3267,7 @@
 			0,
 			"REP",
 			"Repeat String Operation Prefix",
-			"REP:REPE:REPZ:REPNE:REPNZ.html",
-			{
-				"zh-cn": "Repeat while equals 相等时重复"
-			}
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
 		],
 		[
 			0,
@@ -3576,28 +3285,19 @@
 			0,
 			"REPNZ",
 			"Repeat String Operation Prefix",
-			"REP:REPE:REPZ:REPNE:REPNZ.html",
-			{
-				"zh-cn": "Repeat while not zero 非零时重复"
-			}
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
 		],
 		[
 			0,
 			"REPZ",
 			"Repeat String Operation Prefix",
-			"REP:REPE:REPZ:REPNE:REPNZ.html",
-			{
-				"zh-cn": "Repeat while zero 不等于零的时候重复"
-			}
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
 		],
 		[
 			0,
 			"RET",
 			"Return from Procedure",
-			"RET.html",
-			{
-				"zh-cn": "从子程序返回"
-			}
+			"RET.html"
 		],
 		[
 			0,
@@ -3885,10 +3585,7 @@
 			0,
 			"STI",
 			"Set Interrupt Flag",
-			"STI.html",
-			{
-				"zh-cn": "设置i标为1"
-			}
+			"STI.html"
 		],
 		[
 			0,
@@ -3936,10 +3633,7 @@
 			0,
 			"SUB",
 			"Subtract",
-			"SUB.html",
-			{
-				"zh-cn": "第一个操作数减去第二个操作数."
-			}
+			"SUB.html"
 		],
 		[
 			0,
@@ -5967,10 +5661,7 @@
 			0,
 			"XLAT",
 			"Table Look-up Translation",
-			"XLAT:XLATB.html",
-			{
-				"zh-cn": "Table lookup to al al表查找"
-			}
+			"XLAT:XLATB.html"
 		],
 		[
 			0,
@@ -5982,10 +5673,7 @@
 			0,
 			"XOR",
 			"Logical Exclusive OR",
-			"XOR.html",
-			{
-				"zh-cn": "异或操作"
-			}
+			"XOR.html"
 		],
 		[
 			0,

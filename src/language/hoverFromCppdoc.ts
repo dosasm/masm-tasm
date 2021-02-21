@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import * as down from './downloadFile';
+import { keywordType } from './Hover';
 
 const fs = vscode.workspace.fs;
 
 class RESOURCES {
+
     static unincluded: { sectionof: string; list: { name: string; id: string }[] }[] = [
         {
             sectionof: 'WORD',
@@ -17,10 +19,8 @@ class RESOURCES {
             ]
         }
     ];
-    static links = [
-        'https://raw.fastgit.org/MicrosoftDocs/{repoName}/live/',
-        'https://raw.githubusercontent.com/MicrosoftDocs/{repoName}/live/'
-    ];
+
+    /**mainly use information from https://github.com/microsoft/vscode-loc */
     static langMap: { [id: string]: string } = {
         "zh-cn": "zh-cn",
         ja: "ja-jp",
@@ -34,10 +34,18 @@ class RESOURCES {
         cs: "cs-cz",
         "pt-br": "pt-br",
         fr: "fr-fr",
-        //bg: "bg-bg",//pl-pl vscode not support
-        // "en-GB": "en-gb",
-        // hu: "hu-hu"
+        //no resources
+        //bg: "bg-bg",
+        //"en-GB": "en-gb",
+        //hu: "hu-hu"
+        //pl-pl has resources but vscode does not support this language 
     };
+
+    static links = [
+        'https://raw.fastgit.org/MicrosoftDocs/{repo}/{branch}/',
+        'https://raw.githubusercontent.com/MicrosoftDocs/{repo}/{branch}/'
+    ];
+
     static getlinks(id: string, lang: string): string[] {
         const links = [...RESOURCES.links];
         if (lang === 'zh-cn') {
@@ -45,13 +53,17 @@ class RESOURCES {
         }
         let repoName = 'cpp-docs';
         const pre = 'docs/assembler/masm/';
+        let branchName = 'master';
         if (lang && Object.keys(RESOURCES.langMap).includes(lang)) {
             repoName += `.${RESOURCES.langMap[lang]}`;
+            branchName = 'live';
         }
         return links.map(
-            val => val.replace('{repoName}', repoName) + pre + id + '.md'
+            val => val.replace('{repo}', repoName)
+                .replace('{branch}', branchName) + pre + id + '.md'
         );
     }
+
     static generateFromCppdoc(text: string): CppdocInfoCollection {
         const collection = [];
         let section = "";
@@ -80,7 +92,7 @@ class RESOURCES {
                 //title = line.replace('# ', '');
             }
             else {
-                console.log(line);
+                //console.log(line);
             }
         }
         return collection;
@@ -93,21 +105,28 @@ type CppdocInfoCollection = {
     id: string;
 }[];
 
-
+/**offer information of Masm operators,symbols,directives via data from
+ * https://github.com/MicrosoftDocs/cpp-docs/tree/master/docs/assembler/masm
+ */
 export class Cppdoc {
-    static references = ['operators-reference', 'symbols-reference', 'directives-reference'];
-    private missing: string[] = [];
-    private collections: CppdocInfoCollection[] = [];
-    private get dstFolder(): vscode.Uri { return vscode.Uri.joinPath(this.ctx.globalStorageUri, 'cpp-docs'); }
+    static references: string[] = ['operators-reference', 'symbols-reference', 'directives-reference'];
+    private keywordTypes: keywordType[] = [keywordType.operator, keywordType.symbol, keywordType.directive];
+    private collections: CppdocInfoCollection[] = [[], [], []];
+    private missing: number[] = [];
+
+    private get dstFolder(): vscode.Uri {
+        return vscode.Uri.joinPath(this.ctx.globalStorageUri, 'cpp-docs_' + vscode.env.language);
+    }
 
     constructor(private ctx: vscode.ExtensionContext) {
         Cppdoc.references.forEach(
-            ref => {
-                const s = ctx.globalState.get(this.storageKey(ref)) as CppdocInfoCollection;
+            (ref, idx) => {
+                const key = this.storageKey(ref);
+                const s = ctx.globalState.get(key) as CppdocInfoCollection;
                 if (s) {
-                    this.collections.push(s);
+                    this.collections[idx] = s;
                 } else {
-                    this.missing.push(ref);
+                    this.missing.push(idx);
                 }
             }
         );
@@ -124,16 +143,17 @@ export class Cppdoc {
     }
 
     async addMissing(): Promise<void> {
-        const stillmiss = [];
+        const stillmiss: number[] = [];
         await fs.createDirectory(this.dstFolder);
-        for (const ref of this.missing) {
+        for (const idx of this.missing) {
+            const ref = Cppdoc.references[idx];
             const text = await this.getText(ref);
             if (text) {
                 const collection = RESOURCES.generateFromCppdoc(text);
                 this.ctx.globalState.update(this.storageKey(ref), collection);
-                this.collections.push(collection);
+                this.collections[idx] = collection;
             } else {
-                stillmiss.push(ref);
+                stillmiss.push(idx);
             }
         }
         this.missing = stillmiss;
@@ -151,24 +171,26 @@ export class Cppdoc {
         return undefined;
     }
 
-    public async GetKeyword(word: string): Promise<vscode.MarkdownString | undefined> {
-        for (const collect of this.collections) {
-            for (const item of collect) {
-                if (item.name.toLowerCase() === word.toLowerCase()) {
-                    const context = await this.getText(item.id);
-                    const md = new vscode.MarkdownString(`**${word}** ${item.section} [📖cpp-doc link](https://docs.microsoft.com/cpp/assembler/masm/${item.id})`);
-                    if (context) {
-                        const mainpart = context.replace(/---[\s\S]+?---/g, '')//remove header
-                            .replace(/\.md\)/g, ')')
-                            .replace(/\]\(/g, '](https://docs.microsoft.com/cpp/assembler/masm/');
-                        md.appendMarkdown(mainpart);
+    public async findKeyword(word: string, types: keywordType[]): Promise<string | undefined> {
+        for (const type of types) {
+            const idx = this.keywordTypes.findIndex(val => val === type);
+            if (idx > -1 && idx < this.collections.length) {
+                for (const item of this.collections[idx]) {
+                    if (item.name.toLowerCase() === word.toLowerCase()) {
+                        let md = `**${word}** ${item.section} [📖cpp-doc link](https://docs.microsoft.com/cpp/assembler/masm/${item.id})`;
+                        const context = await this.getText(item.id);
+                        if (context) {
+                            md += context
+                                .replace(/---[\s\S]+?---/g, '')//remove header
+                                .replace(/\.md\)/g, ')')
+                                .replace(/\]\(/g, '](https://docs.microsoft.com/cpp/assembler/masm/');//redirect links
+                        }
+                        return md;
                     }
-                    return md;
                 }
             }
         }
         return undefined;
-
     }
 }
 

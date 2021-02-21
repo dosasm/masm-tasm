@@ -48,11 +48,11 @@ export async function downloadFromMultiSources(urls: string[], dest: string) {
             const result = await download(url, dest).catch(e => {
                 console.log(e);
             });
+            console.log(result, url)
             if (result) {
                 break;
             }
         }
     }
-
     return fs.existsSync(dest);
 }
