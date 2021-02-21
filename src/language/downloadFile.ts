@@ -1,8 +1,8 @@
 //https://stackoverflow.com/questions/11944932/how-to-download-a-file-with-node-js-without-using-third-party-libraries
+/* eslint-disable */
 
 import * as https from 'https';
 import * as fs from 'fs';
-
 
 function download(url: string, dest: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -42,7 +42,7 @@ function download(url: string, dest: string): Promise<boolean> {
 }
 
 export async function downloadFromMultiSources(urls: string[], dest: string) {
-    const downloaded = fs.existsSync(dest)
+    const downloaded = fs.existsSync(dest);
     if (downloaded === false) {
         for (const url of urls) {
             const result = await download(url, dest).catch(e => {
@@ -54,5 +54,5 @@ export async function downloadFromMultiSources(urls: string[], dest: string) {
         }
     }
 
-    return fs.existsSync(dest)
+    return fs.existsSync(dest);
 }

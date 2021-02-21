@@ -80,15 +80,19 @@ class TasmSymbol {
 }
 
 export enum linetype {
-    other, macro, endm, segment, ends, struct, proc, endp, label, variable,
-    end, onlycomment, labelB, variableB
+    other,
+    macro, endm, segment, ends, struct, proc, endp,
+    label, variable,
+    end, onlycomment
 }
+
 //TODO: add support for structure
 export class Asmline {
     docuri: vscode.Uri;
     type: linetype = linetype.other;
     line: number;
     str: string;
+
     name: string | undefined;
     index = 1;
     comment: string | undefined;

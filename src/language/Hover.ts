@@ -1,102 +1,63 @@
 import * as vscode from 'vscode';
 import { getDocInfo } from "./scanDoc";
 import * as info from "./wordinfo";
-import { MarkdownString, env, Uri, workspace } from "vscode";
-import { getType } from "./wordinfo";
-import { Cppdoc } from './hoverFromCppdoc'
+import { MarkdownString, Uri } from "vscode";
+import { Cppdoc } from './hoverFromCppdoc';
+import { Instructions } from './hoverForInstructions';
 
-//TODO: collect hover information to show
 export class AsmHoverProvider implements vscode.HoverProvider {
-    // hoverDict: HoverDICT;
     cppdoc?: Cppdoc;
+    instructions?: Instructions;
+
     constructor(private ctx: vscode.ExtensionContext) {
-        //this.hoverDict = new HoverDICT(ctx.extensionUri);
-        Cppdoc.create(ctx).then(
-            val => this.cppdoc = val
-        );
+        this.update();
     }
-    async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover> {
-        let output: vscode.MarkdownString = new vscode.MarkdownString();
-        const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
+
+    async update(): Promise<void> {
+        this.cppdoc = await Cppdoc.create(this.ctx);
+        const jsonfile = Uri.joinPath(this.ctx.extensionUri, 'resources/instructions-reference.json');
+        this.instructions = await Instructions.create(jsonfile);
+    }
+
+    async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover | null | undefined> {
+        const range = document.getWordRangeAtPosition(position);
         const docinfo = getDocInfo(document); //scan the document
+        const line = docinfo.lines[position.line];
+        const md = new MarkdownString();
+
         if (range) {
-            const wordo = document.getText(range);
-            const word = wordo.toLowerCase();
+            const wordGet = document.getText(range);
+            const wordLowCase = wordGet.toLowerCase();
 
-            const char = /'(.)'/.exec(word); //the word is a charactor?
-            //const keyword = this.hoverDict.GetKeyword(word); //the word is a keyword of assembly?
-            const tasmsymbol = docinfo.findSymbol(wordo); //the word is a symbol?
-
-            if (info.isNumberStr(word)) { output.appendMarkdown(info.getNumMsg(word)); } //the word is a number?
-            else if (char) { output.appendMarkdown(info.getcharMsg(char[1])); }
-            else if (tasmsymbol) { output = tasmsymbol.markdown(); }
-            //else if (keyword !== undefined) { output = keyword; }
-            if (this.cppdoc) {
-                let cd = await this.cppdoc.GetKeyword(word);
-                if (cd) { output = cd }
+            if (info.isNumberStr(wordLowCase)) {
+                md.appendMarkdown(info.getNumMsg(wordLowCase));
+                return new vscode.Hover(md);
             }
 
-        }
-        return new vscode.Hover(output);
-    }
-}
-
-interface KEYINFO {
-    name: string;
-    syntax?: string;
-    info?: string;
-    chs?: string;
-    alias?: string[];
-}
-function markdown(key: KEYINFO, type: string): MarkdownString {
-    const md = new MarkdownString(getType(type) + " **" + key.name + "**\n\n");
-    let description = key.info;
-    if (env.language === "zh-cn" && key.chs) { description = key.chs; }
-    md.appendMarkdown(description + "\n\n");
-    if (key.alias) {
-        let msg = "alias: ";
-        let i: number;
-        for (i = 0; i < key.alias.length - 1; i++) {
-            msg += "`" + key.alias[i] + "`,";
-        }
-        msg += "`" + key.alias[i] + "`";
-        md.appendMarkdown(msg);
-    }
-    md.appendCodeblock("Syntax: " + key.syntax, "assembly");
-    return md;
-}
-
-export class HoverDICT {
-    KEYWORD_DICONTARY: { [id: string]: KEYINFO[] } | undefined;
-    constructor(fileuri: Uri) {
-        workspace.fs.readFile(fileuri).then(
-            (value) => {
-                const hoverJSON = JSON.parse(value.toString());
-                this.KEYWORD_DICONTARY = hoverJSON;
+            const char = /'(.)'/.exec(wordLowCase);
+            if (char) {
+                md.appendMarkdown(info.getcharMsg(char[1]));
+                return new vscode.Hover(md);
             }
-        );
-    }
-    public GetKeyword(word: string): MarkdownString | undefined {
-        let res: KEYINFO;
-        if (this.KEYWORD_DICONTARY) {
-            for (const n in this.KEYWORD_DICONTARY) {
-                if (Array.isArray(this.KEYWORD_DICONTARY[n])) {
-                    //console.log(n)
-                    for (let i = 0; i < this.KEYWORD_DICONTARY[n].length; i++) {
-                        const keyword = this.KEYWORD_DICONTARY[n][i];
-                        if (keyword.name === word) { res = keyword; return markdown(res, n); }
-                        if (keyword.alias) {
-                            for (let i = 0; i < keyword.alias.length; i++) {
-                                const alia = keyword.alias[i];
-                                if (alia === word) { res = keyword; return markdown(res, n); }
-                            }
-                        }
-                    }
+
+            const asmsymbol = docinfo.findSymbol(wordGet); //the word is a symbol?
+            if (asmsymbol) {
+                return new vscode.Hover(asmsymbol.markdown());
+            }
+
+            if (this.instructions && line.operator?.includes(wordGet)) {
+                const i = this.instructions.GetKeyword(wordGet);
+                if (i) {
+                    return new vscode.Hover(i);
                 }
             }
+
+            if (this.cppdoc) {
+                const cd = await this.cppdoc.GetKeyword(wordLowCase);
+                if (cd) { return new vscode.Hover(cd); }
+            }
         }
-        return;
+        return undefined;
     }
 }
-
 
