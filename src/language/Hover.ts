@@ -3,11 +3,17 @@ import { getDocInfo } from "./scanDoc";
 import * as info from "./wordinfo";
 import { MarkdownString, env, Uri, workspace } from "vscode";
 import { getType } from "./wordinfo";
+import { Cppdoc } from './hoverFromCppdoc'
+
 //TODO: collect hover information to show
 export class AsmHoverProvider implements vscode.HoverProvider {
-    hoverDict: HoverDICT;
-    constructor(uri: vscode.Uri) {
-        this.hoverDict = new HoverDICT(uri);
+    // hoverDict: HoverDICT;
+    cppdoc?: Cppdoc;
+    constructor(private ctx: vscode.ExtensionContext) {
+        //this.hoverDict = new HoverDICT(ctx.extensionUri);
+        Cppdoc.create(ctx).then(
+            val => this.cppdoc = val
+        );
     }
     async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover> {
         let output: vscode.MarkdownString = new vscode.MarkdownString();
@@ -18,13 +24,18 @@ export class AsmHoverProvider implements vscode.HoverProvider {
             const word = wordo.toLowerCase();
 
             const char = /'(.)'/.exec(word); //the word is a charactor?
-            const keyword = this.hoverDict.GetKeyword(word); //the word is a keyword of assembly?
+            //const keyword = this.hoverDict.GetKeyword(word); //the word is a keyword of assembly?
             const tasmsymbol = docinfo.findSymbol(wordo); //the word is a symbol?
 
             if (info.isNumberStr(word)) { output.appendMarkdown(info.getNumMsg(word)); } //the word is a number?
             else if (char) { output.appendMarkdown(info.getcharMsg(char[1])); }
             else if (tasmsymbol) { output = tasmsymbol.markdown(); }
-            else if (keyword !== undefined) { output = keyword; }
+            //else if (keyword !== undefined) { output = keyword; }
+            if (this.cppdoc) {
+                let cd = await this.cppdoc.GetKeyword(word);
+                if (cd) { output = cd }
+            }
+
         }
         return new vscode.Hover(output);
     }

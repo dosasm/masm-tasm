@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { getDocInfo } from "./scanDoc";
 import { AsmDocFormat } from './AsmDocumentFormattingEdit';
-import { AsmHoverProvider } from './AsmHover';
+import { AsmHoverProvider } from './Hover';
 import { AsmReferenceProvider } from './AsmReference';
 
 class AsmDefProvider implements vscode.DefinitionProvider {
@@ -30,8 +30,7 @@ class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
 export function provider(context: vscode.ExtensionContext): void {
 	const programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language");
 	if (programmaticFeatures.get("Hover")) {
-		const uri: vscode.Uri = vscode.Uri.joinPath(context.extensionUri, '/resources/hoverinfo.json');
-		context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider(uri)));
+		context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider(context)));
 	}
 	if (programmaticFeatures.get("programmaticFeatures")) {
 		context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly", new Asmsymbolprovider()));
