@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { getDocInfo, linetype, Asmline } from "./scanDoc";
+import { DocInfo, linetype, Asmline } from "./scanDoc";
 //TODO: offer different operation for different vscode.FormattingOptions
 export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
     provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
         const textedits: vscode.TextEdit[] = [];
-        const docinfo = getDocInfo(document);
+        const docinfo = DocInfo.getDocInfo(document);
         if (docinfo.tree) {
             docinfo.tree.forEach(
                 (item) => {

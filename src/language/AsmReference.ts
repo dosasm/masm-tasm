@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { DocInfo, getDocInfo, linetype } from './scanDoc';
+import { DocInfo, linetype } from './scanDoc';
 import { KeywordType } from './wordinfo';
 export class AsmReferenceProvider implements vscode.ReferenceProvider {
     provideReferences(document: vscode.TextDocument, position: vscode.Position): vscode.Location[] {
         const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
         let output: vscode.Location[] = [];
-        const docinfo = getDocInfo(document); //scan thdocumente 
+        const docinfo = DocInfo.getDocInfo(document); //scan thdocumente 
         if (range) {
             const word = document.getText(range);
             output = getrefer(docinfo, word, document);

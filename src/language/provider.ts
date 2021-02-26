@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getDocInfo } from "./scanDoc";
+import { DocInfo } from "./scanDoc";
 import { AsmDocFormat } from './AsmDocumentFormattingEdit';
 import { AsmHoverProvider } from './Hover';
 import { AsmReferenceProvider } from './AsmReference';
@@ -7,7 +7,7 @@ import { AsmReferenceProvider } from './AsmReference';
 class AsmDefProvider implements vscode.DefinitionProvider {
 	provideDefinition(document: vscode.TextDocument, position: vscode.Position): vscode.Definition {
 		const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-		const docinfo = getDocInfo(document);//scan thdocumente 
+		const docinfo = DocInfo.getDocInfo(document);//scan thdocumente 
 		const wordo = document.getText(range);
 		const tasmsymbol = docinfo.findSymbol(wordo);
 		if (tasmsymbol) {
@@ -19,7 +19,7 @@ class AsmDefProvider implements vscode.DefinitionProvider {
 
 class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
 	provideDocumentSymbols(document: vscode.TextDocument): vscode.DocumentSymbol[] {
-		const sym = getDocInfo(document).tree;
+		const sym = DocInfo.getDocInfo(document).tree;
 		if (sym) {
 			return sym;
 		};

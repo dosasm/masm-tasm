@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getDocInfo } from "./scanDoc";
+import { DocInfo } from "./scanDoc";
 import * as info from "./wordinfo";
 import { MarkdownString, Uri } from "vscode";
 import { Cppdoc } from './hoverFromCppdoc';
@@ -44,7 +44,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
 
     async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover | null | undefined> {
         const range = document.getWordRangeAtPosition(position);
-        const docinfo = getDocInfo(document); //scan the document
+        const docinfo = DocInfo.getDocInfo(document); //scan the document
         const line = docinfo.lines[position.line];
 
         if (range) {

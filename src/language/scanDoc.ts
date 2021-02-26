@@ -1,23 +1,20 @@
 import * as vscode from 'vscode';
 import { getType, KeywordType } from './wordinfo';
 
-let _docinfo: DocInfo | undefined = undefined;
-let _docstr: string | undefined;
-//TODO: scan relative files
-export const getDocInfo = (doc: vscode.TextDocument): DocInfo => {
-    const str = doc.getText();
-    if (_docinfo && str === _docstr) {
-    }
-    else {
-        //console.log(count++);
-        _docinfo = new DocInfo(doc);
-        _docstr = str;
-    }
-    return _docinfo;
-};
 export class DocInfo {
+    static docScaned: vscode.TextDocument | undefined = undefined;
+    static docInfoScaned: DocInfo | undefined = undefined;
+    static getDocInfo(doc: vscode.TextDocument): DocInfo {
+        if (DocInfo.docInfoScaned && DocInfo.docScaned?.version === doc.version && DocInfo.docScaned.fileName === doc.fileName) {
+        } else {
+            DocInfo.docInfoScaned = new DocInfo(doc);
+            DocInfo.docScaned = doc;
+        }
+        return DocInfo.docInfoScaned;
+    }
+
     lines: Asmline[];
-    flat?: TasmSymbol[];
+    flat?: AsmSymbol[];
     tree?: vscode.DocumentSymbol[];
     constructor(doc: vscode.TextDocument) {
         const asmlines = doc2lines(doc);
@@ -26,7 +23,7 @@ export class DocInfo {
         this.flat = tree.flat;
         this.tree = tree.tree;
     }
-    public findSymbol(word: string): TasmSymbol | undefined {
+    public findSymbol(word: string): AsmSymbol | undefined {
         if (this.flat) {
             for (const sym of this.flat) {
                 if (sym.name === word) {
@@ -37,6 +34,7 @@ export class DocInfo {
         return;
     }
 }
+
 /** convert the symboltype from assembly language to VSCode
  * 
  * | assembly symbol | vscode symbol | 汇编关键字 | vscode关键字 |
@@ -59,7 +57,8 @@ function SymbolVSCfy(asmType: KeywordType): vscode.SymbolKind {
     }
     return vscode.SymbolKind.Null;
 }
-class TasmSymbol {
+
+class AsmSymbol {
     type: KeywordType;
     name: string;
     RangeorPosition: vscode.Range | vscode.Position;
@@ -197,14 +196,14 @@ export class Asmline {
             this.operand = r[3].trim();
         }
     }
-    public toTasmSymbol(): TasmSymbol | undefined {
-        let one: TasmSymbol | undefined = undefined;
+    public toTasmSymbol(): AsmSymbol | undefined {
+        let one: AsmSymbol | undefined = undefined;
         if (this.name) {
             if (this.type === linetype.label) {
-                one = new TasmSymbol(KeywordType.Label, this.name, new vscode.Position(this.line, this.index));
+                one = new AsmSymbol(KeywordType.Label, this.name, new vscode.Position(this.line, this.index));
             }
             else if (this.type === linetype.variable) {
-                one = new TasmSymbol(KeywordType.Variable, this.name, new vscode.Position(this.line, this.index));
+                one = new AsmSymbol(KeywordType.Variable, this.name, new vscode.Position(this.line, this.index));
             }
         }
         return one;
@@ -251,10 +250,11 @@ function doc2lines(document: vscode.TextDocument): Asmline[] {
 
 interface SYMBOLINFO {
     tree: vscode.DocumentSymbol[];
-    flat: TasmSymbol[];
+    flat: AsmSymbol[];
 }
+
 function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
-    const VSCsymbols: vscode.DocumentSymbol[] = [], symbols: TasmSymbol[] = [];
+    const VSCsymbols: vscode.DocumentSymbol[] = [], symbols: AsmSymbol[] = [];
     let i: number;
     //find the information of macro,segemnts and procedure
     asmlines.forEach(
@@ -277,7 +277,7 @@ function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
                 //finded the end of macro
                 if (line.name && lineEndmacro?.line) {
                     const macrorange = new vscode.Range(line.line, line.index, lineEndmacro?.line, lineEndmacro?.index);
-                    symbols.push(new TasmSymbol(KeywordType.Macro, line.name, macrorange));
+                    symbols.push(new AsmSymbol(KeywordType.Macro, line.name, macrorange));
                     const symbol1 = new vscode.DocumentSymbol(line.name, getType(KeywordType.Macro), SymbolVSCfy(KeywordType.Macro), macrorange, new vscode.Range(line.line, line.index, line.line, line.index + line.name.length));
                     VSCsymbols.push(symbol1);
                 }
@@ -299,7 +299,7 @@ function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
                             const range: vscode.Range = new vscode.Range(proc?.line, proc?.index, array[i].line, array[i].index + _name.length);
                             const srange: vscode.Range = new vscode.Range(proc.line, proc.index, proc?.line, proc?.index + proc?.name?.length);
                             procschild.push(new vscode.DocumentSymbol(proc?.name, getType(KeywordType.Procedure), SymbolVSCfy(KeywordType.Procedure), range, srange));
-                            symbols.push(new TasmSymbol(KeywordType.Procedure, _name, range));
+                            symbols.push(new AsmSymbol(KeywordType.Procedure, _name, range));
                         }
                     }
                     //finding the end of segment
@@ -316,7 +316,7 @@ function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
                 //finded the end of segment
                 if (line.name && lineEndSegment?.line) {
                     const range = new vscode.Range(line.line, line.index, lineEndSegment?.line, lineEndSegment?.index);
-                    symbols.push(new TasmSymbol(KeywordType.Segment, line.name, range));
+                    symbols.push(new AsmSymbol(KeywordType.Segment, line.name, range));
                     const symbol1 = new vscode.DocumentSymbol(line.name, getType(KeywordType.Segment), SymbolVSCfy(KeywordType.Segment), range, new vscode.Range(line.line, line.line, line.line, line.line + line.name.length));
                     symbol1.children = procschild;
                     VSCsymbols.push(symbol1);
