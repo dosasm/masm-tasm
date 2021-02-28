@@ -19,6 +19,7 @@ src/**
 # doc pic license samples
 doc/
 */**.md
+!resources/hoverinfo.md
 pics/
 LICENSE
 samples/

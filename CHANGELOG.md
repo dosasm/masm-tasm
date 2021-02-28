@@ -4,7 +4,7 @@
 
 ## 0.8.4
 
-- 悬浮提示信息：增加从[felixcloutier(https://www.felixcloutier.com/x86/)、[msvc](https://docs.microsoft.com/cpp/assembler/masm/）中加载信息
+- 增加悬浮提示信息来源：从[felixcloutier](https://www.felixcloutier.com/x86/)和[msvc](https://docs.microsoft.com/cpp/assembler/masm/)加载悬浮提示信息
 - 增加一个简单的状态条
 
 ## 0.8.0
