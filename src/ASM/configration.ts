@@ -59,8 +59,8 @@ const allowedEMU = (): DOSEMU[] => {
     return emu;
 };
 
-/**### the string replacer 
- * 
+/**### the string replacer
+ *
  * |string|replace to|
  * |------|----------|
  * |`${filename}`|the filename of the source code file like `hello`|
@@ -113,8 +113,8 @@ export class Config {
     }
     //Uris and tools information
     public Uris: TOOLURIS;
-    public get Separate(): boolean { return this._target.get('ASM.separateSpace') as boolean; }
-    public get Clean(): boolean { return this._target.get('ASM.clean') as boolean; }
+    public get Separate(): boolean { return this._target.get('separateSpace') as boolean; }
+    public get Clean(): boolean { return this._target.get('clean') as boolean; }
     private readonly _exturi: Uri;
     private _statusBar = window.createStatusBarItem();
     constructor(ctx: ExtensionContext) {
