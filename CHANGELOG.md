@@ -2,6 +2,10 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
+## 0.8.5
+
+- 修复文件有时无法正确获取的问题
+
 ## 0.8.4
 
 - 增加悬浮提示信息来源：从[felixcloutier](https://www.felixcloutier.com/x86/)和[msvc](https://docs.microsoft.com/cpp/assembler/masm/)加载悬浮提示信息
