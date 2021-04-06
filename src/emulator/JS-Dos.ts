@@ -85,8 +85,8 @@ export class JSDos implements EMURUN {
                 const file = Uri.joinPath(folder, e[0]);
                 //TODO: find out files are binary file or text
                 if (['.asm', '.ASM', '.inc', '.INC'].some(val => e[0].includes(val))) {
-                    const doc = await vscode.workspace.openTextDocument(file);
-                    const body = doc.getText().split('\n').map(val => val.replace(/^\s*;.*/, "")).join('\n');
+                    const doc = await fs.readFile(file);
+                    const body = doc.toString().split('\n').map(val => val.replace(/^\s*;.*/, "")).join('\n');
                     this._launch.writes.push({ path: `/code/${e[0]}`, body });
                 }
                 else {
@@ -153,6 +153,7 @@ export class JSDos implements EMURUN {
             this._launch.shellcmds.push(...cmds);
 
             await JsdosPanel.currentPanel.launchJsdos(this._launch);
+            console.log(this._launch.writes);
             const msg = await JsdosPanel.currentPanel.getStdout();
             //console.log(this._launch);
 
