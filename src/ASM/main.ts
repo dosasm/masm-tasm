@@ -29,16 +29,23 @@ export function AsmCommands(context: vscode.ExtensionContext): void {
             if (process.platform === 'win32') {
                 emu.push(DOSEMU.msdos, DOSEMU.auto);
             }
-            let placeHolder = 'choose DOS environment emulator';
-            const emuSelected = await vscode.window.showQuickPick(emu, { placeHolder });
             const asm = [ASMTYPE.MASM, ASMTYPE.TASM];
-            placeHolder = 'choose MASM or TASM to use';
-            const asmSelected = await vscode.window.showQuickPick(asm, { placeHolder });
-            placeHolder = 'choose where to store the setting';
-            const target = await vscode.window.showQuickPick(['Global', 'Workspace', 'WorkspaceFolder'], { placeHolder });
 
-            await conf.update('emulator', emuSelected, target as unknown as vscode.ConfigurationTarget);
-            await conf.update('MASMorTASM', asmSelected, target as unknown as vscode.ConfigurationTarget);
+            const iterms = [];
+            for (const e of emu) {
+                for (const a of asm) {
+                    iterms.push(e + ' ' + a);
+                }
+            }
+
+            const placeHolder = 'choose DOS environment emulator and assembler';
+            const Selected = await vscode.window.showQuickPick(iterms, { placeHolder });
+            if (Selected) {
+                const [emu1, asm1] = Selected?.split(' ');
+                const target = vscode.ConfigurationTarget.Workspace;
+                await conf.update('emulator', emu1, target);
+                await conf.update('MASMorTASM', asm1, target);
+            }
         }
         )
     ];
