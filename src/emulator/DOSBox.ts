@@ -1,6 +1,6 @@
 import { TextEncoder } from "util";
 import { FileType, Uri, workspace, WorkspaceConfiguration, window } from 'vscode';
-import * as nls from 'vscode-nls';
+import { localize } from '../i18n';
 import { ASMTYPE, Config, SRCFILE, settingsStrReplacer } from '../ASM/configration';
 import { Logger } from '../ASM/outputChannel';
 import { ASMPREPARATION, ASSEMBLERMSG, EMURUN, MSGProcessor } from "../ASM/runcode";
@@ -21,9 +21,6 @@ const LINK_LOG_FILE = 'LINK.LOG';
 const DELAY = (timeout: number): Promise<void> => new Promise((resolve) => {
     setTimeout(resolve, timeout);
 });
-
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 /**interface for configurations from vscode settings */
 interface DosboxAction {

@@ -1,5 +1,5 @@
 import { Disposable, ExtensionContext, Uri, window, workspace } from 'vscode';
-import * as nls from 'vscode-nls';
+import { localize } from '../i18n';
 import { ASMTYPE, Config, DOSEMU, SRCFILE } from './configration';
 import { AssemblerDiag, DIAGCODE, DIAGINFO } from './diagnose/diagnose';
 import { AutoMode } from '../emulator/auto-mode';
@@ -7,9 +7,6 @@ import { DOSBox } from '../emulator/DOSBox';
 import { JSDos } from '../emulator/JS-Dos';
 import { MsdosPlayer } from '../emulator/msdos-player';
 import { Logger } from './outputChannel';
-
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 /**the commands of action*/
 export enum ASMCMD {
@@ -163,7 +160,7 @@ export class AsmAction implements Disposable {
                     if (diag?.code !== undefined) { output.diagCode = diag?.code; }
                     if (diag) {
                         Logger.send({
-                            title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn),
+                            title: localize("diag.msg", "[assembler's message] {0} Error,{1}  Warning collected", diag.error.toString(), diag.warn.toString()),
                             content: msg
                         });
                     }

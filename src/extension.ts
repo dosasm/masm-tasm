@@ -1,11 +1,8 @@
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
+import { localize } from './i18n';
 
 import { provider } from './language/provider';
 import { AsmCommands } from './ASM/main';
-
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
 	console.log(localize("activate.hello", 'Congratulations, your extension "masm-tasm" is now active!'));
