@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import { Config } from '../ASM/configration';
+import { localize } from '../i18n';
 import { JSdosVSCodeConfig } from './JS-Dos';
 
 export interface LaunchOption {
@@ -37,17 +39,14 @@ export class JsdosPanel {
      */
     public static currentPanel: JsdosPanel | undefined;
 
-    public static readonly viewType = 'Jsdos wdosbox';
+    public static readonly viewType = 'Jsdos 7.x wdosbox';
 
-
-    public static wDOSBoxpath?: string;
-
-    public static createOrShow(jsdosUri: vscode.Uri, resources: vscode.Uri): void {
+    public static createOrShow(conf: Config): void {
 
         // If we already have a panel, show it.
         if (JsdosPanel.currentPanel) {
-            JsdosPanel.currentPanel._panel.reveal();
-            return;
+            JsdosPanel.currentPanel.dispose();
+            vscode.window.showWarningMessage(localize('jsdos.panel.forceUpdate', 'your former jsdos pannel has been disposed'));
         }
 
         // Otherwise, create a new panel.
@@ -63,15 +62,20 @@ export class JsdosPanel {
                 enableScripts: true,
 
                 // And restrict the webview to only loading content from our extension's `media` directory.
-                localResourceRoots: [jsdosUri, resources]
+                localResourceRoots: [
+                    conf.asAbsoluteUri('node_modules/emulators/dist'),
+                    conf.asAbsoluteUri('node_modules/emulators-ui/dist'),
+                    conf.asAbsoluteUri('web/dist'),
+                    conf.asAbsoluteUri('web/res/')
+                ]
             }
         );
 
-        JsdosPanel.currentPanel = new JsdosPanel(panel, jsdosUri);
+        JsdosPanel.currentPanel = new JsdosPanel(panel, conf);
     }
 
-    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri): void {
-        JsdosPanel.currentPanel = new JsdosPanel(panel, extensionUri);
+    public static revive(panel: vscode.WebviewPanel, conf: Config): void {
+        JsdosPanel.currentPanel = new JsdosPanel(panel, conf);
     }
 
     private readonly _panel: vscode.WebviewPanel;
@@ -80,17 +84,9 @@ export class JsdosPanel {
     public jsdosStatus: JSDosSTATUS | boolean = false;
     /**record all message from this pannel */
     public allWdosboxStdout: string[] = [];
-    public get wDosboxStdout(): string {
-        return this.allWdosboxStdout.join('');
-    }
-    /**listener called when has wdosbox shell stdout received after update WdosboxStdout */
-    public ListenWdosboxStdout: ((val: string) => void) | undefined = undefined;
-    public jsdosReady: (() => void) | undefined = undefined;
+    public onWdosboxStdout: ((val: string, all: string[]) => void) = () => undefined;
 
-    /**called when JSDos is ready */
-    public wDOSBoxReady: (() => void) | undefined = undefined;
-
-    private constructor(panel: vscode.WebviewPanel, private readonly jsdosFolder: vscode.Uri) {
+    private constructor(panel: vscode.WebviewPanel, private conf: Config) {
         this._panel = panel;
 
         // Set the webview's initial html content
@@ -115,114 +111,15 @@ export class JsdosPanel {
         this._panel.webview.onDidReceiveMessage(
             message => {
                 switch (message.command) {
-                    case 'stdoutData':
-                        this.allWdosboxStdout.push(message.text);
-                        if (this.ListenWdosboxStdout !== undefined) {
-                            this.ListenWdosboxStdout(message.text);
-                        }
-                        break;
-                    case 'jsdosStatus':
-                        this.jsdosStatus = message.text as JSDosSTATUS;
-                        switch (this.jsdosStatus) {
-
-                            case JSDosSTATUS.preparing:
-                            case JSDosSTATUS.fs:
-                            case JSDosSTATUS.main:
-                                this.allWdosboxStdout = [];
-                                break;
-                            case JSDosSTATUS.running:
-                                if (this.wDOSBoxReady !== undefined) {
-                                    this.wDOSBoxReady();
-                                }
-                                break;
-                            case JSDosSTATUS.exit:
-                                JsdosPanel.currentPanel?.dispose();
-                                break;
-                        }
-                        break;
-                    case 'listenning Commands':
-                        this.jsdosStatus = true;
-                        this._panel.webview.postMessage({
-                            command: 'message received',
-                            text: 'listenning Commands'
-                        });
-                        if (this.jsdosReady) { this.jsdosReady(); }
+                    case 'stdout':
+                        this.allWdosboxStdout.push(message.value);
+                        this.onWdosboxStdout(message.value, this.allWdosboxStdout);
                         break;
                 }
             },
             null,
             this._disposables
         );
-    }
-
-    /**get the stdout of assembly assembler */
-    public getStdout(): Promise<string> {
-        const getMessage = (str: string): string | undefined => {
-            const re = str.match(/C:\\CODE>([\s\S]*Assembling[\s\S]*?)C:\\CODE>/);
-            if (re && re[1]) {
-                return re[1];
-            }
-            return;
-        };
-        return new Promise(
-            resolve => {
-                this.ListenWdosboxStdout = (): void => {
-                    const msg = getMessage(this.wDosboxStdout);
-                    if (msg !== undefined) {
-                        resolve(msg);
-                        this.ListenWdosboxStdout = undefined;
-                    }
-                };
-            }
-        );
-    }
-
-    /**launch the jsdos in webview */
-    public launchJsdos(opt: LaunchOption): Promise<string> {
-        const webview = this._panel.webview;
-
-        const wdosboxOnDisk = vscode.Uri.joinPath(this.jsdosFolder, './out/wdosbox.js');
-        const wdosboxUrl = opt.wdosboxUrl !== undefined ? opt.wdosboxUrl.toString() : webview.asWebviewUri(wdosboxOnDisk).toString();
-
-        const extracts = opt.extracts.map(
-            val => [val[0].scheme === 'file' ? webview.asWebviewUri(val[0]).toString() : val[0].toString(), val[1]]
-        );
-
-        const command = 'launch wDOSBox';
-        const text = {
-            extracts, wdosboxUrl,
-            cycles: opt.cycles,
-            autolock: opt.autolock,
-            writes: opt.writes,
-            options: opt.options,
-            shellcmds: opt.shellcmds
-        };
-        return new Promise(
-            resolve => {
-                if (this.jsdosStatus === false) {
-                    this.jsdosReady = (): void => {
-                        this._panel.webview.postMessage({ command, text });
-                        this.jsdosReady = undefined;
-                        resolve('waited');
-                    };
-                } else {
-                    this._panel.webview.postMessage({ command, text });
-                    resolve('at once');
-                }
-            }
-        );
-    }
-
-    public sendCmd(cmds: string[]): boolean {
-        if (this.jsdosStatus !== JSDosSTATUS.exit) {
-            const msg = {
-                command: 'wDosbox shell Command',
-                commands: cmds
-            };
-            this._panel.webview.postMessage(msg);
-            return true;
-        }
-        return false;
     }
 
     public dispose(): void {
@@ -245,32 +142,49 @@ export class JsdosPanel {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
-        // Local path to main script run in the webview
-        const jsdosOnDisk = vscode.Uri.joinPath(this.jsdosFolder, './out/js-dos.js');
-        const ExtJsdosOnDisk = vscode.Uri.joinPath(this.jsdosFolder, './out/main.js');
-
-        // And the uri we use to load this script in the webview
-        const jsdosUri = webview.asWebviewUri(jsdosOnDisk);
-        const ExtJsdosUri = webview.asWebviewUri(ExtJsdosOnDisk);
-
-        // Local path to css styles
-        const stylePath = vscode.Uri.joinPath(this.jsdosFolder, './resources/extJs-dos.css');
-
-        // Uri to load styles into webview
-        const stylesUri = webview.asWebviewUri(stylePath);
-
+        const asWeb = (str: string): vscode.Uri => {
+            const fullpath = this.conf.asAbsoluteUri(str);
+            return webview.asWebviewUri(fullpath);
+        };
         return `<!doctype html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="utf-8">
-  <title>js-dos 6.22, ASM</title>
-  <link href="${stylesUri}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+        html,
+        body,
+        #jsdos {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="${asWeb("/node_modules/emulators/dist/emulators.js")}"></script>
+    <script src="${asWeb("/node_modules/emulators-ui/dist/emulators-ui.js")}"></script>
+    <link rel="stylesheet" href="${asWeb("/node_modules/emulators-ui/dist/emulators-ui.css")}">
 </head>
+
 <body>
-  <canvas id="jsdos"></canvas>
-  <script src="${jsdosUri}"></script>
-  <script src="${ExtJsdosUri}"></script>
-</body>`;
+    <div class="layout">
+        <div class="controls">
+            <Button onclick="javascript:start()">Start</Button>
+            <Button onclick="javascript:stop()">Stop</Button>
+            <Select id="impl-select">
+                <option value="dos-worker" selected>dos worker</option>
+                <option value="dos-direct">dos direct</option>
+            </Select>
+        </div>
+        <div id="root" style="width: 100%; height: 100%;"></div>
+    </div>
+    <script>
+        emulators.pathPrefix = "${asWeb("/node_modules/emulators/dist/")}";
+        bundlePath="${asWeb("web/res/test.jsdos")}"
+    </script>
+    <script src='${asWeb("web/dist/index.js")}'></script>
+</body>
+
+</html>`;
     }
 }

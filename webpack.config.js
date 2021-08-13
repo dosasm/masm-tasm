@@ -25,7 +25,8 @@ const config = {
     },
     devtool: 'source-map',
     externals: {
-        vscode: "commonjs vscode" // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+        vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+        emulators: "commonjs emulators",
     },
     resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
         extensions: ['.ts', '.js']
@@ -54,14 +55,7 @@ const config = {
     }
 };
 
-if (process.argv.includes('--vscode-nls')) {
-    // rewrite nls call when being asked for
-    config.module.rules.unshift({
-        loader: 'vscode-nls-dev/lib/webpack-loader',
-        options: {
-            base: __dirname
-        }
-    });
-}
-
-module.exports = config;
+module.exports = [
+    config,
+    require('./web/webpack.config')
+]

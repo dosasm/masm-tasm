@@ -85,8 +85,6 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE
 
 			//assert message processed
 			const result = (await vscode.commands.executeCommand(cmd) as RUNCODEINFO);
-			const asmMessage = JSON.stringify(result.message);
-			assert.ok(asmMessage.includes('Assembling'), asmMessage);
 			assert.strictEqual(DIAGCODE[result.diagCode], DIAGCODE[diagcode], JSON.stringify(result, null, 4));
 		});
 }

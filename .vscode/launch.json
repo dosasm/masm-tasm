@@ -16,7 +16,7 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: compile-dev"
+			"preLaunchTask": "npm: compile"
 		},
 		{
 			"name": "Run Extension(no pretask)",
@@ -29,19 +29,6 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-		},
-		{
-			"name": "Run Extension(tsc)",
-			"type": "extensionHost",
-			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
-			],
-			"outFiles": [
-				"${workspaceFolder}/dist/**/*.js"
-			],
-			"preLaunchTask": "npm: compile-tsc"
 		},
 		{
 			"name": "Extension Tests",
@@ -57,7 +44,7 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: compile-tsc",
+			"preLaunchTask": "npm: watch-test",
 		}
 	]
 }

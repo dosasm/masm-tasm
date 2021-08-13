@@ -3,13 +3,11 @@
 # ignore test
 .vscode-test/**
 # ignore i18n
-i18n
 README.*.md
 #ignore dev files
 src/**
 **/*.map
 **/*.ts
-**/node_modules
 **/.gitignore
 **/azure-pipelines.yml
 **/tsconfig.json
@@ -29,6 +27,3 @@ tools/**.log
 #dosbox
 tools/dosbox/dosbox-0.74.conf
 tools/dosbox/std*.txt
-#jsdos
-tools/js-dos/*.*
-tools/js-dos/resources/*.zip

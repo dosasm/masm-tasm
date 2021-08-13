@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+        html,
+        body,
+        #jsdos {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="/node_modules/emulators/dist/emulators.js"></script>
+    <script src="/node_modules/emulators-ui/dist/emulators-ui.js"></script>
+    <link rel="stylesheet" href="/node_modules/emulators-ui/dist/emulators-ui.css">
+</head>
+
+<body>
+    <div class="layout">
+        <div class="controls">
+            <Select id="impl-select">
+                <option value="dos-worker" selected>dos worker</option>
+                <option value="dos-direct">dos direct</option>
+            </Select>
+        </div>
+        <div id="root" style="width: 100%; height: 100%;"></div>
+    </div>
+    <script>
+        emulators.pathPrefix = "/node_modules/emulators/dist/";
+        bundlePath = "./res/empty.jsdos"
+    </script>
+    <script src='./dist/index.js'></script>
+</body>
+
+</html>

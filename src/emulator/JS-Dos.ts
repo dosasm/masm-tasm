@@ -2,10 +2,8 @@ import * as vscode from 'vscode';
 import { Uri, window } from 'vscode';
 import { ASMTYPE, Config, settingsStrReplacer, SRCFILE } from '../ASM/configration';
 import { ASMCMD, ASMPREPARATION, EMURUN, MSGProcessor } from '../ASM/runcode';
-import { compressAsmTools, compressDir } from './js-dos_zip';
-import { JsdosPanel, LaunchOption } from './js-dos_Panel';
-
-const fs = vscode.workspace.fs;
+import { JsdosPanel } from './js-dos_Panel';
+import { createBundle } from './bundle';
 
 interface JsdosAsmConfig {
     "open": string[]; "masm": string[]; "tasm": string[];
@@ -17,10 +15,14 @@ export class JSdosVSCodeConfig {
         return vscode.workspace.getConfiguration('masmtasm.jsdos');
     };
     public static get viewColumn(): vscode.ViewColumn {
-        return JSdosVSCodeConfig._target.get("viewColumn") as vscode.ViewColumn;
-    }
-    public get wdosbox(): string {
-        return JSdosVSCodeConfig._target.get("wdosbox") as string;
+        switch (JSdosVSCodeConfig._target.get("viewColumn")) {
+            case 'Beside':
+                return vscode.ViewColumn.Beside;
+            case 'Active':
+                return vscode.ViewColumn.Active;
+
+        }
+        return vscode.ViewColumn.Beside;
     }
     getAction(scope: keyof JsdosAsmConfig): string[] {
         const id = 'masmtasm.jsdos.more';
@@ -63,105 +65,82 @@ export class JSdosVSCodeConfig {
 }
 
 export class JSDos implements EMURUN {
-    private jsdosFolder: Uri;
     private _conf: Config;
     private _VscConf: JSdosVSCodeConfig;
-    private _wsrc?: SRCFILE;
-    private _launch: LaunchOption = { extracts: [], writes: [], options: [], shellcmds: [] };
-    private _resourcesUri: Uri;
     forceCopy?: boolean;
 
     constructor(conf: Config) {
         this._conf = conf;
         this._VscConf = new JSdosVSCodeConfig();
-        this.jsdosFolder = conf.Uris.jsdos;
-        this._resourcesUri = Uri.joinPath(conf.Uris.globalStorage, 'jsdos');
     }
 
-    private async copyDir(folder: Uri): Promise<void> {
-        const entries = await fs.readDirectory(folder);
-        for (const e of entries) {
-            if (e[1] === vscode.FileType.File) {
-                const file = Uri.joinPath(folder, e[0]);
-                //TODO: find out files are binary file or text
-                if (['.asm', '.ASM', '.inc', '.INC'].some(val => e[0].includes(val))) {
-                    const doc = await fs.readFile(file);
-                    const body = doc.toString().split('\n').map(val => val.replace(/^\s*;.*/, "")).join('\n');
-                    this._launch.writes.push({ path: `/code/${e[0]}`, body });
+    private async genBundle(folder: Uri, autoexec: string[]): Promise<void> {
+        autoexec.unshift(
+            'mount y ./',
+            'y:',
+            'mount c ./asm',
+            'mount d ./codes',
+            'set path=c:\;%PATH%',
+            "d:"
+        );
+        await createBundle(this._conf.asAbsolutePath('web/res/test.jsdos'),
+            '[AUTOEXEC]\r\n' + autoexec.join('\r\n'),
+            [
+                {
+                    from: folder.fsPath,
+                    to: 'codes'
+                },
+                {
+                    from: this._conf.asAbsolutePath('tools/' + this._conf.MASMorTASM.toLowerCase()),
+                    to: "asm"
                 }
-                else {
-                    const body = await fs.readFile(file);
-                    this._launch.writes.push({ path: `/code/${e[0]}`, body });
-                }
-            }
-            else if (e[1] === vscode.FileType.Directory && e[0].match(/[\w\.]+/)) {
-                const dstFile = Uri.joinPath(this._resourcesUri, `/codes/${e[0]}.zip`);
-                const srcFolder = Uri.joinPath(folder, e[0]);
-                compressDir(srcFolder, dstFile);
-                this._launch.extracts.push([dstFile, `/code/${e[0]}`]);
-            }
-        }
+            ]);
         return;
     }
 
     async prepare(opt: ASMPREPARATION): Promise<boolean> {
         this.forceCopy = !opt.src.dosboxFsReadable && opt.act !== ASMCMD.OpenEmu;
-        await fs.createDirectory(this._resourcesUri);
-        await fs.createDirectory(Uri.joinPath(this._resourcesUri, 'codes'));
-        JsdosPanel.createOrShow(this.jsdosFolder, this._resourcesUri);
-        if (this._VscConf.wdosbox) {
-            let uri: Uri;
-            if (this._VscConf.wdosbox.includes('https')) {
-                uri = Uri.parse(this._VscConf.wdosbox.trim());
-            } else {
-                uri = Uri.joinPath(Uri.parse('https://js-dos.com/6.22/current/'), this._VscConf.wdosbox.trim());
-            }
-            this._launch.wdosboxUrl = uri;
-        }
-
-        if (opt) {
-            this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, this._wsrc);
-        }
-
-        this._launch.shellcmds.push(...this._VscConf.getAction('open'));
-        await compressAsmTools(this._conf.Uris.tools, this._resourcesUri);
-        this._launch.extracts.push(
-            [Uri.joinPath(this._resourcesUri, 'tasm.zip'), '/ASM/TASM'],
-            [Uri.joinPath(this._resourcesUri, 'masm.zip'), '/ASM/MASM']
-        );
         return true;
     }
+
     async openEmu(folder: vscode.Uri): Promise<void> {
-        if (JsdosPanel.currentPanel) {
-            await this.copyDir(folder);
-            await JsdosPanel.currentPanel.launchJsdos(this._launch);
-        }
+        await this.genBundle(folder, []);
+        JsdosPanel.createOrShow(this._conf);
     }
+
     Run(src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown> {
         return this.runDebug(true, src, msgprocessor);
     }
     Debug(src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown> {
         return this.runDebug(false, src, msgprocessor);
     }
-    public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor): Promise<unknown> {
-        if (JsdosPanel.currentPanel) {
-            const v = Uri.joinPath(Uri.file('/code/'), `${src.filename}.${src.extname}`);
-            this._wsrc = new SRCFILE(v);
-            await this.copyDir(src.folder);
-
-            const cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
-            this._launch.shellcmds.push(...cmds);
-
-            await JsdosPanel.currentPanel.launchJsdos(this._launch);
-            console.log(this._launch.writes);
-            const msg = await JsdosPanel.currentPanel.getStdout();
-            //console.log(this._launch);
-
-            await msgprocessor(msg, { preventWarn: true });
-            return [this._launch.writes.map(val => val.path), JsdosPanel.currentPanel?.allWdosboxStdout, this._wsrc];
-        }
-        throw new Error(`no currentPanel`);//[ ,JsdosPanel.currentPanel?.jsdosStatus, JsdosPanel.currentPanel?.allWdosboxStdout, this._wsrc];
+    public async runDebug(runOrDebug: boolean, src: SRCFILE, msgprocessor: MSGProcessor): Promise<string> {
+        const v = Uri.joinPath(Uri.file('/codes/'), `${src.filename}.${src.extname}`);
+        const wsrc = new SRCFILE(v);
+        this._VscConf.replacer = (val: string): string => settingsStrReplacer(val, this._conf, wsrc);
+        const cmds = this._VscConf.AsmLinkRunDebugCmd(runOrDebug, this._conf.MASMorTASM);
+        await this.genBundle(src.folder, cmds);
+        JsdosPanel.createOrShow(this._conf);
+        const p = new Promise<string>(
+            (resolve, reject) => {
+                if (JsdosPanel.currentPanel?.onWdosboxStdout) {
+                    JsdosPanel.currentPanel.onWdosboxStdout =
+                        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+                        (_, all) => {
+                            const re = all.join('').match(/D:([\s\S]*Assembling[\s\S]*?)D:/);
+                            if (re && re[1]) {
+                                resolve(re[1]);
+                                if (JsdosPanel.currentPanel?.onWdosboxStdout) {
+                                    JsdosPanel.currentPanel.onWdosboxStdout = (): undefined => undefined;
+                                }
+                            }
+                        };
+                }
+                setTimeout(reject, 10000);
+            }
+        );
+        const msg = await p;
+        await msgprocessor(msg);
+        return msg;
     }
 }
-
-

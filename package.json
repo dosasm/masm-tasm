@@ -219,20 +219,16 @@
         },
         "masmtasm.jsdos.viewColumn": {
           "markdownDescription": "%config.jsdos.viewColumn%",
-          "type": "number",
-          "default": -1,
+          "type": "string",
+          "default": "beside",
           "enum": [
-            -1,
-            -2
+            "besides",
+            "active"
           ],
           "enumDescriptions": [
             "%config.jsdos.viewColumn.Active%",
             "%config.jsdos.viewColumn.Besides%"
           ]
-        },
-        "masmtasm.jsdos.wdosbox": {
-          "markdownDescription": "The extension packaged the wdosbox.js as default variant. We can use different variant but make sure console programs/shell is usable. See [js-dos-622-faq-changing-dosbox-variant](https://js-dos.com/#js-dos-622-faq-changing-dosbox-variant)",
-          "type": "string"
         },
         "masmtasm.dosbox.more": {
           "markdownDescription": "%config.dosbox.more%",
@@ -430,22 +426,19 @@
     ]
   },
   "scripts": {
-    "clean": "rimraf dist/",
-    "jsdos": "cd tools/js-dos && npm run build && cd ../..",
-    "compile": "gulp && webpack --mode production --vscode-nls && npm run jsdos",
-    "compile-dev": "gulp && webpack --mode development --vscode-nls && npm run jsdos",
-    "compile-tsc": "tsc -p src/",
-    "watch": "tsc -watch -p ./src",
+    "clean": "rimraf dist/ web/dist",
+    "compile": "webpack --mode production --vscode-nls",
+    "watch": "webpack --mode development --watch",
+    "watch-test": "tsc -watch -p ./src",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
-    "pretest": "npm run compile-tsc && npm run jsdos",
+    "pretest": "tsc -p ./src",
     "test": "node ./dist/test/runTest.js",
-    "vscode:prepublish": "gulp clean && npm run compile",
+    "vscode:prepublish": "npm run clean && npm run compile",
     "publish": "vsce publish  --baseContentUrl https://github.com/xsro/masm-tasm/blob/main/ --baseImagesUrl https://github.com/xsro/masm-tasm/raw/main/ ",
-    "package": "gulp package"
+    "package": "vsce package"
   },
   "devDependencies": {
-    "@types/archiver": "^5.1.0",
     "@types/glob": "^7.1.3",
     "@types/js-yaml": "^4.0.0",
     "@types/mocha": "^7.0.2",
@@ -453,21 +446,16 @@
     "@types/vscode": "^1.49.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
-    "archiver": "^5.2.0",
     "del": "^4.1.1",
     "eslint": "^6.8.0",
     "glob": "^7.1.6",
-    "gulp": "^4.0.2",
-    "gulp-filter": "^5.1.0",
-    "gulp-sourcemaps": "^2.6.5",
-    "gulp-typescript": "^5.0.1",
     "js-yaml": "^4.0.0",
+    "jszip": "^3.7.1",
     "mocha": "^7.2.0",
     "rimraf": "^3.0.2",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.7",
     "vsce": "^1.83.0",
-    "vscode-nls-dev": "^3.2.6",
     "vscode-test": "^1.4.1",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
@@ -480,5 +468,9 @@
     "url": "https://github.com/xsro/masm-tasm/issues",
     "email": "xsro@foxmail.com"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "emulators": "^0.67.0",
+    "emulators-ui": "^0.68.0"
+  }
 }

@@ -46,7 +46,7 @@ export enum DOSEMU {
 
 const packagedTools = "./tools";
 const fs = workspace.fs;
-const delExtList = [".exe", ".obj", ".com"];
+const delExtList = [".EXE", ".OBJ", ".COM"];
 const DST_FILE_NAME = 'T';
 const allowedEMU = (): DOSEMU[] => {
     const emu = [DOSEMU.dosbox, DOSEMU.jsdos];
@@ -114,6 +114,10 @@ export class Config {
     public get Clean(): boolean { return this._target.get('clean') as boolean; }
     private readonly _exturi: Uri;
     private _statusBar = window.createStatusBarItem();
+    public asAbsolutePath: (relativePath: string) => string;
+    public asAbsoluteUri(path: string): Uri {
+        return Uri.joinPath(this._exturi, path);
+    }
     constructor(ctx: ExtensionContext) {
         workspace.onDidChangeConfiguration((e) => {
             if (e.affectsConfiguration('masmtasm.ASM')) {
@@ -136,7 +140,9 @@ export class Config {
         };
         fs.createDirectory(this.Uris.workspace);//make sure the workspace uri exists
         this.printToChannel();
+        this.asAbsolutePath = ctx.asAbsolutePath;
     }
+
     private update(): void {
         this._target = workspace.getConfiguration('masmtasm.ASM');
         this._statusBar.text = `${this.DOSemu} ${this.MASMorTASM}`;

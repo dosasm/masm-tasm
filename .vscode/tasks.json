@@ -5,48 +5,28 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "compile",
-			"problemMatcher": [
-				"$tsc",
-				"$gulp-tsc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"label": "npm: compile",
-			"detail": "gulp && webpack --mode production --vscode-nls && npm run jsdos",
-		},
-		{
-			"type": "npm",
-			"script": "compile-dev",
-			"group": "build",
-			"problemMatcher": [
-				"$tsc",
-				"$gulp-tsc"
-			],
-			"label": "npm: compile-dev",
-			"detail": "gulp && webpack --mode development --vscode-nls && npm run jsdos",
-		},
-		{
-			"type": "npm",
-			"script": "compile-tsc",
-			"problemMatcher": [
-				"$tsc"
-			],
-			"label": "npm: compile-tsc",
-			"detail": "tsc -p src/",
-		},
-		{
-			"type": "npm",
 			"script": "watch",
+			"problemMatcher": "$ts-webpack-watch",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"label": "npm: watch"
+		},
+		{
+			"type": "npm",
+			"script": "compile",
+			"label": "npm: compile"
+		},
+		{
+			"type": "npm",
+			"script": "watch-test",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never"
 			},
-			"label": "npm: watch",
-			"detail": "tsc -watch -p src/"
+			"label": "npm: watch-test"
 		},
 		{
 			"type": "npm",
@@ -56,12 +36,6 @@
 			],
 			"label": "npm: lint",
 			"detail": "eslint src --ext ts"
-		},
-		{
-			"type": "gulp",
-			"task": "clean",
-			"problemMatcher": [],
-			"label": "gulp: clean"
 		}
 	]
 }
