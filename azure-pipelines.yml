@@ -30,7 +30,7 @@ steps:
 
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '14.x'
   displayName: 'Install Node.js'
 
 - bash: |
@@ -41,12 +41,12 @@ steps:
 
 - bash: |
     echo ">>> install npm packages"
-    npm i && cd tools/js-dos && npm i && cd ../.. 
+    yarn
     echo ">>> installed npm packages"
     echo ">>> run eslint"
-    npm run lint
+    yarn lint
     echo ">>> Run sample integration test"
-    npm run test
+    yarn test
   displayName: Run Tests
   env:
     DISPLAY: ':99.0'

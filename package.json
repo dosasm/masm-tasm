@@ -427,14 +427,14 @@
   },
   "scripts": {
     "clean": "rimraf dist/ web/dist",
-    "compile": "webpack --mode production --vscode-nls",
+    "compile": "webpack --mode production",
     "watch": "webpack --mode development --watch",
     "watch-test": "tsc -watch -p ./src",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
-    "pretest": "tsc -p ./src",
+    "pretest": "yarn compile && tsc -p ./src",
     "test": "node ./dist/test/runTest.js",
-    "vscode:prepublish": "npm run clean && npm run compile",
+    "vscode:prepublish": "yarn clean && yarn compile",
     "publish": "vsce publish  --baseContentUrl https://github.com/xsro/masm-tasm/blob/main/ --baseImagesUrl https://github.com/xsro/masm-tasm/raw/main/ ",
     "package": "vsce package"
   },
