@@ -13,7 +13,7 @@ interface JsdosAsmConfig {
 export class JSdosVSCodeConfig {
     private static get _target(): vscode.WorkspaceConfiguration {
         return vscode.workspace.getConfiguration('masmtasm.jsdos');
-    };
+    }
     public static get viewColumn(): vscode.ViewColumn {
         switch (JSdosVSCodeConfig._target.get("viewColumn")) {
             case 'Beside':
