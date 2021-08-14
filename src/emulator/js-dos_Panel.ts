@@ -168,14 +168,6 @@ export class JsdosPanel {
 
 <body>
     <div class="layout">
-        <div class="controls">
-            <Button onclick="javascript:start()">Start</Button>
-            <Button onclick="javascript:stop()">Stop</Button>
-            <Select id="impl-select">
-                <option value="dos-worker" selected>dos worker</option>
-                <option value="dos-direct">dos direct</option>
-            </Select>
-        </div>
         <div id="root" style="width: 100%; height: 100%;"></div>
     </div>
     <script>

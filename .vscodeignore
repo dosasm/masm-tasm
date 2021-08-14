@@ -23,6 +23,8 @@ LICENSE
 samples/
 
 # only package some file of tools folder to control the package size
+web/index.html
+web/test.jsdos
 tools/**.log
 #dosbox
 tools/dosbox/dosbox-0.74.conf

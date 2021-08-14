@@ -220,10 +220,10 @@
         "masmtasm.jsdos.viewColumn": {
           "markdownDescription": "%config.jsdos.viewColumn%",
           "type": "string",
-          "default": "beside",
+          "default": "Beside",
           "enum": [
-            "besides",
-            "active"
+            "Beside",
+            "Active"
           ],
           "enumDescriptions": [
             "%config.jsdos.viewColumn.Active%",
@@ -435,7 +435,7 @@
     "pretest": "yarn compile && tsc -p ./src",
     "test": "node ./dist/test/runTest.js",
     "vscode:prepublish": "yarn clean && yarn compile",
-    "publish": "vsce publish  --baseContentUrl https://github.com/dosasm/masm-tasm/blob/main/ --baseImagesUrl https://github.com/dosasm/masm-tasm/raw/main/ ",
+    "deploy": "vsce publish  --yarn --baseContentUrl https://github.com/dosasm/masm-tasm/blob/main/ --baseImagesUrl https://github.com/dosasm/masm-tasm/raw/main/ ",
     "package": "vsce package"
   },
   "devDependencies": {

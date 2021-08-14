@@ -2,15 +2,11 @@
 
 ## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
 
-## 0.8.5/0.8.6
+# 0.9.0
 
-- (0.8.5)修复文件有时无法正确获取的问题
-- (0.8.6)为防止通过状态栏修改了配置但是更改不体现的情况，所以该版本配置直接更新到工作区。
-
-## 0.8.4
-
-- 增加悬浮提示信息来源：从[felixcloutier](https://www.felixcloutier.com/x86/)和[msvc](https://docs.microsoft.com/cpp/assembler/masm/)加载悬浮提示信息
-- 增加一个简单的状态条
+- 更新JSDos到[v7](https://js-dos.com/)
+- 为防止通过状态栏修改了配置但是更改不体现的情况，所以该版本配置直接更新到工作区。
+- 简化代码结构
 
 ## 0.8.0
 
@@ -22,6 +18,9 @@
   - 修复*问题输出*相关的一些问题
   - jsdos模式下复制文件到webview时，使插件自动清除只有注释的行，因为不清除似乎会出现`非法指令`的报错
 - (0.8.3)fix #15: 使用dosbox调试代码的时候误调用运行代码的指令
+- (0.8.4)增加悬浮提示信息来源：从[felixcloutier](https://www.felixcloutier.com/x86/)和[msvc](https://docs.microsoft.com/cpp/assembler/masm/)加载悬浮提示信息
+- (0.8.4)增加一个简单的状态条
+- (0.8.5)修复文件有时无法正确获取的问题
 
 ## 0.7.0
 
