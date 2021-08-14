@@ -23,8 +23,8 @@
   ],
   "badges": [
     {
-      "url": "https://github.com/xsro/masm-tasm/raw/main/pics/asm.png",
-      "href": "https://github.com/xsro/masm-tasm/wiki/dosbox",
+      "url": "https://github.com/dosasm/masm-tasm/raw/main/pics/asm.png",
+      "href": "https://github.com/dosasm/masm-tasm/wiki/dosbox",
       "description": "some interesting ASM code"
     }
   ],
@@ -435,7 +435,7 @@
     "pretest": "yarn compile && tsc -p ./src",
     "test": "node ./dist/test/runTest.js",
     "vscode:prepublish": "yarn clean && yarn compile",
-    "publish": "vsce publish  --baseContentUrl https://github.com/xsro/masm-tasm/blob/main/ --baseImagesUrl https://github.com/xsro/masm-tasm/raw/main/ ",
+    "publish": "vsce publish  --baseContentUrl https://github.com/dosasm/masm-tasm/blob/main/ --baseImagesUrl https://github.com/dosasm/masm-tasm/raw/main/ ",
     "package": "vsce package"
   },
   "devDependencies": {
@@ -462,10 +462,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xsro/masm-tasm"
+    "url": "https://github.com/dosasm/masm-tasm"
   },
   "bugs": {
-    "url": "https://github.com/xsro/masm-tasm/issues",
+    "url": "https://github.com/dosasm/masm-tasm/issues",
     "email": "xsro@foxmail.com"
   },
   "license": "MIT",

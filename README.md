@@ -2,7 +2,7 @@
 
 [Chinese](README.zh.md)|[English](README.md)|
 [中文 in gitee](https://gitee.com/dosasm/masm-tasm/)|
-[more versions](https://github.com/xsro/masm-tasm/releases)
+[more versions](https://github.com/dosasm/masm-tasm/releases)
 
 Language support for DOS assembly,may be suitable for studying MASM/TASM in DOSBox and the course *principles& peripheral technology of microprocessor*.
 
@@ -46,8 +46,8 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 
 - Editor Command "`Open Emulator`":Open emulator at your file's folder. If your file's path is not readable for DOS emulator, your file will be copied as `T.ASM` in DOS emulator. (For DOSBox, copy your file to work space folder and mount this folder to DOSBox disk `D:`)
 - Command "`Doxbox here`": The extension will Open DOSBox and mount your active editor file's folder directly to DOSBox 's disk `D:` with no path-checking.
-- some ASM commands you may need: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
-- Some interesting assembly codes you may need: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
+- some ASM commands you may need: [ASM_commands](https://github.com/dosasm/masm-tasm/wiki/ASM_commands).
+- Some interesting assembly codes you may need: [DOSBox ASM codes](https://github.com/dosasm/masm-tasm/wiki/dosbox)
 
 ### Demo 3: code Formate,Diagnose and more
 
@@ -156,8 +156,8 @@ if you want to use your tools of assembler, please paste your path to the settin
 - inspired by [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code)
 - Thanks to excellent DOS emulator: [dosbox](https://www.dosbox.com), [caiiiycuk](https://github.com/caiiiycuk)'s [js dos](https://js-dos.com/) and [msdos player](http://takeda-toshiya.my.coocan.jp/msdos)
 - Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho) 's extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086),[blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) for ASM language information
-- Welcome [issue](https://github.com/xsro/masm-tasm/issues) and PR to build a better extension with your help
+- Welcome [issue](https://github.com/dosasm/masm-tasm/issues) and PR to build a better extension with your help
 - [THANKS](doc/Thanks.md)
-- [some infomation :wiki](https://github.com/xsro/masm-tasm/wiki)
+- [some infomation :wiki](https://github.com/dosasm/masm-tasm/wiki)
 
 Enjoy!:smile:

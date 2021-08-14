@@ -6,7 +6,7 @@
 
 ```bash
 cd myFolder
-git clone https://github.com/xsro/masm-tasm.git
+git clone https://github.com/dosasm/masm-tasm.git
 ```
 
 ### 1.install nodejs and npm

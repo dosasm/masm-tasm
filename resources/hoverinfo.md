@@ -38,7 +38,7 @@ i18n:
   - zh-cn
 ```
 
-Interrupt call see [list](https://github.com/xsro/masm-tasm/wiki/Interrupt-list-en)
+Interrupt call see [list](https://github.com/dosasm/masm-tasm/wiki/Interrupt-list-en)
 
 syntax: `int [interruptIndex]`
 

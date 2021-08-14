@@ -33,7 +33,7 @@
 - 通过终端命令`open -a DOSBox --args <dosbox args>`支持在MAC（darwin）中打开dosbox
 - 支持通过设置`masmtasm.dosbox.command`自定义用来打开DOSBox的命令
 - 0.6.1
-  - 修复[#10](https://github.com/xsro/masm-tasm/issues/10) 中`jle`和`jge`两条指令的悬浮提示错误
+  - 修复[#10](https://github.com/dosasm/masm-tasm/issues/10) 中`jle`和`jge`两条指令的悬浮提示错误
 - 0.6.2
   - 废弃`masmtasm.dosbox.CustomResolution`设置选项，通过`masmtasm.dosbox.config`来支持更多的dosbox选项
   - 提供MASM的部分错误信息跳转到Microsoft docs页面的CodeAction
@@ -50,7 +50,7 @@
 
 ### 0.4.0
 
-- fix [#6](https://github.com/xsro/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题
+- fix [#6](https://github.com/dosasm/masm-tasm/issues/6): 修复打开单个汇编文件插件不激活的问题
   - 假如文件languageID是assembly,masm,tasm时插件会激活
 - 增加一个设置选项`masmtasm.language.Hover`以决定是否显示悬浮提示Hover
 
@@ -58,7 +58,7 @@
 
 - windows下打开dosbox会弹出控制台窗口，可以在设置`masmtasm.dosbox.console`中选择显示，最小化还是不显示这个窗口。
 - (0.3.1)dosbox更新到0.74-3
-- (0.3.1)修复Dosbox无法挂载带有中文的路径的问题[#5](https://github.com/xsro/masm-tasm/issues/5)
+- (0.3.1)修复Dosbox无法挂载带有中文的路径的问题[#5](https://github.com/dosasm/masm-tasm/issues/5)
 
 ### 0.2.2/0.2.3
 
@@ -81,7 +81,7 @@ DEMO `dosbox here`:(代码来自[dpisdaniel/assembly-pacman](https://github.com/
 1. 打开命令面板，win下为`ctrl+shift+p`
 2. 在打开的dosbox窗口，输入汇编、链接、运行命令`tasm projf`,`tlink projf`,`projf`
 
-![demo pacman](https://github.com/xsro/masm-tasm/raw/main/pics/demo_pacman.gif)
+![demo pacman](https://github.com/dosasm/masm-tasm/raw/main/pics/demo_pacman.gif)
 
 ## 0.2.0
 

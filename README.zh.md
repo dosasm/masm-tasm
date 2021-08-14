@@ -1,7 +1,7 @@
 # 16位/32位DOS汇编语言支持
 
 [中文](README.zh.md)|[English](README.md)|
-[其他版本](https://github.com/xsro/masm-tasm/releases)
+[其他版本](https://github.com/dosasm/masm-tasm/releases)
 
 :raising_hand:实现对DOSBox等汇编工具的快速调用。主要针对DOS下的单文件汇编语言学习，可能适合学习《汇编语言》、《微机原理》等课程，主要功能特性如下：
 
@@ -43,8 +43,8 @@
 
 - "`Open Emulator`"编辑器命令：会在DOS模拟器中打开文件所在目录。如果文件路径对于dosbox来说难以访问，插件会将编辑器当前文件复制为`T.asm`(对于DOSBox，插件会复制文件到独立工作文件夹，并将该文件夹挂载到DOSBox中的`D:`盘)
 - "`Doxbox here`"命令 会直接将当前文件所在文件夹挂载到DOSBox中的“D:"盘，与Open Emulator命令相似，但是默认只会打开DOSBox并且不会自动判断路径是否可以访问。**注意** 这时在DOSBox中的操作会直接影响电脑中该文件夹中的**文件**，而且通常都是不可逆的
-- 汇编常用命令: [ASM_commands](https://github.com/xsro/masm-tasm/wiki/ASM_commands).
-- 有些有趣的汇编代码: [DOSBox ASM codes](https://github.com/xsro/masm-tasm/wiki/dosbox)
+- 汇编常用命令: [ASM_commands](https://github.com/dosasm/masm-tasm/wiki/ASM_commands).
+- 有些有趣的汇编代码: [DOSBox ASM codes](https://github.com/dosasm/masm-tasm/wiki/dosbox)
 
 ### Demo 3:flashlight:： 代码格式化与错误输出
 
@@ -150,7 +150,7 @@ VSCode文档中关于插件安装路径的说明[VSCode-doc](https://code.visual
 - 插件使用了[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)的[Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)中的汇编语法信息
 - 一些[相关信息](doc/license_and_info.md)和[鸣谢](doc/Thanks.md)
 - gitee 上的一些笔记和代码: [笔记](https://dosasm.gitee.io/),[代码](https://gitee.com/dosasm/asmcodes)
-- 一些相关资料：[wiki](https://github.com/xsro/masm-tasm/wiki)
-- 插件难免会有一些bug，欢迎到github发[issue](https://github.com/xsro/masm-tasm/issues)或者邮件`xsro@foxmail.com`，一起交流和完善。
+- 一些相关资料：[wiki](https://github.com/dosasm/masm-tasm/wiki)
+- 插件难免会有一些bug，欢迎到github发[issue](https://github.com/dosasm/masm-tasm/issues)或者邮件`xsro@foxmail.com`，一起交流和完善。
 
 Enjoy!:smile:

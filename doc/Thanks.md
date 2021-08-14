@@ -1,9 +1,9 @@
 # Thank You
 
-- [#3](https://github.com/xsro/masm-tasm/issues/3): [WMF1997](https://github.com/WMF1997)
-- [#4](https://github.com/xsro/masm-tasm/issues/4): [Define2017](https://github.com/Define2017)
-- [#6](https://github.com/xsro/masm-tasm/issues/6): [my-vegatable-has-exploded](https://github.com/my-vegatable-has-exploded)
-- [#10](https://github.com/xsro/masm-tasm/issues/10): [lllsy12138](https://github.com/lllsy12138)
+- [#3](https://github.com/dosasm/masm-tasm/issues/3): [WMF1997](https://github.com/WMF1997)
+- [#4](https://github.com/dosasm/masm-tasm/issues/4): [Define2017](https://github.com/Define2017)
+- [#6](https://github.com/dosasm/masm-tasm/issues/6): [my-vegatable-has-exploded](https://github.com/my-vegatable-has-exploded)
+- [#10](https://github.com/dosasm/masm-tasm/issues/10): [lllsy12138](https://github.com/lllsy12138)
 
 ## licence and info
 
