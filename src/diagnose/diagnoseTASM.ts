@@ -1,5 +1,5 @@
 import { Diagnostic, TextDocument, DiagnosticCollection, DiagnosticSeverity } from "vscode";
-import { ASMdiagnostic, DIAGINFO } from './diagnose';
+import { ASMdiagnostic, DIAGINFO } from './main';
 /**
  * Process the output of TASM assembler
  * @param TASMmsg the output of TASM

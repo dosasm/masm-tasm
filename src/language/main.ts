@@ -27,7 +27,7 @@ class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
 	}
 }
 
-export function provider(context: vscode.ExtensionContext): void {
+export function activate(context: vscode.ExtensionContext): void {
 	const programmaticFeatures = vscode.workspace.getConfiguration("masmtasm.language");
 	if (programmaticFeatures.get("Hover")) {
 		context.subscriptions.push(vscode.languages.registerHoverProvider('assembly', new AsmHoverProvider(context)));

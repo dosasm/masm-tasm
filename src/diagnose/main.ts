@@ -1,5 +1,8 @@
+/** Process the message from Assembler
+ */
+
 import { Diagnostic, DiagnosticCollection, DiagnosticRelatedInformation, DiagnosticSeverity, languages, Location, TextDocument, Uri } from 'vscode';
-import { ASMTYPE } from '../configration';
+import { ASMTYPE } from '../utils/configuration';
 import { masmDiagnose } from './diagnoseMASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
 import { tasmDiagnose } from './diagnoseTASM';
@@ -18,9 +21,12 @@ export enum DIAGCODE {
 }
 
 /**
- * the class use to diagnose the information from the MASM or TASM assembler
+ * the class used to diagnose the information from the MASM or TASM assembler
+ * 
+ * - use `process` method to process the message
+ * - use `clean` to clear all diagnostic information produced by this class
  */
-export class AssemblerDiag {
+export class AssemblerDiagnose {
     private _masmCollection: DiagnosticCollection;
     private _tasmCollection: DiagnosticCollection;
     constructor() {
@@ -35,7 +41,7 @@ export class AssemblerDiag {
      * @param doc the document of source code
      * @param ASM MASM or TASM
      */
-    public ErrMsgProcess(AsmMsg: string, doc: TextDocument, ASM: ASMTYPE): DIAGINFO | undefined {
+    public process(AsmMsg: string, doc: TextDocument, ASM: ASMTYPE): DIAGINFO | undefined {
         let diag: DIAGINFO | undefined;
         switch (ASM) {
             case ASMTYPE.TASM:
@@ -63,7 +69,7 @@ export class AssemblerDiag {
      * clean the diagnoses
      * @param ASM sepecify which ASM diagnositics to clear, if undefined, clear both MASM and TASM diagnositcs
      */
-    public cleandiagnose(ASM?: ASMTYPE): void {
+    public clean(ASM?: ASMTYPE): void {
         if (ASM === undefined || ASM === ASMTYPE.MASM) {
             this._masmCollection.clear();
         }
@@ -71,7 +77,7 @@ export class AssemblerDiag {
             this._tasmCollection.clear();
         }
     }
-};
+}
 
 /**the information of diagnostics */
 export interface DIAGINFO {
@@ -103,7 +109,7 @@ function lineMacro2DOC(text: string, macroName: string, macroLine: number, local
                 if (local && array[index + 1].match(/LOCAL|local/)) {
                     docMacroLine = index + 1;
                 }
-            };
+            }
         }
     );
     if (docMacroLine) {

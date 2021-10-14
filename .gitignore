@@ -8,4 +8,4 @@ node_modules
 
 **/.DS_store
 
-web/res/test.jsdos
+**.jsdos

@@ -17,6 +17,9 @@
   "engines": {
     "vscode": "^1.49.0"
   },
+  "extensionDependencies": [
+    "xsro.vscode-dosbox"
+  ],
   "categories": [
     "Programming Languages",
     "Other"
@@ -107,10 +110,6 @@
       "type": "object",
       "title": "MASM/TASM",
       "properties": {
-        "masmtasm.ASM.toolspath": {
-          "type": "string",
-          "markdownDescription": "%config.toolspath.mddescription%"
-        },
         "masmtasm.ASM.MASMorTASM": {
           "type": "string",
           "default": "TASM",
@@ -126,13 +125,13 @@
         },
         "masmtasm.ASM.emulator": {
           "type": "string",
-          "default": "dosbox",
+          "default": "jsdos",
           "description": "%config.emulator.description%",
           "enum": [
             "jsdos",
             "dosbox",
-            "msdos player",
-            "auto"
+            "dosboxX",
+            "msdos player"
           ],
           "enumDescriptions": [
             "%config.emulator.jsdos%",
@@ -141,15 +140,10 @@
             "%config.emulator.auto%"
           ]
         },
-        "masmtasm.ASM.separateSpace": {
+        "masmtasm.ASM.singleFileMode": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "%config.separateSpace%"
-        },
-        "masmtasm.ASM.clean": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.clean%"
+          "markdownDescription": "%config.singleFileMode%"
         },
         "masmtasm.ASM.savefirst": {
           "type": "boolean",
@@ -194,10 +188,6 @@
           },
           "markdownDescription": "%config.boxconfig.description%"
         },
-        "masmtasm.dosbox.command": {
-          "type": "string",
-          "description": "%config.boxcommand%"
-        },
         "masmtasm.dosbox.console": {
           "type": "string",
           "default": "redirect",
@@ -230,7 +220,7 @@
             "%config.jsdos.viewColumn.Besides%"
           ]
         },
-        "masmtasm.dosbox.more": {
+        "masmtasm.masm": {
           "markdownDescription": "%config.dosbox.more%",
           "default": {
             "open": [
@@ -295,100 +285,6 @@
             "after_action": {
               "description": "The commands to exec after run or debug\n when set `masmtasm.dosbox.run` as `choose`",
               "type": "array"
-            }
-          }
-        },
-        "masmtasm.jsdos.more": {
-          "markdownDescription": "%config.jsdos.more%",
-          "default": {
-            "open": [
-              "set path=c:\\asm\\masm;c:\\asm\\tasm",
-              "cd code"
-            ],
-            "masm": [
-              "masm ${filename}.ASM;",
-              "if exist ${filename}.OBJ link ${filename}.OBJ;"
-            ],
-            "tasm": [
-              "tasm /zi ${filename}.ASM",
-              "if exist ${filename}.OBJ tlink /v/3 ${filename}.obj"
-            ],
-            "masm_debug": [
-              "if exist ${filename}.exe debug ${filename}.exe"
-            ],
-            "tasm_debug": [
-              "if exist ${filename}.exe TD ${filename}.exe"
-            ],
-            "run": [
-              "if exist ${filename}.exe ${filename}.exe"
-            ]
-          },
-          "properties": {
-            "open": {
-              "description": "The commands to exec when open JSdos webview",
-              "type": "array"
-            },
-            "masm": {
-              "description": "The commands to exec for assembling and linking in Wdosbox when using masm",
-              "type": "array"
-            },
-            "tasm": {
-              "description": "The commands to exec for assembling and linking in Wdosbox when using tasm",
-              "type": "array"
-            },
-            "tasm_debug": {
-              "description": "The commands to exec for debuging in Wdosbox when using tasm",
-              "type:": "array"
-            },
-            "masm_debug": {
-              "description": "The commands to exec for debuging in Wdosbox when using masm",
-              "type:": "array"
-            },
-            "run": {
-              "description": "The commands to run the generated file",
-              "type": "array"
-            }
-          }
-        },
-        "masmtasm.msdos.more": {
-          "description": "%config.msdos.more%",
-          "default": {
-            "workspace": "c:\\.dosasm",
-            "path": "${toolpath}\\player;${toolpath}\\masm;${toolpath}\\tasm;c:\\.dosasm\\tasm;c:\\.dosasm\\masm;",
-            "masm": "player\\playerasm.bat \"${toolpath}\" MASM \"${fullname}\"",
-            "tasm": "player\\playerasm.bat \"${toolpath}\" TASM \"${fullname}\"",
-            "masm_debug": "msdos -v5.0 debug \"${filename}.exe\"",
-            "tasm_debug": "msdos TD \"${filename}.exe\"",
-            "run": "msdos \"${filename}\""
-          },
-          "properties": {
-            "workspace": {
-              "description": "The workspace when using separate space",
-              "type": "string"
-            },
-            "path": {
-              "description": "The path needed to add to the environment value `PATH`",
-              "type": "string"
-            },
-            "masm": {
-              "description": "The commands to exec for assembling and linking in cmd when using masm",
-              "type": "string"
-            },
-            "tasm": {
-              "description": "The commands to exec for assembling and linking in cmd when using tasm",
-              "type": "string"
-            },
-            "tasm_debug": {
-              "description": "(Currently not support)The commands to exec for debuging in cmd when using tasm",
-              "type:": "string"
-            },
-            "masm_debug": {
-              "description": "The commands to exec for debuging in cmd when using masm",
-              "type:": "string"
-            },
-            "run": {
-              "description": "The command to run the generated file",
-              "type": "string"
             }
           }
         }
@@ -458,7 +354,9 @@
     "vsce": "^1.83.0",
     "vscode-test": "^1.4.1",
     "webpack": "^5.50.0",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.7.2",
+    "emulators": "^0.67.0",
+    "emulators-ui": "^0.68.0"
   },
   "repository": {
     "type": "git",
@@ -468,9 +366,5 @@
     "url": "https://github.com/dosasm/masm-tasm/issues",
     "email": "xsro@foxmail.com"
   },
-  "license": "MIT",
-  "dependencies": {
-    "emulators": "^0.67.0",
-    "emulators-ui": "^0.68.0"
-  }
+  "license": "MIT"
 }

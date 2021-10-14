@@ -5,9 +5,9 @@ import { execSync } from 'child_process';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from 'vscode';
-import { DIAGCODE } from '../../ASM/diagnose/diagnose';
-import { DOSEMU, ASMTYPE } from '../../ASM/configration';
-import { RUNCODEINFO } from '../../ASM/runcode';
+import { DIAGCODE } from '../../diagnose/main';
+import { DOSEMU, ASMTYPE } from '../../utils/configuration';
+
 // import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', function () {
@@ -84,7 +84,7 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE
 			assert.ok(vscodecmds.includes(cmd));
 
 			//assert message processed
-			const result = (await vscode.commands.executeCommand(cmd) as RUNCODEINFO);
+			const result = (await vscode.commands.executeCommand(cmd) as any);
 			assert.strictEqual(DIAGCODE[result.diagCode], DIAGCODE[diagcode], JSON.stringify(result, null, 4));
 		});
 }

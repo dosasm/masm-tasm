@@ -1,4 +1,4 @@
-import { localize } from '../i18n';
+import { localize } from '../utils/i18n';
 
 export function isNumberStr(str: string): boolean {
 	const a = str.match(/([01]+[Bb]|[0-7]+[Qq]|[0-9][0-9A-Fa-f]*[Hh]|[0-9]+[Dd]?)/);
