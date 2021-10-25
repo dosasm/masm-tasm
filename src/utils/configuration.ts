@@ -19,3 +19,18 @@ export enum DosEmulatorType {
     msdos = 'msdos player',
     jsdos = 'jsdos',
 }
+
+import * as vscode from 'vscode';
+
+class ExtensionConfiguration {
+    public get asmType(): ASMTYPE {
+        const asmType: ASMTYPE | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.MASMorTASM');
+        return asmType ? asmType : ASMTYPE.TASM;
+    }
+    public get emulator(): DosEmulatorType {
+        const emu: DosEmulatorType | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.emulator');
+        return emu ? emu : DosEmulatorType.jsdos;
+    }
+}
+
+export const extConf = new ExtensionConfiguration();

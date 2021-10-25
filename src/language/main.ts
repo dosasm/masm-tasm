@@ -22,7 +22,7 @@ class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
 		const sym = DocInfo.getDocInfo(document).tree;
 		if (sym) {
 			return sym;
-		};
+		}
 		return [];
 	}
 }

@@ -1,5 +1,7 @@
 {
-  "include": ["**/*.ts"],
+  "include": [
+    "**/*.ts"
+  ],
   "compilerOptions": {
     "module": "commonjs",
     "target": "es2017",
@@ -14,5 +16,8 @@
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */
     // "noUnusedParameters": true,  /* Report errors on unused parameters. */
   },
-  "exclude": ["node_modules", ".vscode-test"]
+  "exclude": [
+    "node_modules",
+    ".vscode-test"
+  ]
 }

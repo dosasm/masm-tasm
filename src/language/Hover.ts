@@ -71,7 +71,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
                 }
 
                 const h = await this.getHover(wordGet, [keywordType.operator, keywordType.register, keywordType.symbol]);
-                if (h) { return h; };
+                if (h) { return h; }
             }
 
             const asmsymbol = docinfo.findSymbol(wordGet); //the word is a symbol?
@@ -80,7 +80,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
             }
 
             const h = await this.getHover(wordGet, [keywordType.other, keywordType.directive, keywordType.register]);
-            if (h) { return h; };
+            if (h) { return h; }
         }
         return undefined;
     }

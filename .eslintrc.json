@@ -5,23 +5,23 @@
     "ecmaVersion": 6,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
-  "extends": ["plugin:@typescript-eslint/recommended"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended"
+  ],
   "rules": {
-    "no-empty-function": "off",
-    "@typescript-eslint/explicit-module-boundary-types": false,
     "@typescript-eslint/semi": "warn",
-    "curly": "warn",
-    "eqeqeq": "warn",
     "no-throw-literal": "warn",
     "semi": "warn",
-    "@typescript-eslint/no-use-before-define": "off"
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "ignorePatterns": [
     "test/**/index.ts",
     "test/**/runTest.ts",
     "node_modules",
-    "**/*.js",
-    "tools"
+    "**/*.js"
   ]
 }

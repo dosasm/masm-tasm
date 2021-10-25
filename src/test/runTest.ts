@@ -1,28 +1,35 @@
+/**
+ * https://code.visualstudio.com/api/working-with-extensions/testing-extension#custom-setup-with-vscodetestelectron
+ */
+
+import * as cp from 'child_process';
 import * as path from 'path';
+import {
+	downloadAndUnzipVSCode,
+	resolveCliPathFromVSCodeExecutablePath,
+	runTests
+} from 'vscode-test';
 
-import { runTests } from 'vscode-test';
-
-async function main(): Promise<void> {
+async function main() {
 	try {
-		// The folder containing the Extension Manifest package.json
-		// Passed to `--extensionDevelopmentPath`
-		const extensionDevelopmentPath = path.resolve(__dirname, '../../');
-
-		// The path to test runner
-		// Passed to --extensionTestsPath
+		const extensionDevelopmentPath = path.resolve(__dirname, '../../../');
 		const extensionTestsPath = path.resolve(__dirname, './suite/index');
+		const vscodeExecutablePath = await downloadAndUnzipVSCode('stable');
+		const cliPath = resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
 
-		const sampleFolder = path.resolve(__dirname, '../../samples');
-		const launchArgs: string[] = [sampleFolder];
+		// Use cp.spawn / cp.exec for custom setup
+		cp.spawnSync(cliPath, ['--install-extension', 'xsro.vscode-dosbox'], {
+			encoding: 'utf-8',
+			stdio: 'inherit'
+		});
 
-		const DELAY = (timeout: number): Promise<undefined> => new Promise((resolve) => { setTimeout(resolve, timeout); });
-		// Download VS Code, unzip it and run the integration test
-		await runTests({ extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await DELAY(20000);
-		//test in version September 2020 (version 1.50) https://code.visualstudio.com/updates/v1_50
-		await runTests({ version: '1.50.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
-		await DELAY(20000);
-		await runTests({ version: '1.49.1', extensionDevelopmentPath, extensionTestsPath, launchArgs });
+		// Run the extension test
+		await runTests({
+			// Use the specified `code` executable
+			vscodeExecutablePath,
+			extensionDevelopmentPath,
+			extensionTestsPath
+		});
 	} catch (err) {
 		console.error('Failed to run tests');
 		process.exit(1);

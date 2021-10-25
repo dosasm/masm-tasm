@@ -21,15 +21,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Install Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - run: yarn
-      - run: xvfb-run -a yarn test
+
+      - name: linux Install dosbox and dosbox-x tool
+        run: |
+          sudo apt-get update
+          sudo apt-get install dosbox
+          sudo apt install flatpak
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install flathub com.dosbox_x.DOSBox-X -y
         if: runner.os == 'Linux'
-      - run: yarn test
-        if: runner.os != 'Linux'
+      - name: macOS Install dosbox and dosbox-x tool
+        run: |
+          brew update
+          brew install dosbox
+          brew install dosbox-x
+        if: runner.os == 'macOS'
+
+      - run: |
+          /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          echo ">>> Started xvfb"
+        if: runner.os == 'Linux'
+
+      - run: |
+          yarn
+          yarn test
+          yarn test-local
+        env:
+          DISPLAY: ":99.0"
 
       - run: yarn lint
 

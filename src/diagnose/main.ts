@@ -1,11 +1,32 @@
-/** Process the message from Assembler
+/** 
+ * Process the message from Assembler
+ * 
+ * @file diagnose/main.ts
  */
 
 import { Diagnostic, DiagnosticCollection, DiagnosticRelatedInformation, DiagnosticSeverity, languages, Location, TextDocument, Uri } from 'vscode';
+import * as vscode from 'vscode';
 import { ASMTYPE } from '../utils/configuration';
 import { masmDiagnose } from './diagnoseMASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
 import { tasmDiagnose } from './diagnoseTASM';
+import { SeeinCPPDOCS } from './codeAction';
+
+
+export function activate(context: vscode.ExtensionContext) {
+    if (vscode.workspace.getConfiguration('masm-tasm').get('ASM.MASMorTASM') === ASMTYPE.MASM) {
+        const disposable: vscode.Disposable = vscode.languages.registerCodeActionsProvider('assembly', new SeeinCPPDOCS(), {
+            providedCodeActionKinds: SeeinCPPDOCS.providedCodeActionKinds
+        });
+        context.subscriptions.push(disposable);
+    }
+
+    const diag = new AssemblerMessageDiagnose();
+    const disposable = vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => diag.clean());
+    context.subscriptions.push(disposable);
+
+    return diag;
+}
 
 export enum DIAGCODE {
     /**null*/
@@ -26,7 +47,7 @@ export enum DIAGCODE {
  * - use `process` method to process the message
  * - use `clean` to clear all diagnostic information produced by this class
  */
-export class AssemblerDiagnose {
+export class AssemblerMessageDiagnose {
     private _masmCollection: DiagnosticCollection;
     private _tasmCollection: DiagnosticCollection;
     constructor() {

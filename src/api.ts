@@ -1,8 +1,3 @@
-/**
- * API from extension [vscode-dosbox](https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox)
- * originally from https://github.com/dosasm/vscode-dosbox/blob/main/src/api.ts
- */
-
 import { CommandInterface, Emulators } from 'emulators';
 import * as vscode from 'vscode';
 
@@ -13,26 +8,8 @@ export interface DosboxResult {
 }
 
 export interface Dosbox {
-    /**
-     * update the main part of the dosbox configuration file
-     */
     updateConf(section: string, key: string, value: string | number | boolean): boolean,
-    /**
-     * update the autoexec section of the dosbox configuration file
-     */
     updateAutoexec(context: string[]): void,
-    /**
-     * update the conf file from jsdos bundle
-     * 
-     * @param bundle the bundle data
-     * @param tempFolder the destination to exact the bundle file
-     */
-    fromBundle(bundle: Uint8Array, tempFolder: vscode.Uri): Promise<void>
-    /**
-     * run the emulator 
-     * 
-     * @param params the parameter passed to dosbox via command line
-     */
     run(params?: string[]): Promise<DosboxResult>
 }
 
