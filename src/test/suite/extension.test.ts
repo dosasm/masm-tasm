@@ -6,7 +6,7 @@ import { execSync } from 'child_process';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import { DIAGCODE } from '../../diagnose/main';
-import { DOSEMU, ASMTYPE } from '../../utils/configuration';
+import { DosEmulatorType, ASMTYPE } from '../../utils/configuration';
 
 // import * as myExtension from '../../extension';
 
@@ -16,20 +16,19 @@ suite('Extension Test Suite', function () {
 		ASMTYPE.MASM,
 		ASMTYPE.TASM,
 	];
-	const emulator: DOSEMU[] = [
-		DOSEMU.jsdos
+	const emulator: DosEmulatorType[] = [
+		DosEmulatorType.jsdos
 	];
 	if (process.platform === 'win32') {
 		emulator.push(
-			DOSEMU.dosbox,
-			DOSEMU.msdos,
-			DOSEMU.auto
+			DosEmulatorType.dosbox,
+			DosEmulatorType.msdos,
 		);
 	} else {
 		try {
 			const msg = execSync('dosbox -version', { encoding: 'utf8' });
 			if (msg.includes('version')) {
-				emulator.push(DOSEMU.dosbox);
+				emulator.push(DosEmulatorType.dosbox);
 			}
 		}
 		catch (e) {
@@ -48,7 +47,7 @@ suite('Extension Test Suite', function () {
 		}
 		return arr;
 	}
-	const args: [string, DIAGCODE, DOSEMU, ASMTYPE][] = [];
+	const args: [string, DIAGCODE, DosEmulatorType, ASMTYPE][] = [];
 	for (const file of filelist) {
 		for (const emu of emulator) {
 			for (const asm of MASMorTASM) {
@@ -59,13 +58,13 @@ suite('Extension Test Suite', function () {
 	shuffle(args).forEach((val) => { testAsmCode(...val); });
 });
 
-function testAsmCode(file: string, diagcode: DIAGCODE, emu: DOSEMU, asm: ASMTYPE): void {
+function testAsmCode(file: string, diagcode: DIAGCODE, emu: DosEmulatorType, asm: ASMTYPE): void {
 	test(`test file ${file} in ${emu} use ${asm} want ${DIAGCODE[diagcode]} ${diagcode}`,
 		async function () {
 			this.timeout('120s');
 			this.slow('10s');
 			//skip azure pipeline test for this condition
-			if (file === '3中文路径hasError.asm' && emu === DOSEMU.msdos && asm === ASMTYPE.MASM && !process.env.LANG?.includes('zh_CN')) {
+			if (file === '3中文路径hasError.asm' && emu === DosEmulatorType.msdos && asm === ASMTYPE.MASM && !process.env.LANG?.includes('zh_CN')) {
 				this.skip();
 			}
 

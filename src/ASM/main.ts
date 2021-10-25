@@ -1,8 +1,10 @@
 import * as vscode from 'vscode';
 import { logger } from '../utils/logger';
 import { API } from './vscode-dosbox';
-import { ASMTYPE, DOSEMU } from '../utils/configuration';
+import { ASMTYPE, DosEmulatorType } from '../utils/configuration';
 import { SeeinCPPDOCS } from '../diagnose/codeAction';
+
+import * as statusBar from './statusBar';
 
 const fs = vscode.workspace.fs;
 
@@ -60,35 +62,12 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => {
             //asm.cleanalldiagnose();
         }),
-        vscode.commands.registerCommand('masm-tasm.dosboxhere', (uri?: vscode.Uri, emulator?: DOSEMU) => {
+        vscode.commands.registerCommand('masm-tasm.dosboxhere', (uri?: vscode.Uri, emulator?: DosEmulatorType) => {
             //return asm.BoxHere(uri, emulator);
         }),
-        vscode.commands.registerCommand('masmtasm.updateEmuASM', async () => {
-            const conf = vscode.workspace.getConfiguration('masmtasm.ASM');
-            const emu = [DOSEMU.jsdos, DOSEMU.dosbox];
-            if (process.platform === 'win32') {
-                emu.push(DOSEMU.msdos, DOSEMU.auto);
-            }
-            const asm = [ASMTYPE.MASM, ASMTYPE.TASM];
 
-            const iterms = [];
-            for (const e of emu) {
-                for (const a of asm) {
-                    iterms.push(e + ' ' + a);
-                }
-            }
-
-            const placeHolder = 'choose DOS environment emulator and assembler';
-            const Selected = await vscode.window.showQuickPick(iterms, { placeHolder });
-            if (Selected) {
-                const [emu1, asm1] = Selected?.split(' ');
-                const target = vscode.ConfigurationTarget.Workspace;
-                await conf.update('emulator', emu1, target);
-                await conf.update('MASMorTASM', asm1, target);
-            }
-        }
-        )
     ];
+
     if (vscode.workspace.getConfiguration('masm-tasm').get('ASM.MASMorTASM') === ASMTYPE.MASM) {
         commands.push(
             vscode.languages.registerCodeActionsProvider('assembly', new SeeinCPPDOCS(), {
@@ -96,5 +75,10 @@ export async function activate(context: vscode.ExtensionContext) {
             })
         );
     }
+
+
+
     context.subscriptions.push(...commands);
+
+    statusBar.activate(context);
 }

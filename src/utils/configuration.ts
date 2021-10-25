@@ -13,9 +13,9 @@ export enum ASMTYPE {
  * - `jsdos` is designed for runing in browser
  * - `auto` is a mode to partly solve the problem of TD's hardly running in msdos
  */
-export enum DOSEMU {
+export enum DosEmulatorType {
     dosbox = 'dosbox',
+    dosboxX = 'dosbox-x',
     msdos = 'msdos player',
-    auto = 'auto',
     jsdos = 'jsdos',
 }
