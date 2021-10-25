@@ -1,0 +1,40 @@
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - main
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: yarn
+      - run: xvfb-run -a yarn test
+        if: runner.os == 'Linux'
+      - run: yarn test
+        if: runner.os != 'Linux'
+
+      - run: yarn lint
+
+      - name: Publish
+        if: success() && startsWith( github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
+        run: yarn deploy
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
