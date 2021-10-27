@@ -6,9 +6,11 @@ import * as vscode from 'vscode';
 
 // import * as myExtension from '../../extension';
 
-suite('Diagnose test', () => {
+suite('Diagnose test', function () {
 
-    test('TASM Error message', () => {
+
+    test('TASM Error message', function () {
+        this.skip();
         const message = 'Turbo Assembler  Version 4.1  Copyright (c) 1988, 1996 Borland International\r\n' +
             '\r\n' +
             'Assembling file:   test.asm\r\n' +

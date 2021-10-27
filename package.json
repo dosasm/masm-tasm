@@ -268,7 +268,7 @@
     "watch-test": "tsc -watch -p ./src",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
-    "pretest": "yarn compile && tsc -p ./src",
+    "pretest": "tsc -p ./src",
     "test": "node ./dist/test/runTest.js",
     "vscode:prepublish": "yarn clean && yarn compile",
     "deploy": "vsce publish  --yarn --baseContentUrl https://github.com/dosasm/masm-tasm/blob/main/ --baseImagesUrl https://github.com/dosasm/masm-tasm/raw/main/ ",

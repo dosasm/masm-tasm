@@ -80,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 ...action.before
             ];
             const timeStamp = new Date().getTime().toString();
-            const logFilename = 't' + timeStamp.substr(timeStamp.length - 6, 8) + '.log'.toUpperCase();
+            const logFilename = timeStamp.substr(timeStamp.length - 5, 8) + '.log'.toUpperCase();
             const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
             if (nodefs.existsSync(logUri.fsPath)) {
                 await fs.delete(logUri);
@@ -112,19 +112,25 @@ export async function activate(context: vscode.ExtensionContext) {
                 nodefs.watchFile(logUri.fsPath, () => {
                     try {
                         if (nodefs.existsSync(logUri.fsPath)) {
-                            const _result = nodefs.readFileSync(logUri.fsPath, { encoding: 'utf-8' });
-                            hook(_result);
+                            const text = nodefs.readFileSync(logUri.fsPath, { encoding: 'utf-8' });
+                            hook(text);
                         }
                     }
                     catch (e) {
                         console.error(e);
                     }
                 });
-                promise.then(val => result = val);
+                promise.then(val => {
+                    console.log(val);
+                });
             }
+
             await box.run();
+
             if (result === '<should-not-return>') {
-                result = (await fs.readFile(logUri)).toString();
+                if (nodefs.existsSync(logUri.fsPath)) {
+                    result = nodefs.readFileSync(logUri.fsPath, { encoding: 'utf-8' });
+                }
             }
         }
 

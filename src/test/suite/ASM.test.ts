@@ -19,13 +19,15 @@ suite('Extension Test Suite', function () {
 		Assembler.TASM,
 	];
 	const emulator: DosEmulatorType[] = [
+		DosEmulatorType.dosbox,
+		DosEmulatorType.dosboxX,
 		DosEmulatorType.jsdos,
 	];
 
 	const filelist: [string, number][] = [
 		['1.asm', 0],
+		['3中文路径hasError.asm', 1],
 		// ['2.asm', DIAGCODE.ok],
-		['3中文路径hasError.asm', 1]
 	];
 
 	const args: [string, DIAGCODE, DosEmulatorType, Assembler][] = [];
@@ -36,6 +38,10 @@ suite('Extension Test Suite', function () {
 			}
 		}
 	}
+
+	this.beforeEach(async function () {
+		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+	});
 
 	shuffle(args).forEach((val) => { testAsmCode(...val); });
 });
@@ -52,7 +58,6 @@ function testAsmCode(file: string, shouldErr: number, emu: DosEmulatorType, asm:
 
 			//open test file. NOTE: the extension will be activated when open .asm file
 			const samplefile = vscode.Uri.joinPath(samplesUri, file);
-			await vscode.commands.executeCommand('vscode.open', samplefile);
 
 			//update settings
 			await vscode.workspace.getConfiguration('masmtasm').update("dosbox.run", "exit");
@@ -68,12 +73,10 @@ function testAsmCode(file: string, shouldErr: number, emu: DosEmulatorType, asm:
 			const vscodecmds2 = await vscode.commands.getCommands(true);
 			assert.ok(vscodecmds2.includes(cmd));
 
-
 			//assert message processed
 			const _result = await vscode.commands.executeCommand(cmd, samplefile);
 			const { message, error } = _result as AsmResult;
 			assert.strictEqual(error, shouldErr, message);
-
 		});
 }
 
