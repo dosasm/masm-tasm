@@ -63,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext) {
         switch (conf.extConf.emulator) {
             case conf.DosEmulatorType.dosbox:
             case conf.DosEmulatorType.dosboxX:
-                const uri = vscode.Uri.joinPath(seperateSpaceFolder, "test" + path.extname(_uri.fsPath));
+                const uri = vscode.Uri.joinPath(seperateSpaceFolder, ("test" + path.extname(_uri.fsPath)).toUpperCase());
                 await fs.copy(_uri, uri);
                 const fileInfo = path.parse(uri.fsPath);
                 const folder = vscode.Uri.joinPath(uri, '..');
@@ -75,7 +75,7 @@ export async function activate(context: vscode.ExtensionContext) {
                     ...action.before
                 ];
 
-                const logFilename = 'box.log';
+                const logFilename = 'box.log'.toUpperCase();
                 const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
                 if (nodefs.existsSync(logUri.fsPath)) {
                     await fs.delete(logUri);

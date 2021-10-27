@@ -1042,11 +1042,6 @@ emoji-regex@^8.0.0:
   resolved "https://registry.nlark.com/emoji-regex/download/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
   integrity sha1-6Bj9ac5cz8tARZT4QpY79TFkzDc=
 
-emulators-ui@^0.68.0:
-  version "0.68.0"
-  resolved "https://registry.nlark.com/emulators-ui/download/emulators-ui-0.68.0.tgz#145363978236a57a934bc2f4c0aea5583d2eab7b"
-  integrity sha1-FFNjl4I2pXqTS8L0wK6lWD0uq3s=
-
 emulators@^0.67.0:
   version "0.67.0"
   resolved "https://registry.nlark.com/emulators/download/emulators-0.67.0.tgz#9daba2fd48cdb634d2c55b12c7116e61ffd2c6b6"
