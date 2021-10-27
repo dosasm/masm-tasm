@@ -47,14 +47,14 @@ jobs:
           echo ">>> Started xvfb"
         if: runner.os == 'Linux'
 
-      - run: |
+
+      - name: yarn,test,lint
+        run: |
           yarn
           yarn test
-          yarn test-local
+          yarn lint
         env:
           DISPLAY: ":99.0"
-
-      - run: yarn lint
 
       - name: Publish
         if: success() && startsWith( github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
