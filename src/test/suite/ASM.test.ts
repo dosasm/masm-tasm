@@ -5,7 +5,7 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import { DIAGCODE, DIAGINFO } from '../../diagnose/main';
-import { DosEmulatorType, ASMTYPE } from '../../utils/configuration';
+import { DosEmulatorType, Assembler } from '../../utils/configuration';
 
 // import * as myExtension from '../../extension';
 
@@ -14,8 +14,8 @@ const samplesUri = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../sam
 suite('Extension Test Suite', function () {
 	vscode.window.showInformationMessage('Start all tests.');
 	const MASMorTASM = [
-		ASMTYPE.MASM,
-		ASMTYPE.TASM,
+		Assembler.MASM,
+		Assembler.TASM,
 	];
 	const emulator: DosEmulatorType[] = [
 		// DosEmulatorType.jsdos,
@@ -29,7 +29,7 @@ suite('Extension Test Suite', function () {
 		['3中文路径hasError.asm', DIAGCODE.hasError]
 	];
 
-	const args: [string, DIAGCODE, DosEmulatorType, ASMTYPE][] = [];
+	const args: [string, DIAGCODE, DosEmulatorType, Assembler][] = [];
 	for (const file of filelist) {
 		for (const emu of emulator) {
 			for (const asm of MASMorTASM) {
@@ -41,13 +41,13 @@ suite('Extension Test Suite', function () {
 	shuffle(args).forEach((val) => { testAsmCode(...val); });
 });
 
-function testAsmCode(file: string, diagcode: DIAGCODE, emu: DosEmulatorType, asm: ASMTYPE): void {
+function testAsmCode(file: string, diagcode: DIAGCODE, emu: DosEmulatorType, asm: Assembler): void {
 	test(`test file ${file} in ${emu} use ${asm} want ${DIAGCODE[diagcode]} ${diagcode}`,
 		async function () {
 			this.timeout('120s');
 			this.slow('10s');
 			//skip azure pipeline test for this condition
-			if (file === '3中文路径hasError.asm' && emu === DosEmulatorType.msdos && asm === ASMTYPE.MASM && !process.env.LANG?.includes('zh_CN')) {
+			if (file === '3中文路径hasError.asm' && emu === DosEmulatorType.msdos && asm === Assembler.MASM && !process.env.LANG?.includes('zh_CN')) {
 				this.skip();
 			}
 
@@ -63,7 +63,12 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DosEmulatorType, asm
 			//assert the extension activated and command contributed
 			const vscodecmds = await vscode.commands.getCommands(true);
 			const cmd = 'masm-tasm.runASM';
-			assert.ok(vscodecmds.includes(cmd));
+			if (!vscodecmds.includes(cmd)) {
+				await vscode.extensions.getExtension('xsro.masm-tasm')?.activate();
+			}
+			const vscodecmds2 = await vscode.commands.getCommands(true);
+			assert.ok(vscodecmds2.includes(cmd));
+
 
 			//assert message processed
 			const _result = await vscode.commands.executeCommand(cmd, samplefile);

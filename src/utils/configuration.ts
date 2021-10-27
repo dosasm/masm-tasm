@@ -2,7 +2,7 @@
  * - MASM: including masm.exe,link.exe,debug.exe
  * - TASM: including tasm.exe,tlink.exe,TD.exe
  */
-export enum ASMTYPE {
+export enum Assembler {
     MASM = 'MASM',
     TASM = 'TASM'
 }
@@ -23,9 +23,9 @@ export enum DosEmulatorType {
 import * as vscode from 'vscode';
 
 class ExtensionConfiguration {
-    public get asmType(): ASMTYPE {
-        const asmType: ASMTYPE | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.MASMorTASM');
-        return asmType ? asmType : ASMTYPE.TASM;
+    public get asmType(): Assembler {
+        const asmType: Assembler | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.assembler');
+        return asmType ? asmType : Assembler.TASM;
     }
     public get emulator(): DosEmulatorType {
         const emu: DosEmulatorType | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.emulator');

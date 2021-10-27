@@ -6,7 +6,7 @@
 
 import { Diagnostic, DiagnosticCollection, DiagnosticRelatedInformation, DiagnosticSeverity, languages, Location, TextDocument, Uri } from 'vscode';
 import * as vscode from 'vscode';
-import { ASMTYPE } from '../utils/configuration';
+import { Assembler } from '../utils/configuration';
 import { masmDiagnose } from './diagnoseMASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
 import { tasmDiagnose } from './diagnoseTASM';
@@ -14,7 +14,7 @@ import { SeeinCPPDOCS } from './codeAction';
 
 
 export function activate(context: vscode.ExtensionContext) {
-    if (vscode.workspace.getConfiguration('masm-tasm').get('ASM.MASMorTASM') === ASMTYPE.MASM) {
+    if (vscode.workspace.getConfiguration('masm-tasm').get('ASM.MASMorTASM') === Assembler.MASM) {
         const disposable: vscode.Disposable = vscode.languages.registerCodeActionsProvider('assembly', new SeeinCPPDOCS(), {
             providedCodeActionKinds: SeeinCPPDOCS.providedCodeActionKinds
         });
@@ -62,13 +62,13 @@ export class AssemblerMessageDiagnose {
      * @param doc the document of source code
      * @param ASM MASM or TASM
      */
-    public process(AsmMsg: string, doc: TextDocument, ASM: ASMTYPE): DIAGINFO | undefined {
+    public process(AsmMsg: string, doc: TextDocument, ASM: Assembler): DIAGINFO | undefined {
         let diag: DIAGINFO | undefined;
         switch (ASM) {
-            case ASMTYPE.TASM:
+            case Assembler.TASM:
                 diag = tasmDiagnose(AsmMsg, doc, this._tasmCollection);
                 break;
-            case ASMTYPE.MASM:
+            case Assembler.MASM:
                 diag = masmDiagnose(AsmMsg, doc, this._masmCollection);
                 break;
             default:
@@ -90,11 +90,11 @@ export class AssemblerMessageDiagnose {
      * clean the diagnoses
      * @param ASM sepecify which ASM diagnositics to clear, if undefined, clear both MASM and TASM diagnositcs
      */
-    public clean(ASM?: ASMTYPE): void {
-        if (ASM === undefined || ASM === ASMTYPE.MASM) {
+    public clean(ASM?: Assembler): void {
+        if (ASM === undefined || ASM === Assembler.MASM) {
             this._masmCollection.clear();
         }
-        if (ASM === undefined || ASM === ASMTYPE.TASM) {
+        if (ASM === undefined || ASM === Assembler.TASM) {
             this._tasmCollection.clear();
         }
     }

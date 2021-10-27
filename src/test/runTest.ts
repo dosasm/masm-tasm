@@ -23,12 +23,19 @@ async function main() {
 			stdio: 'inherit'
 		});
 
+		const sampleFolder = path.resolve(__dirname, '../../samples');
+		const launchArgs: string[] = [
+			"--disable-workspace-trust",
+			sampleFolder
+		];
+
 		// Run the extension test
 		await runTests({
 			// Use the specified `code` executable
 			vscodeExecutablePath,
 			extensionDevelopmentPath,
-			extensionTestsPath
+			extensionTestsPath,
+			launchArgs
 		});
 	} catch (err) {
 		console.error('Failed to run tests');

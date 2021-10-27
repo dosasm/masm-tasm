@@ -21,8 +21,8 @@ async function statusBarCommand() {
     }
 
     const asm = [
-        conf.ASMTYPE.MASM,
-        conf.ASMTYPE.TASM
+        conf.Assembler.MASM,
+        conf.Assembler.TASM
     ];
 
     const iterms = [];

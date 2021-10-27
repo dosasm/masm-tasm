@@ -22,6 +22,7 @@
     "test/**/index.ts",
     "test/**/runTest.ts",
     "node_modules",
-    "**/*.js"
+    "**/*.js",
+    "src/test/suite/diagnose.test.ts"
   ]
 }

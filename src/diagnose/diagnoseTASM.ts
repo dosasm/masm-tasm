@@ -8,8 +8,8 @@ import { ASMdiagnostic, DIAGINFO } from './main';
  */
 export function tasmDiagnose(TASMmsg: string, doc: TextDocument, collection: DiagnosticCollection): DIAGINFO {
     const diagnostics: Diagnostic[] = [];
-    const tasm = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*.ASM)\((\d+)\)\s+(.*)/;
-    const tasmMacro = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*.ASM)\((\d+)\) (.*)\((\d+)\)\s+(.*)/;
+    const tasm = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*)\((\d+)\)\s+(.*)/;
+    const tasmMacro = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*)\((\d+)\) (.*)\((\d+)\)\s+(.*)/;
     let error = 0, warn = 0;
     const severity = (str: string): DiagnosticSeverity | undefined => {
         switch (str) {
