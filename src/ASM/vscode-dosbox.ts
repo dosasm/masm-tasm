@@ -4,6 +4,7 @@
  */
 
 import { CommandInterface, Emulators } from 'emulators';
+import * as Jszip from 'jszip';
 import * as vscode from 'vscode';
 
 export interface DosboxResult {
@@ -37,6 +38,7 @@ export interface Dosbox {
 }
 
 export interface Jsdos {
+    jszip: Jszip,
     /**
      * set the jsdos bundle to use
      * @param bundle the Uint8Array data of the jsdos bundle or its Uri

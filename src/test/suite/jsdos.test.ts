@@ -4,7 +4,8 @@ import * as assert from 'assert';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from 'vscode';
-import { DIAGCODE, DIAGINFO } from '../../diagnose/main';
+import { AsmResult } from '../../ASM/main';
+import { DIAGCODE } from '../../diagnose/main';
 import { DosEmulatorType, Assembler } from '../../utils/configuration';
 
 // import * as myExtension from '../../extension';
@@ -18,15 +19,13 @@ suite('Extension Test Suite', function () {
 		Assembler.TASM,
 	];
 	const emulator: DosEmulatorType[] = [
-		// DosEmulatorType.jsdos,
-		DosEmulatorType.dosbox,
-		DosEmulatorType.dosboxX,
+		DosEmulatorType.jsdos,
 	];
 
-	const filelist: [string, DIAGCODE][] = [
-		['1.asm', DIAGCODE.ok],
+	const filelist: [string, number][] = [
+		['1.asm', 0],
 		// ['2.asm', DIAGCODE.ok],
-		['3中文路径hasError.asm', DIAGCODE.hasError]
+		['3中文路径hasError.asm', 1]
 	];
 
 	const args: [string, DIAGCODE, DosEmulatorType, Assembler][] = [];
@@ -41,11 +40,11 @@ suite('Extension Test Suite', function () {
 	shuffle(args).forEach((val) => { testAsmCode(...val); });
 });
 
-function testAsmCode(file: string, diagcode: DIAGCODE, emu: DosEmulatorType, asm: Assembler): void {
-	test(`test file ${file} in ${emu} use ${asm} want ${DIAGCODE[diagcode]} ${diagcode}`,
+function testAsmCode(file: string, shouldErr: number, emu: DosEmulatorType, asm: Assembler): void {
+	test(`test file ${file} in ${emu} use ${asm} want should ${shouldErr} error`,
 		async function () {
-			this.timeout('120s');
-			this.slow('10s');
+			this.timeout('60s');
+			this.slow('20s');
 			//skip azure pipeline test for this condition
 			if (file === '3中文路径hasError.asm' && emu === DosEmulatorType.msdos && asm === Assembler.MASM && !process.env.LANG?.includes('zh_CN')) {
 				this.skip();
@@ -56,9 +55,9 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DosEmulatorType, asm
 			await vscode.commands.executeCommand('vscode.open', samplefile);
 
 			//update settings
-			await vscode.workspace.getConfiguration('masmtasm').update("dosbox.run", "exit", vscode.ConfigurationTarget.Global);
-			await vscode.workspace.getConfiguration('masmtasm').update("ASM.emulator", emu, vscode.ConfigurationTarget.Global);
-			await vscode.workspace.getConfiguration('masmtasm').update("ASM.assembler", asm, vscode.ConfigurationTarget.Global);
+			await vscode.workspace.getConfiguration('masmtasm').update("dosbox.run", "exit");
+			await vscode.workspace.getConfiguration('masmtasm').update("ASM.emulator", emu);
+			await vscode.workspace.getConfiguration('masmtasm').update("ASM.assembler", asm);
 
 			//assert the extension activated and command contributed
 			const vscodecmds = await vscode.commands.getCommands(true);
@@ -72,8 +71,9 @@ function testAsmCode(file: string, diagcode: DIAGCODE, emu: DosEmulatorType, asm
 
 			//assert message processed
 			const _result = await vscode.commands.executeCommand(cmd, samplefile);
-			const { message, diagnose } = _result as { message: string, diagnose: DIAGINFO | undefined };
-			assert.strictEqual(diagnose?.code, diagcode, DIAGCODE[diagcode] + message);
+			const { message, error } = _result as AsmResult;
+			assert.strictEqual(error, shouldErr, message);
+
 		});
 }
 

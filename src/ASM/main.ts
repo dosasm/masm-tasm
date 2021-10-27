@@ -6,6 +6,7 @@ import { API } from './vscode-dosbox';
 import * as statusBar from './statusBar';
 import * as Diag from '../diagnose/main';
 import * as conf from '../utils/configuration';
+import { messageCollector } from '../diagnose/messageCollector';
 
 const fs = vscode.workspace.fs;
 
@@ -24,6 +25,12 @@ type ACTIONS = {
     }
 };
 
+export interface AsmResult {
+    message?: string,
+    error?: number,
+    warn?: number
+}
+
 export async function activate(context: vscode.ExtensionContext) {
     statusBar.activate(context);
     const diag = Diag.activate(context);
@@ -34,7 +41,8 @@ export async function activate(context: vscode.ExtensionContext) {
     const assemblyToolsFolder = vscode.Uri.joinPath(context.globalStorageUri, conf.extConf.asmType);
     const seperateSpaceFolder = vscode.Uri.joinPath(context.globalStorageUri, "workspace");
 
-    async function singleFileMode(type: actionType, _uri: vscode.Uri) {
+    async function singleFileMode(type: actionType, _uri: vscode.Uri): Promise<AsmResult> {
+
         if (nodefs.existsSync(seperateSpaceFolder.fsPath)) {
             await fs.delete(seperateSpaceFolder, { recursive: true, useTrash: false });
         }
@@ -59,69 +67,116 @@ export async function activate(context: vscode.ExtensionContext) {
         const bundle = await fs.readFile(bundlePath);
 
         let result = "<should-not-return>";
+        const uri = vscode.Uri.joinPath(seperateSpaceFolder, ("test" + path.extname(_uri.fsPath)).toUpperCase());
+        await fs.copy(_uri, uri);
+        const fileInfo = path.parse(uri.fsPath);
+        const folder = vscode.Uri.joinPath(uri, '..');
 
-        switch (conf.extConf.emulator) {
-            case conf.DosEmulatorType.dosbox:
-            case conf.DosEmulatorType.dosboxX:
-                const uri = vscode.Uri.joinPath(seperateSpaceFolder, ("test" + path.extname(_uri.fsPath)).toUpperCase());
-                await fs.copy(_uri, uri);
-                const fileInfo = path.parse(uri.fsPath);
-                const folder = vscode.Uri.joinPath(uri, '..');
-
-                const autoexec = [
-                    `mount c "${assemblyToolsFolder.fsPath}""`,
-                    `mount d "${folder.fsPath}""`,
-                    'd:',
-                    ...action.before
-                ];
-
-                const logFilename = 'box.log'.toUpperCase();
-                const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
-                if (nodefs.existsSync(logUri.fsPath)) {
-                    await fs.delete(logUri);
+        if (conf.extConf.emulator === conf.DosEmulatorType.dosbox || conf.extConf.emulator === conf.DosEmulatorType.dosboxX) {
+            const autoexec = [
+                `mount c "${assemblyToolsFolder.fsPath}""`,
+                `mount d "${folder.fsPath}""`,
+                'd:',
+                ...action.before
+            ];
+            const timeStamp = new Date().getTime().toString();
+            const logFilename = 't' + timeStamp.substr(timeStamp.length - 6, 8) + '.log'.toUpperCase();
+            const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
+            if (nodefs.existsSync(logUri.fsPath)) {
+                await fs.delete(logUri);
+            }
+            function cb(val: string) {
+                const r = val
+                    .replace("${file}", fileInfo.base)
+                    .replace("${filename}", fileInfo.name);
+                if (val.startsWith('>')) {
+                    return r.replace(">", "");
                 }
-                function cb(val: string) {
-                    const r = val
-                        .replace("${file}", fileInfo.base)
-                        .replace("${filename}", fileInfo.name);
-                    if (val.startsWith('>')) {
-                        return r.replace(">", "");
+                return r + " >>C:\\" + logFilename;
+            }
+            if (type === actionType.run) {
+                autoexec.push(...action.run.map(cb));
+            }
+            if (type === actionType.debug) {
+                autoexec.push(...action.debug.map(cb));
+            }
+
+            autoexec.push("exit");
+
+            const box = conf.extConf.emulator === conf.DosEmulatorType.dosboxX ? api.dosboxX : api.dosbox;
+            await box.fromBundle(bundle, assemblyToolsFolder);
+            box.updateAutoexec(autoexec);
+
+            if (type !== actionType.open) {
+                const [hook, promise] = messageCollector();
+                nodefs.watchFile(logUri.fsPath, () => {
+                    try {
+                        if (nodefs.existsSync(logUri.fsPath)) {
+                            const _result = nodefs.readFileSync(logUri.fsPath, { encoding: 'utf-8' });
+                            hook(_result);
+                        }
                     }
-                    return r + " >>C:\\" + logFilename;
-                }
-                if (type === actionType.run) {
-                    autoexec.push(...action.run.map(cb));
-                }
-                if (type === actionType.debug) {
-                    autoexec.push(...action.debug.map(cb));
-                }
-
-                autoexec.push("exit");
-
-                const box = conf.extConf.emulator === conf.DosEmulatorType.dosboxX ? api.dosboxX : api.dosbox;
-                await box.fromBundle(bundle, assemblyToolsFolder);
-                box.updateAutoexec(autoexec);
-                const _run = box.run();
-                const _wait = new Promise<void>(
-                    resolve => setTimeout(resolve, 10000)
-                );
-                await Promise.race([_run, _wait]);
+                    catch (e) {
+                        console.error(e);
+                    }
+                });
+                promise.then(val => result = val);
+            }
+            await box.run();
+            if (result === '<should-not-return>') {
                 result = (await fs.readFile(logUri)).toString();
-                break;
-            case conf.DosEmulatorType.jsdos:
-                api.jsdos.setBundle(bundle);
-                api.jsdos.runInWebview();
-                break;
-            case conf.DosEmulatorType.msdos:
-                api.msdosPlayer();
-                break;
+            }
+        }
+
+        if (conf.extConf.emulator === conf.DosEmulatorType.jsdos) {
+            await api.jsdos.jszip.loadAsync(bundle);
+            api.jsdos.jszip.file('code/' + fileInfo.base, doc.getText());
+            const autoexec = [
+                `mount c .`,
+                `mount d ./code`,
+                'd:',
+                ...action.before
+            ];
+            function cb(val: string) {
+                const r = val
+                    .replace("${file}", fileInfo.base)
+                    .replace("${filename}", fileInfo.name);
+                if (val.startsWith('>')) {
+                    return r.replace(">", "");
+                }
+                return r;
+            }
+            if (type === actionType.run) {
+                autoexec.push(...action.run.map(cb));
+            }
+            if (type === actionType.debug) {
+                autoexec.push(...action.debug.map(cb));
+            }
+            api.jsdos.updateAutoexec(autoexec);
+            const webview = await api.jsdos.runInWebview();
+            if (type !== actionType.open) {
+                const [hook, promise] = messageCollector();
+                webview.onDidReceiveMessage(e => {
+                    switch (e.command) {
+                        case 'stdout':
+                            hook(e.value);
+                            break;
+                    }
+                });
+                result = await promise;
+            }
+        }
+
+        if (conf.extConf.emulator === conf.DosEmulatorType.msdos) {
+            api.msdosPlayer();
         }
 
         const diagnose = diag.process(result, doc, conf.extConf.asmType);
 
         return {
             message: result,
-            diagnose
+            error: diagnose?.error,
+            warn: diagnose?.warn
         };
     }
 

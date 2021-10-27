@@ -38,7 +38,7 @@ async function statusBarCommand() {
         const [emu1, asm1] = Selected?.split(' ');
         const target = vscode.ConfigurationTarget.Workspace;
         await _conf.update('emulator', emu1, target);
-        await _conf.update('MASMorTASM', asm1, target);
+        await _conf.update('assembler', asm1, target);
         showStatus();
     }
 }
