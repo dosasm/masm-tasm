@@ -3,6 +3,28 @@ import * as conf from '../utils/configuration';
 
 const bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
+const emu = [
+    conf.DosEmulatorType.jsdos,
+    conf.DosEmulatorType.dosbox,
+    conf.DosEmulatorType.dosboxX,
+    conf.DosEmulatorType.msdos
+];
+
+const asm = [
+    conf.Assembler.MASM,
+    conf.Assembler.TASM
+];
+
+const iterms: string[] = [];
+for (const e of emu) {
+    for (const a of asm) {
+        if (a === conf.Assembler.TASM && e === conf.DosEmulatorType.msdos) {
+            continue;
+        }
+        iterms.push(e + '\t' + a);
+    }
+}
+
 function showStatus() {
     bar.command = 'masmtasm.updateEmuASM';
     bar.text = `${conf.extConf.emulator} ${conf.extConf.asmType}`;
@@ -11,32 +33,16 @@ function showStatus() {
 
 async function statusBarCommand() {
     const _conf = vscode.workspace.getConfiguration('masmtasm.ASM');
-    const emu = [
-        conf.DosEmulatorType.jsdos,
-        conf.DosEmulatorType.dosbox,
-        conf.DosEmulatorType.dosboxX
-    ];
+
     if (process.platform === 'win32') {
         emu.push(conf.DosEmulatorType.msdos);
-    }
-
-    const asm = [
-        conf.Assembler.MASM,
-        conf.Assembler.TASM
-    ];
-
-    const iterms = [];
-    for (const e of emu) {
-        for (const a of asm) {
-            iterms.push(e + ' ' + a);
-        }
     }
 
     const placeHolder = 'choose DOS environment emulator and assembler';
     const Selected = await vscode.window.showQuickPick(iterms, { placeHolder });
     if (Selected) {
-        const [emu1, asm1] = Selected?.split(' ');
-        const target = vscode.ConfigurationTarget.Workspace;
+        const [emu1, asm1] = Selected?.split('\t');
+        const target = vscode.ConfigurationTarget.Global;
         await _conf.update('emulator', emu1, target);
         await _conf.update('assembler', asm1, target);
         showStatus();

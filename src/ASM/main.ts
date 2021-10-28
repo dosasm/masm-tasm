@@ -174,7 +174,8 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         if (conf.extConf.emulator === conf.DosEmulatorType.msdos) {
-            api.msdosPlayer();
+            const t = api.msdosPlayer();
+            t.show();
         }
 
         const diagnose = diag.process(result, doc, conf.extConf.asmType);
