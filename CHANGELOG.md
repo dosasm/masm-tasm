@@ -1,8 +1,36 @@
-# Change Log
+# Change Log 更新日志
 
-## A VSCode Extension for learning DOS assembly(MASM/TASM) via DOSBox
+[email](mailto:xsro@foxmail.com)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
-# 0.9.0
+## 1.0 Web Extension Support 浏览器端支持
+
+To keep the extension simple, I split the part of interaction with DOS emulator to a new 
+platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
+
+- add support for browser, you can use this extension in sites like [vscode.dev][vscode-dev] and [github-dev][github-dev]
+- add support for DOS emulator [DOSBox-x][dosbox-x]
+- change default emulator to jsdos
+- now only support single file DOS assembly, I try to add some multi-file assembly support, but is's confusing for me.
+- remove the capture of warning message
+- remove command `DOSBox here`
+
+为了保持简洁，我将与DOS模拟器交互的部分独立为一个新的插件[xsro.vscode-dosbox][vscode-dosbox]
+
+- 增加对于浏览器的支持,现在可以在[vscode.dev][vscode-dev]和[github-dev][github-dev]使用
+- 增加对[DOSBox-x][dosbox-x]的支持
+- 默认DOS模拟器变更为jsdos
+- 移除一些烦人的设置，目前只支持单文件的DOS环境下汇编
+- 移除对汇编成功但是有警告信息时显示的界面消息
+- 移除命令`DOSBox here`
+
+[vscode-dosbox]: https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox "VSCode DOSBox"
+[dosbox-x]: https://www.dosbox-x.com "DOSBox-x"
+[github-dev]: https://github.dev
+[vscode-dev]: https://vscode.dev
+
+---
+
+## 0.9.0
 
 - 更新JSDos到[v7](https://js-dos.com/)
 - 为防止通过状态栏修改了配置但是更改不体现的情况，所以该版本配置直接更新到工作区。

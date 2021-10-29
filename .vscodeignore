@@ -1,10 +1,11 @@
+.github/
 .vscode/**
 .vscode-test/**
 .vscode-test-web/**
 src/
 doc/
 pics/
-LICENSE
+dev/
 samples/
 
 **/test/**
