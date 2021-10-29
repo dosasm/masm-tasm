@@ -20,13 +20,13 @@
 		},
 		{
 			"type": "npm",
-			"script": "watch-test",
+			"script": "watch-tsc",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never"
 			},
-			"label": "npm: watch-test"
+			"label": "npm: watch-tsc"
 		},
 		{
 			"type": "npm",

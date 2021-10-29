@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as down from './downloadFile';
+import * as down from '../utils/downloadFile';
 import { keywordType } from './Hover';
 
 const fs = vscode.workspace.fs;
@@ -42,8 +42,8 @@ class RESOURCES {
     };
 
     static links = [
-        'https://raw.fastgit.org/MicrosoftDocs/{repo}/{branch}/',
-        'https://raw.githubusercontent.com/MicrosoftDocs/{repo}/{branch}/'
+        'https://raw.githubusercontent.com/MicrosoftDocs/{repo}/{branch}/',
+        'https://cdn.jsdelivr.net/gh/MicrosoftDocs/{repo}@{branch}/docs/',
     ];
 
     static getlinks(id: string, lang: string): string[] {
@@ -161,14 +161,8 @@ export class Cppdoc {
 
     private async getText(ref: string): Promise<string | undefined> {
         const links = RESOURCES.getlinks(ref, vscode.env.language);
-
-        const dst = vscode.Uri.joinPath(this.dstFolder, `${ref}.md`);
-        const code = await down.downloadFromMultiSources(links, dst.fsPath);
-        if (code) {
-            const arr = await fs.readFile(dst);
-            return arr.toString();
-        }
-        return undefined;
+        const str = await down.downloadFromMultiSources(links);
+        return str;
     }
 
     public async findKeyword(word: string, types: keywordType[]): Promise<string | undefined> {
