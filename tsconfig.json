@@ -3,6 +3,10 @@
     "module": "commonjs",
     "target": "es2017",
     "outDir": "dist",
+    "lib": [
+      "DOM",
+      "ES2017"
+    ],
     "sourceMap": true,
     "rootDir": "src",
     "strict": true /* enable all strict type-checking options */
