@@ -23,6 +23,10 @@ for (const e of emu) {
             if (a === conf.Assembler.TASM || a === conf.Assembler['MASM-v6.11'])
                 continue;
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((process as any).browser && e !== conf.DosEmulatorType.jsdos) {
+            continue;
+        }
         iterms.push(e + '\t' + a);
     }
 }

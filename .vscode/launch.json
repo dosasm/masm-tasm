@@ -31,7 +31,7 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: watch-test",
+			"preLaunchTask": "npm: watch-tsc",
 		}
 	]
 }

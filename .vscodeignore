@@ -1,31 +1,30 @@
-# ignore vscode settings
 .vscode/**
-# ignore test
 .vscode-test/**
-# ignore i18n
-README.*.md
-#ignore dev files
-src/**
+.vscode-test-web/**
+src/
+doc/
+pics/
+LICENSE
+samples/
+
+**/test/**
+
 **/*.map
 **/*.ts
+**/*.md
+!README.md
+!CHANGELOG.md
+!resources/hoverinfo.md
+
 **/.gitignore
 **/azure-pipelines.yml
 **/tsconfig.json
 **/.eslintrc.json
 **/gulpfile.js
 **/webpack.config.js
-# doc pic license samples
-doc/
-*/**.md
-!resources/hoverinfo.md
-pics/
-LICENSE
-samples/
 
-# only package some file of tools folder to control the package size
-web/index.html
-web/test.jsdos
-tools/**.log
-#dosbox
-tools/dosbox/dosbox-0.74.conf
-tools/dosbox/std*.txt
+.vscodeignore
+
+yarn.lock
+
+
