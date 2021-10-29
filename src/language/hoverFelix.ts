@@ -27,8 +27,13 @@ export class FELIX {
 
     static async create(fileuri: Uri): Promise<FELIX> {
         const arr = await fs.readFile(fileuri);
-        const json = JSON.parse(arr.toString());
-        return new FELIX(json);
+        try {
+            const json = JSON.parse(arr.toString());
+            return new FELIX(json);
+        } catch (e) {
+            console.error(e, arr.toString());
+        }
+        throw new Error();
     }
 
     constructor(private target: InstructionsJSON) {

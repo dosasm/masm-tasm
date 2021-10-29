@@ -3,10 +3,6 @@
     "module": "commonjs",
     "target": "es2017",
     "outDir": "dist",
-    "lib": [
-      // "es6",
-      // "WebWorker"
-    ],
     "sourceMap": true,
     "rootDir": "src",
     "strict": true /* enable all strict type-checking options */
