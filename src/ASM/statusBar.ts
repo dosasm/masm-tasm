@@ -11,15 +11,17 @@ const emu = [
 ];
 
 const asm = [
-    conf.Assembler.MASM,
+    conf.Assembler['MASM-v5.00'],
+    conf.Assembler['MASM-v6.11'],
     conf.Assembler.TASM
 ];
 
 const iterms: string[] = [];
 for (const e of emu) {
     for (const a of asm) {
-        if (a === conf.Assembler.TASM && e === conf.DosEmulatorType.msdos) {
-            continue;
+        if (e === conf.DosEmulatorType.msdos) {
+            if (a === conf.Assembler.TASM || a === conf.Assembler['MASM-v6.11'])
+                continue;
         }
         iterms.push(e + '\t' + a);
     }

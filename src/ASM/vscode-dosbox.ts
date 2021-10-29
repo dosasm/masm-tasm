@@ -38,13 +38,21 @@ export interface Dosbox {
 }
 
 export interface Jsdos {
-    jszip: Jszip,
     /**
      * set the jsdos bundle to use
+     * 
+     * @deprecated use jszip
      * @param bundle the Uint8Array data of the jsdos bundle or its Uri
      * @param updateConf use the conf file in the bundle
      */
     setBundle(bundle: vscode.Uri | Uint8Array, updateConf?: boolean): void,
+    /**
+     * the [jszip object](https://stuk.github.io/jszip/)
+     * 
+     * change this to change the bundle's data, 
+     * the extension call it to generate bundle data
+     */
+    jszip: Jszip;
     updateConf(section: string, key: string, value: string | number | boolean): boolean,
     updateAutoexec(context: string[]): void,
     /**
@@ -71,7 +79,6 @@ export interface API {
      * @see https://github.com/js-dos/emulators
      */
     emulators: Emulators;
-
     /**
      * run Jsdos in ExtensionHost or Webview
      */
@@ -80,17 +87,21 @@ export interface API {
     /**
      * run DOSBox via child_process
      */
-    dosbox: Dosbox
-    ;
+    dosbox: Dosbox;
     /**
      * run DOSBox-x via child_process
      */
     dosboxX: Dosbox;
+
     /**
      * run msdos player via cmd.exe
      * 
      * @returns a terminal to control
      */
-    msdosPlayer: () => vscode.Terminal;
+    msdosPlayer(msdosArgs?: string[], command?: string): vscode.Terminal;
+    /**path of the packed msdos player */
+    msdosPath: string,
+    /**path of the packed command.com file */
+    commandPath: string
 
 }

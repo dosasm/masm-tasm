@@ -15,7 +15,8 @@ const samplesUri = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../sam
 suite('Extension Test Suite', function () {
 	vscode.window.showInformationMessage('Start all tests.');
 	const MASMorTASM = [
-		Assembler.MASM,
+		Assembler['MASM-v5.00'],
+		Assembler['MASM-v6.11'],
 		Assembler.TASM,
 	];
 	const emulator: DosEmulatorType[] = [

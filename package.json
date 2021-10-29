@@ -144,8 +144,24 @@
                 "TD ${filename}.exe"
               ]
             },
-            "MASM": {
+            "MASM-v6.11": {
               "baseBundle": "<built-in>/MASM-v6.11.jsdos",
+              "before": [
+                "set PATH=C:\\MASM"
+              ],
+              "run": [
+                "masm ${file};",
+                "link ${filename};",
+                ">${filename}"
+              ],
+              "debug": [
+                "masm ${file};",
+                "link ${filename}.OBJ;",
+                ">debug ${filename}.exe"
+              ]
+            },
+            "MASM-v5.00": {
+              "baseBundle": "<built-in>/MASM-v5.00.jsdos",
               "before": [
                 "set PATH=C:\\MASM"
               ],

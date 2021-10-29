@@ -68,7 +68,8 @@ export class AssemblerMessageDiagnose {
             case Assembler.TASM:
                 diag = tasmDiagnose(AsmMsg, doc, this._tasmCollection);
                 break;
-            case Assembler.MASM:
+            case Assembler['MASM-v5.00']:
+            case Assembler['MASM-v6.11']:
                 diag = masmDiagnose(AsmMsg, doc, this._masmCollection);
                 break;
             default:

@@ -16,6 +16,11 @@ export function messageCollector(): [(msg: string) => void, Promise<string>] {
                 resolve(re[1]);
                 resolve = undefined;
             }
+            re = allmsg.match(/Microsoft \(R\) Macro Assembler Version 5.00([\s\S]*)Microsoft \(R\) Overlay Linker  Version 3.60/);
+            if (re && re[1] && resolve) {
+                resolve(re[1]);
+                resolve = undefined;
+            }
         }
         ,
         new Promise<string>(

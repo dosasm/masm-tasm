@@ -66,6 +66,9 @@ export async function activate(context: vscode.ExtensionContext) {
         );
         const bundle = await fs.readFile(bundlePath);
 
+        const timeStamp = new Date().getTime().toString();
+        const logFilename = timeStamp.substr(timeStamp.length - 5, 8) + '.log'.toUpperCase();
+
         let result = "<should-not-return>";
         const uri = vscode.Uri.joinPath(seperateSpaceFolder, ("test" + path.extname(_uri.fsPath)).toUpperCase());
         await fs.copy(_uri, uri);
@@ -79,8 +82,6 @@ export async function activate(context: vscode.ExtensionContext) {
                 'd:',
                 ...action.before
             ];
-            const timeStamp = new Date().getTime().toString();
-            const logFilename = timeStamp.substr(timeStamp.length - 5, 8) + '.log'.toUpperCase();
             const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
             if (nodefs.existsSync(logUri.fsPath)) {
                 await fs.delete(logUri);
@@ -174,8 +175,53 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         if (conf.extConf.emulator === conf.DosEmulatorType.msdos) {
-            const t = api.msdosPlayer();
-            t.show();
+            const terminal = api.msdosPlayer();
+
+            terminal.show();
+            api.dosbox.fromBundle(bundle, assemblyToolsFolder);
+            action.before.forEach(
+                val => {
+                    (terminal as vscode.Terminal).sendText(val.replace('C:', assemblyToolsFolder.fsPath));
+                }
+            );
+            if (type === actionType.open) {
+                terminal.sendText(`cd "${vscode.Uri.joinPath(_uri, '..').fsPath}"`);
+            }
+            else {
+                terminal.sendText(`cd "${folder.fsPath}"`);
+                function cb(val: string) {
+                    const r = val
+                        .replace("${file}", fileInfo.base)
+                        .replace("${filename}", fileInfo.name);
+                    if (val.startsWith('>')) {
+                        return r.replace(">", "");
+                    } else {
+                        return r + `>> ${logFilename} \n type ${logFilename}`;
+                    }
+                }
+                if (type === actionType.run) {
+                    action.run.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
+                }
+                if (type === actionType.debug) {
+                    action.debug.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
+                }
+                const logUri = vscode.Uri.joinPath(folder, logFilename);
+                const [hook, promise] = messageCollector();
+                nodefs.watchFile(logUri.fsPath, () => {
+                    try {
+                        if (nodefs.existsSync(logUri.fsPath)) {
+                            const text = nodefs.readFileSync(logUri.fsPath, { encoding: 'utf-8' });
+                            hook(text);
+                        }
+                    }
+                    catch (e) {
+                        console.error(e);
+                    }
+                });
+                //terminal.sendText('exit', true);
+                result = await promise;
+            }
+
         }
 
         const diagnose = diag.process(result, doc, conf.extConf.asmType);
