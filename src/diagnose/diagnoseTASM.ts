@@ -1,5 +1,5 @@
 import { Diagnostic, TextDocument, DiagnosticCollection, DiagnosticSeverity } from "vscode";
-import { ASMdiagnostic, DIAGINFO } from './diagnose';
+import { ASMdiagnostic, DIAGINFO } from './main';
 /**
  * Process the output of TASM assembler
  * @param TASMmsg the output of TASM
@@ -8,8 +8,8 @@ import { ASMdiagnostic, DIAGINFO } from './diagnose';
  */
 export function tasmDiagnose(TASMmsg: string, doc: TextDocument, collection: DiagnosticCollection): DIAGINFO {
     const diagnostics: Diagnostic[] = [];
-    const tasm = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*.ASM)\((\d+)\)\s+(.*)/;
-    const tasmMacro = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*.ASM)\((\d+)\) (.*)\((\d+)\)\s+(.*)/;
+    const tasm = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*)\((\d+)\)\s+(.*)/;
+    const tasmMacro = /\s*\*+(Error|Warning|Fatal)\*+\s+(.*)\((\d+)\) (.*)\((\d+)\)\s+(.*)/;
     let error = 0, warn = 0;
     const severity = (str: string): DiagnosticSeverity | undefined => {
         switch (str) {

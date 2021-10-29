@@ -1,15 +1,18 @@
 import * as vscode from 'vscode';
-import { localize, loadI18n } from './i18n';
+import { localize, loadI18n } from './utils/i18n';
 
-import { provider } from './language/provider';
-import { AsmCommands } from './ASM/main';
+import * as lan from './language/main';
+import * as asm from './ASM/main';
 
 export function activate(context: vscode.ExtensionContext): void {
+
 	loadI18n(context);
+
 	//provide programmaic language features like hover,references,outline(symbol)
-	provider(context);
-	//run and debug the code in dosbox or msdos-player by TASM ot MASM
-	AsmCommands(context);
+	lan.activate(context);
+	//provide run and debug features via DOS emulators
+	asm.activate(context);
+
 	console.log(localize("activate.hello", 'Congratulations, your extension "masm-tasm" is now active!'));
 }
 

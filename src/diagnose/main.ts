@@ -1,8 +1,32 @@
+/** 
+ * Process the message from Assembler
+ * 
+ * @file diagnose/main.ts
+ */
+
 import { Diagnostic, DiagnosticCollection, DiagnosticRelatedInformation, DiagnosticSeverity, languages, Location, TextDocument, Uri } from 'vscode';
-import { ASMTYPE } from '../configration';
+import * as vscode from 'vscode';
+import { Assembler } from '../utils/configuration';
 import { masmDiagnose } from './diagnoseMASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
 import { tasmDiagnose } from './diagnoseTASM';
+import { SeeinCPPDOCS } from './codeAction';
+
+
+export function activate(context: vscode.ExtensionContext) {
+    if (vscode.workspace.getConfiguration('masm-tasm').get('ASM.MASMorTASM') === Assembler.MASM) {
+        const disposable: vscode.Disposable = vscode.languages.registerCodeActionsProvider('assembly', new SeeinCPPDOCS(), {
+            providedCodeActionKinds: SeeinCPPDOCS.providedCodeActionKinds
+        });
+        context.subscriptions.push(disposable);
+    }
+
+    const diag = new AssemblerMessageDiagnose();
+    const disposable = vscode.commands.registerCommand('masm-tasm.cleanalldiagnose', () => diag.clean());
+    context.subscriptions.push(disposable);
+
+    return diag;
+}
 
 export enum DIAGCODE {
     /**null*/
@@ -18,9 +42,12 @@ export enum DIAGCODE {
 }
 
 /**
- * the class use to diagnose the information from the MASM or TASM assembler
+ * the class used to diagnose the information from the MASM or TASM assembler
+ * 
+ * - use `process` method to process the message
+ * - use `clean` to clear all diagnostic information produced by this class
  */
-export class AssemblerDiag {
+export class AssemblerMessageDiagnose {
     private _masmCollection: DiagnosticCollection;
     private _tasmCollection: DiagnosticCollection;
     constructor() {
@@ -35,13 +62,14 @@ export class AssemblerDiag {
      * @param doc the document of source code
      * @param ASM MASM or TASM
      */
-    public ErrMsgProcess(AsmMsg: string, doc: TextDocument, ASM: ASMTYPE): DIAGINFO | undefined {
+    public process(AsmMsg: string, doc: TextDocument, ASM: Assembler): DIAGINFO | undefined {
         let diag: DIAGINFO | undefined;
         switch (ASM) {
-            case ASMTYPE.TASM:
+            case Assembler.TASM:
                 diag = tasmDiagnose(AsmMsg, doc, this._tasmCollection);
                 break;
-            case ASMTYPE.MASM:
+            case Assembler['MASM-v5.00']:
+            case Assembler['MASM-v6.11']:
                 diag = masmDiagnose(AsmMsg, doc, this._masmCollection);
                 break;
             default:
@@ -63,15 +91,15 @@ export class AssemblerDiag {
      * clean the diagnoses
      * @param ASM sepecify which ASM diagnositics to clear, if undefined, clear both MASM and TASM diagnositcs
      */
-    public cleandiagnose(ASM?: ASMTYPE): void {
-        if (ASM === undefined || ASM === ASMTYPE.MASM) {
+    public clean(ASM?: Assembler): void {
+        if (ASM === undefined || ASM === Assembler.MASM) {
             this._masmCollection.clear();
         }
-        if (ASM === undefined || ASM === ASMTYPE.TASM) {
+        if (ASM === undefined || ASM === Assembler.TASM) {
             this._tasmCollection.clear();
         }
     }
-};
+}
 
 /**the information of diagnostics */
 export interface DIAGINFO {
@@ -103,7 +131,7 @@ function lineMacro2DOC(text: string, macroName: string, macroLine: number, local
                 if (local && array[index + 1].match(/LOCAL|local/)) {
                     docMacroLine = index + 1;
                 }
-            };
+            }
         }
     );
     if (docMacroLine) {

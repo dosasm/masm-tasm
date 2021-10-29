@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
+import * as vscode from 'vscode';
 
 export function run(): Promise<void> {
 	// Create the mocha test
@@ -9,6 +10,14 @@ export function run(): Promise<void> {
 		color: true,
 		timeout: 20000
 	});
+
+	if (process.platform === 'linux') {
+		vscode.workspace.getConfiguration('vscode-dosbox').update(
+			"command.dosboxX",
+			"flatpak run com.dosbox_x.DOSBox-X -silent -nogui",
+			vscode.ConfigurationTarget.Global
+		);
+	}
 
 	const testsRoot = path.resolve(__dirname, '..');
 

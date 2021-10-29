@@ -56,6 +56,5 @@ const config = {
 };
 
 module.exports = [
-    config,
-    require('./web/webpack.config')
+    config
 ]

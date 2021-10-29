@@ -1,5 +1,5 @@
 import { TextDocument, DiagnosticCollection, Diagnostic, DiagnosticSeverity } from "vscode";
-import { ASMdiagnostic, DIAGINFO } from './diagnose';
+import { ASMdiagnostic, DIAGINFO } from './main';
 export function masmDiagnose(MASMmsg: string, doc: TextDocument, collection: DiagnosticCollection): DIAGINFO {
     const diagnostics: Diagnostic[] = [];
     let error = 0, warn = 0;

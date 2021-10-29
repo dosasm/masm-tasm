@@ -1,29 +1,28 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "extends": [
-        "plugin:@typescript-eslint/recommended"
-    ],
-    "rules": {
-        "@typescript-eslint/semi": "warn",
-        "curly": "warn",
-        "eqeqeq": "warn",
-        "no-throw-literal": "warn",
-        "semi": "warn",
-        "@typescript-eslint/no-use-before-define": "off"
-    },
-    "ignorePatterns": [
-        "test/**/index.ts",
-        "test/**/runTest.ts",
-        "node_modules",
-        "**/*.js",
-        "tools"
-    ]
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "@typescript-eslint/semi": "warn",
+    "no-throw-literal": "warn",
+    "semi": "warn",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
+  },
+  "ignorePatterns": [
+    "test/**/index.ts",
+    "test/**/runTest.ts",
+    "node_modules",
+    "**/*.js",
+    "src/test/suite/diagnose.test.ts"
+  ]
 }

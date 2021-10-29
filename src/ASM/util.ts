@@ -13,7 +13,7 @@ export function inDirectory(dirinfo: [string, FileType][], entry: [string, FileT
         }
     }
     return;
-};
+}
 
 /**
  * make sure value in the list
