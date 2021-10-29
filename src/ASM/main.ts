@@ -7,14 +7,9 @@ import * as statusBar from './statusBar';
 import * as Diag from '../diagnose/main';
 import * as conf from '../utils/configuration';
 import { messageCollector } from '../diagnose/messageCollector';
+import { logger } from '../utils/logger';
 
 const fs = vscode.workspace.fs;
-
-enum actionType {
-    open,
-    run,
-    debug
-}
 
 type ACTIONS = {
     [id: string]: {
@@ -41,7 +36,8 @@ export async function activate(context: vscode.ExtensionContext) {
     const assemblyToolsFolder = vscode.Uri.joinPath(context.globalStorageUri, conf.extConf.asmType);
     const seperateSpaceFolder = vscode.Uri.joinPath(context.globalStorageUri, "workspace");
 
-    async function singleFileMode(type: actionType, _uri: vscode.Uri): Promise<AsmResult> {
+    async function singleFileMode(act: conf.actionType, _uri: vscode.Uri): Promise<AsmResult> {
+        logger.actionLog(act, _uri);
 
         if (nodefs.existsSync(seperateSpaceFolder.fsPath)) {
             await fs.delete(seperateSpaceFolder, { recursive: true, useTrash: false });
@@ -95,10 +91,10 @@ export async function activate(context: vscode.ExtensionContext) {
                 }
                 return r + " >>C:\\" + logFilename;
             }
-            if (type === actionType.run) {
+            if (act === conf.actionType.run) {
                 autoexec.push(...action.run.map(cb));
             }
-            if (type === actionType.debug) {
+            if (act === conf.actionType.debug) {
                 autoexec.push(...action.debug.map(cb));
             }
 
@@ -108,7 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
             await box.fromBundle(bundle, assemblyToolsFolder);
             box.updateAutoexec(autoexec);
 
-            if (type !== actionType.open) {
+            if (act !== conf.actionType.open) {
                 const [hook, promise] = messageCollector();
                 nodefs.watchFile(logUri.fsPath, () => {
                     try {
@@ -153,15 +149,15 @@ export async function activate(context: vscode.ExtensionContext) {
                 }
                 return r;
             }
-            if (type === actionType.run) {
+            if (act === conf.actionType.run) {
                 autoexec.push(...action.run.map(cb));
             }
-            if (type === actionType.debug) {
+            if (act === conf.actionType.debug) {
                 autoexec.push(...action.debug.map(cb));
             }
             api.jsdos.updateAutoexec(autoexec);
             const webview = await api.jsdos.runInWebview();
-            if (type !== actionType.open) {
+            if (act !== conf.actionType.open) {
                 const [hook, promise] = messageCollector();
                 webview.onDidReceiveMessage(e => {
                     switch (e.command) {
@@ -184,7 +180,7 @@ export async function activate(context: vscode.ExtensionContext) {
                     (terminal as vscode.Terminal).sendText(val.replace('C:', assemblyToolsFolder.fsPath));
                 }
             );
-            if (type === actionType.open) {
+            if (act === conf.actionType.open) {
                 terminal.sendText(`cd "${vscode.Uri.joinPath(_uri, '..').fsPath}"`);
             }
             else {
@@ -199,10 +195,10 @@ export async function activate(context: vscode.ExtensionContext) {
                         return r + `>> ${logFilename} \n type ${logFilename}`;
                     }
                 }
-                if (type === actionType.run) {
+                if (act === conf.actionType.run) {
                     action.run.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
                 }
-                if (type === actionType.debug) {
+                if (act === conf.actionType.debug) {
                     action.debug.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
                 }
                 const logUri = vscode.Uri.joinPath(folder, logFilename);
@@ -234,8 +230,8 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     context.subscriptions.push(
-        vscode.commands.registerCommand('masm-tasm.openEmulator', (uri: vscode.Uri) => singleFileMode(actionType.open, uri)),
-        vscode.commands.registerCommand('masm-tasm.runASM', (uri: vscode.Uri) => singleFileMode(actionType.run, uri)),
-        vscode.commands.registerCommand('masm-tasm.debugASM', (uri: vscode.Uri) => singleFileMode(actionType.debug, uri))
+        vscode.commands.registerCommand('masm-tasm.openEmulator', (uri: vscode.Uri) => singleFileMode(conf.actionType.open, uri)),
+        vscode.commands.registerCommand('masm-tasm.runASM', (uri: vscode.Uri) => singleFileMode(conf.actionType.run, uri)),
+        vscode.commands.registerCommand('masm-tasm.debugASM', (uri: vscode.Uri) => singleFileMode(conf.actionType.debug, uri))
     );
 }

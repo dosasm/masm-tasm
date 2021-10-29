@@ -22,6 +22,12 @@ export enum DosEmulatorType {
     jsdos = 'jsdos',
 }
 
+export enum actionType {
+    open,
+    run,
+    debug
+}
+
 import * as vscode from 'vscode';
 
 class ExtensionConfiguration {

@@ -19,7 +19,7 @@ export class HoverFromMarkdown {
     }
     static async create(uri: Uri): Promise<HoverFromMarkdown> {
         const arr = await fs.readFile(uri);
-        const str = arr.toString().replace(/\r\n/g, '\n');
+        const str = new TextDecoder().decode(arr).replace(/\r\n/g, '\n');
         const target: HoverInfoItem[] = [];
         const regex = /```yaml\n([\s\S]+?)\n```([\s\S]+?)(?=```)/g;
         let re = regex.exec(str);

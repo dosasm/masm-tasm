@@ -1,4 +1,5 @@
 import { Uri, workspace } from "vscode";
+import { logger } from "../utils/logger";
 
 const fs = workspace.fs;
 
@@ -28,10 +29,11 @@ export class FELIX {
     static async create(fileuri: Uri): Promise<FELIX> {
         const arr = await fs.readFile(fileuri);
         try {
-            const json = JSON.parse(arr.toString());
+            const data = new TextDecoder().decode(arr);
+            const json = JSON.parse(data);
             return new FELIX(json);
         } catch (e) {
-            console.error(e, arr.toString());
+            console.error(e);
         }
         throw new Error();
     }

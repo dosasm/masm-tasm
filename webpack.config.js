@@ -75,7 +75,7 @@ const webExtensionConfig = {
         mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
         extensions: ['.ts', '.js'], // support ts-files and js-files
         alias: {
-            'node-fetch': './browser-fetch'
+            // 'node-fetch': './browser-fetch'
             // provides alternate implementation for node module and source files
         },
         fallback: {
@@ -83,7 +83,8 @@ const webExtensionConfig = {
             // see https://webpack.js.org/configuration/resolve/#resolvefallback
             // for the list of Node.js core module polyfills.
             assert: require.resolve('assert'),
-            path: require.resolve('path-browserify')
+            path: require.resolve('path-browserify'),
+            "node-fetch": false
         },
     },
     module: {
