@@ -286,7 +286,7 @@
     "pretest": "tsc -p ./",
     "test": "node ./dist/test/runTest.js",
     "pretest-web": "yarn run compile",
-    "test-web": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. --extensionTestsPath=dist/web/test/suite/index.js",
+    "test-web": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../vscode-dosbox ./samples",
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
