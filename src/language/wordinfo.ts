@@ -6,39 +6,39 @@ export function isNumberStr(str: string): boolean {
 	return false;
 }
 const asciiname: string[] = [
-	"NUL" + localize("ascii.NUL", "(NULL)"),
-	"SOH" + localize("ascii.SOH", "(Start Of Headling)"),
-	"STX" + localize("ascii.STX", "(Start Of Text)"),
-	"ETX" + localize("ascii.ETX", "(End Of Text)"),
-	"EOT" + localize("ascii.EOT", "(End Of Transmission)"),
-	"ENQ" + localize("ascii.ENQ", "(Enquiry)"),
-	"ACK" + localize("ascii.ACK", "(Acknowledge)"),
-	"BEL" + localize("ascii.BEL", "(Bell)"),
-	"BS " + localize("ascii.BS", "(Backspace)"),
-	"HT " + localize("ascii.HT", "(Horizontal Tab)"),
-	"LF/NL" + localize("ascii.LFNL", "(Line Feed/New Line)"),
-	"VT " + localize("ascii.VT", "(Vertical Tab)"),
-	"FF/NP " + localize("ascii.FFNP", "(Form Feed/New Page)"),
-	"CR" + localize("ascii.CR", "(Carriage Return)	"),
-	"SO" + localize("ascii.SO", "(Shift Out)"),
-	"SI" + localize("ascii.SI", "(Shift In)"),
-	"DLE" + localize("ascii.DLE", "(Data Link Escape)"),
-	"DC1/XON" + localize("ascii.DC1", "(Device Control 1/Transmission On)"),
-	"DC2" + localize("ascii.DC2", "(Device Control 2)"),
-	"DC3/XOFF" + localize("ascii.DC3", "(Device Control 3/Transmission Off)"),
-	"DC4" + localize("ascii.DC4", "(Device Control 4)"),
-	"NAK" + localize("ascii.NAK", "(Negative Acknowledge)"),
-	"SYN" + localize("ascii.SYN", "(Synchronous Idle)"),
-	"ETB" + localize("ascii.ETB", "(End of Transmission Block)	"),
-	"CAN" + localize("ascii.CAN", "(Cancel)"),
-	"EM" + localize("ascii.EM", "(End of Medium)"),
-	"SUB" + localize("ascii.SUB", "(Substitute)"),
-	"ESC" + localize("ascii.ESC", "(Escape)"),
-	"FS" + localize("ascii.FS", "(File Separator)"),
-	"GS" + localize("ascii.GS", "(Group Separator)"),
-	"RS" + localize("ascii.RS", "(Record Separator)"),
-	"US" + localize("ascii.US", "(Unit Separator)"),
-	localize("ascii.space", "(Space)	"),
+	"NUL" + localize("ascii.NUL",),
+	"SOH" + localize("ascii.SOH",),
+	"STX" + localize("ascii.STX",),
+	"ETX" + localize("ascii.ETX",),
+	"EOT" + localize("ascii.EOT",),
+	"ENQ" + localize("ascii.ENQ",),
+	"ACK" + localize("ascii.ACK",),
+	"BEL" + localize("ascii.BEL",),
+	"BS " + localize("ascii.BS",),
+	"HT " + localize("ascii.HT",),
+	"LF/NL" + localize("ascii.LFNL",),
+	"VT " + localize("ascii.VT",),
+	"FF/NP " + localize("ascii.FFNP",),
+	"CR" + localize("ascii.CR",),
+	"SO" + localize("ascii.SO",),
+	"SI" + localize("ascii.SI",),
+	"DLE" + localize("ascii.DLE",),
+	"DC1/XON" + localize("ascii.DC1",),
+	"DC2" + localize("ascii.DC2",),
+	"DC3/XOFF" + localize("ascii.DC3",),
+	"DC4" + localize("ascii.DC4",),
+	"NAK" + localize("ascii.NAK",),
+	"SYN" + localize("ascii.SYN",),
+	"ETB" + localize("ascii.ETB",),
+	"CAN" + localize("ascii.CAN",),
+	"EM" + localize("ascii.EM",),
+	"SUB" + localize("ascii.SUB",),
+	"ESC" + localize("ascii.ESC",),
+	"FS" + localize("ascii.FS",),
+	"GS" + localize("ascii.GS",),
+	"RS" + localize("ascii.RS",),
+	"US" + localize("ascii.US",),
+	localize("ascii.space",),
 	"!", "\" ", "#",
 	"$", "%", "&", "'", "(",
 	")", "*", "+", ",", "-",
@@ -59,15 +59,15 @@ const asciiname: string[] = [
 	"t", "u", "v", "w", "x",
 	"y", "z", "{", "|", "}",
 	"~",
-	"DEL" + localize("ascii.DEL", "(Delete)"),
+	"DEL" + localize("ascii.DEL"),
 ];
 export function getNumMsg(word: string): string {
 	const base: number = word.endsWith('h') ? 16 : word.endsWith('q') ? 8 : word.endsWith('b') ? 2 : 10;
 	const value: number = Number.parseInt(word, base);
-	const hex = localize("num.hex", "Hexadecimal  Number");
-	const oct = localize("num.oct", "Octal  Number");
-	const dec = localize("num.dec", "Decimal  Number");
-	const bin = localize("num.bin", "Binary  Number");
+	const hex = localize("num.hex",);
+	const oct = localize("num.oct",);
+	const dec = localize("num.dec",);
+	const bin = localize("num.bin",);
 	let s = "(" + (base === 16 ? hex : base === 8 ? oct : base === 10 ? dec : bin) + ") " + word + ":\n\n";
 	s += " `DEC`: " + value.toString(10) + "D\n\n";
 	s += " `HEX`: " + value.toString(16) + "H\n\n";
@@ -103,29 +103,29 @@ export function getType(type: KeywordType | string): string {
 	}
 	switch (itsType) {
 		case KeywordType.Instruction:
-			return localize("keykind.Command", "(Opcode mnemonics)");
+			return localize("keykind.Command");
 		case KeywordType.MemoryAllocation:
-			return localize("keykind.Memory", "(Data definitions)");
+			return localize("keykind.Memory",);
 		case KeywordType.PreCompileCommand:
-			return localize("keykind.Instruction", "(Assembly directives)");
+			return localize("keykind.Instruction",);
 		case KeywordType.Register:
-			return localize("keykind.Register", "(Register)");
+			return localize("keykind.Register",);
 		case KeywordType.SavedWord:
-			return localize("keykind.Saved", "(Saved)");
+			return localize("keykind.Saved",);
 		case KeywordType.Size:
-			return localize("keykind.Size", "(Size)");
+			return localize("keykind.Size",);
 		case KeywordType.Label:
-			return localize("keykind.Label", "(Label)");
+			return localize("keykind.Label",);
 		case KeywordType.Macro:
-			return localize("keykind.Macro", "(Macro)");
+			return localize("keykind.Macro",);
 		case KeywordType.Procedure:
-			return localize("keykind.Procedure", "(Procedure)");
+			return localize("keykind.Procedure",);
 		case KeywordType.Structure:
-			return localize("keykind.Structure", "(Structure)");
+			return localize("keykind.Structure",);
 		case KeywordType.Variable:
-			return localize("keykind.Variable", "(Variable)");
+			return localize("keykind.Variable",);
 		case KeywordType.Segment:
-			return localize("keykind.Segment", "(Segment)");
+			return localize("keykind.Segment",);
 	}
 	return type.toString();
 }

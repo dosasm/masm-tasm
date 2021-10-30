@@ -31,6 +31,17 @@ export interface AsmResult {
     warn?: number
 }
 
+function actionMessage(act: conf.actionType, file: string): string {
+    switch (act) {
+        case conf.actionType.open:
+            return logger.localize("ASM.openemu.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+        case conf.actionType.run:
+            return logger.localize("ASM.run.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+        case conf.actionType.debug:
+            return logger.localize("ASM.debug.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+    }
+}
+
 export async function activate(context: vscode.ExtensionContext) {
     statusBar.activate(context);
     const diag = Diag.activate(context);
@@ -39,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const api: API = await vscode_dosbox?.activate();
 
     async function singleFileMode(act: actionType, _uri: vscode.Uri): Promise<AsmResult> {
-        logger.actionLog(act, _uri);
+        logger.channel(actionMessage(act, _uri.fsPath));
         const actions: ACTIONS | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.actions');
         if (actions === undefined) {
             throw new Error("configurate `masmtasm.ASM.actions` first");
