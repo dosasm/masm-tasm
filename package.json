@@ -238,6 +238,17 @@
             "SDL.output": "opengl"
           },
           "markdownDescription": "%config.boxconfig.description%"
+        },
+        "masmtasm.dosboxX.config": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {
+            "SDL.windowresolution": "1024x640",
+            "SDL.output": "opengl"
+          },
+          "markdownDescription": "%config.boxXconfig.description%"
         }
       }
     },
