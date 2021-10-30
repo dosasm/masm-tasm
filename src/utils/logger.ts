@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { actionMessage, localize } from './i18n';
-import * as conf from './configuration';
+import { localize } from './i18n';
 
 class Logger {
     outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('masm-tasm');
@@ -8,13 +7,12 @@ class Logger {
     warn = console.warn;
     error = console.error;
     localize = localize;
-    actionLog(act: conf.actionType, uri: vscode.Uri) {
-        const message = actionMessage(act, uri.fsPath, conf.extConf.emulator, conf.extConf.asmType);
-        this.channel('\n' + message + '\n').show();
-    }
 
-    channel(value: string) {
-        this.outputChannel.append(value);
+    channel(...vals: string[]) {
+        for (const val of vals) {
+            this.outputChannel.append(`\n${val.trim()}`);
+        }
+        this.outputChannel.append('\n');
         return this.outputChannel;
     }
 }

@@ -26,6 +26,17 @@ export interface AsmResult {
     warn?: number
 }
 
+function actionMessage(act: conf.actionType, file: string): string {
+    switch (act) {
+        case conf.actionType.open:
+            return logger.localize("ASM.openemu.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+        case conf.actionType.run:
+            return logger.localize("ASM.run.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+        case conf.actionType.debug:
+            return logger.localize("ASM.debug.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+    }
+}
+
 export async function activate(context: vscode.ExtensionContext) {
     statusBar.activate(context);
     const diag = Diag.activate(context);
@@ -37,7 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const seperateSpaceFolder = vscode.Uri.joinPath(context.globalStorageUri, "workspace");
 
     async function singleFileMode(act: conf.actionType, _uri: vscode.Uri): Promise<AsmResult> {
-        logger.actionLog(act, _uri);
+        logger.channel(actionMessage(act, _uri.fsPath));
 
         if (nodefs.existsSync(seperateSpaceFolder.fsPath)) {
             await fs.delete(seperateSpaceFolder, { recursive: true, useTrash: false });
@@ -102,6 +113,26 @@ export async function activate(context: vscode.ExtensionContext) {
 
             const box = conf.extConf.emulator === conf.DosEmulatorType.dosboxX ? api.dosboxX : api.dosbox;
             await box.fromBundle(bundle, assemblyToolsFolder);
+
+            switch (vscode.workspace.getConfiguration('masm-tasm').get('dosbox.run')) {
+                case "keep":
+                    break;
+                case "exit":
+                    autoexec.push('exit');
+                    break;
+                case 'pause':
+                    autoexec.push('pause', 'exit');
+                    break;
+                case "choose":
+                default:
+                    autoexec.push(
+                        "@choice Do you need to keep the DOSBox",
+                        "@IF ERRORLEVEL 2 exit",
+                        "@IF ERRORLEVEL 1 echo on"
+                    );
+                    break;
+            }
+
             box.updateAutoexec(autoexec);
 
             if (act !== conf.actionType.open) {
@@ -221,6 +252,16 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         const diagnose = diag.process(result, doc, conf.extConf.asmType);
+        if (diagnose) {
+            if (diagnose?.error > 0) {
+                vscode.window.showErrorMessage(logger.localize("ASM.error"));
+                logger.outputChannel.show();
+            }
+            logger.channel(
+                logger.localize('diag.msg', diagnose.error.toString(), diagnose.warn.toString()),
+                "\n\t" + result.replace(/\r/g, "").replace(/[\n]*/g, "\n\t")
+            );
+        }
 
         return {
             message: result,
@@ -229,9 +270,14 @@ export async function activate(context: vscode.ExtensionContext) {
         };
     }
 
+    const workingMode = singleFileMode;
+
+    const msg = logger.localize("ASM.singleFileMode", seperateSpaceFolder.fsPath);
+    logger.channel(msg);
+
     context.subscriptions.push(
-        vscode.commands.registerCommand('masm-tasm.openEmulator', (uri: vscode.Uri) => singleFileMode(conf.actionType.open, uri)),
-        vscode.commands.registerCommand('masm-tasm.runASM', (uri: vscode.Uri) => singleFileMode(conf.actionType.run, uri)),
-        vscode.commands.registerCommand('masm-tasm.debugASM', (uri: vscode.Uri) => singleFileMode(conf.actionType.debug, uri))
+        vscode.commands.registerCommand('masm-tasm.openEmulator', (uri: vscode.Uri) => workingMode(conf.actionType.open, uri)),
+        vscode.commands.registerCommand('masm-tasm.runASM', (uri: vscode.Uri) => workingMode(conf.actionType.run, uri)),
+        vscode.commands.registerCommand('masm-tasm.debugASM', (uri: vscode.Uri) => workingMode(conf.actionType.debug, uri))
     );
 }

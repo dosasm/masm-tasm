@@ -101,29 +101,29 @@
       {
         "command": "masm-tasm.cleanalldiagnose",
         "title": "%command.cleanalldianose%"
-      },
-      {
-        "command": "masm-tasm.dosboxhere",
-        "title": "%command.dosboxhere%"
       }
     ],
     "configuration": {
       "type": "object",
       "title": "MASM/TASM",
       "properties": {
+        "masmtasm.ASM.mode": {
+          "type": "string",
+          "default": "single file",
+          "enum": [
+            "singla file"
+          ],
+          "markdownDescription": "choose working Mode"
+        },
         "masmtasm.ASM.assembler": {
           "type": "string",
           "default": "TASM",
-          "description": "%config.masmortasm.description%",
+          "description": "%config.assembler.description%",
           "enum": [
             "TASM",
             "MASM",
             "MASM-v5.00",
             "MASM-v6.11"
-          ],
-          "enumDescriptions": [
-            "%config.masmortasm.enum1%",
-            "%config.masmortasm.enum2%"
           ]
         },
         "masmtasm.ASM.actions": {
@@ -192,14 +192,9 @@
           "enumDescriptions": [
             "%config.emulator.jsdos%",
             "%config.emulator.dosbox%",
-            "%config.emulator.player%",
-            "%config.emulator.auto%"
+            "%config.emulator.dosboxX%",
+            "%config.emulator.player%"
           ]
-        },
-        "masmtasm.ASM.singleFileMode": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "%config.singleFileMode%"
         },
         "masmtasm.ASM.savefirst": {
           "type": "boolean",

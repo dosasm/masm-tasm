@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	//provide run and debug features via DOS emulators
 	asm.activate(context);
 
-	console.log(localize("activate.hello", 'Congratulations, your extension "masm-tasm" is now active!'));
+	console.log(localize("activate.hello"));
 }
 
 // this method is called when your extension is deactivated
