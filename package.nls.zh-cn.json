@@ -15,7 +15,8 @@
 	"config.boxrun.enum2": "运行程序之后直接关闭DOSBOX",
 	"config.boxrun.enum3": "运行程序之后先停顿一下，输入任意字符后关闭DOSBOX窗口",
 	"config.boxrun.choose": "使用choose命令，来选择是否关闭dosbox",
-	"config.boxconfig.description": "dosbox的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox官网的说明](https://www.dosbox.com/wiki/Dosbox.conf),如果需要设置AUTOEXEC,可以使用格式如`\"AUTOEXEC\":\"echo hi\\ndir\"`",
+	"config.boxconfig.description": "dosbox的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox官网的说明](https://www.dosbox.com/wiki/Dosbox.conf),请勿设置`autoexec`",
+	"config.boxXconfig.description": "dosbox-x的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox-x官网的说明](https://dosbox-x.com/wiki/),请勿设置`autoexec`",
 	"config.hover": "是否显示悬浮提示(hover)，可能需要重启vscode来应用变更",
 	"config.PLF": "使用提供大纲，跳到定义，查找引用等programmatic features"
 }

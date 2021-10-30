@@ -109,28 +109,40 @@ export async function activate(context: vscode.ExtensionContext) {
                 autoexec.push(...action.debug.map(cb));
             }
 
-            autoexec.push("exit");
-
             const box = conf.extConf.emulator === conf.DosEmulatorType.dosboxX ? api.dosboxX : api.dosbox;
             await box.fromBundle(bundle, assemblyToolsFolder);
 
-            switch (vscode.workspace.getConfiguration('masm-tasm').get('dosbox.run')) {
-                case "keep":
-                    break;
-                case "exit":
-                    autoexec.push('exit');
-                    break;
-                case 'pause':
-                    autoexec.push('pause', 'exit');
-                    break;
-                case "choose":
-                default:
-                    autoexec.push(
-                        "@choice Do you need to keep the DOSBox",
-                        "@IF ERRORLEVEL 2 exit",
-                        "@IF ERRORLEVEL 1 echo on"
-                    );
-                    break;
+            if (act !== conf.actionType.open) {
+                switch (vscode.workspace.getConfiguration('masm-tasm').get('dosbox.run')) {
+                    case "keep":
+                        break;
+                    case "exit":
+                        autoexec.push('exit');
+                        break;
+                    case 'pause':
+                        autoexec.push('pause', 'exit');
+                        break;
+                    case "choose":
+                    default:
+                        autoexec.push(
+                            "@choice Do you need to keep the DOSBox",
+                            "@IF ERRORLEVEL 2 exit",
+                            "@IF ERRORLEVEL 1 echo on"
+                        );
+                        break;
+                }
+            }
+
+            const dosboxConf: { [id: string]: string } | undefined =
+                conf.extConf.emulator === conf.DosEmulatorType.dosboxX
+                    ? vscode.workspace.getConfiguration("masmtasm").get("dosbox.config")
+                    : vscode.workspace.getConfiguration("masmtasm").get("dosboxX.config");
+            if (dosboxConf) {
+                for (const id in dosboxConf) {
+                    const [section, key] = id.toLowerCase().split('.');
+                    const value = dosboxConf[id];
+                    box.updateConf(section, key, value);
+                }
             }
 
             box.updateAutoexec(autoexec);
