@@ -8,6 +8,7 @@ import * as Diag from '../diagnose/main';
 import * as conf from '../utils/configuration';
 import { messageCollector } from '../diagnose/messageCollector';
 import { logger } from '../utils/logger';
+import { getFiles } from './util';
 
 const fs = vscode.workspace.fs;
 
@@ -279,7 +280,7 @@ export async function activate(context: vscode.ExtensionContext) {
             }
             logger.channel(
                 logger.localize('diag.msg', diagnose.error.toString(), diagnose.warn.toString()),
-                "\n\t" + result.replace(/\r/g, "").replace(/[\n]*/g, "\n\t")
+                "\n\t" + result.replace(/\r/g, "").replace(/[\n]+/g, "\n\t")
             );
         }
 
@@ -325,8 +326,8 @@ export async function activate(context: vscode.ExtensionContext) {
         if (workspaceFolder === undefined) {
             throw new Error("can't get current workspace of file:" + _uri.fsPath);
         }
-        const rel = path.relative(workspaceFolder.uri.fsPath, _uri.fsPath);
-        const fileInfo = path.parse(rel);
+        const fileRel = path.relative(workspaceFolder.uri.fsPath, _uri.fsPath);
+        const fileInfo = path.parse(fileRel);
         const folder = vscode.Uri.joinPath(_uri, "..");
 
         if (conf.extConf.emulator === conf.DosEmulatorType.dosbox || conf.extConf.emulator === conf.DosEmulatorType.dosboxX) {
@@ -334,6 +335,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 `mount c "${assemblyToolsFolder.fsPath}""`,
                 `mount d "${workspaceFolder.uri.fsPath}""`,
                 'd:',
+                `cd ${fileInfo.dir}`,
                 ...action.before
             ];
             const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
@@ -342,8 +344,8 @@ export async function activate(context: vscode.ExtensionContext) {
             }
             function cb(val: string) {
                 const r = val
-                    .replace("${file}", path.resolve(fileInfo.dir, fileInfo.base))
-                    .replace("${filename}", path.resolve(fileInfo.dir, fileInfo.name));
+                    .replace("${file}", fileInfo.base)
+                    .replace("${filename}", fileInfo.name);
                 if (val.startsWith('>')) {
                     return r.replace(">", "");
                 }
@@ -423,11 +425,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
         if (conf.extConf.emulator === conf.DosEmulatorType.jsdos) {
             await api.jsdos.jszip.loadAsync(bundle);
-            api.jsdos.jszip.file('code/' + fileInfo.base, doc.getText());
+            for await (const f of getFiles(workspaceFolder.uri.fsPath)) {
+                const rel = path.relative(workspaceFolder.uri.fsPath, f);
+                const dst = path.posix.join('code/', rel);
+                const _data = await fs.readFile(vscode.Uri.file(f));
+                const fileContent = new TextDecoder().decode(_data);
+                api.jsdos.jszip.file(dst, fileContent);
+            }
             const autoexec = [
                 `mount c .`,
                 `mount d ./code`,
                 'd:',
+                `cd ${fileInfo.dir}`,
                 ...action.before
             ];
             function cb(val: string) {
@@ -518,7 +527,7 @@ export async function activate(context: vscode.ExtensionContext) {
             }
             logger.channel(
                 logger.localize('diag.msg', diagnose.error.toString(), diagnose.warn.toString()),
-                "\n\t" + result.replace(/\r/g, "").replace(/[\n]*/g, "\n\t")
+                "\n\t" + result.replace(/\r/g, "").replace(/[\n]+/g, "\n\t")
             );
         }
 
@@ -541,8 +550,6 @@ export async function activate(context: vscode.ExtensionContext) {
             logger.channel(msg);
             break;
     }
-
-
 
     context.subscriptions.push(
         vscode.commands.registerCommand('masm-tasm.openEmulator', (uri: vscode.Uri) => workingMode(conf.actionType.open, uri)),

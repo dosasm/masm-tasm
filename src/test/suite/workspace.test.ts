@@ -12,7 +12,7 @@ import { DosEmulatorType, Assembler } from '../../utils/configuration';
 
 const samplesUri = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/');
 
-suite('single file mode Test Suite', function () {
+suite('workspace mode Test Suite', function () {
 	vscode.window.showInformationMessage('Start all tests.');
 	const MASMorTASM = [
 		Assembler['MASM-v5.00'],
@@ -27,8 +27,8 @@ suite('single file mode Test Suite', function () {
 
 	const filelist: [string, number][] = [
 		['1.asm', 0],
-		['3中文路径hasError.asm', 1],
-		// ['2.asm', DIAGCODE.ok],
+		// ['3中文路径hasError.asm', 1],
+		['multi/2.asm', 0],
 	];
 
 	const args: [string, DIAGCODE, DosEmulatorType, Assembler][] = [];
@@ -62,7 +62,7 @@ function testAsmCode(file: string, shouldErr: number, emu: DosEmulatorType, asm:
 
 			//update settings
 			await vscode.workspace.getConfiguration('masmtasm').update("dosbox.run", "exit");
-			await vscode.workspace.getConfiguration('masmtasm').update("ASM.mode", "single file");
+			await vscode.workspace.getConfiguration('masmtasm').update("ASM.mode", "workspace");
 			await vscode.workspace.getConfiguration('masmtasm').update("ASM.emulator", emu);
 			await vscode.workspace.getConfiguration('masmtasm').update("ASM.assembler", asm);
 
