@@ -114,6 +114,10 @@
             "single file",
             "workspace"
           ],
+          "markdownEnumDescriptions": [
+            "%config.mode.singleFile%",
+            "%config.mode.workspace%"
+          ],
           "markdownDescription": "choose working Mode"
         },
         "masmtasm.ASM.assembler": {

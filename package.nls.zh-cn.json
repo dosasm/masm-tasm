@@ -3,6 +3,8 @@
 	"editor.runAsm": "运行当前程序(汇编+链接+运行)",
 	"editor.debugAsm": "调试当前程序(汇编+链接+调试)",
 	"command.cleanalldianose": "MASM/TASM: 清除MASM/TASM的所有问题信息",
+	"config.mode.singleFile": "针对所有代码存储在一个文件中的模式，插件会首先复制文件并对副本进行操作",
+	"config.mode.workspace": "针对文件存在依赖的模式，插件会直接在当前工作文件夹中操作。\n\n- dosbox会直接在工作区文件夹挂载，jsdos会复制整个工作区所有文件\n- 注意DOS系统常常需要遵守8.3规则",
 	"config.assembler.description": "选择使用的汇编工具",
 	"config.emulator.description": "选择使用的DOS环境模拟器",
 	"config.emulator.jsdos": "使用jsdos在webview中运行jsdos(wdosbox)来提供DOS环境",

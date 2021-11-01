@@ -31,6 +31,9 @@ export enum actionType {
 import * as vscode from 'vscode';
 
 class ExtensionConfiguration {
+    public get _conf() {
+        return vscode.workspace.getConfiguration('masmtasm');
+    }
     public get asmType(): Assembler {
         const asmType: Assembler | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.assembler');
         if (asmType === 'MASM') {
