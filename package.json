@@ -32,8 +32,8 @@
     }
   ],
   "activationEvents": [
-    "onCommand:masm-tasm.dosboxhere",
     "onLanguage:assembly",
+    "onLanguage:asm-collection",
     "onLanguage:tasm",
     "onLanguage:masm"
   ],
