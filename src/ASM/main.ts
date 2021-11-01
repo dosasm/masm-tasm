@@ -12,15 +12,6 @@ import { getFiles } from './util';
 
 const fs = vscode.workspace.fs;
 
-type ACTIONS = {
-    [id: string]: {
-        baseBundle: string,
-        before: string[],
-        run: string[],
-        debug: string[]
-    }
-};
-
 export interface AsmResult {
     message?: string,
     error?: number,
@@ -65,12 +56,6 @@ export async function activate(context: vscode.ExtensionContext) {
         await emptyFolder(assemblyToolsFolder.fsPath);
         await emptyFolder(seperateSpaceFolder.fsPath);
 
-        const actions: ACTIONS | undefined = extConfig.get('ASM.actions');
-        if (actions === undefined) {
-            throw new Error("configurate `masmtasm.ASM.actions` first");
-        }
-        const action = actions[conf.extConf.asmType];
-
         const doc = await vscode.workspace.openTextDocument(_uri);
         if (doc.isDirty && extConfig.get('ASM.savefirst')) {
             await doc.save();
@@ -78,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         const bundlePath = vscode.Uri.joinPath(
             context.extensionUri,
-            action["baseBundle"].replace('<built-in>/', "resources/")
+            conf.extConf.action["baseBundle"].replace('<built-in>/', "resources/")
         );
         const bundle = await fs.readFile(bundlePath);
 
@@ -95,9 +80,12 @@ export async function activate(context: vscode.ExtensionContext) {
             const autoexec = [
                 `mount c "${assemblyToolsFolder.fsPath}""`,
                 `mount d "${folder.fsPath}""`,
-                'd:',
-                ...action.before
+                'd:'
             ];
+            const before = conf.extConf.action.before;
+            if (before) {
+                autoexec.push(...before);
+            }
             const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
             if (nodefs.existsSync(logUri.fsPath)) {
                 await fs.delete(logUri);
@@ -112,10 +100,10 @@ export async function activate(context: vscode.ExtensionContext) {
                 return r + " >>C:\\" + logFilename;
             }
             if (act === conf.actionType.run) {
-                autoexec.push(...action.run.map(cb));
+                autoexec.push(...conf.extConf.action.run.map(cb));
             }
             if (act === conf.actionType.debug) {
-                autoexec.push(...action.debug.map(cb));
+                autoexec.push(...conf.extConf.action.debug.map(cb));
             }
 
             const box = conf.extConf.emulator === conf.DosEmulatorType.dosboxX ? api.dosboxX : api.dosbox;
@@ -189,9 +177,12 @@ export async function activate(context: vscode.ExtensionContext) {
             const autoexec = [
                 `mount c .`,
                 `mount d ./code`,
-                'd:',
-                ...action.before
+                'd:'
             ];
+            const before = conf.extConf.action.before;
+            if (before) {
+                autoexec.push(...before);
+            }
             function cb(val: string) {
                 const r = val
                     .replace("${file}", fileInfo.base)
@@ -202,10 +193,10 @@ export async function activate(context: vscode.ExtensionContext) {
                 return r;
             }
             if (act === conf.actionType.run) {
-                autoexec.push(...action.run.map(cb));
+                autoexec.push(...conf.extConf.action.run.map(cb));
             }
             if (act === conf.actionType.debug) {
-                autoexec.push(...action.debug.map(cb));
+                autoexec.push(...conf.extConf.action.debug.map(cb));
             }
             api.jsdos.updateAutoexec(autoexec);
             const webview = await api.jsdos.runInWebview();
@@ -227,11 +218,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
             terminal.show();
             api.dosbox.fromBundle(bundle, assemblyToolsFolder);
-            action.before.forEach(
-                val => {
-                    (terminal as vscode.Terminal).sendText(val.replace('C:', assemblyToolsFolder.fsPath));
-                }
-            );
+            const { before, run, debug } = conf.extConf.action;
+            if (before) {
+                before.forEach(
+                    val => {
+                        (terminal as vscode.Terminal).sendText(val.replace('C:', assemblyToolsFolder.fsPath));
+                    }
+                );
+            }
+
             if (act === conf.actionType.open) {
                 terminal.sendText(`cd "${vscode.Uri.joinPath(_uri, '..').fsPath}"`);
             }
@@ -248,10 +243,10 @@ export async function activate(context: vscode.ExtensionContext) {
                     }
                 }
                 if (act === conf.actionType.run) {
-                    action.run.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
+                    run.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
                 }
                 if (act === conf.actionType.debug) {
-                    action.debug.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
+                    debug.map(cb).forEach(val => (terminal as vscode.Terminal).sendText(val));
                 }
                 const logUri = vscode.Uri.joinPath(folder, logFilename);
                 const [hook, promise] = messageCollector();
@@ -298,11 +293,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         emptyFolder(assemblyToolsFolder.fsPath);
 
-        const actions: ACTIONS | undefined = extConfig.get('ASM.actions');
-        if (actions === undefined) {
-            throw new Error("configurate `masmtasm.ASM.actions` first");
-        }
-        const action = actions[conf.extConf.asmType];
+        const action = conf.extConf.action;
 
         const doc = await vscode.workspace.openTextDocument(_uri);
         if (doc.isDirty && extConfig.get('ASM.savefirst')) {
@@ -335,9 +326,11 @@ export async function activate(context: vscode.ExtensionContext) {
                 `mount c "${assemblyToolsFolder.fsPath}""`,
                 `mount d "${workspaceFolder.uri.fsPath}""`,
                 'd:',
-                `cd ${fileInfo.dir}`,
-                ...action.before
+                `cd ${fileInfo.dir}`
             ];
+            if (action.before) {
+                autoexec.push(...action.before);
+            }
             const logUri = vscode.Uri.joinPath(assemblyToolsFolder, logFilename);
             if (nodefs.existsSync(logUri.fsPath)) {
                 await fs.delete(logUri);
@@ -435,9 +428,11 @@ export async function activate(context: vscode.ExtensionContext) {
                 `mount c .`,
                 `mount d ./code`,
                 'd:',
-                `cd ${fileInfo.dir}`,
-                ...action.before
+                `cd ${fileInfo.dir}`
             ];
+            if (action.before) {
+                autoexec.push(...action.before);
+            }
             function cb(val: string) {
                 const r = val
                     .replace("${file}", fileInfo.base)
@@ -473,7 +468,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             terminal.show();
             api.dosbox.fromBundle(bundle, assemblyToolsFolder);
-            action.before.forEach(
+            action.before?.forEach(
                 val => {
                     (terminal as vscode.Terminal).sendText(val.replace('C:', assemblyToolsFolder.fsPath));
                 }

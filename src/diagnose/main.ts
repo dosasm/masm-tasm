@@ -3,18 +3,21 @@
  * 
  * @file diagnose/main.ts
  */
-
 import { Diagnostic, DiagnosticCollection, DiagnosticRelatedInformation, DiagnosticSeverity, languages, Location, TextDocument, Uri } from 'vscode';
 import * as vscode from 'vscode';
-import { Assembler } from '../utils/configuration';
+import { extConf } from '../utils/configuration';
 import { masmDiagnose } from './diagnoseMASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
 import { tasmDiagnose } from './diagnoseTASM';
 import { SeeinCPPDOCS } from './codeAction';
 
+export enum Assembler {
+    MASM = "MASM",
+    TASM = "TASM"
+}
 
 export function activate(context: vscode.ExtensionContext) {
-    if (vscode.workspace.getConfiguration('masm-tasm').get('ASM.MASMorTASM') === Assembler.MASM) {
+    if (extConf.asmType.includes("MASM")) {
         const disposable: vscode.Disposable = vscode.languages.registerCodeActionsProvider('assembly', new SeeinCPPDOCS(), {
             providedCodeActionKinds: SeeinCPPDOCS.providedCodeActionKinds
         });
@@ -26,19 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     return diag;
-}
-
-export enum DIAGCODE {
-    /**null*/
-    null = -1,
-    /**no error and warning information */
-    ok,
-    /**has error information */
-    hasError,
-    /**has no error but has warning information */
-    hasWarn,
-    /**TODO: not a text of assembler's output */
-    notMSG
 }
 
 /**
@@ -62,27 +52,15 @@ export class AssemblerMessageDiagnose {
      * @param doc the document of source code
      * @param ASM MASM or TASM
      */
-    public process(AsmMsg: string, doc: TextDocument, ASM: Assembler): DIAGINFO | undefined {
+    public process(AsmMsg: string, doc: TextDocument, ASM: string): DIAGINFO | undefined {
         let diag: DIAGINFO | undefined;
-        switch (ASM) {
-            case Assembler.TASM:
-                diag = tasmDiagnose(AsmMsg, doc, this._tasmCollection);
-                break;
-            case Assembler['MASM-v5.00']:
-            case Assembler['MASM-v6.11']:
-                diag = masmDiagnose(AsmMsg, doc, this._masmCollection);
-                break;
-            default:
-                return undefined;
+        if (ASM.includes("MASM")) {
+            diag = masmDiagnose(AsmMsg, doc, this._masmCollection);
+        }
+        else if (ASM.includes("TASM")) {
+            diag = tasmDiagnose(AsmMsg, doc, this._tasmCollection);
         }
         if (diag) {
-            diag.code = DIAGCODE.ok;
-            if (diag.error !== 0) {
-                diag.code = DIAGCODE.hasError;
-            }
-            else if (diag.warn !== 0) {
-                diag.code = DIAGCODE.hasWarn;
-            }
             return diag;
         }
         return undefined;
@@ -103,7 +81,6 @@ export class AssemblerMessageDiagnose {
 
 /**the information of diagnostics */
 export interface DIAGINFO {
-    code?: DIAGCODE;
     error: number;
     warn: number;
     diagnostics?: Diagnostic[];

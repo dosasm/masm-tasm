@@ -4,7 +4,7 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import { AsmResult } from '../../ASM/main';
-import { DosEmulatorType, Assembler } from '../../utils/configuration';
+import { DosEmulatorType } from '../../utils/configuration';
 // import * as myExtension from '../../extension';
 
 const samplesUri = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/');
@@ -12,7 +12,7 @@ const samplesUri = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../sam
 suite('Extension Test Suite', () => {
     const file = '3中文路径hasError.asm';
     const emu = DosEmulatorType.msdos;
-    const asm = Assembler['MASM-v5.00'];
+    const asm = 'MASM-v5.00';
     const shouldErr = 1;
 
     test(`test file ${file} in ${emu} use ${asm} want should ${shouldErr} error`,

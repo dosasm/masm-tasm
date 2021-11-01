@@ -5,7 +5,6 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import { AsmResult } from '../../../ASM/main';
-import { DIAGCODE } from '../../../diagnose/main';
 import { DosEmulatorType, Assembler } from '../../../utils/configuration';
 
 // import * as myExtension from '../../extension';
@@ -19,9 +18,9 @@ const samplesUri = folders[0].uri;
 suite('workspace mode Test Suite', function () {
 	vscode.window.showInformationMessage('Start all tests.');
 	const MASMorTASM = [
-		Assembler['MASM-v5.00'],
-		Assembler['MASM-v6.11'],
-		Assembler.TASM,
+		'MASM-v5.00',
+		'MASM-v6.11',
+		'TASM',
 	];
 	const emulator: DosEmulatorType[] = [
 		// DosEmulatorType.dosbox,
@@ -35,7 +34,7 @@ suite('workspace mode Test Suite', function () {
 		['multi/2.asm', 0],
 	];
 
-	const args: [string, DIAGCODE, DosEmulatorType, Assembler][] = [];
+	const args: [string, number, DosEmulatorType, Assembler][] = [];
 	for (const file of filelist) {
 		for (const emu of emulator) {
 			for (const asm of MASMorTASM) {
@@ -56,10 +55,6 @@ function testAsmCode(file: string, shouldErr: number, emu: DosEmulatorType, asm:
 		async function () {
 			this.timeout('60s');
 			this.slow('20s');
-			//skip azure pipeline test for this condition
-			if (file === '3中文路径hasError.asm' && emu === DosEmulatorType.msdos && asm === Assembler.MASM && !process.env.LANG?.includes('zh_CN')) {
-				this.skip();
-			}
 
 			//open test file. NOTE: the extension will be activated when open .asm file
 			const samplefile = vscode.Uri.joinPath(samplesUri, file);

@@ -133,6 +133,48 @@
         },
         "masmtasm.ASM.actions": {
           "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "baseBundle": {
+                "type": "string",
+                "description": "The jsdos bundle of assembler tools"
+              },
+              "support": {
+                "type": "array",
+                "description": "The supported emulators. By default is `dosbox(-x)` and `jsdos`",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "before": {
+                "type": "array",
+                "description": "The commands to exec in open emulator and before `run` or `debug` the code",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "run": {
+                "type": "array",
+                "description": "The commands to run the code, add a `>` before the command if you need to prevent redirect the command's output",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "debug": {
+                "type": "array",
+                "description": "The commands to debug the code",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "baseBundle",
+              "run",
+              "debug"
+            ]
+          },
           "default": {
             "TASM": {
               "baseBundle": "<built-in>/TASM.jsdos",
@@ -142,7 +184,7 @@
               "run": [
                 "TASM ${file}",
                 "TLINK ${filename}",
-                "${filename}"
+                ">${filename}"
               ],
               "debug": [
                 "TASM /zi ${file}",
@@ -180,6 +222,12 @@
                 "masm ${file};",
                 "link ${filename}.OBJ;",
                 ">debug ${filename}.exe"
+              ],
+              "support": [
+                "jsdos",
+                "dosbox",
+                "dosboxX",
+                "msdos player"
               ]
             }
           }

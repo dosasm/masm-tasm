@@ -2,12 +2,18 @@
  * - MASM: including masm.exe,link.exe,debug.exe
  * - TASM: including tasm.exe,tlink.exe,TD.exe
  */
-export enum Assembler {
-    'MASM-v6.11' = 'MASM-v6.11',
-    'MASM-v5.00' = 'MASM-v5.00',
-    MASM = 'MASM',
-    TASM = 'TASM'
-}
+export type Assembler = string;
+
+type ACTION = {
+    baseBundle: string,
+    before?: string[],
+    run: string[],
+    debug: string[],
+    support?: string[],
+};
+export type ACTIONS = {
+    [id: string]: ACTION
+};
 
 /**the emulator for the 16bit DOS environment
  * - `dosbox` is the most famous one
@@ -34,13 +40,33 @@ class ExtensionConfiguration {
     public get _conf() {
         return vscode.workspace.getConfiguration('masmtasm');
     }
+
+    public get actions(): ACTIONS {
+        const actions: ACTIONS | undefined = this._conf.get("ASM.actions");
+        if (actions === undefined) {
+            throw new Error('`masmtasm.ASM.actions` is undefined');
+        }
+        return actions;
+    }
     public get asmType(): Assembler {
         const asmType: Assembler | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.assembler');
-        if (asmType === 'MASM') {
-            return Assembler['MASM-v6.11'];
+        if (asmType === undefined) {
+            throw new Error('`masmtasm.ASM.assembler` is undefined');
         }
-        return asmType ? asmType : Assembler.TASM;
+        if (Object.keys(this.actions).includes(asmType)) {
+            return asmType;
+        } else {
+            if (asmType === 'MASM' && Object.keys(this.actions).includes('MASM-v6.11')) {
+                return 'MASM-v6.11';
+            }
+            vscode.window.showErrorMessage(`${asmType} is not defined in "masmtasm.ASM.actions"`);
+            throw new Error(`${asmType} is not defined in "masmtasm.ASM.actions"`);
+        }
     }
+    public get action(): ACTION {
+        return this.actions[this.asmType];
+    }
+
     public get emulator(): DosEmulatorType {
         const emu: DosEmulatorType | undefined = vscode.workspace.getConfiguration('masmtasm').get('ASM.emulator');
         return emu ? emu : DosEmulatorType.jsdos;

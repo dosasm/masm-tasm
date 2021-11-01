@@ -10,23 +10,30 @@ const emu = [
     conf.DosEmulatorType.msdos
 ];
 
-const asm = [
-    conf.Assembler['MASM-v5.00'],
-    conf.Assembler['MASM-v6.11'],
-    conf.Assembler.TASM
-];
-
 const iterms: string[] = [];
-for (const e of emu) {
-    for (const a of asm) {
-        if (e === conf.DosEmulatorType.msdos) {
-            if (a === conf.Assembler.TASM || a === conf.Assembler['MASM-v6.11'])
-                continue;
-        }
+for (const a of Object.keys(conf.extConf.actions)) {
+    for (const e of emu) {
+        //if running in browser only use jsdos
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((process as any).browser && e !== conf.DosEmulatorType.jsdos) {
             continue;
         }
+
+        //ignore msdos player by default
+        if (conf.extConf.actions[a].support === undefined && e === conf.DosEmulatorType.msdos) {
+            continue;
+        }
+
+        //hide msdos player in nonwin system
+        if (process.platform !== "win32" && e === conf.DosEmulatorType.msdos) {
+            continue;
+        }
+
+        if (conf.extConf.actions[a].support) {
+            if (!conf.extConf.actions[a].support?.includes(e))
+                continue;
+        }
+
         iterms.push(e + '\t' + a);
     }
 }
@@ -39,10 +46,6 @@ function showStatus() {
 
 async function statusBarCommand() {
     const _conf = vscode.workspace.getConfiguration('masmtasm.ASM');
-
-    if (process.platform === 'win32') {
-        emu.push(conf.DosEmulatorType.msdos);
-    }
 
     const placeHolder = 'choose DOS environment emulator and assembler';
     const Selected = await vscode.window.showQuickPick(iterms, { placeHolder });
