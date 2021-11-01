@@ -538,22 +538,24 @@ export async function activate(context: vscode.ExtensionContext) {
         };
     }
 
-    const mode = vscode.workspace.getConfiguration('masmtasm').get('ASM.mode');
-    let workingMode = singleFileMode;
-    switch (mode) {
-        case "workspace":
-            workingMode = workspaceMode;
-            break;
-        case "single file":
-            workingMode = singleFileMode;
-            const msg = logger.localize("ASM.singleFileMode", seperateSpaceFolder.fsPath);
-            logger.channel(msg);
-            break;
-    }
+    const workingMode = () => {
+        const mode = conf.extConf._conf.get("ASM.mode");
+        switch (mode) {
+            case "workspace":
+                return workspaceMode;
+                break;
+            case "single file":
+            default:
+                const msg = logger.localize("ASM.singleFileMode", seperateSpaceFolder.fsPath);
+                logger.channel(msg);
+                return singleFileMode;
+                break;
+        }
+    };
 
     context.subscriptions.push(
-        vscode.commands.registerCommand('masm-tasm.openEmulator', (uri: vscode.Uri) => workingMode(conf.actionType.open, uri)),
-        vscode.commands.registerCommand('masm-tasm.runASM', (uri: vscode.Uri) => workingMode(conf.actionType.run, uri)),
-        vscode.commands.registerCommand('masm-tasm.debugASM', (uri: vscode.Uri) => workingMode(conf.actionType.debug, uri))
+        vscode.commands.registerCommand('masm-tasm.openEmulator', (uri: vscode.Uri) => workingMode()(conf.actionType.open, uri)),
+        vscode.commands.registerCommand('masm-tasm.runASM', (uri: vscode.Uri) => workingMode()(conf.actionType.run, uri)),
+        vscode.commands.registerCommand('masm-tasm.debugASM', (uri: vscode.Uri) => workingMode()(conf.actionType.debug, uri))
     );
 }
