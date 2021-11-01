@@ -425,12 +425,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
         if (conf.extConf.emulator === conf.DosEmulatorType.jsdos) {
             await api.jsdos.jszip.loadAsync(bundle);
-            for await (const f of getFiles(workspaceFolder.uri.fsPath)) {
-                const rel = path.relative(workspaceFolder.uri.fsPath, f);
+            for await (const f of getFiles(workspaceFolder.uri)) {
+                const rel = path.relative(workspaceFolder.uri.fsPath, f.fsPath);
                 const dst = path.posix.join('code/', rel);
-                const _data = await fs.readFile(vscode.Uri.file(f));
-                const fileContent = new TextDecoder().decode(_data);
-                api.jsdos.jszip.file(dst, fileContent);
+                const _data = await fs.readFile(f);
+                api.jsdos.jszip.file(dst, _data);
             }
             const autoexec = [
                 `mount c .`,

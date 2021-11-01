@@ -1,5 +1,4 @@
 import { Uri, workspace } from "vscode";
-import { logger } from "../utils/logger";
 
 const fs = workspace.fs;
 

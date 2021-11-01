@@ -1,11 +1,13 @@
-import * as nodefs from 'fs';
-import * as path from 'path';
+import * as vscode from 'vscode';
 
-export async function* getFiles(dir: string): AsyncGenerator<string> {
-    const dirents = await nodefs.promises.readdir(dir, { withFileTypes: true });
+const fs = vscode.workspace.fs;
+
+export async function* getFiles(dir: string | vscode.Uri): AsyncGenerator<vscode.Uri> {
+    const rootDir = typeof dir === 'string' ? vscode.Uri.file(dir) : dir;
+    const dirents = await fs.readDirectory(rootDir);
     for (const dirent of dirents) {
-        const res = path.resolve(dir, dirent.name);
-        if (dirent.isDirectory()) {
+        const res = vscode.Uri.joinPath(rootDir, dirent[0]);
+        if (dirent[1] === vscode.FileType.Directory) {
             yield* getFiles(res);
         } else {
             yield res;
