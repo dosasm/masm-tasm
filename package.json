@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "dosbox",
     "16位",
@@ -226,7 +226,7 @@
               "support": [
                 "jsdos",
                 "dosbox",
-                "dosboxX",
+                "dosbox-x",
                 "msdos player"
               ]
             }
@@ -239,7 +239,7 @@
           "enum": [
             "jsdos",
             "dosbox",
-            "dosboxX",
+            "dosbox-x",
             "msdos player"
           ],
           "enumDescriptions": [
@@ -287,8 +287,8 @@
             "type": "string"
           },
           "default": {
-            "SDL.windowresolution": "1024x640",
-            "SDL.output": "opengl"
+            "sdl.windowresolution": "1024x640",
+            "sdl.output": "overlay"
           },
           "markdownDescription": "%config.boxconfig.description%"
         },
@@ -296,10 +296,6 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
-          },
-          "default": {
-            "SDL.windowresolution": "1024x640",
-            "SDL.output": "opengl"
           },
           "markdownDescription": "%config.boxXconfig.description%"
         }

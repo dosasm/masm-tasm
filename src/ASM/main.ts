@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as nodefs from 'fs';
 
-import { API } from './vscode-dosbox';
+import { API, Dosbox } from './vscode-dosbox';
 import * as statusBar from './statusBar';
 import * as Diag from '../diagnose/main';
 import * as conf from '../utils/configuration';
@@ -47,6 +47,23 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const assemblyToolsFolder = vscode.Uri.joinPath(context.globalStorageUri, conf.extConf.asmType);
     const seperateSpaceFolder = vscode.Uri.joinPath(context.globalStorageUri, "workspace");
+
+    function updateDosboxConf(box: Dosbox) {
+        let confSting = "dosbox.config";
+        if (conf.extConf.emulator === conf.DosEmulatorType.dosboxX) {
+            confSting = "dosboxX.config";
+        }
+        if (conf.extConf._conf.has(confSting)) {
+            const dosboxConf: { [id: string]: string } | undefined = conf.extConf._conf.get(confSting);
+            if (dosboxConf) {
+                for (const id in dosboxConf) {
+                    const [section, key] = id.toLowerCase().split('.');
+                    const value = dosboxConf[id];
+                    box.updateConf(section, key, value);
+                }
+            }
+        }
+    }
 
     async function singleFileMode(act: conf.actionType, _uri: vscode.Uri): Promise<AsmResult> {
         logger.channel(actionMessage(act, _uri.fsPath));
@@ -130,18 +147,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 }
             }
 
-            const dosboxConf: { [id: string]: string } | undefined =
-                conf.extConf.emulator === conf.DosEmulatorType.dosboxX
-                    ? vscode.workspace.getConfiguration("masmtasm").get("dosbox.config")
-                    : vscode.workspace.getConfiguration("masmtasm").get("dosboxX.config");
-            if (dosboxConf) {
-                for (const id in dosboxConf) {
-                    const [section, key] = id.toLowerCase().split('.');
-                    const value = dosboxConf[id];
-                    box.updateConf(section, key, value);
-                }
-            }
-
+            updateDosboxConf(box);
             box.updateAutoexec(autoexec);
 
             if (act !== conf.actionType.open) {
@@ -375,18 +381,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 }
             }
 
-            const dosboxConf: { [id: string]: string } | undefined =
-                conf.extConf.emulator === conf.DosEmulatorType.dosboxX
-                    ? vscode.workspace.getConfiguration("masmtasm").get("dosbox.config")
-                    : vscode.workspace.getConfiguration("masmtasm").get("dosboxX.config");
-            if (dosboxConf) {
-                for (const id in dosboxConf) {
-                    const [section, key] = id.toLowerCase().split('.');
-                    const value = dosboxConf[id];
-                    box.updateConf(section, key, value);
-                }
-            }
-
+            updateDosboxConf(box);
             box.updateAutoexec(autoexec);
 
             if (act !== conf.actionType.open) {
