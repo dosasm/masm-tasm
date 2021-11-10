@@ -42,6 +42,7 @@ when you are editing `assembly` files ,you can right click at the editor panel,t
 
 - If your code just in a single file, set configuration `masmtasm.ASM.mode` as `single file`. The extension will copy your file to a seperate space in your machine to keep your workspace Folder clean.
 - If your project is complex and making up with many files, you may set configuration `masmtasm.ASM.mode` as `workspace` and keep your files' names follow the emulator's limitation.
+  - take `include <filename>` for example, the `<filename>` should be the relative path to your workspace Folder
 - Obviously, this extension may be not suitable for complex project
 
 ## Platform Support
