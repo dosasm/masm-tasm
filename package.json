@@ -189,7 +189,8 @@
               "debug": [
                 "TASM /zi ${file}",
                 "TLINK /v/3 ${filename}.obj",
-                "TD ${filename}.exe"
+                "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
+                "TD -cTDCONFIG.TD ${filename}.exe"
               ]
             },
             "MASM-v6.11": {
