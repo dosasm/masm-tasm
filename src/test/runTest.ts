@@ -4,6 +4,7 @@
 
 import * as cp from 'child_process';
 import * as path from 'path';
+import * as fs from "fs";
 import {
 	downloadAndUnzipVSCode,
 	resolveCliPathFromVSCodeExecutablePath,
@@ -17,11 +18,33 @@ async function main() {
 		const vscodeExecutablePath = await downloadAndUnzipVSCode('stable');
 		const cliPath = resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
 
+		const extensions = [
+			"xsro.vscode-dosbox"
+		];
+
+		const vscedosbox = path.resolve(__dirname, "../..", "..", "vscode-dosbox");
+		if (fs.existsSync(vscedosbox)) {
+			const dirs = await fs.promises.readdir(vscedosbox);
+			const dir = dirs.find(val => val.includes(`vscode-dosbox-${process.platform}-${process.arch}`));
+			if (dir) {
+				console.log("found " + dir);
+				extensions[0] = path.resolve(vscedosbox, dir);
+			}
+		}
+
 		// Use cp.spawn / cp.exec for custom setup
-		cp.spawnSync(cliPath, ['--install-extension', 'xsro.vscode-dosbox'], {
+		const p1 = cp.spawnSync(cliPath, ['--install-extension', ...extensions], {
 			encoding: 'utf-8',
 			stdio: 'inherit'
 		});
+
+		// Use cp.spawn / cp.exec for custom setup
+		const p2 = cp.spawnSync(cliPath, ["--list-extensions", "--show-versions"], {
+			encoding: 'utf-8',
+			stdio: 'inherit'
+		});
+
+		console.log(p1, p2);
 
 		const sampleFolder = path.resolve(__dirname, '../../samples');
 		const launchArgs: string[] = [
