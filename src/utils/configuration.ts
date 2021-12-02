@@ -1,18 +1,24 @@
-/**use MASM or TASM
+/** the id of the profile,for example:
+ * 
  * - MASM: including masm.exe,link.exe,debug.exe
  * - TASM: including tasm.exe,tlink.exe,TD.exe
  */
-export type Assembler = string;
+type profileId = string;
+export type Assembler = profileId;
 
-type ACTION = {
+/**
+ * the profile of the action
+ */
+type ActionProfile = {
     baseBundle: string,
     before?: string[],
     run: string[],
     debug: string[],
     support?: string[],
 };
+
 export type ACTIONS = {
-    [id: string]: ACTION
+    [id: profileId]: ActionProfile
 };
 
 /**the emulator for the 16bit DOS environment
@@ -28,10 +34,17 @@ export enum DosEmulatorType {
     jsdos = 'jsdos',
 }
 
-export enum actionType {
+/**the action type for run a assembly file */
+export enum ActionType {
     open,
     run,
     debug
+}
+
+/**how to mount the assembly file to DOS emulator */
+export enum MountMode {
+    single = "single file",
+    workspace = "workspace"
 }
 
 import * as vscode from 'vscode';
@@ -39,6 +52,14 @@ import * as vscode from 'vscode';
 class ExtensionConfiguration {
     public get _conf() {
         return vscode.workspace.getConfiguration('masmtasm');
+    }
+
+    public get<T>(id: string, defaultValue: T) {
+        const value: T | undefined = this._conf.get(id);
+        if (value === undefined) {
+            return defaultValue;
+        }
+        return value;
     }
 
     public get actions(): ACTIONS {
@@ -63,7 +84,7 @@ class ExtensionConfiguration {
             throw new Error(`${asmType} is not defined in "masmtasm.ASM.actions"`);
         }
     }
-    public get action(): ACTION {
+    public get action(): ActionProfile {
         return this.actions[this.asmType];
     }
 

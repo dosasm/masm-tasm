@@ -1,4 +1,4 @@
-include mac.inc
+include multi\mac.inc
 .model small
 .stack 64
 .data
