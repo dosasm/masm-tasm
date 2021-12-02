@@ -1,35 +1,52 @@
 import * as vscode from 'vscode';
+import { eolString } from '../utils/eol';
 import { DocInfo, linetype, Asmline } from "./scanDoc";
+
 //TODO: offer different operation for different vscode.FormattingOptions
 export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
-    provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
+    provideDocumentFormattingEdits(document: vscode.TextDocument, options: vscode.FormattingOptions, token: vscode.CancellationToken): vscode.TextEdit[] {
         const textedits: vscode.TextEdit[] = [];
+        const tabString = options.insertSpaces ? new Array(options.tabSize).fill(" ").join("") : "\t";
         const docinfo = DocInfo.getDocInfo(document);
         if (docinfo.tree) {
-            docinfo.tree.forEach(
-                (item) => {
-                    formateline(item.range.start.line, item.range.end.line, docinfo.lines, document, textedits);
+            for (const item of docinfo.tree) {
+                if (token.isCancellationRequested) {
+                    return textedits;
                 }
-            );
+                const newText = formateline(item.range, docinfo.lines, tabString);
+                const range = document.validateRange(item.range);
+                textedits.push(new vscode.TextEdit(range, newText.join(eolString(document.eol))));
+            }
         }
         return textedits;
     }
 }
-function formateline(beg: number, end: number, asmline: Asmline[], document: vscode.TextDocument, formator: vscode.TextEdit[]): vscode.TextEdit[] {
+
+/**
+ * format a segment of assembly code
+ * @param range the range of the code
+ * @param asmline the array of lines information
+ * @param tabString the string to used as tab
+ * @returns 
+ */
+function formateline(range: vscode.Range, asmline: Asmline[], tabString = "\t"): string[] {
     let namesize = 0, optsize = 0, oprsize = 0,
-        str: string | undefined = undefined, r: vscode.Range, i: number;
+        str: string | undefined = undefined;
+    const output: string[] = [];
+
     //scan the asmlines for information
-    for (i = beg; i < end; i++) {
+    for (let i = range.start.line; i <= range.end.line; i++) {
         const item = asmline[i];
         if (item.name) { namesize = item.name.length > namesize ? item.name.length : namesize; }//find the maxlength of label name or variabel name
         if (item.operator) { optsize = item.operator.length > optsize ? item.operator.length : optsize; }//find the maxlength of operator 
         if (item.operand) { oprsize = item.operand.length > oprsize ? item.operand.length : oprsize; }//find the maxlength of operand
     }
-    for (i = beg; i < end; i++) {
+
+    for (let i = range.start.line; i <= range.end.line; i++) {
         str = undefined;
         const item = asmline[i];
         if (item.type === linetype.label || item.type === linetype.variable) {
-            str = "\t";
+            str = tabString;
             let length = 0;
             if (item.name?.length) { length = item.name.length; }
             if (item.type === linetype.label && item.name) { str += item.name + ":"; }
@@ -47,25 +64,22 @@ function formateline(beg: number, end: number, asmline: Asmline[], document: vsc
                 if (item.operand?.length) { length = item.operand.length; }
                 else { length = 0; }
                 for (let i = 0; i < oprsize - length; i++) { str += " "; }//操作数后补充空格
-                str += "\t" + item.comment;
+                str += tabString + item.comment;
             }
         }
         else if (item.type === linetype.onlycomment) {
-            str = "\t" + item.comment;
+            str = tabString + item.comment;
         }
         else if (item.main) {
             str = item.main.replace(/\s+/, " ");
             const length: number = namesize + 1 + optsize + 1 + oprsize - str.length;
             if (item.comment) {
                 for (let i = 0; i < length; i++) { str += " "; }//后补充空格
-                str += "\t\t" + item.comment;
+                str += tabString + tabString + item.comment;
             }
         }
-        if (str && str !== item.str) {
-            r = new vscode.Range(item.line, 0, item.line, item.str.length);
-            formator.push(vscode.TextEdit.replace(document.validateRange(r), str));
-        }
+        output.push(str && str !== item.str ? str : item.str);
     }
-    return formator;
+    return output;
 }
 

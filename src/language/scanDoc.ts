@@ -276,7 +276,7 @@ function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
                 }
                 //finded the end of macro
                 if (line.name && lineEndmacro?.line) {
-                    const macrorange = new vscode.Range(line.line, line.index, lineEndmacro?.line, lineEndmacro?.index);
+                    const macrorange = new vscode.Range(line.line, line.index, lineEndmacro?.line, lineEndmacro.str.length);
                     symbols.push(new AsmSymbol(KeywordType.Macro, line.name, macrorange));
                     const symbol1 = new vscode.DocumentSymbol(line.name, getType(KeywordType.Macro), SymbolVSCfy(KeywordType.Macro), macrorange, new vscode.Range(line.line, line.index, line.line, line.index + line.name.length));
                     VSCsymbols.push(symbol1);
@@ -296,7 +296,7 @@ function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
                     if (array[i].type === linetype.endp && proc?.name === array[i].name) {
                         const _name = array[i].name;
                         if (proc?.name && _name) {
-                            const range: vscode.Range = new vscode.Range(proc?.line, proc?.index, array[i].line, array[i].index + _name.length);
+                            const range: vscode.Range = new vscode.Range(proc?.line, proc?.index, array[i].line, array[i].str.length);
                             const srange: vscode.Range = new vscode.Range(proc.line, proc.index, proc?.line, proc?.index + proc?.name?.length);
                             procschild.push(new vscode.DocumentSymbol(proc?.name, getType(KeywordType.Procedure), SymbolVSCfy(KeywordType.Procedure), range, srange));
                             symbols.push(new AsmSymbol(KeywordType.Procedure, _name, range));
@@ -315,7 +315,7 @@ function lines2tree(asmlines: Asmline[]): SYMBOLINFO {
                 }
                 //finded the end of segment
                 if (line.name && lineEndSegment?.line) {
-                    const range = new vscode.Range(line.line, line.index, lineEndSegment?.line, lineEndSegment?.index);
+                    const range = new vscode.Range(line.line, line.index, lineEndSegment?.line, lineEndSegment.str.length);
                     symbols.push(new AsmSymbol(KeywordType.Segment, line.name, range));
                     const symbol1 = new vscode.DocumentSymbol(line.name, getType(KeywordType.Segment), SymbolVSCfy(KeywordType.Segment), range, new vscode.Range(line.line, line.line, line.line, line.line + line.name.length));
                     symbol1.children = procschild;
