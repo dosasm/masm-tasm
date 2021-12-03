@@ -66,15 +66,17 @@ export class Dosbox implements ExecAction {
         }
 
         const logUri = Utils.joinPath(ctx.assemblyToolsFolder, ctx.logFileName);
-        const file = path.relative(
+
+        const rel = path.relative(
             workspaceFolder.fsPath,
             ctx.mountMode === conf.MountMode.single ? ctx.fileCopyUri.fsPath : ctx.fileUri.fsPath,
         );
-        const fileinfo = path.parse(file);
+        const fileInDosbox = path.win32.resolve("D:\\", rel);
+        const fileinfo = path.parse(fileInDosbox);
         function cb(val: string) {
             const r = val
-                .replace("${file}", file)
-                .replace("${filename}", file.replace(fileinfo.ext, ""));
+                .replace("${file}", fileInDosbox)
+                .replace("${filename}", fileInDosbox.replace(fileinfo.ext, ""));
             if (val.startsWith('>')) {
                 return r.replace(">", "");
             }
