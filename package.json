@@ -346,9 +346,7 @@
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
-    "vscode:prepublish": "yarn clean && yarn compile",
-    "deploy": "vsce publish  --yarn",
-    "package": "vsce package"
+    "vscode:prepublish": "yarn clean && yarn compile"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
@@ -375,7 +373,6 @@
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",
     "typescript": "^4.4.4",
-    "vsce": "^1.100.2",
     "vscode-test": "^1.4.1",
     "vscode-uri": "^3.0.2",
     "webpack": "^5.60.0",
