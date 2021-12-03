@@ -10,7 +10,6 @@ import { messageCollector } from "../diagnose/messageCollector";
 export class JsdosWeb implements ExecAction {
     name: DosEmulatorType | DosEmulatorType[] = DosEmulatorType.jsdos;
     async run(context: ExtensionContext, ctx: ActionContext, api: API): Promise<AsmResult> {
-        let result = undefined;
         await api.jsdos.jszip.loadAsync(ctx.bundleData);
 
         let fileInJsdos = "";
@@ -67,8 +66,9 @@ export class JsdosWeb implements ExecAction {
                         break;
                 }
             });
-            result = await promise;
+            const message = await promise;
+            return { message, webview };
         }
-        return { message: result };
+        throw new Error("can't get message from" + this.name);
     }
 }

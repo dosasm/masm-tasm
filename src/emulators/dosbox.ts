@@ -114,8 +114,8 @@ export class Dosbox implements ExecAction {
 
         let result = undefined;
 
+        const [hook, promise] = messageCollector();
         if (ctx.actionType !== conf.ActionType.open && USE_NODEFS_WATCH) {
-            const [hook, promise] = messageCollector();
             nodefs.watchFile(logUri.fsPath, () => {
                 try {
                     if (nodefs.existsSync(logUri.fsPath)) {
@@ -127,24 +127,25 @@ export class Dosbox implements ExecAction {
                     console.error(e);
                 }
             });
-            promise.then(val => {
-                console.log(val);
-                result = val;
-            });
         }
 
         await box.run().catch(e => {
             console.error("dosbox run error", e);
+            throw new Error(e);
         });
 
         if (result === undefined) {
             if (nodefs.existsSync(logUri.fsPath)) {
                 result = nodefs.readFileSync(logUri.fsPath, { encoding: 'utf-8' });
+                hook(result);
             }
         }
+
+        const message = await promise;
+
         if (result === undefined) {
             throw new Error("can't get dosbox's result" + logUri.fsPath);
         }
-        return { message: result };
+        return { message, result };
     }
 }

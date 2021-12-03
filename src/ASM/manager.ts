@@ -9,9 +9,10 @@ import { uriUtils } from '../utils/util';
 export * from './vscode-dosbox';
 
 export interface AsmResult {
-    message?: string,
+    message: string,
     error?: number,
-    warn?: number
+    warn?: number,
+    [id: string]: unknown,
 }
 
 export interface ActionContext {
