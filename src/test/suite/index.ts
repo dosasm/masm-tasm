@@ -8,7 +8,8 @@ export function run(): Promise<void> {
 	const mocha = new Mocha({
 		ui: 'tdd',
 		color: true,
-		timeout: 2000
+		timeout: 2000,
+		retries: 3,
 	});
 
 	if (process.platform === 'linux') {

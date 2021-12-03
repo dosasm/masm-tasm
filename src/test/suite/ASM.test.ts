@@ -57,13 +57,18 @@ const emulator: DosEmulatorType[] = [
 	DosEmulatorType.jsdos,
 ];
 
+if (!process.platform) {
+	emulator.shift();
+	emulator.shift();
+}
+
 const filelist: [string, number][] = [
 	['1.asm', 0],
 	['3中文路径hasError.asm', 1],
 	['multi/2.asm', 0],
 ];
 
-suite("single file mode test", function () {
+export const singleFileTestSuite = suite("single file mode test", function () {
 	this.timeout('60s');
 	this.slow('20s');
 	for (const emu of emulator) {
@@ -81,7 +86,7 @@ suite("single file mode test", function () {
 	}
 });
 
-suite("workspace mode test", function () {
+export const workspaceTestSuite = suite("workspace mode test", function () {
 	this.timeout('60s');
 	this.slow('20s');
 	for (const emu of emulator) {
