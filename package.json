@@ -289,7 +289,7 @@
           },
           "default": {
             "sdl.windowresolution": "1024x640",
-            "sdl.output": "overlay"
+            "sdl.output": "opengl"
           },
           "markdownDescription": "%config.boxconfig.description%"
         },
