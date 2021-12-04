@@ -13,7 +13,7 @@ export async function downloadFromMultiSources(urls: string[]): Promise<string |
                 return val;
             }
         } catch (e) {
-            logger.channel(JSON.stringify(e)).show();
+            logger.channel(`donwload ${url}\nerror ${JSON.stringify(e)}`);
         }
     }
 }

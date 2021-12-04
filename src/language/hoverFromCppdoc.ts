@@ -43,25 +43,33 @@ class RESOURCES {
 
     static links = [
         'https://raw.githubusercontent.com/MicrosoftDocs/{repo}/{branch}/',
-        'https://cdn.jsdelivr.net/gh/MicrosoftDocs/{repo}@{branch}/docs/',
+        'https://gitee.com/dosasm/{repo}/raw/{branch}/',
+        'https://cdn.jsdelivr.net/gh/MicrosoftDocs/{repo}@{branch}/',
     ];
 
-    static getlinks(id: string, lang: string): string[] {
+    /**get links from the cpp-docs id
+     * The Microsoft has removed its localized docs repo from github
+     * TODO: find a way to get the content of localized docs
+     * see: https://github.com/MicrosoftDocs/cpp-docs
+     * @param id 
+     * @param lang 
+     * @returns links for download
+     */
+    static getlinks(id: string, lang: string, prefix = 'docs/assembler/masm/'): string[] {
         const links = [...RESOURCES.links];
-        if (lang === 'zh-cn') {
-            links.unshift('https://gitee.com/dosasm/cpp-docs.zh-cn/raw/live/');
-        }
-        let repoName = 'cpp-docs';
-        const pre = 'docs/assembler/masm/';
-        let branchName = 'master';
-        if (lang && Object.keys(RESOURCES.langMap).includes(lang)) {
-            repoName += `.${RESOURCES.langMap[lang]}`;
-            branchName = 'live';
-        }
-        return links.map(
+
+        // if (lang === 'zh-cn') {
+        //     links = ['https://gitee.com/dosasm/cpp-docs.zh-cn/raw/live/'];
+        // }
+
+        const repoName = 'cpp-docs';
+        const branchName = 'master';
+        const downloadables = links.map(
             val => val.replace('{repo}', repoName)
-                .replace('{branch}', branchName) + pre + id + '.md'
+                .replace('{branch}', branchName) + prefix + id + '.md'
         );
+
+        return downloadables;
     }
 
     static generateFromCppdoc(text: string): CppdocInfoCollection {

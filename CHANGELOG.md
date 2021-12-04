@@ -21,6 +21,7 @@ platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
   - fix #32: use a TDConfig when debugging with TD for better experience.
     - thanks to [x402][x402]
   - (vscode-DOSBox) fix the error of update dosbox config
+- 1.0.2: remove localized Hover from [cpp-docs][cpp-docs] since no repo from MicrosoftDocs is available
 
 为了保持简洁，我将与DOS模拟器交互的部分独立为一个新的插件[xsro.vscode-dosbox][vscode-dosbox]
 
@@ -34,6 +35,7 @@ platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
   - 修复格式化中未完全替换原内容的问题
   - 恢复原来版本中的TDConfig
   - (vscode-dosbox) 修复注入DOSBox设置会出现的混乱
+- 1.0.2: 由于MicrosoftDocs不再提供对仓库[cpp-docs][cpp-docs]的本地化仓库，所以现在只能提供英语
 
 [vscode-dosbox]: https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox "VSCode DOSBox"
 [dosbox-x]: https://www.dosbox-x.com "DOSBox-x"
@@ -41,6 +43,7 @@ platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
 [vscode-dev]: https://vscode.dev/github/dosasm/dos-assembly-codes "open sample code with vscode.dev"
 [x402]: https://github.com/x402
 [BillLee-CN]: https://github.com/BillLee-CN
+[cpp-docs]: https://github.com/MicrosoftDocs/cpp-docs "MicrosoftDocs/cpp-docs"
 
 ## 0.9.0
 

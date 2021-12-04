@@ -73,7 +73,7 @@ export const singleFileTestSuite = suite("single file mode test", function () {
 	this.slow('20s');
 	for (const emu of emulator) {
 		suite(`test in ${emu}`, async function () {
-			this.beforeAll(async function () {
+			this.beforeEach(async function () {
 				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 			});
 			for (const [file, shouldErr] of [filelist[0], filelist[1]]) {
@@ -91,7 +91,7 @@ export const workspaceTestSuite = suite("workspace mode test", function () {
 	this.slow('20s');
 	for (const emu of emulator) {
 		suite(`test in ${emu}`, async function () {
-			this.beforeAll(async function () {
+			this.beforeEach(async function () {
 				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 			});
 			for (const [file, shouldErr] of [filelist[0], filelist[2]]) {
@@ -108,7 +108,7 @@ if (process.platform === 'win32') {
 	const emu = DosEmulatorType.msdos;
 	suite(`test in ${emu}`, async function () {
 		this.timeout("60s");
-		this.beforeAll(async function () {
+		this.beforeEach(async function () {
 			await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 		});
 		for (const asm of [profileId[0]]) {
