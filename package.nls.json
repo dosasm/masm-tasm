@@ -20,5 +20,6 @@
 	"config.boxconfig.description": "configuration for DOSBox, use format like the default value, see [dosbox](https://www.dosbox.com/wiki/Dosbox.conf),Please don't set `autoexec` here",
 	"config.boxXconfig.description": "configuration for DOSBox-X, use format like the default value, see [dosbox-x](https://dosbox-x.com/wiki/), Please don't set `autoexec `here",
 	"config.hover": "Display Hover information or not, restart VSCode to apply",
+	"config.cpp-docs.links": "Links for fetch hover data from [cppdocs](https://github.com/MicrosoftDocs/cpp-docs). \"{vid}\" will be replaced as `Visual Studio Code Language ID`,\"{mid}\" will be replaced as `MLCP language code`, see [vscode-loc](https://github.com/microsoft/vscode-loc)",
 	"config.PLF": "Experimental programmatic language features like outline,jump to definition/reference. Restart needed"
 }

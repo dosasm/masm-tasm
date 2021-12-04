@@ -2,8 +2,6 @@ import * as vscode from 'vscode';
 import * as down from '../utils/downloadFile';
 import { keywordType } from './Hover';
 
-const fs = vscode.workspace.fs;
-
 class RESOURCES {
 
     static unincluded: { sectionof: string; list: { name: string; id: string }[] }[] = [
@@ -21,7 +19,7 @@ class RESOURCES {
     ];
 
     /**mainly use information from https://github.com/microsoft/vscode-loc */
-    static langMap: { [id: string]: string } = {
+    static langMap: { [vscode_lang_id: string]: string } = {
         "zh-cn": "zh-cn",
         ja: "ja-jp",
         ru: "ru-ru",
@@ -41,35 +39,28 @@ class RESOURCES {
         //pl-pl has resources but vscode does not support this language 
     };
 
-    static links = [
-        'https://raw.githubusercontent.com/MicrosoftDocs/{repo}/{branch}/',
-        'https://gitee.com/dosasm/{repo}/raw/{branch}/',
-        'https://cdn.jsdelivr.net/gh/MicrosoftDocs/{repo}@{branch}/',
-    ];
-
     /**get links from the cpp-docs id
      * The Microsoft has removed its localized docs repo from github
      * TODO: find a way to get the content of localized docs
      * see: https://github.com/MicrosoftDocs/cpp-docs
-     * @param id 
-     * @param lang 
+     * @param id docs's id in 'docs/assembler/masm/' forder
+     * @param lang vscode language Id https://github.com/microsoft/vscode-loc
      * @returns links for download
      */
     static getlinks(id: string, lang: string, prefix = 'docs/assembler/masm/'): string[] {
-        const links = [...RESOURCES.links];
+        const links: string[] | undefined = vscode.workspace.getConfiguration("masmtasm").get("cpp-docs.links");
 
-        // if (lang === 'zh-cn') {
-        //     links = ['https://gitee.com/dosasm/cpp-docs.zh-cn/raw/live/'];
-        // }
-
-        const repoName = 'cpp-docs';
-        const branchName = 'master';
-        const downloadables = links.map(
-            val => val.replace('{repo}', repoName)
-                .replace('{branch}', branchName) + prefix + id + '.md'
-        );
-
-        return downloadables;
+        if (links) {
+            const downloadables = links.map(
+                val => {
+                    const link = val.replace('{vid}', lang)
+                        .replace('{mid}', this.langMap[lang]);
+                    return link + prefix + id + '.md';
+                }
+            );
+            return downloadables;
+        }
+        return [];
     }
 
     static generateFromCppdoc(text: string): CppdocInfoCollection {
@@ -122,10 +113,6 @@ export class Cppdoc {
     private collections: CppdocInfoCollection[] = [[], [], []];
     private missing: number[] = [];
 
-    private get dstFolder(): vscode.Uri {
-        return vscode.Uri.joinPath(this.ctx.globalStorageUri, 'cpp-docs_' + vscode.env.language);
-    }
-
     constructor(private ctx: vscode.ExtensionContext) {
         Cppdoc.references.forEach(
             (ref, idx) => {
@@ -152,7 +139,6 @@ export class Cppdoc {
 
     async addMissing(): Promise<void> {
         const stillmiss: number[] = [];
-        await fs.createDirectory(this.dstFolder);
         for (const idx of this.missing) {
             const ref = Cppdoc.references[idx];
             const text = await this.getText(ref);

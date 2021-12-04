@@ -20,5 +20,6 @@
 	"config.boxconfig.description": "dosbox的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox官网的说明](https://www.dosbox.com/wiki/Dosbox.conf),请勿设置`autoexec`",
 	"config.boxXconfig.description": "dosbox-x的配置信息，将会写到插件专用的配置文件中, 参见 [dosbox-x官网的说明](https://dosbox-x.com/wiki/),请勿设置`autoexec`",
 	"config.hover": "是否显示悬浮提示(hover)，可能需要重启vscode来应用变更",
+	"config.cpp-docs.links": "用于获取[cppdocs](https://github.com/MicrosoftDocs/cpp-docs)信息的链接, \"{vid}\"将被替换为`Visual Studio Code Language ID`,\"{mid}\" 将被替换为`MLCP language code`, 参见 [vscode-loc](https://github.com/microsoft/vscode-loc)",
 	"config.PLF": "使用提供大纲，跳到定义，查找引用等programmatic features"
 }

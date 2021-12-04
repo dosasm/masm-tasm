@@ -265,6 +265,18 @@
           "default": true,
           "description": "%config.hover%"
         },
+        "masmtasm.cpp-docs.links": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "markdownDescription": "%config.cpp-docs.links%",
+          "default": [
+            "https://cdn.jsdelivr.net/gh/MicrosoftDocs/cpp-docs@master/",
+            "https://raw.githubusercontent.com/MicrosoftDocs/cpp-docs/master/",
+            "https://gitee.com/dosasm/cpp-docs/raw/master/"
+          ]
+        },
         "masmtasm.dosbox.run": {
           "type": "string",
           "default": "choose",
