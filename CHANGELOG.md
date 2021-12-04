@@ -4,6 +4,8 @@
 
 ## 1.0 Web Extension Support 浏览器端支持
 
+![web extension Demo](pics/demo_web-russiacube.gif)
+
 To keep the extension simple, I split the part of interaction with DOS emulator to a new 
 platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
 
@@ -31,7 +33,7 @@ platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
 - 1.0.1
   - 修复格式化中未完全替换原内容的问题
   - 恢复原来版本中的TDConfig
-  - (vscode-dosbox) 修复注入DOSBox设置会出现的混乱，并将DOSBOX默认`sdl.output`修改为`overlay`
+  - (vscode-dosbox) 修复注入DOSBox设置会出现的混乱
 
 [vscode-dosbox]: https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox "VSCode DOSBox"
 [dosbox-x]: https://www.dosbox-x.com "DOSBox-x"
