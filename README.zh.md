@@ -42,7 +42,7 @@
 ## 平台支持
 
 插件依赖[vscode-dosbox](https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox) 来与 DOS 模拟器交互。
-`vscode-dosbox`打包了 win 平台上的二进制文件，参考[它的文档](https://github.com/dosasm/vscode-dosbox#dependency-installation) 在其他平台安装相关 DOS 模拟器。
+`vscode-dosbox`打包了 win 平台上的二进制文件，参考[它的文档](https://github.com/dosasm/vscode-dosbox/blob/main/README.zh.md#安装依赖) 在其他平台安装相关 DOS 模拟器。
 
 ## 自定义 Actions
 

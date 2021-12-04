@@ -1,8 +1,10 @@
 # Change Log 更新日志
 
-[email](mailto:xsro@foxmail.com)|[issue](https://github.com/dosasm/masm-tasm/issues)
+[email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
 ## 1.0 Web Extension Support 浏览器端支持
+
+![web extension Demo](pics/demo_web-russiacube.gif)
 
 To keep the extension simple, I split the part of interaction with DOS emulator to a new 
 platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
@@ -10,9 +12,15 @@ platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
 - add support for browser, you can use this extension in sites like [vscode.dev][vscode-dev] and [github-dev][github-dev]
 - add support for DOS emulator [DOSBox-x][dosbox-x]
 - change default emulator to jsdos
-- now only support single file DOS assembly, I try to add some multi-file assembly support, but is's confusing for me.
+- now **only** support single file DOS assembly, I try to add some multi-file assembly support, but is's confusing for me.
 - remove the capture of warning message
 - remove command `DOSBox here`
+- 1.0.1 patch
+  - fix #31 #32: improve **document format** 
+    - thanks to [BillLee-CN][BillLee-CN], [x402][x402]
+  - fix #32: use a TDConfig when debugging with TD for better experience.
+    - thanks to [x402][x402]
+  - (vscode-DOSBox) fix the error of update dosbox config
 
 为了保持简洁，我将与DOS模拟器交互的部分独立为一个新的插件[xsro.vscode-dosbox][vscode-dosbox]
 
@@ -22,13 +30,17 @@ platform-specified extension [xsro.vscode-dosbox][vscode-dosbox]
 - 移除一些烦人的设置，目前只支持单文件的DOS环境下汇编
 - 移除对汇编成功但是有警告信息时显示的界面消息
 - 移除命令`DOSBox here`
+- 1.0.1
+  - 修复格式化中未完全替换原内容的问题
+  - 恢复原来版本中的TDConfig
+  - (vscode-dosbox) 修复注入DOSBox设置会出现的混乱
 
 [vscode-dosbox]: https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox "VSCode DOSBox"
 [dosbox-x]: https://www.dosbox-x.com "DOSBox-x"
-[github-dev]: https://github.dev
-[vscode-dev]: https://vscode.dev
-
----
+[github-dev]: https://github.dev/dosasm/dos-assembly-codes "open sample code with github.dev"
+[vscode-dev]: https://vscode.dev/github/dosasm/dos-assembly-codes "open sample code with vscode.dev"
+[x402]: https://github.com/x402
+[BillLee-CN]: https://github.com/BillLee-CN
 
 ## 0.9.0
 
