@@ -8,6 +8,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
 /** @type WebpackConfig */
@@ -51,8 +52,6 @@ const config = {
     }
 };
 
-const webpack = require('webpack');
-
 /** @type WebpackConfig */
 const webExtensionConfig = {
     mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
@@ -70,7 +69,6 @@ const webExtensionConfig = {
         mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
         extensions: ['.ts', '.js'], // support ts-files and js-files
         alias: {
-            // 'node-fetch': './browser-fetch'
             // provides alternate implementation for node module and source files
         },
         fallback: {

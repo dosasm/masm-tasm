@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "node12",
     "target": "es2017",
     "outDir": "dist",
     "lib": [
