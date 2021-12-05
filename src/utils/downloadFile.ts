@@ -2,7 +2,7 @@
  * API for downloading information from web
  */
 import { logger } from "./logger";
-import fetch from 'node-fetch';
+import { fetch } from "./fetch";
 
 export async function downloadFromMultiSources(urls: string[]): Promise<string | undefined> {
     for (const url of urls) {

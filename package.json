@@ -382,7 +382,7 @@
     "process": "^0.11.10",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.2.6",
-    "typescript": "^4.4.4",
+    "typescript": "^4.6.0-dev.20211205",
     "vscode-test": "^1.4.1",
     "vscode-uri": "^3.0.2",
     "webpack": "^5.60.0",
