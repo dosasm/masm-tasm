@@ -2,15 +2,17 @@ import * as vscode from 'vscode';
 import { getType, KeywordType } from './wordinfo';
 
 export class DocInfo {
-    static docScaned: vscode.TextDocument | undefined = undefined;
-    static docInfoScaned: DocInfo | undefined = undefined;
+    static docScannedVersion: number | undefined = undefined;
+    static docScannedFileName: string | undefined = undefined;
+    static docInfoScanned: DocInfo | undefined = undefined;
     static getDocInfo(doc: vscode.TextDocument): DocInfo {
-        if (DocInfo.docInfoScaned && DocInfo.docScaned?.version === doc.version && DocInfo.docScaned.fileName === doc.fileName) {
+        if (DocInfo.docInfoScanned && this.docScannedVersion === doc.version && this.docScannedFileName === doc.fileName) {
         } else {
-            DocInfo.docInfoScaned = new DocInfo(doc);
-            DocInfo.docScaned = doc;
+            DocInfo.docInfoScanned = new DocInfo(doc);
+            this.docScannedFileName = doc.fileName;
+            this.docScannedVersion = doc.version;
         }
-        return DocInfo.docInfoScaned;
+        return DocInfo.docInfoScanned;
     }
 
     lines: Asmline[];
