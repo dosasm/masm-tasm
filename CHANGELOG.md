@@ -2,6 +2,16 @@
 
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
+### 1.1.0 Fix format 修复格式化时还原的问题
+
+Thanks to [Asttear][github:Asttear] for debugging and fixing [#37][issue:37]
+
+修复格式化的时候文档被还原为初始文档的问题[#37][issue:37]。该bug影响较广，非常抱歉。
+感谢[Asttear][github:Asttear]报告并帮助修复:heart:。
+
+[github:Asttear]: https://github.com/Asttear
+[issue:37]: https://github.com/dosasm/masm-tasm/issues/37 "格式化时文件被还原"
+
 ## 1.0 Web Extension Support 浏览器端支持
 
 ![web extension Demo](pics/demo_web-russiacube.gif)
