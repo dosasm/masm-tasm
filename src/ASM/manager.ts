@@ -48,6 +48,12 @@ export function activateManager(context: vscode.ExtensionContext, actions: ExecA
     const diag = Diag.activate(context);
 
     return async function (actionType: conf.ActionType, _uri: vscode.Uri) {
+        if(_uri===undefined && vscode.window.activeTextEditor){
+            _uri=vscode.window.activeTextEditor.document.uri;
+        }
+        if(_uri===undefined){
+            throw new Error("no file finded");
+        }
         logger.channel(actionMessage(actionType, _uri.fsPath));
 
         const vscode_dosbox = vscode.extensions.getExtension<API>('xsro.vscode-dosbox');
@@ -83,7 +89,7 @@ export function activateManager(context: vscode.ExtensionContext, actions: ExecA
         const workspaceFolder = vscode.workspace.workspaceFolders?.find(val => _uri.fsPath.includes(val.uri.fsPath));
         let workspaceFolderUri = uriUtils.dirname(_uri);
         if (workspaceFolder === undefined) {
-            logger.warn("can't get current vscode workspace of file:" + _uri.fsPath + "use its dir instead");
+            logger.warn("can't get current vscode workspace of file: " + _uri.fsPath + "\n use its folder instead");
         } else {
             workspaceFolderUri = workspaceFolder.uri;
         }
