@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as dosbox from "./dosbox/main";
 import * as player from "./msdos-player/main";
 import * as jsdos from "./jsdos/main";
-import { emulators } from "./jsdos/runInHost";
+import * as adapted  from "./emulators/main";
 export { API } from "./api";
 import * as D from "./api";
 import { logger } from "./util/logger";
@@ -17,7 +17,7 @@ export async function activate(
     ...(await dosbox.activate(context)),
     ...player.activate(context),
     ...jsdos.activate(context),
-    emulators,
+    emulators:adapted.emulators,
   };
 
   return api;

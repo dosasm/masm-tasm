@@ -1,4 +1,8 @@
-import { CommandInterface } from "../emulators";
+// This file is no longer used, should be removed
+
+/* eslint-disable no-invalid-this, max-len, prefer-promise-reject-errors */
+
+import { CommandInterface, NetworkType } from "../emulators";
 import { CommandInterfaceEventsImpl } from "../impl/ci-impl";
 
 import { JanusJS } from "./janus";
@@ -8,7 +12,7 @@ export type JanusMessageType = "error" | "attached" | "started" |
     "onremotestream" | "destroyed";
 
 function dataAssembler(onMessage: (data: string) => void,
-    onError: (message: any) => void) {
+                       onError: (message: any) => void) {
     let acc = "";
 
     const assemble = (data: string) => {
@@ -46,15 +50,15 @@ class JanusBackendImpl implements JanusCommandInterface {
     private eventsImpl: CommandInterfaceEventsImpl;
 
     private exitPromise: Promise<void>;
-    private exitResolveFn: () => void = () => {/**/ };
+    private exitResolveFn: () => void = () => {/**/};
 
     private configPromise: Promise<DosConfig>;
-    private configResolveFn: (dosConfig: DosConfig) => void = () => {/**/ };
+    private configResolveFn: (dosConfig: DosConfig) => void = () => {/**/};
 
     private opaqueId: string;
     private handle?: JanusJS.PluginHandle;
     private handlePromise: Promise<JanusJS.PluginHandle>;
-    private handleResolveFn: (handle: JanusJS.PluginHandle) => void = () => {/**/ };
+    private handleResolveFn: (handle: JanusJS.PluginHandle) => void = () => {/**/};
 
     private keyMatrix: { [keyCode: number]: boolean } = {};
 
@@ -120,7 +124,7 @@ class JanusBackendImpl implements JanusCommandInterface {
                 });
 
                 resolve(handle);
-            }
+            };
         });
         this.attach();
     }
@@ -189,7 +193,7 @@ class JanusBackendImpl implements JanusCommandInterface {
         } else {
             this.eventsImpl.fireStdout(data);
         }
-    }
+    };
 
     private onJanusMessage = (handle: JanusJS.PluginHandle, message: JanusJS.Message, jsep?: JanusJS.JSEP) => {
         if (jsep !== undefined && jsep !== null) {
@@ -212,11 +216,11 @@ class JanusBackendImpl implements JanusCommandInterface {
                 error: this.onError,
             });
         }
-    }
+    };
 
     onError = (error: any) => {
         this.fireMessage("error", error);
-    }
+    };
 
     onDestroyed() {
         this.fireMessage("destroyed");
@@ -245,8 +249,8 @@ class JanusBackendImpl implements JanusCommandInterface {
 
     simulateKeyPress(...keyCodes: number[]) {
         const timeMs = Date.now() - this.startedAt;
-        keyCodes.forEach(keyCode => this.addKey(keyCode, true, timeMs));
-        keyCodes.forEach(keyCode => this.addKey(keyCode, false, timeMs + 16));
+        keyCodes.forEach((keyCode) => this.addKey(keyCode, true, timeMs));
+        keyCodes.forEach((keyCode) => this.addKey(keyCode, false, timeMs + 16));
     }
 
     sendKeyEvent(keyCode: number, pressed: boolean) {
@@ -365,12 +369,20 @@ class JanusBackendImpl implements JanusCommandInterface {
         this.eventIntervalId = -1;
         clearInterval(this.rttIntervalId);
         this.rttIntervalId = -1;
-        this.janus.destroy()
+        this.janus.destroy();
         return this.exitPromise;
     }
 
     events() {
         return this.eventsImpl;
+    }
+
+    networkConnect(networkType: NetworkType, ip: string, port: number): Promise<void> {
+        return Promise.reject("Not supported");
+    }
+
+    networkDisconnect(networkType: NetworkType): Promise<void> {
+        return Promise.reject("Not supported");
     }
 }
 
@@ -399,7 +411,7 @@ export default function JanusBackend(restUrl: string, janus?: any): Promise<Comm
                     backend.onDestroyed();
                 }
             },
-        }
+        };
 
         const options: JanusJS.ConstructorOptions = {
             server: restUrl,
@@ -414,7 +426,6 @@ export default function JanusBackend(restUrl: string, janus?: any): Promise<Comm
 
         const janusImpl = new Janus(options) as JanusJS.Janus;
     });
-
 }
 
 function utf8Decode(base64Text: string) {

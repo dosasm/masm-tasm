@@ -1,4 +1,4 @@
-import { emulators } from "../emulators/emulators";
+import { emulators } from "../emulators/main";
 import { EmulatorsUi } from "emulators-ui";
 import { CommandInterface } from "emulators";
 import { onGetCi } from "./onGetCi";

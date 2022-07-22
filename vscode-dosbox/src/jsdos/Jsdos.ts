@@ -1,19 +1,22 @@
-import { CommandInterface } from "../emulators/emulators";
+import * as adapted from "../emulators/main";
+import { CommandInterface } from "emulators";
 import * as vscode from "vscode";
 import * as api from "../api";
 import { Conf } from "../dosbox/conf";
 import * as Jszip from "jszip";
-import { createTerminal, emulators } from "./runInHost";
+import { createTerminal} from "./runInHost";
 import { runInWebview } from "./runInWebview";
 import { EmulatorFunction } from "emulators-ui/dist/types/js-dos";
 import { logger } from "../util/logger";
 import { JsdosShell } from "../jsdos-ci-shell/main";
+import { isNode } from "browser-or-node";
+import { loadWasmModule } from "./hooks";
 
 const fs = vscode.workspace.fs;
 
 export class Jsdos implements api.Jsdos {
   public set pathPrefix(pathPrefix: string) {
-    emulators.pathPrefix = pathPrefix;
+    adapted.emulators.pathPrefix = pathPrefix;
   }
   public conf: Conf = new Conf("");
   public jszip: Jszip = new Jszip();
@@ -23,23 +26,22 @@ export class Jsdos implements api.Jsdos {
       context.extensionUri,
       "/node_modules/emulators/dist/"
     );
+    this.pathPrefix=isNode?dist.fsPath:dist.toString();
 
     //take over path resolve method for file in extension has different schema
     // - in Browser has a schema of http
     // - in Machine has a schema of file
-    emulators.pathResolver = function (filename: string) {
-      const uri = vscode.Uri.joinPath(dist, filename);
-      return dist.scheme === "file" ? uri.fsPath : uri.toString(true);
-    };
+    // adaptedEmulatorsImpl.pathResolver = function (filename: string) {
+    //   const uri = vscode.Uri.joinPath(dist, filename);
+    //   return dist.scheme === "file" ? uri.fsPath : uri.toString(true);
+    // };
 
     //take over HTTP request for running as web extension
-    emulators.HTTPRequest = async function (
+    const request:adapted.ReadContent = async function (
       url: string,
       options: any
     ): Promise<string | ArrayBuffer | undefined> {
-      const uri = process.platform
-        ? vscode.Uri.file(url)
-        : vscode.Uri.parse(url);
+      const uri = vscode.Uri.parse(url);
       const fileArr = await fs.readFile(uri);
       console.log(url, options);
       if (uri.path.includes(context.extensionUri.path)) {
@@ -50,6 +52,8 @@ export class Jsdos implements api.Jsdos {
       }
       return undefined;
     };
+    adapted.setReadContent(request);
+    adapted.setLoadWasmModule(loadWasmModule);
   }
 
   async setBundle(
@@ -97,16 +101,16 @@ export class Jsdos implements api.Jsdos {
     bundle?: vscode.Uri | null | undefined,
     useWorker?: boolean
   ): Promise<api.CI> {
-    const ci = (await this._runInHost(bundle, useWorker)) as api.CI;
-    const shell = new JsdosShell(ci);
-    ci.shell = shell;
-    ci.terminal = () => createTerminal(shell);
-    return ci;
+    const ci = (await this._runInHost(bundle, useWorker));
+    const shell = new JsdosShell(ci as CommandInterface);
+    (ci as api.CI).shell = shell;
+    (ci as api.CI).terminal = () => createTerminal(shell);
+    return ci as api.CI;
   }
   private async _runInHost(
     bundle?: vscode.Uri | null | undefined,
     useWorker?: boolean
-  ): Promise<CommandInterface> {
+  ): Promise<adapted.CommandInterface> {
     let func: EmulatorFunction = (process as any).browser
       ? "dosboxWorker"
       : "dosboxDirect";
@@ -117,15 +121,16 @@ export class Jsdos implements api.Jsdos {
     }
     if (bundle === undefined) {
       const bundleData = await this.getBundleData();
-      return emulators[func](bundleData);
+      const ci=await adapted.emulators[func](bundleData);
+      return ci;
     } else if (bundle === null) {
       const bundleData = await new Jszip()
         .file(".jsdos/dosbox.conf", "")
         .generateAsync({ type: "uint8array" });
-      return emulators[func](bundleData);
+      return adapted.emulators[func](bundleData);
     } else if (bundle.scheme === "file") {
       const bundleData = await fs.readFile(bundle);
-      return emulators[func](bundleData);
+      return adapted.emulators[func](bundleData);
     }
     throw new Error(
       "bundle uri is not a uri with schema file or undefined/null"

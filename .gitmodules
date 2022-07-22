@@ -2,3 +2,6 @@
 	path = bundles
 	url = git@github.com:dosasm/assembly-tool.git
 	branch = gh-pages
+[submodule "vscode-dosbox/emu"]
+	path = vscode-dosbox/emu
+	url = git@github.com:dosasm/dosemu.git

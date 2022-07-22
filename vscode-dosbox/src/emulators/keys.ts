@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 class KeyCodes {
     public KBD_NONE = 0;
     public KBD_0 = 48;
@@ -49,7 +51,7 @@ class KeyCodes {
     public KBD_f11 = 300;
     public KBD_f12 = 301;
 
-    /*Now the weirder keys */
+    /* Now the weirder keys */
     public KBD_kp0 = 320;
     public KBD_kp1 = 321;
     public KBD_kp2 = 322;

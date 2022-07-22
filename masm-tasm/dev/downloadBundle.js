@@ -1,23 +1,26 @@
-const download = require('download');
-const { existsSync } = require('fs');
-const { resolve } = require('path');
+const { existsSync,copyFileSync } = require('fs');
+const path = require('path');
 const pkg = require("../package.json");
 
 const actions = pkg.contributes.configuration.properties['masmtasm.ASM.actions'].default
 const assemblers = Object.keys(actions).map(key => actions[key].baseBundle.replace('<built-in>/', ""));
 
-const host = "https://dosasm.github.io/dosrun/bundles/"
-const dstFolder = resolve(__dirname, "..", "resources");
+const srcFolder = path.resolve(__dirname,"..","..","bundles")
+const dstFolder = path.resolve(__dirname, "..", "resources");
 
 async function main() {
     for (const asm of assemblers) {
-        const dst = resolve(dstFolder, asm);
-        const src = host + asm;
+        const dst = path.resolve(dstFolder, asm);
+        const src = path.resolve(srcFolder, asm);
+        if(!existsSync(src)){
+            console.warn("can't find file "+src+"[skip]");
+            continue
+        }
         if (existsSync(dst)) {
-            console.log('already downloaded', asm)
-            console.log(src, dst)
+            console.log('already added', asm)
         } else {
-            await download(src, dstFolder)
+            console.log(src,dstFolder)
+            copyFileSync(src,dst)
         }
     }
 }

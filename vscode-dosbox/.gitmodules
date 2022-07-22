@@ -1,3 +1,0 @@
-[submodule "emu"]
-	path = emu
-	url = git@github.com:dosasm/dosemu.git

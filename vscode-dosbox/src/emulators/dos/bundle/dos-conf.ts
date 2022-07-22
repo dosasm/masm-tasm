@@ -20,6 +20,7 @@ export interface DosConfigCategory {
 
 export class OutputCategory implements DosConfigCategory {
     name = "sdl";
+    // eslint-disable-next-line max-len
     description = "This section contains all of the low level system settings for how DOSBox interacts with your real hardware. You can define what resolutions are emulated, how DOSBox should treat errors or listen to your keyboard and mouse. You can often achieve a fair level of optimization by working with these setting, though for the most part leaving them at their default settings will create the best experience. These settings are passed on to the SDL Library which handles low level things like input and thread priority.";
     options = {
         autolock: {
@@ -27,25 +28,28 @@ export class OutputCategory implements DosConfigCategory {
             description: "Mouse will automatically lock, if you click on the screen.",
             value: false,
             allowedValues: [true, false],
-        }
+        },
     };
 }
 
 export class DosboxCategory implements DosConfigCategory {
     name = "dosbox";
+    // eslint-disable-next-line max-len
     description = "The [dosbox] section contains various settings that do not pertain to any other section (e.g. setting the language used in DOSBox help texts, where to store screen captures, etc.)";
     options = {
         machine: {
             name: "machine",
             description: "The type of machine tries to emulate.",
             value: "svga_s3",
+            // eslint-disable-next-line max-len
             allowedValues: ["hercules", "cga", "tandy", "pcjr", "ega", "vgaonly", "svga_s3", "svga_et3000", "svga_et4000", "svga_paradise", "vesa_nolfb", "vesa_oldvbe"],
-        }
+        },
     };
 }
 
 export class CpuCategory implements DosConfigCategory {
     name = "cpu";
+    // eslint-disable-next-line max-len
     description = "The CPU section controls how DOSBox tries to emulate the CPU, how fast the emulation should be, and to adjust it. DOSBox offers 4 different methods of CPU emulation.";
     options = {
         core: {
@@ -58,10 +62,11 @@ export class CpuCategory implements DosConfigCategory {
             name: "cputype",
             description: "CPU Type used in emulation. auto is the fastest choice.",
             value: "auto",
-            allowedValues: ["auto", "386", "386_slow", "486_slow", "pentium_slow", "386_prefetch"]
+            allowedValues: ["auto", "386", "386_slow", "486_slow", "pentium_slow", "386_prefetch"],
         },
         cycles: {
             name: "cycles",
+            // eslint-disable-next-line max-len
             description: `Amount of instructions DOSBox tries to emulate each millisecond. Setting this value too high results in sound dropouts and lags.
 Cycles can be set in 3 ways:
 'auto'          tries to guess what a game needs.
@@ -202,13 +207,13 @@ async function normalizeCategory(category: DosConfigCategory, valid: DosConfigCa
             }
 
             const value: any = option;
-            category.options[key] = {...validCategory};
+            category.options[key] = { ...validCategory };
             category.options[key].value = value;
         }
     }
 }
 
-async function normalizeConfig(config: DosConfig) : Promise<any> {
+async function normalizeConfig(config: DosConfig): Promise<any> {
     const valid = createDosConfig();
     for (const category of Object.keys(valid)) {
         await normalizeCategory((config as any)[category], (valid as any)[category]);
@@ -241,7 +246,7 @@ function writeCategory(section: DosConfigCategory): string {
     body += `[${section.name}]\n`;
     for (const key of Object.keys(section.options).sort()) {
         const next = section.options[key];
-        body += `${next.name}=${next.value}\n`
+        body += `${next.name}=${next.value}\n`;
     }
 
     return body;
@@ -314,6 +319,7 @@ prebuffer=20
 }
 
 function writeOtherDefaults() {
+    /* eslint-disable max-len */
     return `
 [render]
 # frameskip: How many frames DOSBox skips before drawing one.
@@ -464,6 +470,8 @@ keyboardlayout=auto
 [ipx]
 # ipx: Enable ipx over UDP/IP emulation.
 
-ipx=false
+ipx=true
 `;
+
+    /* eslint-enable max-len */
 }

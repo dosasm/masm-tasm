@@ -3,6 +3,7 @@ dist
 node_modules
 .vscode-test-web/
 .vscode-test/
+.emulators
 *.vsix
 
 **/.DS_store

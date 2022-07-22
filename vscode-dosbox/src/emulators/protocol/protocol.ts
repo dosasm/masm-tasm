@@ -1,5 +1,5 @@
 import { DosConfig } from "../dos/bundle/dos-conf";
-import { CommandInterface } from "../emulators";
+import { DirectSound, CommandInterface, NetworkType, BackendOptions } from "../emulators";
 import { CommandInterfaceEventsImpl } from "../impl/ci-impl";
 
 export type ClientMessage =
@@ -15,9 +15,12 @@ export type ClientMessage =
     "wc-pause" |
     "wc-resume" |
     "wc-mute" |
-    "wc-unmute";
+    "wc-unmute" |
+    "wc-connect" |
+    "wc-disconnect";
 
 export type ServerMessage =
+    "ws-extract-progress" |
     "ws-ready" |
     "ws-server-ready" |
     "ws-frame-set-size" |
@@ -31,13 +34,15 @@ export type ServerMessage =
     "ws-sound-init" |
     "ws-sound-push" |
     "ws-config" |
-    "ws-sync-sleep";
+    "ws-sync-sleep" |
+    "ws-connected" |
+    "ws-disconnected";
 
-export type MessageHandler =  (name: ServerMessage, props: {[key: string]: any}) => void;
+export type MessageHandler = (name: ServerMessage, props: { [key: string]: any }) => void;
 
 export interface TransportLayer {
     sessionId: string;
-    sendMessageToServer(name: ClientMessage, props?: {[key: string]: any}): void;
+    sendMessageToServer(name: ClientMessage, props?: { [key: string]: any }): void;
     initMessageHandler(handler: MessageHandler): void;
     exit?: () => void;
 }
@@ -51,7 +56,8 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
     private startedAt = Date.now();
     private frameWidth = 0;
     private frameHeight = 0;
-    private rgb: Uint8Array = new Uint8Array();
+    private rgb: Uint8Array | null = null;
+    private rgba: Uint8Array | null = null;
     private freq = 0;
 
     private bundles?: Uint8Array[];
@@ -66,15 +72,28 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
 
     private eventsImpl = new CommandInterfaceEventsImpl();
 
-    private keyMatrix: {[keyCode: number]: boolean} = {};
+    private keyMatrix: { [keyCode: number]: boolean } = {};
 
     private configPromise: Promise<DosConfig>;
     private configResolve: (config: DosConfig) => void = () => {/**/};
     private panicMessages: string[] = [];
 
+    private connectPromise: Promise<void> | null = null;
+    private connectResolve: () => void = () => {/**/};
+    private connectReject: () => void = () => {/**/};
+
+    private disconnectPromise: Promise<void> | null = null;
+    private disconnectResolve: () => void = () => {/**/};
+
+    public sharedMemory?: SharedArrayBuffer;
+    public directSound?: DirectSound;
+    public options: BackendOptions;
+
     constructor(bundles: Uint8Array[],
-                transport: TransportLayer,
-                ready: (err: Error | null) => void) {
+        transport: TransportLayer,
+        ready: (err: Error | null) => void,
+        options: BackendOptions) {
+        this.options = options;
         this.bundles = bundles;
         this.transport = transport;
         this.ready = ready;
@@ -82,13 +101,13 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
         this.transport.initMessageHandler(this.onServerMessage.bind(this));
     }
 
-    private sendClientMessage(name: ClientMessage, props?: {[key: string]: any}) {
+    private sendClientMessage(name: ClientMessage, props?: { [key: string]: any }) {
         props = props || {};
         props.sessionId = props.sessionId || this.transport.sessionId;
         this.transport.sendMessageToServer(name, props);
     }
 
-    private onServerMessage(name: ServerMessage, props: {[key: string]: any}) {
+    private onServerMessage(name: ServerMessage, props: { [key: string]: any }) {
         if (name === undefined || name.length < 3 ||
             name[0] !== "w" || name[1] !== "s" || name[2] !== "-") {
             return;
@@ -100,6 +119,7 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
 
         switch (name) {
             case "ws-ready": {
+                this.sharedMemory = props.sharedMemory;
                 this.sendClientMessage("wc-run", {
                     bundles: this.bundles,
                 });
@@ -120,7 +140,7 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
                 this.onFrameSize(props.width, props.height);
             } break;
             case "ws-update-lines": {
-                this.onFrameLines(props.lines);
+                this.onFrameLines(props.lines, props.rgba);
             } break;
             case "ws-exit": {
                 this.onExit();
@@ -144,7 +164,7 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
                 this.onPersist(props.bundle);
             } break;
             case "ws-sound-init": {
-                this.onSoundInit(props.freq);
+                this.onSoundInit(props.freq, props.directSound);
             } break;
             case "ws-sound-push": {
                 this.onSoundPush(props.samples);
@@ -154,6 +174,31 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
             } break;
             case "ws-sync-sleep": {
                 this.sendClientMessage("wc-sync-sleep", props);
+            } break;
+            case "ws-connected": {
+                this.connectResolve();
+                this.connectPromise = null;
+                this.connectResolve = () => {/**/};
+                this.connectReject = () => {/**/};
+                this.eventsImpl.fireNetworkConnected(props.networkType, props.address, props.port);
+            } break;
+            case "ws-disconnected": {
+                if (this.connectPromise !== null) {
+                    this.connectReject();
+                    this.connectPromise = null;
+                    this.connectResolve = () => {/**/};
+                    this.connectReject = () => {/**/};
+                } else {
+                    this.disconnectResolve();
+                    this.disconnectPromise = null;
+                    this.disconnectResolve = () => {/**/};
+                }
+                this.eventsImpl.fireNetworkDisconnected(props.networkType);
+            } break;
+            case "ws-extract-progress": {
+                if (this.options.onExtractProgress) {
+                    this.options.onExtractProgress(props.index, props.file, props.extracted, props.count);
+                }
             } break;
             default: {
                 // eslint-disable-next-line
@@ -173,19 +218,35 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
 
         this.frameWidth = width;
         this.frameHeight = height;
-        this.rgb = new Uint8Array(width * height * 3);
+        if (this.sharedMemory === undefined) {
+            this.rgb = new Uint8Array(width * height * 3);
+        }
         this.eventsImpl.fireFrameSize(width, height);
     }
 
-    private onFrameLines(lines: FrameLine[]) {
-        for (const line of lines) {
-            this.rgb.set(line.heapu8, line.start * this.frameWidth * 3);
+    private onFrameLines(lines: FrameLine[], rgbaPtr: number) {
+        if (this.sharedMemory !== undefined) {
+            this.rgba = new Uint8Array(
+                this.sharedMemory, rgbaPtr,
+                this.frameWidth * this.frameHeight * 4,
+            );
+        } else {
+            for (const line of (lines as FrameLine[])) {
+                (this.rgb as Uint8Array).set(line.heapu8, line.start * this.frameWidth * 3);
+            }
         }
-        this.eventsImpl.fireFrame(this.rgb);
+
+        this.eventsImpl.fireFrame(this.rgb, this.rgba);
     }
 
-    private onSoundInit(freq: number) {
+    private onSoundInit(freq: number, directSound: DirectSound | undefined) {
         this.freq = freq;
+        this.directSound = directSound;
+        if (this.directSound !== undefined) {
+            for (let i = 0; i < this.directSound.ringSize; ++i) {
+                this.directSound.buffer[i] = new Float32Array(this.directSound.buffer[i]);
+            }
+        }
     }
 
     private onSoundPush(samples: Float32Array) {
@@ -203,9 +264,7 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
     private onErr(tag: string, message: string) {
         if (tag === "panic") {
             this.panicMessages.push(message);
-			console.error("[" + tag + "]" + message);
-        } else {
-			console.log("[" + tag + "]" + message);
+            console.error("[" + tag + "]" + message);
         }
         this.eventsImpl.fireMessage("error", "[" + tag + "]" + message);
     }
@@ -231,25 +290,34 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
     }
 
     public screenshot(): Promise<ImageData> {
-        const rgba = new Uint8ClampedArray(this.rgb.length / 3 * 4);
+        if (this.rgb !== null || this.rgba !== null) {
+            const rgba = new Uint8ClampedArray(this.frameWidth * this.frameHeight * 4);
+            const frame = (this.rgb !== null ? this.rgb : this.rgba) as Uint8Array;
 
-        let rgbOffset = 0;
-        let rgbaOffset = 0
+            let frameOffset = 0;
+            let rgbaOffset = 0;
 
-        while (rgbaOffset < rgba.length) {
-            rgba[rgbaOffset++] = this.rgb[rgbOffset++];
-            rgba[rgbaOffset++] = this.rgb[rgbOffset++];
-            rgba[rgbaOffset++] = this.rgb[rgbOffset++];
-            rgba[rgbaOffset++] = 255;
+            while (rgbaOffset < rgba.length) {
+                rgba[rgbaOffset++] = frame[frameOffset++];
+                rgba[rgbaOffset++] = frame[frameOffset++];
+                rgba[rgbaOffset++] = frame[frameOffset++];
+                rgba[rgbaOffset++] = 255;
+
+                if (frame.length === rgba.length) {
+                    frameOffset++;
+                }
+            }
+
+            return Promise.resolve(new ImageData(rgba, this.frameWidth, this.frameHeight));
+        } else {
+            return Promise.reject(new Error("No frame received"));
         }
-
-        return Promise.resolve(new ImageData(rgba, this.frameWidth, this.frameHeight));
     }
 
     public simulateKeyPress(...keyCodes: number[]) {
         const timeMs = Date.now() - this.startedAt;
-        keyCodes.forEach(keyCode => this.addKey(keyCode, true, timeMs));
-        keyCodes.forEach(keyCode => this.addKey(keyCode, false, timeMs + 16));
+        keyCodes.forEach((keyCode) => this.addKey(keyCode, true, timeMs));
+        keyCodes.forEach((keyCode) => this.addKey(keyCode, false, timeMs + 16));
     }
 
     public sendKeyEvent(keyCode: number, pressed: boolean) {
@@ -267,11 +335,11 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
     }
 
     public sendMouseMotion(x: number, y: number) {
-        this.sendClientMessage("wc-mouse-move", { x, y, relative: false, timeMs: Date.now() - this.startedAt })
+        this.sendClientMessage("wc-mouse-move", { x, y, relative: false, timeMs: Date.now() - this.startedAt });
     }
 
     public sendMouseRelativeMotion(x: number, y: number) {
-        this.sendClientMessage("wc-mouse-move", { x, y, relative: true, timeMs: Date.now() - this.startedAt })
+        this.sendClientMessage("wc-mouse-move", { x, y, relative: true, timeMs: Date.now() - this.startedAt });
     }
 
     public sendMouseButton(button: number, pressed: boolean) {
@@ -351,4 +419,39 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
         return this.eventsImpl;
     }
 
+    public networkConnect(networkType: NetworkType, address: string, port: number): Promise<void> {
+        if (this.connectPromise !== null || this.disconnectPromise !== null) {
+            return Promise.reject(new Error("Already prefoming connection or disconnection..."));
+        }
+
+        this.connectPromise = new Promise<void>((resolve, reject) => {
+            if (!address.startsWith("wss://") && !address.startsWith("ws://")) {
+                address = (window.location.protocol === "http:" ? "ws://" : "wss://") + address;
+            }
+
+            this.connectResolve = resolve;
+            this.connectReject = reject;
+            this.sendClientMessage("wc-connect", {
+                networkType,
+                address,
+                port,
+            });
+        });
+        return this.connectPromise;
+    }
+
+    public networkDisconnect(networkType: NetworkType): Promise<void> {
+        if (this.connectPromise !== null || this.disconnectPromise !== null) {
+            return Promise.reject(new Error("Already prefoming connection or disconnection..."));
+        }
+
+        this.disconnectPromise = new Promise<void>((resolve) => {
+            this.disconnectResolve = resolve;
+
+            this.sendClientMessage("wc-disconnect", {
+                networkType,
+            });
+        });
+        return this.disconnectPromise;
+    }
 }

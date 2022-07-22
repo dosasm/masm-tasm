@@ -1,5 +1,4 @@
 import * as assert from "assert";
-
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from "vscode";
@@ -21,6 +20,10 @@ export const jsdosHostTestSuite = suite("test jsdos API", function () {
   });
 
   test("launch jsdos in extension host direct", async function () {
+    if(!process.platform){
+      console.log("skip test dosboxDirect mode in web host");
+      this.skip();
+    }
     const ci = await api.jsdos.runInHost(undefined, false);
     assert.ok(typeof ci.width() === "number");
 
@@ -50,7 +53,8 @@ export const jsdosHostTestSuite = suite("test jsdos API", function () {
   });
 
   test("launch jsdos in extension host webworker", async function () {
-    if (process.platform !== undefined) {
+    if(process.platform){
+      console.log("skip test dosboxDirect mode in local machine host");
       this.skip();
     }
     const ci = await api.jsdos.runInHost(undefined, true);

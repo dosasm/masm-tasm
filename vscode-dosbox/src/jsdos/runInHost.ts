@@ -1,4 +1,3 @@
-export { emulators } from "../emulators/emulators";
 import * as vscode from "vscode";
 import { JsdosShell } from "../jsdos-ci-shell/main";
 

@@ -1,50 +1,19 @@
-/* eslint no-self-assign: 0 */
-/* eslint @typescript-eslint/no-var-requires: 0 */
-
-import { Cache } from "../cache";
-import { HTTPRequest } from "../http";
-import * as bon from "browser-or-node";
-
-let globalObj={};
-if(bon.isBrowser){
-    globalObj=window as any;
-}
-else if(bon.isNode){
-    globalObj=global as any;
-}
-else if(bon.isWebWorker){
-    globalObj=self as any;
-}else{
-    globalObj={} as any;
-}
-
-
-export interface WasmModule {
-    instantiate: (module?: any) => Promise<any>;
-}
-
-export interface IWasmModules {
-    libzip: () => Promise<WasmModule>;
-    dosbox: () => Promise<WasmModule>;
-}
+import * as origin from "./modules.origin";
+import { URI ,Utils} from 'vscode-uri';
+export {WasmModule,IWasmModules} from "./modules.origin"
 
 interface Globals {
     exports: {[moduleName: string]: any},
-    compiled: {[moduleName: string]: Promise<WasmModule>},
+    compiled: {[moduleName: string]: Promise<origin.WasmModule>},
 }
 
 class Host {
     public wasmSupported = false;
     public globals: Globals;
     constructor() {
-        this.globals=globalObj as any;
-        
-        if (!this.globals.exports) {
-            this.globals.exports = {};
-        }
-        if (!this.globals.compiled) {
-            this.globals.compiled = {};
-        }
+        this.globals = globalThis as any
+        if(this.globals.exports===undefined) this.globals.exports={}
+        if(this.globals.compiled===undefined) this.globals.compiled={}
 
         // ### WebAssembly
         // Host able to detect is WebAssembly supported or not,
@@ -52,7 +21,6 @@ class Host {
         if (typeof WebAssembly === "object" &&
             typeof WebAssembly.instantiate === "function" &&
             typeof WebAssembly.compile === "function") {
-
             const wmodule = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
             if (wmodule instanceof WebAssembly.Module) {
                 this.wasmSupported = new WebAssembly.Instance(wmodule) instanceof WebAssembly.Instance;
@@ -74,7 +42,9 @@ class Host {
             Math.imul = Math.imul;
 
             if (!Math.fround) {
-                Math.fround = function(x) { return x; };
+                Math.fround = function(x) {
+                    return x;
+                };
             }
             Math.fround = Math.fround;
 
@@ -82,7 +52,9 @@ class Host {
                 Math.clz32 = function(x) {
                     x = x >>> 0;
                     for (let i = 0; i < 32; i++) {
-                        if (x & (1 << (31 - i))) { return i; }
+                        if (x & (1 << (31 - i))) {
+                            return i;
+                        }
                     }
                     return 32;
                 };
@@ -101,26 +73,27 @@ class Host {
 
 export const host = new Host();
 
-export class WasmModulesImpl implements IWasmModules {
-    private cache: Cache;
+export class WasmModulesImpl implements origin.IWasmModules {
+    private pathPrefix: URI
 
-    private libzipPromise?: Promise<WasmModule>;
-    private dosboxPromise?: Promise<WasmModule>;
+    private libzipPromise?: Promise<origin.WasmModule>;
+    private dosboxPromise?: Promise<origin.WasmModule>;
 
     public wasmSupported = false;
 
-    constructor(
-        public pathResolver: (filename:string)=>string,
-        cache: Cache) {
-        this.cache = cache;
-    }
+    constructor(pathPrefix: string,
+        private wdosboxJs: string = "wdosbox.js",
+        private wlibzipJs: string = "wlibzip.js",
+    ) {
+        this.pathPrefix=URI.parse(pathPrefix)
+     }
 
     libzip() {
         if (this.libzipPromise !== undefined) {
             return this.libzipPromise;
         }
 
-        this.libzipPromise = this.loadModule(this.pathResolver("wlibzip.js"), "WLIBZIP");
+        this.libzipPromise = this.loadModule(Utils.joinPath(this.pathPrefix,this.wlibzipJs), "WLIBZIP");
         return this.libzipPromise;
     }
 
@@ -129,139 +102,19 @@ export class WasmModulesImpl implements IWasmModules {
             return this.dosboxPromise;
         }
 
-        this.dosboxPromise = this.loadModule(this.pathResolver("wdosbox.js"), "WDOSBOX");
+        this.dosboxPromise = this.loadModule(Utils.joinPath(this.pathPrefix,this.wdosboxJs), "WDOSBOX");
+
         return this.dosboxPromise;
     }
 
-    private loadModule(url: string,
-                       moduleName: string) {
+    private loadModule(url: URI,
+        moduleName: string) {
         // eslint-disable-next-line
-        return loadWasmModule(url, moduleName, this.cache, () => {});
+        return loadWasmModule(url, moduleName, () => { });
     }
 }
 
-export function loadWasmModule(url: string,
-                               moduleName: string,
-                               cache: Cache,
-                               onprogress: (stage: string, total: number, loaded: number) => void): Promise<WasmModule> {
-    if (typeof XMLHttpRequest === "undefined") {
-        return loadWasmModuleNode(url, moduleName, cache, onprogress);
-    } else {
-        return loadWasmModuleBrowser(url, moduleName, cache, onprogress);
-    }
-}
 
-function loadWasmModuleNode(url: string,
-                            moduleName: string,
-                            // eslint-disable-next-line
-                            cache: Cache,
-                            // eslint-disable-next-line
-                            onprogress: (stage: string, total: number, loaded: number) => void) {
-    if (host.globals.compiled[moduleName] !== undefined) {
-        return host.globals.compiled[moduleName];
-    }
-
-    const emModule = eval("require")(url);
-    const compiledModulePromise = Promise.resolve(new CompiledNodeModule(emModule));
-    if (moduleName) {
-        host.globals.compiled[moduleName] = compiledModulePromise;
-    }
-
-    return compiledModulePromise;
-}
-
-function loadWasmModuleBrowser(url: string,
-                          moduleName: string,
-                          cache: Cache,
-                          onprogress: (stage: string, total: number, loaded: number) => void) {
-    if (host.globals.compiled[moduleName] !== undefined) {
-        return host.globals.compiled[moduleName];
-    }
-
-    async function load() {
-        const fromIndex = url.lastIndexOf("/");
-        const wIndex = url.indexOf("w", fromIndex);
-        const isWasmUrl = wIndex === fromIndex + 1 && wIndex >= 0;
-
-        if (!host.wasmSupported || !isWasmUrl) {
-            throw new Error("Starting from js-dos 6.22.60 js environment is not supported");
-        }
-
-        const wasmUrl = url.replace(".js", ".wasm");
-        const binaryPromise = HTTPRequest(wasmUrl, {
-            cache,
-            responseType: "arraybuffer",
-            progress: (total, loaded) => {
-                onprogress("Resolving DosBox (" + url + ")", total, loaded);
-            },
-        });
-        const scriptPromise = HTTPRequest(url, {
-            cache,
-            progress: (total, loaded) => {
-                onprogress("Resolving DosBox", total, loaded);
-            },
-        });
-
-        const [binary, script] = await Promise.all([binaryPromise, scriptPromise]);
-        const wasmModule = await WebAssembly.compile(binary as ArrayBuffer);
-        const instantiateWasm = (info: any, receiveInstance: any) => {
-            info.env = info.env || {};
-            WebAssembly.instantiate(wasmModule, info)
-                .then((instance) => receiveInstance(instance, wasmModule));
-            return; // no-return
-        };
-
-        eval.call(globalObj, script as string);
-
-        return new CompiledBrowserModule(wasmModule,
-                                         host.globals.exports[moduleName],
-                                         instantiateWasm);
-    }
-
-    const promise = load();
-
-    if (moduleName) {
-        host.globals.compiled[moduleName] = promise;
-    }
-
-    return promise;
-}
-
-class CompiledNodeModule implements WasmModule {
-    private emModule: any;
-    constructor(emModule: any) {
-        this.emModule = emModule;
-    }
-
-    instantiate(initialModule: any): Promise<void> {
-        return new Promise<void>((resolve) => {
-            initialModule.onRuntimeInitialized = () => {
-                resolve();
-            };
-
-            new this.emModule(initialModule);
-        });
-    }
-}
-
-class CompiledBrowserModule implements WasmModule {
-    public wasmModule: WebAssembly.Module;
-    private module: any;
-    private instantiateWasm: any;
-
-    constructor(wasmModule: WebAssembly.Module, module: any, instantiateWasm: any) {
-        this.wasmModule = wasmModule;
-        this.module = module;
-        this.instantiateWasm = instantiateWasm;
-    }
-
-    instantiate(initialModule: any): Promise<void> {
-        return new Promise<void>((resolve) => {
-            initialModule.instantiateWasm = this.instantiateWasm;
-            initialModule.onRuntimeInitialized = () => {
-                resolve();
-            };
-            new this.module(initialModule);
-        });
-    }
-}
+export type LoadWasmModule = (url: URI, moduleName: string, onprogress: (stage: string, total: number, loaded: number) => void)=> Promise<origin.WasmModule>
+let loadWasmModule:LoadWasmModule = (url,moduleName,onprogress)=>origin.loadWasmModule(url.toString(),moduleName,onprogress)
+export function setLoadWasmModule(f: LoadWasmModule) { loadWasmModule = f }

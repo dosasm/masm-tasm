@@ -3,8 +3,8 @@ name: github pages
 
 on:
   push:
-    branches:
-      - main  # Set a branch to deploy
+    tags:
+      - "**"  # Set a branch to deploy
   pull_request:
 
 jobs:
@@ -16,7 +16,10 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '12.x'
+          node-version: '16.x'
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: "*"
 
       - name: build react app
         working-directory: ./react-app

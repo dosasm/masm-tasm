@@ -133,5 +133,4 @@ export default class LibZip {
     private chdir(path: string) {
         this.module.FS.chdir(this.home + "/" + path);
     }
-
 }

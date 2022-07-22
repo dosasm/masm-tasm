@@ -4,8 +4,7 @@
 import { DosConfig, createDosConfig, toDosboxConf } from "./dos-conf";
 import LibZip from "../../libzip/libzip";
 
-import { HTTPRequest } from "../../http";
-import { Cache } from "../../cache";
+import { httpRequest } from "../../http";
 
 import { WasmModule } from "../../impl/modules";
 
@@ -29,13 +28,11 @@ export default class DosBundle {
     public sources: DosArchiveSource[];
 
     private libzipWasm: WasmModule;
-    private cache: Cache;
 
-    constructor(libzipWasm: WasmModule, cache: Cache) {
+    constructor(libzipWasm: WasmModule) {
         this.config = createDosConfig();
         this.sources = [];
         this.libzipWasm = libzipWasm;
-        this.cache = cache;
     }
 
     autoexec(...lines: string[]): DosBundle {
@@ -56,8 +53,9 @@ export default class DosBundle {
 
     // ### extractAll
     extractAll(sources: DosArchiveSource[]): DosBundle {
+        // eslint-disable-next-line max-len
         // download given [`sources`](https://js-dos.com/6.22/docs/api/generate.html?page=jsdos-bundle#dosfs-dosarchivesource)
-        // and extract them 
+        // and extract them
         this.sources.push(...sources);
         return this;
     }
@@ -74,14 +72,13 @@ export default class DosBundle {
                 throw new Error("Only Zip is supported");
             }
 
-            const resource = HTTPRequest(source.url, {
-                cache: this.cache,
+            const resource = httpRequest(source.url, {
                 responseType: "arraybuffer",
             }).then((buffer: string | ArrayBuffer) => {
                 return {
                     source,
                     data: new Uint8Array(buffer as ArrayBuffer),
-                }
+                };
             });
 
             promises.push(resource);
@@ -109,9 +106,7 @@ export default class DosBundle {
 
         return bundle;
     }
-
 }
-
 
 
 const readmeTxt = `
