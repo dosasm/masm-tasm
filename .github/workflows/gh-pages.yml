@@ -1,0 +1,38 @@
+# 📖 https://gohugo.io/hosting-and-deployment/hosting-on-github/
+name: github pages
+
+on:
+  push:
+    branches:
+      - main  # Set a branch to deploy
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+
+      - name: create jsdos bundles
+        working-directory: ./bundles
+        run: |
+          yarn
+          yarn build
+
+      - name: build react app
+        working-directory: ./react-app
+        run: |
+          yarn
+          yarn build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./react-app/build

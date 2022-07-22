@@ -1,0 +1,226 @@
+{
+    "$comment": "Configurations for jsdos bundle and their usage",
+    "profiles": [
+        {
+            "label": "MASM 6.11",
+            "description": "Microsoft Macro Assembler with MASM.exe 5.00 link.exe 3.60",
+            "baseBundle": "/bundles/MASM-v6.11.jsdos",
+            "codeExt":"asm",
+            "CodeLanguage": "nasm",
+            "CodePath": "code/hello.asm",
+            "actions": [
+                {
+                    "label": "run",
+                    "zh-cn": "运行代码",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\masm;%PATH%",
+                        "d:",
+                        "masm test.asm;",
+                        "link test.obj;",
+                        "test.exe"
+                    ]
+                },
+                {
+                    "label": "debug",
+                    "zh-cn": "使用debug调试",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\masm;%PATH%",
+                        "d:",
+                        "masm test.asm;",
+                        "link test.obj;",
+                        "debug test.exe"
+                    ]
+                },
+                {
+                    "label": "list",
+                    "zh-cn": "生成lst文件",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\masm;%PATH%",
+                        "d:",
+                        "masm /la test.asm;",
+                        "type test.lst"
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "MASM 5.00",
+            "description": "Microsoft Macro Assembler with MASM.exe 5.00 link.exe 3.60",
+            "baseBundle": "/bundles/MASM-v5.00.jsdos",
+            "codeExt":"asm",
+            "CodeLanguage": "nasm",
+            "CodePath": "code/hello.asm",
+            "actions": [
+                {
+                    "label": "run",
+                    "zh-cn": "运行代码",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\masm;%PATH%",
+                        "d:",
+                        "masm test.asm;",
+                        "link test.obj;",
+                        "test.exe"
+                    ]
+                },
+                {
+                    "label": "debug",
+                    "zh-cn": "使用debug调试",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\masm;%PATH%",
+                        "d:",
+                        "masm test.asm;",
+                        "link test.obj;",
+                        "debug test.exe"
+                    ]
+                },
+                {
+                    "label": "list",
+                    "zh-cn": "生成lst文件",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\masm;%PATH%",
+                        "d:",
+                        "masm /la test.asm;",
+                        "type test.lst"
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "TASM 4.1",
+            "description": "Borland's Turbo Assembler with tasm.exe 4.1 tlink.exe 7.1.30.1",
+            "baseBundle": "/bundles/TASM.jsdos",
+            "codeExt":"asm",
+            "CodeLanguage": "nasm",
+            "CodePath": "code/hello.asm",
+            "actions": [
+                {
+                    "label": "run",
+                    "zh-cn": "运行代码",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\tasm;%PATH%",
+                        "d:",
+                        "tasm test.asm;",
+                        "tlink test.obj;",
+                        "test.exe"
+                    ]
+                },
+                {
+                    "label": "debug",
+                    "zh-cn": "使用TD调试",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\tasm;%PATH%",
+                        "d:",
+                        "tasm /zi test.asm",
+                        "tlink /v/3 test.obj",
+                        "TD test.exe"
+                    ]
+                },
+                {
+                    "label": "list",
+                    "zh-cn": "生成lst文件",
+                    "CodeDestination": "test/test.asm",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\tasm;%PATH%",
+                        "d:",
+                        "tasm /la test.asm;",
+                        "type test.lst"
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "batch",
+            "description": "use a empty jsdos bundle, we can run batch file",
+            "baseBundle": "/bundles/empty.jsdos",
+            "codeExt":"bat",
+            "CodeLanguage": "bat",
+            "baseCode":"echo hello jsdos",
+            "actions": [
+                {
+                    "label": "run",
+                    "zh-cn": "运行BAT",
+                    "CodeDestination": "test/test.bat",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "d:",
+                        "test.bat"
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Turbo C 2.0(T)",
+            "description": "Turbo C 2.0 Compile code in Text Mode. From Gabriel Ortiz(gabrielortizamador@gmail.com)",
+            "baseBundle": "/bundles/TurboC.jsdos",
+            "CodeLanguage": "C",
+            "CodePath": "Code/Text.c",
+            "codeExt":"c",
+            "actions": [
+                {
+                    "label": "run",
+                    "zh-cn": "运行代码",
+                    "CodeDestination": "test/test.c",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "d:",
+                        "set PATH=C:\\TC;%PATH%",
+                        "tcc Text.c",
+                        "tcc -Ic:\\tc\\ -Lc:\\tc\\ d:test",
+                        "test.exe"
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Turbo C 2.0(G)",
+            "description": "Turbo C 2.0 Compile code in Graph Mode. From Gabriel Ortiz(gabrielortizamador@gmail.com)",
+            "baseBundle": "/bundles/TurboC.jsdos",
+            "CodeLanguage": "C",
+            "CodePath": "Code/Graphic.c",
+            "codeExt":"c",
+            "actions": [
+                {
+                    "label": "run",
+                    "zh-cn": "使用TD调试",
+                    "CodeDestination": "test/test.c",
+                    "command": [
+                        "mount c ./",
+                        "mount d ./test/",
+                        "set PATH=C:\\TC;%PATH%",
+                        "d:",
+                        "tcc -Ic:\\tc\\ -Lc:\\tc\\ d:\\test c:\\tc\\graphics.lib",
+                        "test.exe"
+                    ]
+                }
+            ]
+        }
+    ]
+}

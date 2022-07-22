@@ -1,0 +1,33 @@
+{
+    "comments": {
+        // symbol used for single line comment
+        "lineComment": ";"
+    },
+    // symbols used as brackets
+    "brackets": [
+        ["[", "]"],
+        ["SEGMENT","ENDS"],
+        ["STRUCT","ENDS"],
+        ["MACRO","ENDM"],
+        ["PROC","ENDP"]
+    ],
+    // symbols that are auto closed when typing
+    "autoClosingPairs": [
+        ["[", "]"],
+        ["\"", "\""],
+        ["'", "'"]
+    ],
+    // symbols that that can be used to surround a selection
+    "surroundingPairs": [
+        ["[", "]"],
+        ["\"", "\""],
+        ["'", "'"],
+    ],
+    "folding": {
+        "markers": {
+            "start": "^\\s*\\w+\\s+proc|struct|PROC|STRUCT|SEGMENT|MACRO|macro",
+            "end": "^\\s*\\w*\\s*endp|ends|ENDP|ENDS|ENDM|endm"
+        }
+    },
+    "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\:\\;\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)|('.')|(\\;.+$)",
+}

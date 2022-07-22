@@ -1,0 +1,402 @@
+{
+  "name": "masm-tasm",
+  "displayName": "MASM/TASM",
+  "publisher": "xsro",
+  "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
+  "version": "1.1.0",
+  "keywords": [
+    "dosbox",
+    "16位",
+    "汇编",
+    "微机原理",
+    "tasm",
+    "masm",
+    "x86"
+  ],
+  "icon": "resources/dosboxasm.png",
+  "engines": {
+    "vscode": "^1.61.0"
+  },
+  "extensionDependencies": [
+    "xsro.vscode-dosbox"
+  ],
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "badges": [
+    {
+      "url": "https://github.com/dosasm/masm-tasm/raw/main/pics/asm.png",
+      "href": "https://github.com/dosasm/masm-tasm/wiki/dosbox",
+      "description": "some interesting ASM code"
+    }
+  ],
+  "activationEvents": [
+    "onLanguage:assembly",
+    "onLanguage:asm-collection",
+    "onLanguage:tasm",
+    "onLanguage:masm"
+  ],
+  "main": "./dist/extension.js",
+  "browser": "./dist/web/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "assembly",
+        "aliases": [
+          "assembly(DOS)"
+        ],
+        "extensions": [
+          ".asm",
+          ".inc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "assembly",
+        "path": "./snippets.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "assembly",
+        "scopeName": "source.asm",
+        "path": "./syntaxes/assembly.tmLanguage.json"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "command": "masm-tasm.openEmulator",
+          "group": "0_MASM-TASM@1"
+        },
+        {
+          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "command": "masm-tasm.runASM",
+          "group": "0_MASM-TASM@2"
+        },
+        {
+          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "command": "masm-tasm.debugASM",
+          "group": "0_MASM-TASM@3"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "masm-tasm.openEmulator",
+        "title": "%editor.openEmu%"
+      },
+      {
+        "command": "masm-tasm.runASM",
+        "title": "%editor.runAsm%"
+      },
+      {
+        "command": "masm-tasm.debugASM",
+        "title": "%editor.debugAsm%"
+      },
+      {
+        "command": "masm-tasm.cleanalldiagnose",
+        "title": "%command.cleanalldianose%"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "MASM/TASM",
+      "properties": {
+        "masmtasm.ASM.mode": {
+          "type": "string",
+          "default": "single file",
+          "enum": [
+            "single file",
+            "workspace"
+          ],
+          "markdownEnumDescriptions": [
+            "%config.mode.singleFile%",
+            "%config.mode.workspace%"
+          ],
+          "markdownDescription": "choose working Mode"
+        },
+        "masmtasm.ASM.assembler": {
+          "type": "string",
+          "default": "TASM",
+          "description": "%config.assembler.description%",
+          "enum": [
+            "TASM",
+            "MASM",
+            "MASM-v5.00",
+            "MASM-v6.11"
+          ]
+        },
+        "masmtasm.ASM.actions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "baseBundle": {
+                "type": "string",
+                "description": "The jsdos bundle of assembler tools"
+              },
+              "support": {
+                "type": "array",
+                "description": "The supported emulators. By default is `dosbox(-x)` and `jsdos`",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "before": {
+                "type": "array",
+                "description": "The commands to exec in open emulator and before `run` or `debug` the code",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "run": {
+                "type": "array",
+                "description": "The commands to run the code, add a `>` before the command if you need to prevent redirect the command's output",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "debug": {
+                "type": "array",
+                "description": "The commands to debug the code",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "baseBundle",
+              "run",
+              "debug"
+            ]
+          },
+          "default": {
+            "TASM": {
+              "baseBundle": "<built-in>/TASM.jsdos",
+              "before": [
+                "set PATH=C:\\TASM"
+              ],
+              "run": [
+                "TASM ${file}",
+                "TLINK ${filename}",
+                ">${filename}"
+              ],
+              "debug": [
+                "TASM /zi ${file}",
+                "TLINK /v/3 ${filename}.obj",
+                "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
+                "TD -cTDCONFIG.TD ${filename}.exe"
+              ]
+            },
+            "MASM-v6.11": {
+              "baseBundle": "<built-in>/MASM-v6.11.jsdos",
+              "before": [
+                "set PATH=C:\\MASM"
+              ],
+              "run": [
+                "masm ${file};",
+                "link ${filename};",
+                ">${filename}"
+              ],
+              "debug": [
+                "masm ${file};",
+                "link ${filename}.OBJ;",
+                ">debug ${filename}.exe"
+              ]
+            },
+            "MASM-v5.00": {
+              "baseBundle": "<built-in>/MASM-v5.00.jsdos",
+              "before": [
+                "set PATH=C:\\MASM"
+              ],
+              "run": [
+                "masm ${file};",
+                "link ${filename};",
+                ">${filename}"
+              ],
+              "debug": [
+                "masm ${file};",
+                "link ${filename}.OBJ;",
+                ">debug ${filename}.exe"
+              ],
+              "support": [
+                "jsdos",
+                "dosbox",
+                "dosbox-x",
+                "msdos player"
+              ]
+            }
+          }
+        },
+        "masmtasm.ASM.emulator": {
+          "type": "string",
+          "default": "jsdos",
+          "description": "%config.emulator.description%",
+          "enum": [
+            "jsdos",
+            "dosbox",
+            "dosbox-x",
+            "msdos player"
+          ],
+          "enumDescriptions": [
+            "%config.emulator.jsdos%",
+            "%config.emulator.dosbox%",
+            "%config.emulator.dosboxX%",
+            "%config.emulator.player%"
+          ]
+        },
+        "masmtasm.ASM.savefirst": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.savefirst%"
+        },
+        "masmtasm.language.programmaticFeatures": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.PLF%"
+        },
+        "masmtasm.language.Hover": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.hover%"
+        },
+        "masmtasm.cpp-docs.links": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "markdownDescription": "%config.cpp-docs.links%",
+          "default": [
+            "https://cdn.jsdelivr.net/gh/MicrosoftDocs/cpp-docs@master/",
+            "https://raw.githubusercontent.com/MicrosoftDocs/cpp-docs/master/",
+            "https://gitee.com/dosasm/cpp-docs/raw/master/"
+          ]
+        },
+        "masmtasm.dosbox.run": {
+          "type": "string",
+          "default": "choose",
+          "description": "%config.boxrun.description%",
+          "enum": [
+            "keep",
+            "exit",
+            "pause",
+            "choose"
+          ],
+          "enumDescriptions": [
+            "%config.boxrun.enum1%",
+            "%config.boxrun.enum2%",
+            "%config.boxrun.enum3%",
+            "%config.boxrun.choose%"
+          ]
+        },
+        "masmtasm.dosbox.config": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {
+            "sdl.windowresolution": "1024x640",
+            "sdl.output": "opengl"
+          },
+          "markdownDescription": "%config.boxconfig.description%"
+        },
+        "masmtasm.dosboxX.config": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "markdownDescription": "%config.boxXconfig.description%"
+        }
+      }
+    },
+    "problemMatchers": [
+      {
+        "owner": "MASM",
+        "fileLocation": "autoDetect",
+        "pattern": [
+          {
+            "regexp": "^\\s*(.*)\\((\\d+)\\):\\s+(error|warning)\\s+([A-Z]\\d+:\\s+.*)$",
+            "file": 1,
+            "line": 2,
+            "severity": 3,
+            "message": 4,
+            "loop": true
+          }
+        ]
+      },
+      {
+        "owner": "TASM",
+        "fileLocation": "autoDetect",
+        "pattern": [
+          {
+            "regexp": "^\\s*\\*+(Error|Warning)\\*+\\s+(.*)\\((\\d+)\\)\\s+(.*)$",
+            "line": 3,
+            "severity": 1,
+            "message": 4,
+            "file": 2,
+            "loop": true
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "clean": "rimraf dist/ web/dist",
+    "postinstall": "node dev/downloadBundle.js",
+    "watch-tsc": "tsc -watch -p ./",
+    "watch": "webpack --mode development --watch",
+    "compile": "webpack --mode production",
+    "pretest": "tsc -p ./",
+    "test": "node ./dist/test/runTest.js",
+    "pretest-web": "yarn run compile",
+    "test-web": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../vscode-dosbox ./samples",
+    "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
+    "lint": "eslint src --ext ts",
+    "lint-fix": "eslint src --ext ts --fix",
+    "vscode:prepublish": "yarn clean && yarn compile"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/js-yaml": "^4.0.3",
+    "@types/mocha": "^9.0.0",
+    "@types/node-fetch": "^2.x",
+    "@types/vscode": "^1.61.0",
+    "@types/webpack-env": "^1.16.2",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
+    "@vscode/test-electron": "^2.1.3",
+    "@vscode/test-web": "^0.0.24",
+    "assert": "^2.0.0",
+    "del": "^6.0.0",
+    "download": "^8.0.0",
+    "emulators": "^0.72.0",
+    "eslint": "^8.1.0",
+    "glob": "^8.0.1",
+    "js-yaml": "^4.0.0",
+    "jszip": "^3.7.1",
+    "mocha": "^9.1.3",
+    "node-fetch": "^2.x",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.4.4",
+    "vscode-uri": "^3.0.2",
+    "webpack": "^5.60.0",
+    "webpack-cli": "^4.9.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dosasm/masm-tasm"
+  },
+  "bugs": {
+    "url": "https://github.com/dosasm/masm-tasm/issues",
+    "email": "xsro@foxmail.com"
+  },
+  "license": "MIT"
+}

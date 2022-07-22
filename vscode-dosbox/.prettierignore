@@ -1,0 +1,6 @@
+.vscode*/
+.git/
+out/
+dist/
+emu/
+src/emulators/

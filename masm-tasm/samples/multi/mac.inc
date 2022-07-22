@@ -1,0 +1,3 @@
+mac MACRO par
+
+ENDM
