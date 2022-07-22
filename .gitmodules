@@ -1,0 +1,4 @@
+[submodule "bundles"]
+	path = bundles
+	url = git@github.com:dosasm/assembly-tool.git
+	branch = gh-pages

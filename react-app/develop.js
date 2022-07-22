@@ -14,7 +14,7 @@ if (process.argv.includes('copy') || process.argv.includes('copy-emulators')) {
 }
 
 if (process.argv.includes('copy') || process.argv.includes('copy-bundles')) {
-    const srcDir = path.resolve(__dirname, '../', 'bundles', 'out');
+    const srcDir = path.resolve(__dirname, '../', 'bundles');
     const dstDir = path.resolve(__dirname, 'public', 'bundles');
     if (!fs.existsSync(dstDir)) {
         fs.mkdirSync(dstDir)

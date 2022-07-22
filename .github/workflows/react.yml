@@ -18,17 +18,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: create jsdos bundles
-        working-directory: ./bundles
-        run: |
-          yarn
-          yarn build
-
       - name: build react app
         working-directory: ./react-app
         run: |
-          yarn
-          yarn build
+          pnpm i
+          pnpm build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
