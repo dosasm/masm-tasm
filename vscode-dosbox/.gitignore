@@ -6,6 +6,6 @@ dist
 .emulators
 *.vsix
 build
-.vscodeignore
+/.vscodeignore
 
 **/.DS_store
