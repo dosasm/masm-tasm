@@ -3,6 +3,7 @@
 src/**
 out/**
 node_modules/**
+!node_modules/emulators*/
 .gitmodules
 vsc-extension-quickstart.md
 README.*.md
@@ -16,17 +17,8 @@ webpack.config.js
 
 .github/
 
-!node_modules/emulators*/package.json
-!node_modules/emulators/dist/w*.*
-!node_modules/emulators-ui/dist/*.*
 **/test/
-
-web/
-!web/dist/index.js
 
 dev/
 
-emu
-!emu/dosbox
-!emu/dosbox_x
-!emu/msdos_player
+

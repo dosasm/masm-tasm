@@ -100,7 +100,7 @@ flatpak install flathub com.dosbox_x.DOSBox-X
 
 |environment|platform|dosboxWorker|dosboxDirect|
 |---|---|---|---|
-|extensionhost|nodejs|✅|✅|
+|extensionhost|nodejs|❌|✅|
 |webview|browser|✅|✅|
 |web extensionhost|Worker|✅|❌|
 |web webview|browser|✅|✅|

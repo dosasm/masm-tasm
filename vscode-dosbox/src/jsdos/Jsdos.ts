@@ -24,7 +24,7 @@ export class Jsdos implements api.Jsdos {
   constructor(private context: vscode.ExtensionContext) {
     const dist = vscode.Uri.joinPath(
       context.extensionUri,
-      "/node_modules/emulators/dist/"
+      "/dist/emulators/"
     );
     this.pathPrefix=isNode?dist.fsPath:dist.toString();
 

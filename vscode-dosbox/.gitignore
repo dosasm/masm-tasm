@@ -1,9 +1,11 @@
 out
 dist
-node_modules
+*node_modules
 .vscode-test-web/
 .vscode-test/
 .emulators
 *.vsix
+build
+.vscodeignore
 
 **/.DS_store

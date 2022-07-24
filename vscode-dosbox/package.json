@@ -130,6 +130,7 @@
 		]
 	},
 	"scripts": {
+		"postinstall": "node dev/postinstall.js",
 		"test": "vscode-test-web --extensionDevelopmentPath=. --extensionTestsPath=dist/web/test/suite/index.js",
 		"compile-tsc": "tsc -p .",
 		"test-local": "tsc -p . && node out/test/runTest.js",
@@ -179,5 +180,9 @@
 		"publisherDisplayName": "clcxsrolau",
 		"publisherId": "758ca816-0470-447f-a0cf-9f5f0ef14d50",
 		"isPreReleaseVersion": false
-	}
+	},
+	"vsce": {
+		"dependencies": false,
+		"yarn": false
+	  }
 }
