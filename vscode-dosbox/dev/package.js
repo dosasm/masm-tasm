@@ -2,7 +2,7 @@ const fs = require("fs");
 const pak = require("../package.json");
 const path = require("path");
 const os = require("os");
-const cp=require("child_process");
+const cp = require("child_process");
 
 const projectDir = path.resolve(__dirname, "..");
 
@@ -20,24 +20,36 @@ const validTargets = [
   "web",
 ];
 
-function generateIgnore(platform,arch){
+function generateIgnore(platform, arch) {
   const ignorePath = path.resolve(projectDir, ".vscodeignore");
-  const baseContent=fs.readFileSync(path.resolve(projectDir,".vsce/.vscodeignore"),"utf-8");
-  const platformContent=fs.readFileSync(path.resolve(projectDir,`.vsce/${platform}.vscodeignore`),"utf-8");
-  fs.writeFileSync(ignorePath,baseContent+"\n"+platformContent.replace(/\{arch\}/g,arch));
+  const baseContent = fs.readFileSync(
+    path.resolve(projectDir, ".vsce/.vscodeignore"),
+    "utf-8"
+  );
+  const platformContent = fs.readFileSync(
+    path.resolve(projectDir, `.vsce/${platform}.vscodeignore`),
+    "utf-8"
+  );
+  fs.writeFileSync(
+    ignorePath,
+    baseContent + "\n" + platformContent.replace(/\{arch\}/g, arch)
+  );
 }
 
-async function package(platform, arch,folder="build") {
+async function package(platform, arch, folder = "build") {
   const target = platform + (arch ? "-" + arch : "");
-  generateIgnore(platform,arch);
+  generateIgnore(platform, arch);
 
   !fs.existsSync(folder) && fs.mkdirSync(folder);
 
   const packagePath = `${folder}/${pak.name}-${target}-${pak.version}.vsix`;
-  const run=command=>cp.execSync(command,{stdio:"inherit"});
-  run(`pnpm vsce package --no-dependencies --target ${target} --out ${packagePath}`);
+  const run = (command) => cp.execSync(command, { stdio: "inherit" });
+  run(
+    `pnpm vsce package --no-dependencies --target ${target} --out ${packagePath}`
+  );
 
-  console.log(`
+  console.log(
+    `
 start creating package in platform:${process.platform},arch:${process.arch}
 package path: ${packagePath}
 `,

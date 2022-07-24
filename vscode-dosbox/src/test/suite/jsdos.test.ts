@@ -20,7 +20,7 @@ export const jsdosHostTestSuite = suite("test jsdos API", function () {
   });
 
   test("launch jsdos in extension host direct", async function () {
-    if(!process.platform){
+    if (!process.platform) {
       console.log("skip test dosboxDirect mode in web host");
       this.skip();
     }
@@ -53,7 +53,7 @@ export const jsdosHostTestSuite = suite("test jsdos API", function () {
   });
 
   test("launch jsdos in extension host webworker", async function () {
-    if(process.platform){
+    if (process.platform) {
       console.log("skip test dosboxDirect mode in local machine host");
       this.skip();
     }

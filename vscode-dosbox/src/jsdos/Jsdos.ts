@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 import * as api from "../api";
 import { Conf } from "../dosbox/conf";
 import * as Jszip from "jszip";
-import { createTerminal} from "./runInHost";
+import { createTerminal } from "./runInHost";
 import { runInWebview } from "./runInWebview";
 import { EmulatorFunction } from "emulators-ui/dist/types/js-dos";
 import { logger } from "../util/logger";
@@ -22,11 +22,8 @@ export class Jsdos implements api.Jsdos {
   public jszip: Jszip = new Jszip();
 
   constructor(private context: vscode.ExtensionContext) {
-    const dist = vscode.Uri.joinPath(
-      context.extensionUri,
-      "/dist/emulators/"
-    );
-    this.pathPrefix=isNode?dist.fsPath:dist.toString();
+    const dist = vscode.Uri.joinPath(context.extensionUri, "/dist/emulators/");
+    this.pathPrefix = isNode ? dist.fsPath : dist.toString();
 
     //take over path resolve method for file in extension has different schema
     // - in Browser has a schema of http
@@ -37,7 +34,7 @@ export class Jsdos implements api.Jsdos {
     // };
 
     //take over HTTP request for running as web extension
-    const request:adapted.ReadContent = async function (
+    const request: adapted.ReadContent = async function (
       url: string,
       options: any
     ): Promise<string | ArrayBuffer | undefined> {
@@ -101,7 +98,7 @@ export class Jsdos implements api.Jsdos {
     bundle?: vscode.Uri | null | undefined,
     useWorker?: boolean
   ): Promise<api.CI> {
-    const ci = (await this._runInHost(bundle, useWorker));
+    const ci = await this._runInHost(bundle, useWorker);
     const shell = new JsdosShell(ci as CommandInterface);
     (ci as api.CI).shell = shell;
     (ci as api.CI).terminal = () => createTerminal(shell);
@@ -121,7 +118,7 @@ export class Jsdos implements api.Jsdos {
     }
     if (bundle === undefined) {
       const bundleData = await this.getBundleData();
-      const ci=await adapted.emulators[func](bundleData);
+      const ci = await adapted.emulators[func](bundleData);
       return ci;
     } else if (bundle === null) {
       const bundleData = await new Jszip()

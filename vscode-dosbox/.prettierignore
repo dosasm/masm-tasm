@@ -1,5 +1,4 @@
-.vscode*/
-.git/
+.*/
 out/
 dist/
 emu/

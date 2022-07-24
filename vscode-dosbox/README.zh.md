@@ -96,14 +96,14 @@ flatpak install flathub com.dosbox_x.DOSBox-X
 - `vscode-dosbox.command.dosbox`: 自定义打开 dosbox 的命令
 - `vscode-dosbox.command.dosboxX`: 自定义打开 dosbox-x 的命令
 
-## jsdos兼容情况
+## jsdos 兼容情况
 
-|environment|platform|dosboxWorker|dosboxDirect|
-|---|---|---|---|
-|extensionhost|nodejs|❌|✅|
-|webview|browser|✅|✅|
-|web extensionhost|Worker|✅|❌|
-|web webview|browser|✅|✅|
+| environment       | platform | dosboxWorker | dosboxDirect |
+| ----------------- | -------- | ------------ | ------------ |
+| extensionhost     | nodejs   | ❌           | ✅           |
+| webview           | browser  | ✅           | ✅           |
+| web extensionhost | Worker   | ✅           | ❌           |
+| web webview       | browser  | ✅           | ✅           |
 
 ## 报告问题
 
