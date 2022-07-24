@@ -3,7 +3,6 @@
 src/**
 out/**
 node_modules/**
-!node_modules/emulators*/
 .gitmodules
 vsc-extension-quickstart.md
 README.*.md
@@ -22,3 +21,5 @@ webpack.config.js
 dev/
 
 
+emu
+!emu/dosbox/dosbox-0.74.conf

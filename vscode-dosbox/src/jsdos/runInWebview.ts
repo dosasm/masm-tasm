@@ -38,7 +38,6 @@ export function runInWebview(
     return link;
   };
 
-  const prefix = "/dist/emulators/";
   const jsdosScript = (process as any).browser
     ? {
         emu: "https://js-dos.com/v7/build/releases/latest/emulators/emulators.js",
@@ -48,10 +47,10 @@ export function runInWebview(
           "https://js-dos.com/v7/build/releases/latest/emulators-ui/emulators-ui.css",
       }
     : {
-        emu: asWeb(prefix + "emulators.js"),
-        emuDist: asWeb(prefix + ""),
-        ui: asWeb(prefix + "emulators-ui.js"),
-        uiCss: asWeb(prefix + "/emulators-ui.css"),
+        emu: asWeb( "/dist/emulators/emulators.js"),
+        emuDist: asWeb("/dist/emulators/"),
+        ui: asWeb("/dist/emulators-ui/emulators-ui.js"),
+        uiCss: asWeb("/dist/emulators-ui/emulators-ui.css"),
       };
 
   panel.webview.html = `
