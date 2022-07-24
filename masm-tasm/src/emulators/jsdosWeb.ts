@@ -24,7 +24,7 @@ export class JsdosWeb implements ExecAction {
                 ctx.workspaceFolderUri.fsPath,
                 ctx.fileUri.fsPath,
             );
-            fileInJsdos = path.win32.resolve("D:\\", rel);
+            fileInJsdos = "D:\\"+ rel.replace(/\//g,"\\");
         } else if (ctx.mountMode === conf.MountMode.single) {
             api.jsdos.jszip.file('code/test' + uriUtils.extname(ctx.fileUri), ctx.doc.getText());
             fileInJsdos = "D:\\test" + uriUtils.extname(ctx.fileUri);

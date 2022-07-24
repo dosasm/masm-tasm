@@ -131,9 +131,9 @@
   },
   "scripts": {
     "postinstall": "node dev/postinstall.js",
-    "test": "vscode-test-web --extensionDevelopmentPath=. --extensionTestsPath=dist/web/test/suite/index.js",
+    "test-web": "vscode-test-web --extensionDevelopmentPath=. --extensionTestsPath=dist/web/test/suite/index.js",
     "compile-tsc": "tsc -p .",
-    "test-local": "tsc -p . && node out/test/runTest.js",
+    "test": "tsc -p . && node out/test/runTest.js",
     "vscode:prepublish": "pnpm package",
     "compile": "webpack --mode development",
     "watch": "webpack --mode development --watch",

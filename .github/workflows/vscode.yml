@@ -50,8 +50,8 @@ jobs:
         run: |
           pnpm install
           pnpm compile
+          pnpm test-web
           pnpm test
-          pnpm test-local
         working-directory: ./vscode-dosbox
         env:
           DISPLAY: ":99.0"
