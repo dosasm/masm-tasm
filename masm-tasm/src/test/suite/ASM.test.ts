@@ -4,12 +4,19 @@ import { DosEmulatorType, MountMode } from '../../utils/configuration';
 import assert = require("assert");
 import { AsmResult } from "../../ASM/manager";
 
+const folders = vscode.workspace.workspaceFolders;
+if (folders === undefined) { throw new Error(); }
+const samplesUri = process.platform
+	? vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/')
+	: folders[0].uri;
+
 export const testAsmCommand = function ([file, shouldErr]: [string, number], emu: DosEmulatorType, asm: string, mode = MountMode.single): [string, Mocha.Func] {
 	const title = `test file ${file} in ${emu} use ${asm} should ${shouldErr} error [${mode}]`;
 	return [
 		title,
 		async function () {
 			if (false
+				|| (!process.platform && file === "3中文路径hasError.asm")
 				//|| emu !== DosEmulatorType.dosbox
 				//|| title !== "test file multi/2.asm in dosbox use TASM should 0 error [workspace]"
 			) {
@@ -43,8 +50,6 @@ export const testAsmCommand = function ([file, shouldErr]: [string, number], emu
 		}
 	];
 };
-
-export const samplesUri = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../../samples/');
 
 const profileId: string[] = [
 	'MASM-v5.00',
