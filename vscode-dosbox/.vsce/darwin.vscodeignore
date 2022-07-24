@@ -1,2 +1,2 @@
 emu
-!emu/dosbox/dosbox-0.74.conf
+!emu/**/*.conf
