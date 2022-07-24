@@ -11,7 +11,7 @@ function copydir(dir, dst) {
   }
 }
 
-const mkdirSync = (dir) => !fs.existsSync(dir) && fs.mkdirSync(dir);
+const mkdirSync = (dir) => !fs.existsSync(dir) && fs.mkdirSync(dir,{recursive:true});
 mkdirSync("dist/emulators/");
 mkdirSync("dist/emulators-ui/");
 copydir("node_modules/emulators/dist", "dist/emulators/");
