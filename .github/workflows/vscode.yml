@@ -63,6 +63,7 @@ jobs:
       - name: install and test ./masm-tasm
         run: |
           pnpm install
+          pnpm compile-dev
           pnpm test
           pnpm test-web
         working-directory: ./masm-tasm
