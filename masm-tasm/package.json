@@ -358,7 +358,11 @@
     "run-in-browser": "vscode-test-web --extensionDevelopmentPath=. --extensionPath=../vscode-dosbox .",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
-    "vscode:prepublish": "yarn clean && yarn compile"
+    "vscode:prepublish": "pnpm clean && pnpm compile"
+  },
+  "vsce": {
+    "dependencies": false,
+    "yarn": false
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",

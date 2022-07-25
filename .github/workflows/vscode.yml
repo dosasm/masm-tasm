@@ -62,13 +62,14 @@ jobs:
 
       - name: install and test ./masm-tasm
         run: |
-          yarn
-          yarn test && yarn test-web
+          pnpm install
+          pnpm test
+          pnpm test-web
         working-directory: ./masm-tasm
         env:
           DISPLAY: ":99.0"
 
-      - run: yarn lint
+      - run: pnpm lint
         if: runner.os == 'Linux'
 
   build:
@@ -90,7 +91,7 @@ jobs:
       - name: install and package vscode-dosbox
         working-directory: ./vscode-dosbox
         run: |
-          yarn
+          pnpm
           node dev/package.js --all
       - uses: actions/upload-artifact@v2
         with:
@@ -105,7 +106,7 @@ jobs:
 
       - name: Publish
         if: success() && startsWith( github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
-        run: npx vsce publish  --yarn
+        run: npx vsce publish
         working-directory: ./masm-tasm
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}

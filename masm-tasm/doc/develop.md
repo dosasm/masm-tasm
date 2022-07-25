@@ -9,20 +9,20 @@
 git clone https://github.com/dosasm/masm-tasm.git
 ```
 
-### 1.install nodejs and npm and yarn
+### 1.install nodejs and npm and pnpm
 
 the website of nodejs: <http://nodejs.org>, <http://nodejs.cn/>
 
 ```sh
 sudo apt install nodejs
 sudo apt install npm
-npm install --global yarn
+npm install --global pnpm
 ```
 
 ### 2.install dependence
 
 ```sh
-yarn install
+pnpm install
 ```
 
 ### 3.generate `visx` package
@@ -34,7 +34,7 @@ npx vsce package
 ### Debug
 
 ```sh
-yarn watch
+pnpm watch
 ```
 
 Press <kbd>F5</kbd> or Click `run` -> `Start Debugging`
