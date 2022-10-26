@@ -85,7 +85,7 @@ export class WasmModulesImpl implements origin.IWasmModules {
         private wdosboxJs: string = "wdosbox.js",
         private wlibzipJs: string = "wlibzip.js",
     ) {
-        this.pathPrefix=URI.parse(pathPrefix)
+        this.pathPrefix=pathPrefix.startsWith("http")?URI.parse(pathPrefix):URI.file(pathPrefix)
      }
 
     libzip() {
@@ -101,8 +101,8 @@ export class WasmModulesImpl implements origin.IWasmModules {
         if (this.dosboxPromise !== undefined) {
             return this.dosboxPromise;
         }
-
-        this.dosboxPromise = this.loadModule(Utils.joinPath(this.pathPrefix,this.wdosboxJs), "WDOSBOX");
+        const wdosboxpath=Utils.joinPath(this.pathPrefix,this.wdosboxJs);
+        this.dosboxPromise = this.loadModule(wdosboxpath, "WDOSBOX");
 
         return this.dosboxPromise;
     }

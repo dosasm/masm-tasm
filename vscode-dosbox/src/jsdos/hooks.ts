@@ -23,8 +23,9 @@ function loadWasmModuleNode(
   if (host.globals.compiled[moduleName] !== undefined) {
     return host.globals.compiled[moduleName];
   }
+  const wdosboxurl=url.fsPath;
 
-  const emModule = eval("require(url.fsPath)");
+  const emModule = eval(`require`)(wdosboxurl);
   const compiledModulePromise = Promise.resolve(
     new CompiledNodeModule(emModule)
   );
