@@ -63,9 +63,16 @@ export class AsmHoverProvider implements vscode.HoverProvider {
                     md.appendMarkdown(info.getNumMsg(wordLowCase));
                     return new vscode.Hover(md);
                 }
+                
 
-                const char = /'(.)'/.exec(wordLowCase);
-                if (char && line.operand?.includes(wordGet)) {
+                //hover for char
+                let wordGet2=wordGet;
+                if(range.start.character>0 && range.end.character-range.start.character===1){
+                    const range2=new vscode.Range(range.start.line,range.start.character-1,range.end.line,range.end.character+1);
+                    wordGet2=document.getText(range2);
+                }
+                const char = /['"](.)['"]/.exec(wordGet2);
+                if (char && line.operand?.includes(wordGet2)) {
                     md.appendMarkdown(info.getcharMsg(char[1]));
                     return new vscode.Hover(md);
                 }
