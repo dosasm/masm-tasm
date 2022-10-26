@@ -3,6 +3,7 @@ import * as db from "./dosbox";
 import * as cp from "child_process";
 import { Conf } from "./conf";
 import { logger } from "../util/logger";
+import * as nodefs from "fs";
 
 const fs = vscode.workspace.fs;
 
@@ -93,6 +94,7 @@ export async function activate(context: vscode.ExtensionContext) {
       confPath = dosboxConfigurationFile.boxXzh;
   }
   await dosboxX.setConf(confPath);
+  nodefs.mkdirSync(context.logUri.fsPath,{recursive:true});
   const dosboxXlog = vscode.Uri.joinPath(context.logUri, "dosbox-x.log");
   dosboxX.updateConf("log", "logfile", dosboxXlog.fsPath);
   logger.channel("dosbox-x log at: " + dosboxXlog.fsPath + "\n");
