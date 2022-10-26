@@ -142,6 +142,7 @@ export class Asmline {
         let flag = false;
         r = str.match(/^\s*(\w+)\s+(\w+)\s*/);
         let type1: linetype | undefined;
+        let indexOffset=0;
         if (r) {
             switch (r[2].toUpperCase()) {
                 case 'MACRO': type1 = linetype.macro; break;
@@ -165,10 +166,11 @@ export class Asmline {
         else if (r = str.match(/^\s*\.([a-zA-Z_@?$]\w+)\s*$/)) {
             type1 = linetype.segment;
             name = r[1];
+            indexOffset=-1;
         }
         if (type1 && name) {
             this.type = type1;
-            this.index = str.indexOf(name);
+            this.index = str.indexOf(name)+indexOffset;
             this.name = name;
             flag = true;
         }
