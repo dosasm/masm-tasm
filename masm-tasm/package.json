@@ -3,7 +3,7 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "keywords": [
     "dosbox",
     "16位",

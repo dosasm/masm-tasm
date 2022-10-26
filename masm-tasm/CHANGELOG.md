@@ -6,11 +6,18 @@
 
 Thanks to [Asttear][github:Asttear] for debugging and fixing [#37][issue:37]
 
+- 1.1.1: fix [#43][issue:43]Format error when use simplified segment definition [#44][issue:44] ASCII character hover
+
 修复格式化的时候文档被还原为初始文档的问题[#37][issue:37]。该bug影响较广，非常抱歉。
 感谢[Asttear][github:Asttear]报告并帮助修复:heart:。
 
+- 1.1.1: 修复 [#43][issue:43]简化段定义格式化错误 [#44][issue:44]未能区分ASCII大小写
+
 [github:Asttear]: https://github.com/Asttear
 [issue:37]: https://github.com/dosasm/masm-tasm/issues/37 "格式化时文件被还原"
+[issue:43]: https://github.com/dosasm/masm-tasm/issues/43 "简化段定义格式化错误"
+[issue:44]: https://github.com/dosasm/masm-tasm/issues/44 "未能区分ASCII大小写"
+
 
 ## 1.0 Web Extension Support 浏览器端支持
 

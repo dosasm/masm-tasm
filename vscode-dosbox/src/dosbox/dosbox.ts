@@ -46,7 +46,7 @@ export class DOSBox implements api.Dosbox {
     return new Promise<DosboxResult>((resolve, reject) => {
       const p = cp.exec(command, { cwd: this.cwd }, (error, stdout, stderr) => {
         if (error) {
-          logger.error(error, p, this);
+          logger.error(JSON.stringify(error), p, this);
           vscode.window.showErrorMessage(
             "can't open dosbox with command: " + command + "cwd:" + this.cwd
           );
