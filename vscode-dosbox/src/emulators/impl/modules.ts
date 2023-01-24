@@ -1,19 +1,30 @@
-import * as origin from "./modules.origin";
-import { URI ,Utils} from 'vscode-uri';
-export {WasmModule,IWasmModules} from "./modules.origin"
+import { httpRequest } from "../http.modify";
+
+export interface WasmModule {
+    instantiate: (module?: any) => Promise<any>;
+}
+
+export interface IWasmModules {
+    libzip: () => Promise<WasmModule>;
+    dosbox: () => Promise<WasmModule>;
+}
 
 interface Globals {
     exports: {[moduleName: string]: any},
-    compiled: {[moduleName: string]: Promise<origin.WasmModule>},
+    compiled: {[moduleName: string]: Promise<WasmModule>},
 }
 
 class Host {
     public wasmSupported = false;
     public globals: Globals;
     constructor() {
-        this.globals = globalThis as any
-        if(this.globals.exports===undefined) this.globals.exports={}
-        if(this.globals.compiled===undefined) this.globals.compiled={}
+        this.globals = typeof window === "undefined" ? {} : window as any;
+        if (!this.globals.exports) {
+            this.globals.exports = {};
+        }
+        if (!this.globals.compiled) {
+            this.globals.compiled = {};
+        }
 
         // ### WebAssembly
         // Host able to detect is WebAssembly supported or not,
@@ -73,27 +84,31 @@ class Host {
 
 export const host = new Host();
 
-export class WasmModulesImpl implements origin.IWasmModules {
-    private pathPrefix: URI
+export class WasmModulesImpl implements IWasmModules {
+    private pathPrefix: string;
+    private wdosboxJs: string;
 
-    private libzipPromise?: Promise<origin.WasmModule>;
-    private dosboxPromise?: Promise<origin.WasmModule>;
+    private libzipPromise?: Promise<WasmModule>;
+    private dosboxPromise?: Promise<WasmModule>;
 
     public wasmSupported = false;
 
     constructor(pathPrefix: string,
-        private wdosboxJs: string = "wdosbox.js",
-        private wlibzipJs: string = "wlibzip.js",
-    ) {
-        this.pathPrefix=URI.parse(pathPrefix)
-     }
+        wdosboxJs: string) {
+        if (pathPrefix.length > 0 && pathPrefix[pathPrefix.length - 1] !== "/") {
+            pathPrefix += "/";
+        }
+
+        this.pathPrefix = pathPrefix;
+        this.wdosboxJs = wdosboxJs;
+    }
 
     libzip() {
         if (this.libzipPromise !== undefined) {
             return this.libzipPromise;
         }
 
-        this.libzipPromise = this.loadModule(Utils.joinPath(this.pathPrefix,this.wlibzipJs), "WLIBZIP");
+        this.libzipPromise = this.loadModule(this.pathPrefix + "wlibzip.js", "WLIBZIP");
         return this.libzipPromise;
     }
 
@@ -102,19 +117,137 @@ export class WasmModulesImpl implements origin.IWasmModules {
             return this.dosboxPromise;
         }
 
-        this.dosboxPromise = this.loadModule(Utils.joinPath(this.pathPrefix,this.wdosboxJs), "WDOSBOX");
+        this.dosboxPromise = this.loadModule(this.pathPrefix + this.wdosboxJs, "WDOSBOX");
 
         return this.dosboxPromise;
     }
 
-    private loadModule(url: URI,
+    private loadModule(url: string,
         moduleName: string) {
         // eslint-disable-next-line
-        return loadWasmModule(url, moduleName, () => { });
+        return loadWasmModule(url, moduleName, () => {});
     }
 }
 
+export function loadWasmModule(url: string,
+                               moduleName: string,
+                               onprogress: (stage: string, total: number, loaded: number) => void,
+): Promise<WasmModule> {
+    if (typeof XMLHttpRequest === "undefined") {
+        return loadWasmModuleNode(url, moduleName, onprogress);
+    } else {
+        return loadWasmModuleBrowser(url, moduleName, onprogress);
+    }
+}
 
-export type LoadWasmModule = (url: URI, moduleName: string, onprogress: (stage: string, total: number, loaded: number) => void)=> Promise<origin.WasmModule>
-let loadWasmModule:LoadWasmModule = (url,moduleName,onprogress)=>origin.loadWasmModule(url.toString(),moduleName,onprogress)
-export function setLoadWasmModule(f: LoadWasmModule) { loadWasmModule = f }
+function loadWasmModuleNode(url: string,
+                            moduleName: string,
+                            // eslint-disable-next-line
+                            onprogress: (stage: string, total: number, loaded: number) => void) {
+    if (host.globals.compiled[moduleName] !== undefined) {
+        return host.globals.compiled[moduleName];
+    }
+
+    const emModule = require(url);
+    const compiledModulePromise = Promise.resolve(new CompiledNodeModule(emModule));
+    if (moduleName) {
+        host.globals.compiled[moduleName] = compiledModulePromise;
+    }
+
+    return compiledModulePromise;
+}
+
+function loadWasmModuleBrowser(url: string,
+                               moduleName: string,
+                               onprogress: (stage: string, total: number, loaded: number) => void) {
+    if (host.globals.compiled[moduleName] !== undefined) {
+        return host.globals.compiled[moduleName];
+    }
+
+    async function load() {
+        const fromIndex = url.lastIndexOf("/");
+        const wIndex = url.indexOf("w", fromIndex);
+        const isWasmUrl = wIndex === fromIndex + 1 && wIndex >= 0;
+
+        if (!host.wasmSupported || !isWasmUrl) {
+            throw new Error("Starting from js-dos 6.22.60 js environment is not supported");
+        }
+
+        const wasmUrl = url.substr(0, url.lastIndexOf(".js")) + ".wasm";
+        const binaryPromise = httpRequest(wasmUrl, {
+            responseType: "arraybuffer",
+            progress: (total, loaded) => {
+                onprogress("Resolving DosBox (" + url + ")", total, loaded);
+            },
+        });
+        const scriptPromise = httpRequest(url, {
+            progress: (total, loaded) => {
+                onprogress("Resolving DosBox", total, loaded);
+            },
+        });
+
+        const [binary, script] = await Promise.all([binaryPromise, scriptPromise]);
+        const wasmModule = await WebAssembly.compile(binary as ArrayBuffer);
+        const instantiateWasm = (info: any, receiveInstance: any) => {
+            info.env = info.env || {};
+            WebAssembly.instantiate(wasmModule, info)
+                .then((instance) => receiveInstance(instance, wasmModule));
+            return; // no-return
+        };
+
+        eval.call(window, script as string);
+
+        return new CompiledBrowserModule(wasmModule,
+            host.globals.exports[moduleName],
+            instantiateWasm);
+    }
+
+    const promise = load();
+
+    if (moduleName) {
+        host.globals.compiled[moduleName] = promise;
+    }
+
+    return promise;
+}
+
+class CompiledNodeModule implements WasmModule {
+    private emModule: any;
+    constructor(emModule: any) {
+        this.emModule = emModule;
+    }
+
+    instantiate(initialModule: any): Promise<void> {
+        return new Promise<void>((resolve) => {
+            initialModule.onRuntimeInitialized = () => {
+                resolve();
+            };
+
+            // eslint-disable-next-line new-cap
+            new this.emModule(initialModule);
+        });
+    }
+}
+
+class CompiledBrowserModule implements WasmModule {
+    public wasmModule: WebAssembly.Module;
+    private module: any;
+    private instantiateWasm: any;
+
+    constructor(wasmModule: WebAssembly.Module, module: any, instantiateWasm: any) {
+        this.wasmModule = wasmModule;
+        this.module = module;
+        this.instantiateWasm = instantiateWasm;
+    }
+
+    instantiate(initialModule: any): Promise<void> {
+        return new Promise<void>((resolve) => {
+            initialModule.instantiateWasm = this.instantiateWasm;
+            initialModule.onRuntimeInitialized = () => {
+                resolve();
+            };
+            // eslint-disable-next-line new-cap
+            new this.module(initialModule);
+        });
+    }
+}

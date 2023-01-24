@@ -4,7 +4,7 @@
 import { DosConfig, createDosConfig, toDosboxConf } from "./dos-conf";
 import LibZip from "../../libzip/libzip";
 
-import { httpRequest } from "../../http";
+import { httpRequest } from "../../http.modify";
 
 import { WasmModule } from "../../impl/modules";
 

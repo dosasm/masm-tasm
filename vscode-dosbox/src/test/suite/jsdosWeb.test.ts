@@ -52,7 +52,7 @@ export const jsdosWebTestSuite = suite(
 
     test("launch jsdos in webview with https url", async function () {
       const uri = vscode.Uri.parse(
-        "https://doszone-uploads.s3.dualstack.eu-central-1.amazonaws.com/original/2X/2/24b00b14f118580763440ecaddcc948f8cb94f14.jsdos"
+        "https://cdn.dos.zone/original/2X/2/24b00b14f118580763440ecaddcc948f8cb94f14.jsdos"
       );
       const panel = await api.jsdos.runInWebviewPanel(uri);
 

@@ -8,7 +8,7 @@ const empty = "empty (only load jsdos)";
 const webresources = [
   {
     name: "digger.com (jsdos demo)",
-    url: "https://doszone-uploads.s3.dualstack.eu-central-1.amazonaws.com/original/2X/2/24b00b14f118580763440ecaddcc948f8cb94f14.jsdos",
+    url: "https://cdn.dos.zone/original/2X/2/24b00b14f118580763440ecaddcc948f8cb94f14.jsdos",
   },
 ];
 

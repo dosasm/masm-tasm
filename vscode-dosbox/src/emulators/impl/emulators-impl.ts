@@ -5,7 +5,7 @@ import { IWasmModules, WasmModulesImpl } from "./modules";
 
 import DosBundle from "../dos/bundle/dos-bundle";
 import { dosDirect } from "../dos/dosbox/ts/direct";
-import { dosWorker } from "../dos/dosbox/ts/worker";
+import { dosWorker } from "../dos/dosbox/ts/worker.modify";
 import Janus from "../janus/janus-impl";
 
 import { TransportLayer, CommandInterfaceOverTransportLayer } from "../protocol/protocol";

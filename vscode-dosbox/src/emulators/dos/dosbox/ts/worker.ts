@@ -1,11 +1,6 @@
 import { WasmModule } from "../../../impl/modules";
 import { TransportLayer, MessageHandler, ClientMessage } from "../../../protocol/protocol";
 import { MessagesQueue } from "../../../protocol/messages-queue";
-import { createWorker as _cw } from "./create-worker";
-
-export type CreateWorker=(url: string) => Promise<Worker> | Worker
-let createWorker:CreateWorker=_cw
-export const setCreateWorker=function(f:CreateWorker){createWorker=f}
 
 export async function dosWorker(workerUrl: string,
                                 wasmModule: WasmModule,
@@ -13,7 +8,7 @@ export async function dosWorker(workerUrl: string,
     const messagesQueue = new MessagesQueue();
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
 
-    const worker = await createWorker(workerUrl);
+    const worker = new Worker(workerUrl);
     worker.onerror = (e) => {
         handler("ws-err", { type: e.type, filename: e.filename, message: e.message });
     };
