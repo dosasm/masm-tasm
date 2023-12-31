@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { eolString } from "../utils/eol";
 import { DocInfo, linetype, Asmline } from "./scanDoc";
 
+type caseType = "upper" | "lower" | "title" | "off";
+
 interface FormatConfig {
     tab: boolean;
     tabSize: number;
@@ -24,16 +26,19 @@ interface FormatConfig {
      * - `title`: `Mov` `Jmp`
      * - `off`: keep the original case
      */
-    instructionCase: "upper" | "lower" | "title" | "off";
+    instructionCase: caseType;
     /**
      * The case of registers
      */
-    registerCase: "upper" | "lower" | "title" | "off";
-
+    registerCase: caseType;
     /**
      * The case of directives
      */
-    directiveCase: "upper" | "lower" | "title" | "off";
+    directiveCase: caseType;
+    /**
+     * The case of operators
+     */
+    operatorCase: caseType;
     /**
      * Whether to align the operands
      */
@@ -41,7 +46,11 @@ interface FormatConfig {
     /**
      * Whether to align the comments
      */
-    alignComment: boolean;
+    alignTrailingComment: boolean;
+    /**
+     * Whether to align the single line comments
+     */
+    alignSingleLineComment: boolean;
     /**
      * Whether to add a space after the comma
      */
@@ -61,12 +70,14 @@ export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
             tab: !options.insertSpaces,
             tabSize: options.tabSize,
             align: "label",
-            instructionCase: "off",
-            registerCase: "off",
-            directiveCase: "off",
-            alignOperand: false,
-            alignComment: false,
-            spaceAfterComma: "off",
+            instructionCase: "title",
+            registerCase: "upper",
+            directiveCase: "lower",
+            operatorCase: "lower",
+            alignOperand: true,
+            alignTrailingComment: true,
+            alignSingleLineComment: true,
+            spaceAfterComma: "always",
         };
         const textedits: vscode.TextEdit[] = [];
         const docinfo = DocInfo.getDocInfo(document);
@@ -83,6 +94,7 @@ export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
                 else {
                     newText = align(docinfo.lines, item, config);
                 }
+                postFormat(newText, config);
                 const range = document.validateRange(item.range);
                 textedits.push(
                     new vscode.TextEdit(range, newText.join(eolString(document.eol)))
@@ -91,6 +103,34 @@ export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
         }
         return textedits;
     }
+}
+
+function postFormat(text: string[], config: FormatConfig) {
+    for (let i = text.length - 1; i >= 0; i--) {
+        // test if current line is a a comment only line, use regexp
+        let line = text[i];
+        // Remove the trailing spaces
+        text[i] = text[i].trimEnd();
+        if (/^\s*;/.test(line)) {
+            // Align the single line comment
+            if (config.alignSingleLineComment && i !== text.length) {
+                line = line.trimStart();
+                // align the single line comment to the next line, if next line is not empty
+                const nextLine = text[i + 1];
+                if (nextLine && nextLine !== "") {
+                    const match = nextLine.match(/^\s*/);
+                    if (match) {
+                        text[i] = match[0] + line;
+                    }
+                }
+            }
+        }
+        else if (config.directiveCase !== 'off') {
+            // Convert the case of directives
+            text[i] = convertDirectiveCase(text[i], config.directiveCase);
+        }
+    }
+    return text;
 }
 
 /**
@@ -257,22 +297,30 @@ function formatLine(
         const isVariable = line.type === linetype.variable;
         if (isLabel || isVariable) {
             const alignSize = config.align === 'indent' && isLabel ? config.tabSize - 1 : size.name;
-            output.push(
-                formatLabelLine(line, alignOpt, {
-                    ...size,
-                    name: alignSize,
-                }, config)
-            );
+            const str = formatLabelLine(line, alignOpt, {
+                ...size,
+                name: alignSize,
+            }, config);
+            output.push(str);
         }
         else if (line.type === linetype.onlycomment) {
             output.push(indentStr(config) + line.comment);
         }
         else if (line.main) {
             let str = line.main.replace(/\s+/, " ");
+
             if (line.comment) {
-                //后补充空格
-                str += space(size.name + 1 + size.operator + 1 + size.operand - str.length);
-                str += indentStr(config, config.tabSize * 2) + line.comment;
+                if (config.alignTrailingComment) {
+                    //后补充空格
+                    str += space(size.name + 1 + size.operator + 1 + size.operand - str.length) + indentStr(config, config.tabSize * 2);
+                }
+                else {
+                    const match = line.str.match(/\s*(?=;)/);
+                    if (match) {
+                        str += match[0];
+                    }
+                }
+                str += line.comment;
             }
             output.push(str);
         }
@@ -308,12 +356,36 @@ function formatLabelLine(
         }
         str += line.name ? space(indent) : indentStr(config, indent);
     }
-    str += line.operator;
+    str += convertCase(line.operator ?? '', config.instructionCase);
     if (line.operand || line.comment) { //操作码后补充空格
-        str += `${space(size.operator - operatorLength)} ${line.operand}`;
+        if (config.alignOperand) {
+            str += space(size.operator - operatorLength);
+        }
+        str += ' ';
+        let operand = line.operand ?? '';
+        if (config.registerCase !== 'off' && line.operand && isLabel) {
+            operand = convertRegisterCase(operand, config.registerCase);
+        }
+        if (config.operatorCase !== 'off' && line.operand) {
+            operand = convertOperatorCase(operand, config.operatorCase);
+        }
+        if (config.spaceAfterComma !== 'off' && line.operand) {
+            operand = adjustSpaceAfterComma(operand, config.spaceAfterComma === 'always');
+        }
+        str += operand;
     }
     if (line.comment) { //操作数后补充空格
-        str += `${space(size.operand - operandLength)}${indentStr(config)}${line.comment}`;
+        if (config.alignTrailingComment) {
+            str += `${space(size.operand - operandLength)}${indentStr(config)}`;
+        }
+        else {
+            // get the original \s before `;` in line.str
+            const match = line.str.match(/\s*(?=;)/);
+            if (match) {
+                str += match[0];
+            }
+        }
+        str += line.comment;
     }
     return str;
 }
@@ -339,4 +411,65 @@ function indentStr(config: { tab: boolean, tabSize: number }, size?: number) {
     const indenter = tab ? "\t" : space(tabSize);
     return indenter.repeat(Math.floor(size / tabSize)) + // initial indent
         space(size % tabSize);                           // align indent
+}
+
+function convertCase(word: string, toCase: caseType) {
+    switch (toCase) {
+        case 'upper':
+            return word.toUpperCase();
+        case 'lower':
+            return word.toLowerCase();
+        case 'title':
+            if (word.length === 0) {
+                return word;
+            }
+            // Find the first letter
+            const firstIndex = word.search(/[a-zA-Z]/);
+            if (firstIndex === -1) {
+                return word;
+            }
+            const first = word[firstIndex];
+            const rest = word.slice(firstIndex + 1);
+            return word.slice(0, firstIndex) + first.toUpperCase() + rest.toLowerCase();
+        default:
+            return word;
+    }
+}
+
+function convertCaseFor(str: string, toCase: caseType, regex: RegExp) {
+    return str.replace(regex, (match) => {
+        if (!match) {
+            return match;
+        }
+        return convertCase(match, toCase);
+    });
+}
+
+
+function convertRegisterCase(str: string, toCase: caseType) {
+    const regex = /(?<!;.*?)\b((?<general>EAX|EBX|ECX|EDX|AX|BX|CX|DX|AL|AH|BL|BH|CL|CH|DL|DH)|(?<segment>CS|DS|ES|FS|GS|SS)|(?<pointer>DI|SI|BP|SP|IP)|(?<control>CR[01234])|(?<ProtectedMode>GDTR|IDTR|LDTR|TR)|(?<DebugTest>DR[0-7]|TR[3-7])|(?<float>R[0-7]))\b(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/gi;
+
+    return convertCaseFor(str, toCase, regex);
+}
+
+function convertDirectiveCase(str: string, toCase: caseType) {
+    const regex = /(?<!;.*?)(?<!\S)((?<x64>\.ALLOCSTACK|\.ENDPROLOG|PROC|\.PUSHFRAME|\.PUSHREG|\.SAVEREG|\.SAVEXMM128|\.SETFRAME)|(?<CodeLabels>ALIGN|EVEN|LABEL|ORG)|(?<ConditionalAssembly>ELSE|ELSEIF|ELSEIF2|IF|IF2|IFB|IFNB|IFDEF|IFNDEF|IFDIF|IFDIFI|IFE|IFIDN|IFIDNI)|(?<ConditionalControlFlow>\.BREAK|\.CONTINUE|\.ELSE|\.ELSEIF|\.ENDIF|\.ENDW|\.IF|\.REPEAT|\.UNTIL|\.UNTILCXZ|\.WHILE)|(?<ConditionalError>\.ERR|\.ERR2|\.ERRB|\.ERRDEF|\.ERRDIF|\.ERRDIFI|\.ERRE|\.ERRIDN|\.ERRIDNI|\.ERRNB|\.ERRNDEF|\.ERRNZ)|(?<DataAllocation>DB|DW|DD|DQ|DF|DT|ALIGN|BYTE|SBYTE|DWORD|SDWORD|EVEN|FWORD|LABEL|ORG|QWORD|REAL4|REAL8|REAL10|TBYTE|WORD|SWORD)|(?<Equates>=|EQU|TEXTEQU)|(?<ListingControl>\.CREF|\.LIST|\.LISTALL|\.LISTIF|\.LISTMACRO|\.LISTMACROALL|\.NOCREF|\.NOLIST|\.NOLISTIF|\.NOLISTMACRO|PAGE|SUBTITLE|\.TFCOND|TITLE)|(?<Macros>ENDM|EXITM|GOTO|LOCAL|MACRO|PURGE)|(?<Miscellaneous>ALIAS|ASSUME|COMMENT|ECHO|END|\.FPO|INCLUDE|INCLUDELIB|MMWORD|OPTION|POPCONTEXT|PUSHCONTEXT|\.RADIX|\.SAFESEH|XMMWORD|YMMWORD)|(?<Procedures>ENDP|INVOKE|PROC|PROTO)|(?<Processor>\.386|\.386P|\.387|\.486|\.486P|\.586|\.586P|\.686|\.686P|\.K3D|\.MMX|\.XMM)|(?<RepeatBlocks>ENDM|FOR|FORC|GOTO|REPEAT|WHILE)|(?<Scope>COMM|EXTERN|EXTERNDEF|INCLUDELIB|PUBLIC)|(?<Segment>\.ALPHA|ASSUME|\.DOSSEG|END|ENDS|GROUP|SEGMENT|\.SEQ)|(?<SimplifiedSegment>\.CODE|\.CONST|\.DATA|\.DATA\?|\.DOSSEG|\.EXIT|\.FARDATA|\.FARDATA\?|\.MODEL|\.STACK|\.STARTUP)|(?<String>CATSTR|INSTR|SIZESTR|SUBSTR)|(?<StructureAndRecord>ENDS|RECORD|STRUCT|TYPEDEF|UNION))\b(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/gi;
+
+    return convertCaseFor(str, toCase, regex);
+}
+
+function convertOperatorCase(str: string, toCase: caseType) {
+    const regex = /(?<!;.*?)(?<!\S)(ABS|ADDR|AND|DUP|REP|EQ|GE|GT|HIGH|HIGH32|HIGHWORD|IMAGEREL|LE|LENGTH|LENGTHOF|LOW|LOW32|LOWWORD|LROFFSET|LT|MASK|MOD|NE|NOT|OFFSET|OPATTR|OR|PTR|SEG|SHL|.TYPE|SECTIONREL|SHORT|SHR|SIZE|SIZEOF|THIS|TYPE|WIDTH|XOR)\b(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/gi;
+
+    return convertCaseFor(str, toCase, regex);
+}
+
+function adjustSpaceAfterComma(str: string, space: boolean) {
+    const regex = /(?<!;.*?)(\s*),(\s*)(?=(?:[^'"]|'[^']*'|"[^"]*")*$)/gi;
+    if (space) {
+        return str.replace(regex, ', ');
+    }
+    else {
+        return str.replace(regex, ',');
+    }
 }
