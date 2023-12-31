@@ -265,6 +265,82 @@
           "default": true,
           "description": "%config.hover%"
         },
+        "masmtasm.language.Format.align": {
+          "type": "string",
+          "default": "segment",
+          "markdownDescription": "%config.format.align.description%",
+          "enum": [ "indent", "label", "segment"],
+          "enumItemLabels": [
+            "%config.format.align.enum.indent.label%",
+            "%config.format.align.enum.label.label%",
+            "%config.format.align.enum.segment.label%"
+          ],
+          "markdownEnumDescriptions": [
+            "%config.format.align.enum.indent.md%",
+            "%config.format.align.enum.label.md%",
+            "%config.format.align.enum.segment.md%"
+          ]
+        },
+        "masmtasm.language.Format.casing": {
+          "type": "object",
+          "markdownDescription": "%config.format.casing.description%",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "properties": {
+            "instruction": {
+              "type": "string",
+              "description": "%config.format.casing.instruction%",
+              "enum": ["lower", "upper", "title", "off"],
+              "default": "off"
+            },
+            "register": {
+              "type": "string",
+              "description": "%config.format.casing.register%",
+              "enum": ["lower", "upper", "title", "off"],
+              "default": "off"
+            },
+            "directive": {
+              "type": "string",
+              "description": "%config.format.casing.directive%",
+              "enum": ["lower", "upper", "title", "off"],
+              "default": "off"
+            },
+            "operator": {
+              "type": "string",
+              "description": "%config.format.casing.operator%",
+              "enum": ["lower", "upper", "title", "off"],
+              "default": "off"
+            }
+          }
+        },
+        "masmtasm.language.Format.alignOperand": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%config.format.alignOperand.description%"
+        },
+        "masmtasm.language.Format.alignTrailingComment": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%config.format.alignTrailingComment.description%"
+        },
+        "masmtasm.language.Format.alignSingleLineComment": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "%config.format.alignSingleLineComment.description%"
+        },
+        "masmtasm.language.Format.spaceAfterComma": {
+          "type": "string",
+          "default": "off",
+          "markdownDescription": "%config.format.spaceAfterComma.description%",
+          "enum": ["always", "never", "off"],
+          "enumItemLabels": [
+            "%config.format.spaceAfterComma.enum.always%",
+            "%config.format.spaceAfterComma.enum.never%",
+            "%config.format.spaceAfterComma.enum.off%"
+          ]
+        },
+
         "masmtasm.cpp-docs.links": {
           "type": "array",
           "items": {

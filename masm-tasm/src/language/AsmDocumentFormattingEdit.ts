@@ -58,7 +58,6 @@ interface FormatConfig {
 }
 
 
-
 //TODO: offer different operation for different vscode.FormattingOptions
 export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
     provideDocumentFormattingEdits(
@@ -66,19 +65,7 @@ export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
         options: vscode.FormattingOptions,
         token: vscode.CancellationToken
     ): vscode.TextEdit[] {
-        const config: FormatConfig = {
-            tab: !options.insertSpaces,
-            tabSize: options.tabSize,
-            align: "label",
-            instructionCase: "title",
-            registerCase: "upper",
-            directiveCase: "lower",
-            operatorCase: "lower",
-            alignOperand: true,
-            alignTrailingComment: true,
-            alignSingleLineComment: true,
-            spaceAfterComma: "always",
-        };
+        const config = loadFormatConfig(options);
         const textedits: vscode.TextEdit[] = [];
         const docinfo = DocInfo.getDocInfo(document);
         if (docinfo.tree) {
@@ -103,6 +90,33 @@ export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
         }
         return textedits;
     }
+}
+
+function loadFormatConfig(options: vscode.FormattingOptions): FormatConfig {
+    const config = vscode.workspace.getConfiguration("masmtasm.language.Format");
+
+    const tab = !options.insertSpaces;
+    const tabSize = options.tabSize;
+    const casing = config.get<{
+        instruction: caseType,
+        register: caseType,
+        directive: caseType,
+        operator: caseType,
+    }>('casing');
+    return {
+        tab,
+        tabSize,
+        align: config.get<'indent' | 'label' | 'segment'>('align') ?? 'segment',
+        instructionCase: casing?.instruction ?? 'off',
+        registerCase: casing?.register ?? 'off',
+        directiveCase: casing?.directive ?? 'off',
+        operatorCase: casing?.operator ?? 'off',
+        alignOperand: config.get<boolean>('alignOperand') ?? true,
+        alignTrailingComment: config.get<boolean>('alignTrailingComment') ?? true,
+        alignSingleLineComment: config.get<boolean>('alignSingleLineComment') ?? true,
+        spaceAfterComma: config.get<'always' | 'never' | 'off'>('spaceAfterComma') ?? 'off',
+    };
+
 }
 
 function postFormat(text: string[], config: FormatConfig) {
