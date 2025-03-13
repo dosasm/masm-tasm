@@ -6,5 +6,5 @@ node_modules
 *.vsix
 
 **/.DS_store
-
-**.jsdos
+dev/*.tgz
+resources/*.zip

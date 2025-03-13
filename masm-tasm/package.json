@@ -173,7 +173,7 @@
           },
           "default": {
             "TASM": {
-              "baseBundle": "<built-in>/TASM.jsdos",
+              "baseBundle": "<built-in>/TASM.zip",
               "before": [
                 "set PATH=C:\\TASM"
               ],
@@ -190,7 +190,7 @@
               ]
             },
             "MASM-v6.11": {
-              "baseBundle": "<built-in>/MASM-v6.11.jsdos",
+              "baseBundle": "<built-in>/MASM-v6.11.zip",
               "before": [
                 "set PATH=C:\\MASM"
               ],
@@ -206,7 +206,7 @@
               ]
             },
             "MASM-v5.00": {
-              "baseBundle": "<built-in>/MASM-v5.00.jsdos",
+              "baseBundle": "<built-in>/MASM-v5.00.zip",
               "before": [
                 "set PATH=C:\\MASM"
               ],
@@ -472,9 +472,10 @@
     "assert": "^2.0.0",
     "del": "^7.0.0",
     "download": "^8.0.0",
-    "emulators": "https://raw.githubusercontent.com/dosasm/dosplay/gh-pages/emulators-v8.3.3-dosasm10.tgz",
+    "emulators": "./dev/emulators-v8.3.3-dosasm11.tgz",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
+    "http-proxy-agent": "^7.0.2",
     "js-yaml": "^4.1.0",
     "jszip": "^3.10.0",
     "mocha": "^10.0.0",

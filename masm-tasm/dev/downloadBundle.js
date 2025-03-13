@@ -1,28 +1,26 @@
-const { existsSync,copyFileSync } = require('fs');
-const path = require('path');
-const pkg = require("../package.json");
+const fetch = require('node-fetch');
+const {HttpProxyAgent }= require('http-proxy-agent');
+const fs=require("fs")
 
-const actions = pkg.contributes.configuration.properties['masmtasm.ASM.actions'].default
-const assemblers = Object.keys(actions).map(key => actions[key].baseBundle.replace('<built-in>/', ""));
 
-const srcFolder = path.resolve(__dirname,"..","..","bundles")
-const dstFolder = path.resolve(__dirname, "..", "resources");
+const url = "https://dosasm.github.io/dosplay/jsdos-bundle/";
 
-async function main() {
-    for (const asm of assemblers) {
-        const dst = path.resolve(dstFolder, asm);
-        const src = path.resolve(srcFolder, asm);
-        if(!existsSync(src)){
-            console.warn("can't find file "+src+"[skip]");
-            continue
-        }
-        if (existsSync(dst)) {
-            console.log('already added', asm)
-        } else {
-            console.log(src,dstFolder)
-            copyFileSync(src,dst)
-        }
+const proxy = 'http://127.0.0.1:7890';
+const agent = new HttpProxyAgent(proxy);
+
+async function main(params) {
+    let a=await fetch(url+"info.json");
+    let info=await a.json()
+    console.log(info)
+    for (const b of info.bundles){
+        console.log(b)
+        const response=await fetch(url+b.filepath)
+        const fileStream = fs.createWriteStream("./resources/"+b.name+".zip");
+        response.body.pipe(fileStream);
+        await new Promise((resolve, reject) => {
+            fileStream.on('finish', resolve);
+            fileStream.on('error', reject);
+          });
     }
 }
-
 main()
