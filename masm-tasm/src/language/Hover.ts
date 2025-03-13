@@ -5,6 +5,7 @@ import { MarkdownString, Uri } from "vscode";
 import { Cppdoc } from './hoverFromCppdoc';
 import { FELIX } from './hoverFelix';
 import { HoverFromMarkdown } from './hoverFromMarkdown';
+import * as ast from "./ast";
 
 export enum keywordType {
     other = 0,
@@ -46,6 +47,9 @@ export class AsmHoverProvider implements vscode.HoverProvider {
         const range = document.getWordRangeAtPosition(position);
         const docinfo = DocInfo.getDocInfo(document); //scan the document
         const line = docinfo.lines[position.line];
+
+        const {tokens, errors}=ast.tokenize(document.getText());
+        const b=ast.parse(tokens);
 
         if (range) {
             const wordGet = document.getText(range);

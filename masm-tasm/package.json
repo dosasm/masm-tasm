@@ -445,18 +445,14 @@
     ]
   },
   "scripts": {
-    "clean": "rimraf dist/ web/dist",
-    "postinstall": "node dev/downloadBundle.js",
-    "watch-tsc": "tsc -watch -p ./",
-    "watch": "webpack --mode development --watch",
-    "compile": "webpack --mode production",
-    "compile-dev": "tsc -p ./ && webpack --mode development",
-    "test": "node ./dist/test/runTest.js",
-    "test-web": "vscode-test-web --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../vscode-dosbox --open-devtools ./samples",
-    "run-in-browser": "vscode-test-web --extensionDevelopmentPath=. --extensionPath=../vscode-dosbox .",
-    "lint": "eslint src --ext ts",
-    "lint-fix": "eslint src --ext ts --fix",
-    "vscode:prepublish": "pnpm clean && pnpm compile"
+    "test": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. --extensionTestsPath=dist/web/test/suite/index.js",
+    "pretest": "pnpm run compile-web",
+    "vscode:prepublish": "pnpm run package-web",
+    "compile-web": "webpack",
+    "watch-web": "webpack --watch",
+    "package-web": "webpack --mode production --devtool hidden-source-map",
+    "lint": "eslint src",
+    "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
   },
   "vsce": {
     "dependencies": false,

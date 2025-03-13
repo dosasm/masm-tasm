@@ -5,37 +5,25 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "watch",
-			"problemMatcher": "$ts-webpack-watch",
-			"isBackground": true,
-			"presentation": {
-				"reveal": "never"
+			"script": "compile-web",
+			"group": {
+				"kind": "build",
+				"isDefault": true
 			},
-			"label": "npm: watch"
-		},
-		{
-			"type": "npm",
-			"script": "compile",
-			"label": "npm: compile"
-		},
-		{
-			"type": "npm",
-			"script": "watch-tsc",
-			"problemMatcher": "$tsc-watch",
-			"isBackground": true,
-			"presentation": {
-				"reveal": "never"
-			},
-			"label": "npm: watch-tsc"
-		},
-		{
-			"type": "npm",
-			"script": "lint",
 			"problemMatcher": [
-				"$eslint-stylish"
-			],
-			"label": "npm: lint",
-			"detail": "eslint src --ext ts"
+				"$ts-webpack",
+				"$tslint-webpack"
+			]
+		},
+		{
+			"type": "npm",
+			"script": "watch-web",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [
+				"$ts-webpack-watch",
+				"$tslint-webpack-watch"
+			]
 		}
 	]
 }
