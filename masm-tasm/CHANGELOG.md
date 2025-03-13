@@ -2,6 +2,13 @@
 
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
+
+### 1.2.0 Use Jsdos for default 使用JSDos作为默认仿真器
+
+- By default we think only one assembly file you are using to compile
+- If your source code include many files, add a `dosbox.conf` file to your project's root folder we will exec the file just like dosbox
+  - if you are using 
+
 ### 1.1.0 Fix format 修复格式化时还原的问题
 
 Thanks to [Asttear][github:Asttear] for debugging and fixing [#37][issue:37]

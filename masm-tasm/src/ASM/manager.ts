@@ -30,7 +30,7 @@ export interface ActionContext {
 
 export interface ExecAction {
     name: conf.DosEmulatorType | conf.DosEmulatorType[],
-    run(context: vscode.ExtensionContext, ctx: ActionContext, api: API): AsmResult | Thenable<AsmResult>
+    run(context: vscode.ExtensionContext, ctx: ActionContext): AsmResult | Thenable<AsmResult>
 }
 
 function actionMessage(act: conf.ActionType, file: string): string {
@@ -55,21 +55,6 @@ export function activateManager(context: vscode.ExtensionContext, actions: ExecA
             throw new Error("no file finded");
         }
         logger.channel(actionMessage(actionType, _uri.fsPath));
-
-        const vscode_dosbox = vscode.extensions.getExtension<API>('xsro.vscode-dosbox');
-
-        if (vscode_dosbox === undefined) {
-            throw new Error("can't get extension xsro.vscode-dosbox");
-        }
-        let api: API | undefined = vscode_dosbox.exports;
-        if (!vscode_dosbox.isActive) {
-            api = await vscode_dosbox?.activate();
-        }
-        logger.log(vscode_dosbox);
-
-        if (api === undefined) {
-            throw new Error("can't get api from" + vscode_dosbox?.id);
-        }
 
         const doc = await vscode.workspace.openTextDocument(_uri);
         if (doc.isDirty && conf.extConf.get<boolean>('ASM.savefirst', true)) {
@@ -109,7 +94,7 @@ export function activateManager(context: vscode.ExtensionContext, actions: ExecA
 
         const execAction = actions.find(val => Array.isArray(val.name) ? val.name.includes(conf.extConf.emulator) : (val.name === conf.extConf.emulator));
         if (execAction) {
-            const result = await execAction.run(context, ctx, api);
+            const result = await execAction.run(context, ctx);
             if (result && result.message) {
                 const message = result.message;
                 const diagnose = diag.process(message, doc, conf.extConf.asmType);

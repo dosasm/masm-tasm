@@ -17,9 +17,6 @@
   "engines": {
     "vscode": "^1.61.0"
   },
-  "extensionDependencies": [
-    "xsro.vscode-dosbox"
-  ],
   "categories": [
     "Programming Languages",
     "Other"
@@ -32,7 +29,6 @@
     }
   ],
   "activationEvents": [
-    "onLanguage:assembly",
     "onLanguage:asm-collection",
     "onLanguage:tasm",
     "onLanguage:masm"
@@ -269,7 +265,11 @@
           "type": "string",
           "default": "segment",
           "markdownDescription": "%config.format.align.description%",
-          "enum": [ "indent", "label", "segment"],
+          "enum": [
+            "indent",
+            "label",
+            "segment"
+          ],
           "enumItemLabels": [
             "%config.format.align.enum.indent.label%",
             "%config.format.align.enum.label.label%",
@@ -291,25 +291,45 @@
             "instruction": {
               "type": "string",
               "description": "%config.format.casing.instruction%",
-              "enum": ["lower", "upper", "title", "off"],
+              "enum": [
+                "lower",
+                "upper",
+                "title",
+                "off"
+              ],
               "default": "off"
             },
             "register": {
               "type": "string",
               "description": "%config.format.casing.register%",
-              "enum": ["lower", "upper", "title", "off"],
+              "enum": [
+                "lower",
+                "upper",
+                "title",
+                "off"
+              ],
               "default": "off"
             },
             "directive": {
               "type": "string",
               "description": "%config.format.casing.directive%",
-              "enum": ["lower", "upper", "title", "off"],
+              "enum": [
+                "lower",
+                "upper",
+                "title",
+                "off"
+              ],
               "default": "off"
             },
             "operator": {
               "type": "string",
               "description": "%config.format.casing.operator%",
-              "enum": ["lower", "upper", "title", "off"],
+              "enum": [
+                "lower",
+                "upper",
+                "title",
+                "off"
+              ],
               "default": "off"
             }
           }
@@ -333,14 +353,17 @@
           "type": "string",
           "default": "off",
           "markdownDescription": "%config.format.spaceAfterComma.description%",
-          "enum": ["always", "never", "off"],
+          "enum": [
+            "always",
+            "never",
+            "off"
+          ],
           "enumItemLabels": [
             "%config.format.spaceAfterComma.enum.always%",
             "%config.format.spaceAfterComma.enum.never%",
             "%config.format.spaceAfterComma.enum.off%"
           ]
         },
-
         "masmtasm.cpp-docs.links": {
           "type": "array",
           "items": {
@@ -453,7 +476,7 @@
     "assert": "^2.0.0",
     "del": "^7.0.0",
     "download": "^8.0.0",
-    "emulators": "^0.73.7",
+    "emulators": "https://raw.githubusercontent.com/dosasm/dosplay/gh-pages/emulators-v8.3.3-dosasm10.tgz",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "js-yaml": "^4.1.0",
