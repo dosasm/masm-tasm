@@ -5,7 +5,7 @@ import { MarkdownString, Uri } from "vscode";
 import { Cppdoc } from './hoverFromCppdoc';
 import { FELIX } from './hoverFelix';
 import { HoverFromMarkdown } from './hoverFromMarkdown';
-import * as ast from "./ast";
+import * as ast from "./ast/main";
 
 export enum keywordType {
     other = 0,
@@ -48,8 +48,14 @@ export class AsmHoverProvider implements vscode.HoverProvider {
         const docinfo = DocInfo.getDocInfo(document); //scan the document
         const line = docinfo.lines[position.line];
 
-        const {tokens, errors}=ast.tokenize(document.getText());
-        const b=ast.parse(tokens);
+        const text=document.getText();
+        const {tokens, errors}=ast.tokenize(text);
+        const pos=ast.lineAndColumnToPosition(text,position.line,position.character);
+        for(const token of tokens){
+            if(pos>token.position && pos<token.value.length+token.position){
+                return new vscode.Hover(JSON.stringify(token));
+            }
+        }
 
         if (range) {
             const wordGet = document.getText(range);
