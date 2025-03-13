@@ -128,6 +128,28 @@ export class JSDosHost implements ExecAction{
                     data:rgb
                 })
             })
+            panel.webview.onDidReceiveMessage(
+                message => {
+                    console.log(message)
+                    switch (message.command) {
+                        case 'alert':
+                            vscode.window.showInformationMessage(message.text);
+                            return;
+                        case 'keyup':
+                            const up=utils.htmlKey2jsdos(message.code)
+                            if(up && runtime&& runtime.ci)
+                                runtime.ci.sendKeyEvent(up, false);
+                            return;
+                        case 'keydown':
+                            const down=utils.htmlKey2jsdos(message.code)
+                            if(down && runtime&& runtime.ci)
+                                runtime.ci.sendKeyEvent(down, true);
+                            return;
+                    }
+                },
+                undefined,
+                context.subscriptions
+            );
         }
         
         return {

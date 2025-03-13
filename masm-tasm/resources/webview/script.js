@@ -1,3 +1,5 @@
+const vscode = acquireVsCodeApi();
+
 class Events{
     consumers={frame:[],frameSize:[],exit:[]}
     addConsumer(key,consumer){
@@ -44,7 +46,24 @@ window.addEventListener('message', event => {
     if(message.command==="ci"){
         ci._width=message.width
         ci._height=message.height
-        webGl(document.getElementById("layout"),ci)
+        const canvas=document.getElementById("layout");
+        webGl(canvas,ci)
+        window.addEventListener("keydown",(event)=>{
+            vscode.postMessage(
+                {
+                    command:"keydown",
+                    code:event.code
+                }
+            )
+        })
+        window.addEventListener("keyup",(event)=>{
+            vscode.postMessage(
+                {
+                    command:"keyup",
+                    code:event.code
+                }
+            )
+        })
     }
 });
 
