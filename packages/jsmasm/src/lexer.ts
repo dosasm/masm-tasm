@@ -66,8 +66,12 @@ export class Lexer {
       this.input = input;
     }
   
-    peek(): string {
+    private peek(): string {
       return this.input[this.position];
+    }
+
+    public nextchar():string{
+      return this.input[this.position+1];
     }
   
     private advance(): string {
@@ -87,7 +91,7 @@ export class Lexer {
     }
   
     private isDigit(char: string): boolean {
-      return /[0-9]/.test(char);
+      return /[0-9A-Fa-fHBhb]/.test(char);
     }
   
     private isAlphanumeric(char: string): boolean {
@@ -95,7 +99,7 @@ export class Lexer {
     }
   
     private isWhitespace(char: string): boolean {
-      return /\s/.test(char);
+      return /[\s]/.test(char);
     }
   
     private skipWhitespace(): void {
@@ -105,6 +109,10 @@ export class Lexer {
     }
   
     public nextToken(): Token {
+      if (this.peek() === "\n") {
+        this.advance();
+        return {type: TokenType.NEWLINE, value: "\n", location: {line:this.line, column:this.column}}
+      }
       this.skipWhitespace();
   
       if (this.position >= this.input.length) {
@@ -221,11 +229,6 @@ export class Lexer {
             location: { line, column },
           };
         }
-      }
-  
-      if (char === "\n") {
-          this.advance();
-          return {type: TokenType.NEWLINE, value: "\n", location: {line, column}}
       }
   
       return { type: TokenType.ERROR, value: this.advance(), location: { line, column } };

@@ -30,6 +30,7 @@ export interface Location {
     | ProcedureDeclaration
     | ProcedureEnd
     | DataDeclaration
+    | AssumeDirective
     | IncludeDirective;
   
   // 段声明
@@ -99,6 +100,24 @@ export interface Location {
   export interface ExpressionOperand extends ASTNode {
     type: "ExpressionOperand";
     expression: Expression;
+  }
+
+  export type DataExpression={
+    type:"DataExpression",
+    value:string
+    | NumericLiteralExpression
+    | DupExpression,
+    location:Location
+  }
+
+  export type DupExpression={
+    type:"DupExpression",
+    value:NumericLiteralExpression[]|string|DupQuestionMark
+    times:number
+  }
+
+  export type DupQuestionMark={
+    type:"DupQuestionMark"
   }
   
   // 表达式类型
@@ -187,7 +206,7 @@ export interface Location {
     type: "DataDeclaration";
     name: string;
     dataType: string; // DB, DW, DD, ...
-    initialValue: Expression | string; // 可以是表达式或字符串
+    value: DataExpression[]; // 可以是表达式或字符串
   }
   
   // 指令
@@ -201,4 +220,9 @@ export interface Location {
   export interface IncludeDirective extends ASTNode {
     type: "IncludeDirective";
     filename: string;
+  }
+
+  export interface AssumeDirective extends ASTNode{
+    type:"AssumeDirective"
+    pair:{register:string,segment:string}[]
   }

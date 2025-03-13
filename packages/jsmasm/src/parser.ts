@@ -2,6 +2,11 @@
 import { Lexer, Token, TokenType } from "./lexer";
 import * as AST from "./ast";
 
+
+function parseNumber(input: string) {
+  return parseInt(input)
+}
+
 export class Parser {
   private lexer: Lexer;
   private currentToken: Token;
@@ -11,12 +16,12 @@ export class Parser {
   constructor(lexer: Lexer) {
     this.lexer = lexer;
     this.currentToken = this.lexer.nextToken();
-    this.nextToken=this.lexer.nextToken();
+    this.nextToken = this.lexer.nextToken();
   }
 
-  public next(){
-    this.currentToken=this.nextToken;
-    this.nextToken=this.lexer.nextToken();
+  public next() {
+    this.currentToken = this.nextToken;
+    this.nextToken = this.lexer.nextToken();
     return this.currentToken
   }
 
@@ -54,6 +59,45 @@ export class Parser {
     };
   }
 
+  private parseDataDeclaration(): AST.DataDeclaration {
+    const name = this.eat(TokenType.IDENTIFIER).value;
+    const dataType = this.eat(this.currentToken.type).value;
+    let value: AST.DataExpression[] = []
+    while (this.currentToken.type !== TokenType.NEWLINE) {
+      if (this.currentToken.type === TokenType.COMMA) {
+        this.eat(TokenType.COMMA)
+        continue
+      }
+      if (this.currentToken.type === TokenType.STRING) {
+        let a: AST.DataExpression = {
+          type: "DataExpression",
+          value: this.eat(TokenType.STRING).value,
+          location: this.currentToken.location
+        }
+        value.push(a)
+      }
+      if (this.currentToken.type === TokenType.NUMBER) {
+        let a: AST.DataExpression = {
+          type: "DataExpression",
+          value: {
+            "type": "NumericLiteralExpression",
+            value: parseNumber(this.eat(TokenType.NUMBER).value),
+            location: this.currentToken.location
+          },
+          location: this.currentToken.location
+        }
+        value.push(a)
+      }
+    }
+    return {
+      type: "DataDeclaration",
+      name,
+      dataType,
+      value,
+      location: this.currentToken.location,
+    };
+  }
+
   private parseSegmentEnd(): AST.SegmentEnd {
     const name = this.eat(TokenType.IDENTIFIER).value;
     this.eat(TokenType.ENDS);
@@ -74,6 +118,22 @@ export class Parser {
       }
     }
     return { type: "Instruction", mnemonic, operands, location: this.currentToken.location };
+  }
+
+  private parseAssume(): AST.AssumeDirective {
+    let out: AST.AssumeDirective = {
+      "type": "AssumeDirective",
+      "pair": [],
+      "location": this.currentToken.location
+    };
+    this.eat(this.currentToken.type)
+    while(this.currentToken.type!==TokenType.NEWLINE){
+      const register=this.eat(this.currentToken.type).value;
+      this.eat(TokenType.COLON)
+      const segment=this.eat(this.currentToken.type).value
+      out.pair.push({register,segment})
+    }
+    return out
   }
 
   private parseOperand(): AST.Operand {
@@ -131,7 +191,7 @@ export class Parser {
     const name = this.eat(TokenType.DIRECTIVE).value;
     const args: AST.Expression[] = [];
     if (this.currentToken.type === TokenType.STRING) {
-        args.push({type: "StringLiteralExpression", name:"debug!!!!",value: this.eat(TokenType.STRING).value, location: this.currentToken.location});
+      args.push({ type: "StringLiteralExpression", name: "debug!!!!", value: this.eat(TokenType.STRING).value, location: this.currentToken.location });
     }
 
     return { type: "Directive", name, arguments: args, location: this.currentToken.location };
@@ -151,7 +211,12 @@ export class Parser {
     if (this.currentToken.type === TokenType.IDENTIFIER) {
       if (this.nextToken.value === "SEGMENT") {
         return this.parseSegmentDeclaration();
-      } else if (this.nextToken.value === "ENDS") {
+      }
+      else if ([TokenType.DB, TokenType.DW, TokenType.DD].some(a => a === this.nextToken.type)) {
+        return this.parseDataDeclaration();
+      }
+
+      else if (this.nextToken.value === "ENDS") {
         return this.parseSegmentEnd();
       } else if (this.nextToken.value === ":") {
         return this.parseLabel();
@@ -164,6 +229,8 @@ export class Parser {
       } else {
         return this.parseDirective();
       }
+    }else if(this.currentToken.type===TokenType.ASSUME){
+      return this.parseAssume()
     }
     return null;
   }

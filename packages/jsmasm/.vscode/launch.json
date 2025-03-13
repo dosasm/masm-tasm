@@ -20,7 +20,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\dist\\app.js",
-            "preLaunchTask": "tsc: build - tsconfig.json",
+            "preLaunchTask": "tsc: watch - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ]

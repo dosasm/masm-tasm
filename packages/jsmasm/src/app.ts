@@ -24,11 +24,11 @@ END  BEG
 `; // Replace with your file path
 let lexer = new Lexer(input);
 
-// let token: Token;
-// while ((token = lexer.nextToken()).type !== TokenType.EOF) {
-//   console.log(token);
-// }
-// lexer = new Lexer(input);
+let token: Token;
+while ((token = lexer.nextToken()).type !== TokenType.EOF) {
+  console.log(token);
+}
+lexer = new Lexer(input);
 
 const parser = new Parser(lexer);
 const ast = parser.parse();
