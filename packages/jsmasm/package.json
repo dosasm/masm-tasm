@@ -1,0 +1,21 @@
+{
+  "name": "typescript-mocha-project",
+  "version": "1.0.0",
+  "description": "A TypeScript project with Mocha for testing.",
+  "main": "dist/app.js",
+  "scripts": {
+    "test": "mocha -r ts-node/register test/**/*.test.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^4.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.0",
+    "ts-node": "^10.0.0",
+    "@types/mocha": "^9.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
