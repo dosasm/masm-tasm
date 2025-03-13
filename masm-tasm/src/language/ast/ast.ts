@@ -1,5 +1,6 @@
 // Define token types
 export type TokenType =
+  | 'COMMENT'
   | 'INSTRUCTION'
   | 'REGISTER'
   | 'NUMBER'
