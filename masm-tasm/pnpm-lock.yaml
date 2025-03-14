@@ -48,8 +48,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       emulators:
-        specifier: ./dev/emulators-v8.3.3-dosasm11.tgz
-        version: file:dev/emulators-v8.3.3-dosasm11.tgz
+        specifier: ./dev/emulators-v8.3.3-dosasm2.0.tgz
+        version: file:dev/emulators-v8.3.3-dosasm2.0.tgz
       eslint:
         specifier: ^8.20.0
         version: 8.20.0
@@ -714,9 +714,9 @@ packages:
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
-  emulators@file:dev/emulators-v8.3.3-dosasm11.tgz:
-    resolution: {integrity: sha512-E6UOGcdjn2Lc1otSrSaOFoWVzda2q2GhLq394meNjA22vb+MgB2f/J3vGmqIYjmoDHiXPTgZHbvJphNyCc6oFQ==, tarball: file:dev/emulators-v8.3.3-dosasm11.tgz}
-    version: 8.3.3-dosasm11
+  emulators@file:dev/emulators-v8.3.3-dosasm2.0.tgz:
+    resolution: {integrity: sha512-Jp2wba5R4mOrQ+vlsXAvV3LP3JxqtZVVwHpsuJ5I8xlzBFFpquyBHPSgiuC8PZWNQRHcl8TxRZned8Y2s0DlpQ==, tarball: file:dev/emulators-v8.3.3-dosasm2.0.tgz}
+    version: 8.3.3-dosasm2.0
 
   encodeurl@1.0.2:
     resolution: {integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==}
@@ -2807,7 +2807,7 @@ snapshots:
 
   emoji-regex@8.0.0: {}
 
-  emulators@file:dev/emulators-v8.3.3-dosasm11.tgz: {}
+  emulators@file:dev/emulators-v8.3.3-dosasm2.0.tgz: {}
 
   encodeurl@1.0.2: {}
 
