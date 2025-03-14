@@ -1,12 +1,11 @@
 import * as vscode from 'vscode';
 
-import { API } from './vscode-dosbox';
 import * as Diag from '../diagnose/main';
 import * as conf from '../utils/configuration';
 import { logger } from '../utils/logger';
 import { uriUtils } from '../utils/util';
 
-export * from './vscode-dosbox';
+import * as statusbar from "../emulators/jsdos-ci";
 
 export interface AsmResult {
     message: string,
@@ -46,6 +45,7 @@ function actionMessage(act: conf.ActionType, file: string): string {
 
 export function activateManager(context: vscode.ExtensionContext, actions: ExecAction[]) {
     const diag = Diag.activate(context);
+    statusbar.activate(context)
 
     return async function (actionType: conf.ActionType, _uri: vscode.Uri) {
         if(_uri===undefined && vscode.window.activeTextEditor){

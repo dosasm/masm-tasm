@@ -5,7 +5,6 @@ import { MarkdownString, Uri } from "vscode";
 import { Cppdoc } from './hoverFromCppdoc';
 import { FELIX } from './hoverFelix';
 import { HoverFromMarkdown } from './hoverFromMarkdown';
-import * as ast from "./ast/main";
 
 export enum keywordType {
     other = 0,
@@ -48,64 +47,50 @@ export class AsmHoverProvider implements vscode.HoverProvider {
         const docinfo = DocInfo.getDocInfo(document); //scan the document
         const line = docinfo.lines[position.line];
 
-        const text = document.getText();
-        const lexer = new ast.AssemblyLexer(text);
 
-        const tokens = lexer.tokenize();
+        if (range) {
+            const wordGet = document.getText(range);
+            const wordLowCase = wordGet.toLowerCase();
 
-        for (const token of tokens) {
-            if (token.line - 1 == position.line) {
-                if (position.character+1 >= token.column && position.character+1 < token.column + token.value.length) {
-                    const str = `${token.value} ${token.column} ${position.character} ${token.type}`;
-                    return new vscode.Hover(str);
-                }
+            if (line && line.operator?.includes(wordGet)) {
+                const h = await this.getHover(wordGet, [keywordType.instruction]);
+                if (h) { return h; }
             }
+
+            if (line && line.operand?.includes(wordGet)) {
+
+                const md = new MarkdownString();
+                if (info.isNumberStr(wordLowCase)) {
+                    md.appendMarkdown(info.getNumMsg(wordLowCase));
+                    return new vscode.Hover(md);
+                }
+
+
+                //hover for char
+                let wordGet2=wordGet;
+                if(range.start.character>0 && range.end.character-range.start.character===1){
+                    const range2=new vscode.Range(range.start.line,range.start.character-1,range.end.line,range.end.character+1);
+                    wordGet2=document.getText(range2);
+                }
+                const char = /['"](.)['"]/.exec(wordGet2);
+                if (char && line.operand?.includes(wordGet2)) {
+                    md.appendMarkdown(info.getcharMsg(char[1]));
+                    return new vscode.Hover(md);
+                }
+
+                const h = await this.getHover(wordGet, [keywordType.operator, keywordType.register, keywordType.symbol]);
+                if (h) { return h; }
+            }
+
+            const asmsymbol = docinfo.findSymbol(wordGet); //the word is a symbol?
+            if (asmsymbol) {
+                return new vscode.Hover(asmsymbol.markdown());
+            }
+
+            const h = await this.getHover(wordGet, [keywordType.other, keywordType.directive, keywordType.register]);
+            if (h) { return h; }
         }
-
-
-        // if (range) {
-        //     const wordGet = document.getText(range);
-        //     const wordLowCase = wordGet.toLowerCase();
-
-        //     if (line && line.operator?.includes(wordGet)) {
-        //         const h = await this.getHover(wordGet, [keywordType.instruction]);
-        //         if (h) { return h; }
-        //     }
-
-        //     if (line && line.operand?.includes(wordGet)) {
-
-        //         const md = new MarkdownString();
-        //         if (info.isNumberStr(wordLowCase)) {
-        //             md.appendMarkdown(info.getNumMsg(wordLowCase));
-        //             return new vscode.Hover(md);
-        //         }
-
-
-        //         //hover for char
-        //         let wordGet2=wordGet;
-        //         if(range.start.character>0 && range.end.character-range.start.character===1){
-        //             const range2=new vscode.Range(range.start.line,range.start.character-1,range.end.line,range.end.character+1);
-        //             wordGet2=document.getText(range2);
-        //         }
-        //         const char = /['"](.)['"]/.exec(wordGet2);
-        //         if (char && line.operand?.includes(wordGet2)) {
-        //             md.appendMarkdown(info.getcharMsg(char[1]));
-        //             return new vscode.Hover(md);
-        //         }
-
-        //         const h = await this.getHover(wordGet, [keywordType.operator, keywordType.register, keywordType.symbol]);
-        //         if (h) { return h; }
-        //     }
-
-        //     const asmsymbol = docinfo.findSymbol(wordGet); //the word is a symbol?
-        //     if (asmsymbol) {
-        //         return new vscode.Hover(asmsymbol.markdown());
-        //     }
-
-        //     const h = await this.getHover(wordGet, [keywordType.other, keywordType.directive, keywordType.register]);
-        //     if (h) { return h; }
-        // }
-        // return undefined;
+        return undefined;
     }
 
     public async getHover(word: string, types: keywordType[]): Promise<vscode.Hover | undefined> {
