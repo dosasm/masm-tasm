@@ -251,6 +251,17 @@
           "default": true,
           "description": "%config.savefirst%"
         },
+        "masmtasm.jsdos.ignore": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "\\.git",
+              "\\.vscode",
+              "node_modules"
+            ]
+          },
         "masmtasm.language.programmaticFeatures": {
           "type": "boolean",
           "default": true,

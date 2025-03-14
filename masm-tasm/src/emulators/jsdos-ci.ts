@@ -30,7 +30,7 @@ class JsdosTerminal implements vscode.Pseudoterminal {
         this.writeEmitter.fire('\x1b[31mJSDos\x1b[0m\r\nhello');
     }
     close(): void {
-        this.ci.exit();
+        // this.ci.exit();
     }
     input = "";
     handleInput?(data: string): void {
@@ -66,20 +66,24 @@ function getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
 
 
 class Manager {
-    ci: CommandInterface | undefined = undefined;
+    hasCi: {ci: CommandInterface|undefined}={ci:undefined};
     terminal:vscode.Terminal|undefined=undefined;
-    updateci(ci: CommandInterface) {
-        const bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-        bar.command = 'masmtasm.emulatorStatus';
-        bar.text = `jsdos`;
-        bar.show();
+    shell:utils.Shell|undefined=undefined;
+    bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+    updateci(hasCi:{ci: CommandInterface}) {
+        this.bar.command = 'masmtasm.emulatorStatus';
+        this.bar.text = `jsdos`;
+        this.bar.show();
+        this.bar.color=new vscode.ThemeColor("activityBar.activeBackground")
 
-        this.ci = ci;
-        const pty = new JsdosTerminal(this.ci);
+        this.hasCi = hasCi;
+        const pty = new JsdosTerminal(hasCi.ci);
         this.terminal=vscode.window.createTerminal({ name: "jsdos", pty, });
+        this.shell=pty.shell
     }
     webview(context:vscode.ExtensionContext) {
-        if (this.ci) {
+        let ci=this.hasCi.ci;
+        if (ci) {
             const panel = vscode.window.createWebviewPanel(
                 "jsdos",
                 "jsdos panel",
@@ -95,10 +99,10 @@ class Manager {
 
             panel.webview.postMessage({
                 command: "ci",
-                width: this.ci?.width(),
-                height: this.ci?.height()
+                width: ci?.width(),
+                height: ci?.height()
             });
-           this.ci?.events().onFrame((rgb, rgba) => {
+           ci?.events().onFrame((rgb, rgba) => {
                 panel.webview.postMessage({
                     command: 'rgb',
                     time: new Date().getTime(),
@@ -114,13 +118,13 @@ class Manager {
                             return;
                         case 'keyup':
                             const up = utils.htmlKey2jsdos(message.code);
-                            if (up && this.ci)
-                                this.ci.sendKeyEvent(up, false);
+                            if (up && ci)
+                                ci.sendKeyEvent(up, false);
                             return;
                         case 'keydown':
                             const down = utils.htmlKey2jsdos(message.code);
-                            if (down && this.ci)
-                                this.ci.sendKeyEvent(down, true);
+                            if (down && ci)
+                                ci.sendKeyEvent(down, true);
                             return;
                     }
                 },
@@ -137,7 +141,7 @@ export const manager=new Manager();
 
 export function activate(context: vscode.ExtensionContext): void {
     async function statusBarCommand() {
-        const items = ["show jsdos view", "show terminal"];
+        const items = ["show jsdos view", "show terminal","exit"];
     
         const placeHolder = 'manipulate emulator';
         const seleted = await vscode.window.showQuickPick(items, { placeHolder });
@@ -146,6 +150,12 @@ export function activate(context: vscode.ExtensionContext): void {
         }
         if(seleted===items[1]){
             manager.terminal?.show();
+        }
+        if(seleted===items[2]){
+            manager.hasCi.ci?.exit()
+            manager.hasCi.ci=undefined
+            manager.bar.hide()
+            manager.terminal?.hide()
         }
     }
     const disposable = vscode.commands.registerCommand('masmtasm.emulatorStatus', statusBarCommand);

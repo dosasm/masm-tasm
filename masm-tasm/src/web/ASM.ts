@@ -2,10 +2,8 @@ import * as vscode from "vscode";
 import { emulist } from "../emulators/main";
 import { ActionType } from "../utils/configuration";
 import { activateManager } from "../ASM/manager";
-import * as statusBar from '../emulators/jsdos-ci'
 
 export async function activate(context: vscode.ExtensionContext) {
-    statusBar.activate(context);
 
     const execAction = activateManager(context, emulist);
 
