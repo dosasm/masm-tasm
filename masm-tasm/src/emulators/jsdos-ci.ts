@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as conf from '../utils/configuration';
-import { CommandInterface, utils } from 'emulators';
+import { CommandInterface, utils } from 'emulators/dist/out/emulators';
 
 class JsdosTerminal implements vscode.Pseudoterminal {
     onDidWrite: vscode.Event<string>;

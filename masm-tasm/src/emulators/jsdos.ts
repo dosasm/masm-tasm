@@ -2,18 +2,12 @@ import { ExtensionContext, ExtensionMode, Uri } from "vscode";
 import * as vscode from "vscode"
 import { ActionContext, AsmResult, ExecAction } from "../ASM/manager";
 import { DosEmulatorType } from "../utils/configuration";
-import { CommandInterface, getEmulators,platform } from "emulators";
+import { CommandInterface, getEmulators,platform } from 'emulators/dist/out/emulators';
 import { manager } from "./jsdos-ci";
 import { createBundle } from "./bundle";
-import { XhrOptions } from "emulators/dist/out/impl/http";
 
-platform.current.node_require=function(url:string){
-    return __non_webpack_require__(url);
-};
-const request=platform.current.httpRequest
-platform.current.httpRequest=function(url:string,options:XhrOptions){
-    return request(url,options)
-}
+
+
 
 class JsdosRuntime{
     emulators;
@@ -22,7 +16,10 @@ class JsdosRuntime{
         this.emulators=getEmulators(pathprefix);
     }
     async run(FS:Uint8Array){
-        this.ci=await this.emulators.dosboxDirect(FS,);
+        this.ci=await this.emulators.dosboxWorker(FS,);
+        this.ci.events().onMessage((msg,...args)=>{
+            console.log(msg,args)
+        })
     }
 }
 

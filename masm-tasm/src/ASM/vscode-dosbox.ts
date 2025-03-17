@@ -3,7 +3,7 @@
  * originally from https://github.com/dosasm/vscode-dosbox/blob/main/src/api.ts
  */
 
-import { CommandInterface, Emulators } from 'emulators';
+import { CommandInterface, Emulators } from 'emulators/dist/out/emulators';
 import * as Jszip from 'jszip';
 import * as vscode from 'vscode';
 

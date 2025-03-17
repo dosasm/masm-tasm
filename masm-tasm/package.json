@@ -483,7 +483,7 @@
     "assert": "^2.0.0",
     "del": "^7.0.0",
     "download": "^8.0.0",
-    "emulators": "./dev/emulators-v8.3.3-dosasm2.0.tgz",
+    "emulators": "./dev/emulators-v8.3.3-dosasm2.1.tgz",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "http-proxy-agent": "^7.0.2",
