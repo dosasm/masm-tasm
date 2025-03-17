@@ -2,7 +2,7 @@ import { ExtensionContext, ExtensionMode, Uri } from "vscode";
 import * as vscode from "vscode"
 import { ActionContext, AsmResult, ExecAction } from "../ASM/manager";
 import { DosEmulatorType } from "../utils/configuration";
-import { CommandInterface, getEmulators,platform } from 'emulators/dist/out/emulators';
+import { CommandInterface, getEmulators} from 'emulators';
 import { manager } from "./jsdos-ci";
 import { createBundle } from "./bundle";
 
@@ -31,7 +31,7 @@ export class JSDosHost implements ExecAction{
 
         if(runtime===undefined||runtime.ci===undefined){
             if(context.extensionMode==ExtensionMode.Development){
-                runtime=new JsdosRuntime(Uri.joinPath(context.extensionUri,"node_modules/emulators/dist/").fsPath);
+                runtime=new JsdosRuntime(Uri.joinPath(context.extensionUri,"resources/jsdos/").fsPath);
             }else{
                 throw new Error("not implemented");
             }
@@ -48,12 +48,12 @@ c:
             await runtime.run(data);
             if(runtime && runtime.ci){
                 manager.updateci(runtime as {ci:CommandInterface});
+                runtime.ci.resume()
             }
-            vscode.workspace.fs.writeFile(Uri.joinPath(context.extensionUri,"resources","test.zip"),data)
         }
 
         if(manager.hasCi.ci&&manager.terminal){
-            manager.shell?.exec("echo hello")
+            manager.shell?.exec("echo hello",1000,1000,100000000)
         }
         
         return {

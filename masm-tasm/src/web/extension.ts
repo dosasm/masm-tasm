@@ -4,51 +4,60 @@ import { localize, loadI18n } from '../utils/i18n';
 import * as lan from '../language/main';
 import * as asm from './ASM';
 
-import { XhrOptions } from "emulators/dist/out/impl/http";
-import { platform } from 'emulators/dist/out/emulators';
+import { platform, Platform, XhrOptions } from 'emulators';
 
-self.window=self
-
-export function activate(context: vscode.ExtensionContext): void {
-
-    let jsdos=""
-    if(context.extensionMode==vscode.ExtensionMode.Development){
-        jsdos="node_modules/emulators/dist/"
+export class Browser implements Platform {
+    jsdos = ""
+    constructor(private context: vscode.ExtensionContext) {
+        if (context.extensionMode == vscode.ExtensionMode.Development) {
+            this.jsdos = "resources/jsdos/"
+        }
     }
-
-    const request=platform.current.httpRequest
-    platform.current.httpRequest=async function(url:string,options:XhrOptions){
-        if(url.endsWith("wasm")){
-            const uri=vscode.Uri.file(url)
-            const filename=uri.path.substring(uri.path.lastIndexOf('/'));
-            const uri2=vscode.Uri.joinPath(context.extensionUri,jsdos,filename)
+    name = "vscode-web";
+    async httpRequest(url: string, options: XhrOptions) {
+        if (url.endsWith("wasm")) {
+            const uri = vscode.Uri.file(url)
+            const filename = uri.path.substring(uri.path.lastIndexOf('/'));
+            const uri2 = vscode.Uri.joinPath(this.context.extensionUri, this.jsdos, filename)
             return await vscode.workspace.fs.readFile(uri2)
         }
-        if(url.endsWith("js")){
-            const uri=vscode.Uri.file(url)
-            const filename=uri.path.substring(uri.path.lastIndexOf('/'));
-            const uri2=vscode.Uri.joinPath(context.extensionUri,jsdos,filename)
-            const data=await vscode.workspace.fs.readFile(uri2)
-            const text=new TextDecoder("utf-8").decode(data)
+
+        if (url.endsWith("js")) {
+            const uri = vscode.Uri.file(url)
+            const filename = uri.path.substring(uri.path.lastIndexOf('/'));
+            const uri2 = vscode.Uri.joinPath(this.context.extensionUri, this.jsdos, filename)
+            const data = await vscode.workspace.fs.readFile(uri2)
+            const text = new TextDecoder("utf-8").decode(data)
             return text
         }
-        return request(url,options)
+        throw new Error("  ")
     }
+    node_require(path: string) {
+        return require(path)
+    }
+    async createWorker(url: string, onerror: (e: ErrorEvent) => void, onmessage: (e: MessageEvent) => void): Promise<Worker> {
+        const uri = vscode.Uri.file(url)
+        const filename = uri.path.substring(uri.path.lastIndexOf('/'));
+        const uri2 = vscode.Uri.joinPath(this.context.extensionUri, this.jsdos, filename)
+        const data = await vscode.workspace.fs.readFile(uri2)
 
-    platform.current.createWorker=async function(url: string,onerror:(e:ErrorEvent)=>void,onmessage:(e:MessageEvent)=>void): Promise<Worker>{
-        const uri=vscode.Uri.file(url)
-        const filename=uri.path.substring(uri.path.lastIndexOf('/'));
-        const uri2=vscode.Uri.joinPath(context.extensionUri,jsdos,filename)
-        const data=await vscode.workspace.fs.readFile(uri2)
-   
         const b = new Blob([data])
 
         const localUrl = URL.createObjectURL(b);
         const worker = new Worker(localUrl);
-        worker.onerror=onerror;
-        worker.onmessage=onmessage
+        worker.addEventListener('message', (message:any) => {
+            onmessage(message)
+        });
+        worker.addEventListener('error',(error:any)=>{
+            onerror(error)
+        })
         return worker
-    } as any;
+    }
+}
+
+
+export function activate(context: vscode.ExtensionContext): void {
+    platform.set(new Browser(context))
 
     loadI18n(context);
 

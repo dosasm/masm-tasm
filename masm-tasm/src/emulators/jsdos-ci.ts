@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as conf from '../utils/configuration';
-import { CommandInterface, utils } from 'emulators/dist/out/emulators';
+import { CommandInterface, utils } from 'emulators';
 
 class JsdosTerminal implements vscode.Pseudoterminal {
     onDidWrite: vscode.Event<string>;
@@ -66,32 +66,49 @@ function getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
 
 
 class Manager {
-    hasCi: {ci: CommandInterface|undefined}={ci:undefined};
-    terminal:vscode.Terminal|undefined=undefined;
-    shell:utils.Shell|undefined=undefined;
+    hasCi: { ci: CommandInterface | undefined } = { ci: undefined };
+    terminal: vscode.Terminal | undefined = undefined;
+    shell: utils.Shell | undefined = undefined;
     bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-    updateci(hasCi:{ci: CommandInterface}) {
+    updateci(hasCi: { ci: CommandInterface }) {
         this.bar.command = 'masmtasm.emulatorStatus';
         this.bar.text = `jsdos`;
         this.bar.show();
-        this.bar.color=new vscode.ThemeColor("activityBar.activeBackground")
+        this.bar.color = new vscode.ThemeColor("activityBar.activeBackground")
 
         this.hasCi = hasCi;
         const pty = new JsdosTerminal(hasCi.ci);
-        this.terminal=vscode.window.createTerminal({ name: "jsdos", pty, });
-        this.shell=pty.shell
+        this.terminal = vscode.window.createTerminal({ name: "jsdos", pty, });
+        this.shell = pty.shell
+
+        this.hasCi.ci?.events().onFrame((rgb, rgba) => {
+            if(this.panel)
+            this.panel.webview.postMessage({
+                command: 'rgb',
+                time: new Date().getTime(),
+                data: rgb
+            });
+        });
     }
-    webview(context:vscode.ExtensionContext) {
-        let ci=this.hasCi.ci;
+    panel: vscode.WebviewPanel | undefined = undefined
+    webview(context: vscode.ExtensionContext) {
+        const ci = this.hasCi.ci;
         if (ci) {
-            const panel = vscode.window.createWebviewPanel(
-                "jsdos",
-                "jsdos panel",
-                { viewColumn: vscode.ViewColumn.Beside },
-                {
-                    enableScripts: true
-                }
-            )
+            if (!this.panel?.active) {
+                this.panel?.reveal()
+            }
+            if (this.panel === undefined) {
+                this.panel=vscode.window.createWebviewPanel(
+                    "jsdos",
+                    "jsdos panel",
+                    { viewColumn: vscode.ViewColumn.Beside },
+                    {
+                        enableScripts: true
+                    }
+                )
+            }
+            const panel =this.panel as vscode.WebviewPanel
+
             const currentTime = new Date().getTime();
 
             panel.webview.html = getWebviewContent(panel.webview, context.extensionUri);
@@ -101,13 +118,6 @@ class Manager {
                 command: "ci",
                 width: ci?.width(),
                 height: ci?.height()
-            });
-           ci?.events().onFrame((rgb, rgba) => {
-                panel.webview.postMessage({
-                    command: 'rgb',
-                    time: new Date().getTime(),
-                    data: rgb
-                });
             });
             panel.webview.onDidReceiveMessage(
                 message => {
@@ -135,25 +145,25 @@ class Manager {
     }
 }
 
-export const manager=new Manager();
+export const manager = new Manager();
 
 
 
 export function activate(context: vscode.ExtensionContext): void {
     async function statusBarCommand() {
-        const items = ["show jsdos view", "show terminal","exit"];
-    
+        const items = ["show jsdos view", "show terminal", "exit"];
+
         const placeHolder = 'manipulate emulator';
         const seleted = await vscode.window.showQuickPick(items, { placeHolder });
-        if (seleted===items[0]) {
+        if (seleted === items[0]) {
             manager.webview(context);
         }
-        if(seleted===items[1]){
+        if (seleted === items[1]) {
             manager.terminal?.show();
         }
-        if(seleted===items[2]){
+        if (seleted === items[2]) {
             manager.hasCi.ci?.exit()
-            manager.hasCi.ci=undefined
+            manager.hasCi.ci = undefined
             manager.bar.hide()
             manager.terminal?.hide()
         }
