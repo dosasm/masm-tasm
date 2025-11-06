@@ -1,17 +1,9 @@
-import * as load from "./loadJsdos";
-import { loghtml } from "./util";
 import { VscConnect } from "./connection";
+import { loghtml } from "./util";
 
 declare const jsdosconfig: {
   bundlePath: string | undefined;
 };
-
-//auto load bundle when webview loaded
-if (jsdosconfig.bundlePath) {
-  loghtml("auto loading from " + jsdosconfig);
-  load.start(jsdosconfig.bundlePath);
-  loghtml("", false);
-}
 
 //load bundle from message
 VscConnect.listen("start", async (message: any) => {
@@ -23,7 +15,7 @@ VscConnect.listen("start", async (message: any) => {
     const bundlePath =
       message.bundlePath === undefined ? message.bundle : message.bundlePath;
     loghtml("bundle url: " + bundlePath);
-    load.start(message.bundlePath);
+    // load.start(message.bundlePath);
     loghtml("", false);
   } else {
     //since Uint8array is not works well in VSCode
@@ -39,7 +31,7 @@ VscConnect.listen("start", async (message: any) => {
     }
     loghtml("bundle Array received lenghth: " + bundleData.length);
     loghtml("", false);
-    load.start(bundleData);
+    // load.start(bundleData);
   }
 });
 

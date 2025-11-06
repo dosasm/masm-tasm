@@ -3,7 +3,7 @@
  * originally from https://github.com/dosasm/vscode-dosbox/blob/main/src/api.ts
  */
 
-import { CommandInterface, Emulators } from "./emulators/emulators";
+import { CommandInterface, Emulators } from "emulators";
 import * as Jszip from "jszip";
 import * as vscode from "vscode";
 
@@ -14,13 +14,6 @@ export interface CreateBundleOptions {
 }
 
 export interface CI extends CommandInterface {
-  /**a simple shell with stdout and stdin */
-  shell: {
-    onStdout: (consumer: (message: string) => void) => void;
-    shell: (cmd: string) => void;
-  };
-  /**use jsdos shell as VSCode Terminal */
-  terminal(): vscode.Terminal;
 }
 
 export interface DosboxResult {

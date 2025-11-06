@@ -2,6 +2,12 @@
 
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
+### 1.2.0 No longer explictly dependent on VSCode Dosbox 
+
+- 合入https://github.com/dosasm/masm-tasm/pull/
+- Jsdos将作为第一支持DOS模拟器，因为其可以更好地与vscode交互，dosbox和dosbox-x也将继续支持
+- 不再显式依赖vscode-dosbox，因为在windows平台该插件可能有兼容性问题。
+
 ### 1.1.0 Fix format 修复格式化时还原的问题
 
 Thanks to [Asttear][github:Asttear] for debugging and fixing [#37][issue:37]

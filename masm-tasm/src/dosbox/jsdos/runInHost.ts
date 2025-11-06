@@ -1,7 +1,8 @@
+import { CommandInterface,utils } from "emulators";
 import * as vscode from "vscode";
-import { JsdosShell } from "../jsdos-ci-shell/main";
 
-export function createTerminal(shell: JsdosShell) {
+export function createTerminal(ci: CommandInterface) {
+  const shell=new utils.Shell(ci)
   const writeEmitter = new vscode.EventEmitter<string>();
   const pty: vscode.Pseudoterminal = {
     onDidWrite: writeEmitter.event,
@@ -9,18 +10,18 @@ export function createTerminal(shell: JsdosShell) {
       writeEmitter.fire(
         "Jsdos Terminal all changes after launch \x1b[31mwill not\x1b[0m be applied to this shell\r\n"
       );
-      shell.onStdout((val) => {
+      ci.events().onStdout((val) => {
         writeEmitter.fire(val);
       });
     },
-    close: () => {},
+    close: () => { },
     handleInput: (data) => {
       if (data.charCodeAt(0) === 127) {
         writeEmitter.fire("<backspace>");
       } else {
         writeEmitter.fire(data);
       }
-      shell.shell(data);
+      shell.exec(data);
     },
   };
 
