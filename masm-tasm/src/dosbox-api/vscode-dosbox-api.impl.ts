@@ -2,8 +2,8 @@ import { CommandInterface, Emulators,getEmulators } from "emulators";
 import { ExtensionContext, Terminal, Uri, Webview } from "vscode";
 import { API, Dosbox, Jsdos } from "./vscode-dosbox-api";
 import * as Jszip from 'jszip';
-import {activateJSdos} from "./jsdos/main"
-import { CreateBundleOptions } from "./jsdos-bundle/bundle";
+import {activateJSdos,createBundle,createTerminal} from "./jsdos/main"
+import { CreateBundleOptions } from "./jsdos/utils/bundle";
 
 export class vscodeDosboxAPI implements API {
     emulators: Emulators;
@@ -12,14 +12,16 @@ export class vscodeDosboxAPI implements API {
     dosboxX: Dosbox;
     msdosPath: string="";
     commandPath: string="";
-    createBundle:({ sample, boxConf, mount, }: CreateBundleOptions) => Promise<Jszip>
+    createBundle=createBundle;
+    createTerminal=createTerminal;
+    
 
     constructor(context:ExtensionContext) {
-        const { jsdos, createBundle }=activateJSdos(context);
+        const jsdos=activateJSdos(context);
+        this.jsdos=jsdos;
         this.emulators = jsdos.emulators;
 
         // prefer real emulator instances when available, otherwise keep lightweight placeholders
-        this.jsdos = jsdos;
         this.createBundle=createBundle;
         this.dosbox = (this.emulators as any).dosbox || ({} as Dosbox);
         this.dosboxX = (this.emulators as any).dosboxX || ({} as Dosbox);

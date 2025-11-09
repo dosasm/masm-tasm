@@ -1,5 +1,5 @@
-import { JsdosWeb } from "./jsdosWeb";
+import { JsdosHost } from "./jsdosHost";
 
 export const emulist = [
-    new JsdosWeb(),
+    new JsdosHost(),
 ];

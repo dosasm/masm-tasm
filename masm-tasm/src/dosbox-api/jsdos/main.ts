@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
-import { createBundle } from "../jsdos-bundle/bundle";
+import { createBundle } from "./utils/bundle";
+export{ createBundle } from "./utils/bundle";
+export { createTerminal } from "./utils/terminal";
 import { Jsdos } from "../jsdos/Jsdos";
 
 const input = "Input your url";
@@ -74,5 +76,5 @@ export function activateJSdos(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable, disposable2);
 
-  return { jsdos, createBundle };
+  return jsdos;
 }

@@ -7,6 +7,7 @@ import * as Jszip from "jszip";
 import { runInWebview } from "./runInWebview";
 import { logger } from "../logger";
 import { isNode } from "browser-or-node";
+import { createTerminal } from "./utils/terminal";
 
 const fs = vscode.workspace.fs;
 
@@ -19,10 +20,11 @@ export class Jsdos implements api.Jsdos {
   public jszip: Jszip = new Jszip();
 
   constructor(private context: vscode.ExtensionContext) {
-    const dist = vscode.Uri.joinPath(context.extensionUri, "node_modules/emulators/build/wasm");
+    const dist = vscode.Uri.joinPath(context.extensionUri, "node_modules/emulators/build/wasm/");
     this.pathPrefix = isNode ? dist.fsPath : dist.toString();
     this.emulators=adapted.getEmulators(this.pathPrefix)
   }
+  createTerminal=createTerminal;
 
   async setBundle(
     bundle: vscode.Uri | Uint8Array,

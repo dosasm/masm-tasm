@@ -70,6 +70,8 @@ export interface Jsdos {
      * @returns the vscode webview running JSDos
      */
     runInWebview(): Promise<vscode.Webview>,
+
+    createTerminal(ci: CommandInterface): vscode.Terminal
 }
 
 export interface API {
