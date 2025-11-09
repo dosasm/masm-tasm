@@ -53,7 +53,7 @@ export interface Jsdos {
      * change this to change the bundle's data, 
      * the extension call it to generate bundle data
      */
-    jszip: Jszip;
+    jszip: typeof Jszip;
     updateConf(section: string, key: string, value: string | number | boolean): boolean,
     updateAutoexec(context: string[]): void,
     /**

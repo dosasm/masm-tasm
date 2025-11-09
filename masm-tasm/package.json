@@ -464,7 +464,6 @@
     "yarn": false
   },
   "devDependencies": {
-    "@types/glob": "^9.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/mocha": "^10.0.10",
     "@types/node-fetch": "^2.6.13",
@@ -475,9 +474,10 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/test-web": "^0.0.74",
     "assert": "^2.1.0",
+    "browser-or-node": "^3.0.0",
     "del": "^8.0.1",
     "download": "^8.0.0",
-    "emulators": "^8.3.9",
+    "emulators": "https://github.com/dosasm/emulators/releases/download/v8.3.9-dosasm4.0/emulators-v8.3.9-dosasm4.0.tgz",
     "eslint": "^9.39.1",
     "glob": "^11.0.3",
     "js-yaml": "^4.1.0",
@@ -491,7 +491,8 @@
     "typescript": "^5.9.3",
     "vscode-uri": "^3.1.0",
     "webpack": "^5.102.1",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-node-externals": "^3.0.0"
   },
   "repository": {
     "type": "git",

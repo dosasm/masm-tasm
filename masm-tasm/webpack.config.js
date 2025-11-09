@@ -8,26 +8,30 @@
 'use strict';
 
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
+const webpack = require('webpack');
+
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
 /** @type WebpackConfig */
-const config = {
-    target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-    entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
-    output: { // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
+const extensionConfig = {
+    target: 'node', // 运行在 Node.js 环境
+    entry: './src/extension.ts',
+    output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'extension.js',
         libraryTarget: "commonjs2",
         devtoolModuleFilenameTemplate: "../[resource-path]",
     },
     node: {
-        __dirname: false, // leave the __dirname behavior intact
+        __dirname: false,
     },
     devtool: 'source-map',
-    externals: {
-        vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-    },
-    resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
+    externals: [
+        nodeExternals(), 
+        { vscode: "commonjs vscode" }  // 注意这里是对象格式，而非字符串
+        ],
+    resolve: {
         extensions: ['.ts', '.js'],
     },
     module: {
@@ -35,8 +39,6 @@ const config = {
             test: /\.ts$/,
             exclude: /node_modules/,
             use: [{
-                // configure TypeScript loader:
-                // * enable sources maps for end-to-end source maps
                 loader: 'ts-loader',
                 options: {
                     compilerOptions: {
@@ -51,15 +53,13 @@ const config = {
     }
 };
 
-const webpack = require('webpack');
-
 /** @type WebpackConfig */
 const webExtensionConfig = {
-    mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
-    target: 'webworker', // extensions run in a webworker context
+    mode: 'none',
+    target: 'webworker',
     entry: {
-        extension: './src/web/extension.ts', // source of the web extension main file
-        'test/suite/index': './src/web/test/suite/index.ts', // source of the web extension test runner
+        extension: './src/web/extension.ts',
+        'test/suite/index': './src/web/test/suite/index.ts',
     },
     output: {
         filename: '[name].js',
@@ -67,18 +67,18 @@ const webExtensionConfig = {
         libraryTarget: 'commonjs',
     },
     resolve: {
-        mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-        extensions: ['.ts', '.js'], // support ts-files and js-files
+        mainFields: ['browser', 'module', 'main'],
+        extensions: ['.ts', '.js'],
         alias: {
-            // 'node-fetch': './browser-fetch'
-            // provides alternate implementation for node module and source files
+            // 关键修复：映射 node: 协议到对应的 polyfill 模块
+            'node:process': 'process/browser',
+            'node:buffer': 'buffer/',
         },
         fallback: {
-            // Webpack 5 no longer polyfills Node.js core modules automatically.
-            // see https://webpack.js.org/configuration/resolve/#resolvefallback
-            // for the list of Node.js core module polyfills.
             assert: require.resolve('assert'),
             path: require.resolve('path-browserify'),
+            buffer: require.resolve('buffer/'), // 添加 buffer  polyfill
+            process: require.resolve('process/browser'), // 确保 process 映射
         },
     },
     module: {
@@ -96,21 +96,38 @@ const webExtensionConfig = {
     },
     plugins: [
         new webpack.ProvidePlugin({
-            process: 'process/browser', // provide a shim for the global `process` variable
+            process: 'process/browser',
+            Buffer: ['buffer', 'Buffer'], // 提供 Buffer 全局变量
         }),
+        // 关键修复：处理 node: 协议的模块解析
+        new webpack.NormalModuleReplacementPlugin(
+            /^node:/,
+            (resource) => {
+                const mod = resource.request.replace(/^node:/, '');
+                switch (mod) {
+                    case 'process':
+                        resource.request = 'process/browser';
+                        break;
+                    case 'buffer':
+                        resource.request = 'buffer/';
+                        break;
+                    default:
+                        resource.request = mod;
+                }
+            }
+        )
     ],
     externals: {
-        vscode: 'commonjs vscode', // ignored because it doesn't exist
+        vscode: 'commonjs vscode',
     },
     performance: {
         hints: false,
     },
-    devtool: 'nosources-source-map', // create a source map that points to the original source file
+    devtool: 'nosources-source-map',
 };
 
-module.exports = [webExtensionConfig];
 
 module.exports = [
-    config,
+    extensionConfig, 
     webExtensionConfig
-]
+];

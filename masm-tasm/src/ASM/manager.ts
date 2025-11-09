@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 
-import { API } from './vscode-dosbox';
+import { API } from '../dosbox-api/vscode-dosbox-api';
+import { api } from '../dosbox-api/vscode-dosbox-api.impl';
 import * as Diag from '../diagnose/main';
 import * as conf from '../utils/configuration';
 import { logger } from '../utils/logger';
 import { uriUtils } from '../utils/util';
 
-export * from './vscode-dosbox';
+export * from '../dosbox-api/vscode-dosbox-api';
 
 export interface AsmResult {
     message: string,
@@ -55,21 +56,6 @@ export function activateManager(context: vscode.ExtensionContext, actions: ExecA
             throw new Error("no file finded");
         }
         logger.channel(actionMessage(actionType, _uri.fsPath));
-
-        const vscode_dosbox = vscode.extensions.getExtension<API>('xsro.vscode-dosbox');
-
-        if (vscode_dosbox === undefined) {
-            throw new Error("can't get extension xsro.vscode-dosbox");
-        }
-        let api: API | undefined = vscode_dosbox.exports;
-        if (!vscode_dosbox.isActive) {
-            api = await vscode_dosbox?.activate();
-        }
-        logger.log(vscode_dosbox);
-
-        if (api === undefined) {
-            throw new Error("can't get api from" + vscode_dosbox?.id);
-        }
 
         const doc = await vscode.workspace.openTextDocument(_uri);
         if (doc.isDirty && conf.extConf.get<boolean>('ASM.savefirst', true)) {
