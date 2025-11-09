@@ -28,7 +28,8 @@ export function createTerminal(ci: CommandInterface) {
           ci.simulateKeyPress(257)
         }
         else {
-          const keys = utils.string2jsdosKey(data);
+          const keys = utils.string2jsdosKey(data,true,false);
+          console.log(keys)
           keys.forEach(k => ci.simulateKeyPress(...k));
         }
       }
