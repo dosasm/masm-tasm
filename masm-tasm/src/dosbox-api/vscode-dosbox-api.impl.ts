@@ -1,48 +1,29 @@
-import { CommandInterface, Emulators } from "emulators";
-import { Terminal, Uri, Webview } from "vscode";
+import { CommandInterface, Emulators,getEmulators } from "emulators";
+import { ExtensionContext, Terminal, Uri, Webview } from "vscode";
 import { API, Dosbox, Jsdos } from "./vscode-dosbox-api";
 import * as Jszip from 'jszip';
+import {activateJSdos} from "./jsdos/main"
+import { CreateBundleOptions } from "./jsdos-bundle/bundle";
 
-
-class JsdosApi implements Jsdos{
-    setBundle(bundle: Uri | Uint8Array, updateConf?: boolean): void {
-        throw new Error("Method not implemented.");
-    }
-    jszip=Jszip;
-    updateConf(section: string, key: string, value: string | number | boolean): boolean {
-        throw new Error("Method not implemented.");
-    }
-    updateAutoexec(context: string[]): void {
-        throw new Error("Method not implemented.");
-    }
-    runInHost(): Promise<CommandInterface> {
-        throw new Error("Method not implemented.");
-    }
-    runInWebview(): Promise<Webview> {
-        throw new Error("Method not implemented.");
-    }
-    
-}
-
-class vscodeDosboxAPI implements API {
+export class vscodeDosboxAPI implements API {
     emulators: Emulators;
-    jsdos: Jsdos=new JsdosApi();
+    jsdos: Jsdos;
     dosbox: Dosbox;
     dosboxX: Dosbox;
-    msdosPath: string;
-    commandPath: string;
+    msdosPath: string="";
+    commandPath: string="";
+    createBundle:({ sample, boxConf, mount, }: CreateBundleOptions) => Promise<Jszip>
 
-    constructor(emulators?: Emulators, msdosPath?: string, commandPath?: string) {
-        // store the provided emulators object or use an empty placeholder
-        this.emulators = emulators || ({} as Emulators);
+    constructor(context:ExtensionContext) {
+        const { jsdos, createBundle }=activateJSdos(context);
+        this.emulators = jsdos.emulators;
 
         // prefer real emulator instances when available, otherwise keep lightweight placeholders
-        this.jsdos = (this.emulators as any).jsdos || ({} as Jsdos);
+        this.jsdos = jsdos;
+        this.createBundle=createBundle;
         this.dosbox = (this.emulators as any).dosbox || ({} as Dosbox);
         this.dosboxX = (this.emulators as any).dosboxX || ({} as Dosbox);
 
-        this.msdosPath = msdosPath || "";
-        this.commandPath = commandPath || "";
     }
 
     /**
@@ -101,5 +82,3 @@ class vscodeDosboxAPI implements API {
     }
 
 }
-
-export const api=new vscodeDosboxAPI()

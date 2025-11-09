@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 import { API } from '../dosbox-api/vscode-dosbox-api';
-import { api } from '../dosbox-api/vscode-dosbox-api.impl';
+import { vscodeDosboxAPI} from '../dosbox-api/vscode-dosbox-api.impl';
 import * as Diag from '../diagnose/main';
 import * as conf from '../utils/configuration';
 import { logger } from '../utils/logger';
@@ -92,6 +92,8 @@ export function activateManager(context: vscode.ExtensionContext, actions: ExecA
             seperateSpaceFolder,
             workspaceFolderUri,
         };
+
+        let api=new vscodeDosboxAPI(context);
 
         const execAction = actions.find(val => Array.isArray(val.name) ? val.name.includes(conf.extConf.emulator) : (val.name === conf.extConf.emulator));
         if (execAction) {

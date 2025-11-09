@@ -12,7 +12,7 @@ const webresources = [
   },
 ];
 
-export function activate(context: vscode.ExtensionContext) {
+export function activateJSdos(context: vscode.ExtensionContext) {
   const jsdos = new Jsdos(context);
 
   let disposable = vscode.commands.registerCommand(
