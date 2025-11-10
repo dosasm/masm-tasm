@@ -18,11 +18,9 @@ export function createTerminal(ci: CommandInterface) {
       console.log(datas)
       for (const data of datas.split("")) {
         if (data.charCodeAt(0) === 127) {
-          writeEmitter.fire("<backspace>");
-        } else {
-          // writeEmitter.fire(data);
-        }
-        if (data.charCodeAt(0) === 13) {
+          // writeEmitter.fire("<backspace>");
+          ci.simulateKeyPress(utils.Keys.KBD_backspace)
+        } else if (data.charCodeAt(0) === 13) {
           const key = utils.Keys.KBD_enter;
           console.log(key)
           ci.simulateKeyPress(257)
