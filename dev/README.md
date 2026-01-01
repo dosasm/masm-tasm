@@ -23,6 +23,7 @@ git clone https://github.com/dosasm/assembly-tool
 git clone -b dev/2026 https://github.com/dosasm/masm-tasm
 cd masm-tasm
 pnpm install
+pnpm compile-webview
 pnpm compile-dev
 ```
 

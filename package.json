@@ -98,6 +98,10 @@
       {
         "command": "masm-tasm.cleanalldiagnose",
         "title": "%command.cleanalldianose%"
+      },
+      {
+        "command":"masm-tasm.show-jsdos",
+        "title": "show the jsdos instances"
       }
     ],
     "configuration": {
@@ -452,6 +456,7 @@
     "watch": "webpack --mode development --watch",
     "compile": "webpack --mode production",
     "compile-dev": "tsc -p ./ && webpack --mode development",
+    "compile-webview":"webpack --mode development --config webview.webpack.config.js",
     "test": "node ./dist/test/runTest.js",
     "test-web": "vscode-test-web --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../vscode-dosbox --open-devtools ./samples",
     "run-in-browser": "vscode-test-web --extensionDevelopmentPath=. --extensionPath=../vscode-dosbox .",

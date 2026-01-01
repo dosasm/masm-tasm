@@ -5,7 +5,7 @@ import * as conf from '../utils/configuration';
 import { uriUtils } from "../utils/util";
 import { activateJSdos } from "./jsdos/main";
 import { runJsdos } from "./jsdos-run";
-import { JSdosCi } from "./jsdos";
+import { CIManager, JSdosCi } from "./jsdos";
 
 async function ensureFileOpenn(uri:vscode.Uri){
     let _uri=uri;
@@ -49,6 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const timeStamp = new Date().getTime().toString();
     const seperateSpaceFolder = uriUtils.joinPath(context.globalStorageUri, "workspace");
     const jsdos_api=activateJSdos(context);
+    const cis=new CIManager(context);
 
     async function openEmulator(uri:vscode.Uri){
         logger.channel("open file",uri.fsPath);
@@ -57,8 +58,9 @@ export async function activate(context: vscode.ExtensionContext) {
         let workspaceUri=getWorksapceUri(uri);
         const mountMode=conf.extConf.get<conf.MountMode>("ASM.mode", conf.MountMode.single);
         let ci=await runJsdos(jsdos_api,bundleData,workspaceUri,uri2,mountMode);
-        let ci2=new JSdosCi(ci);
-        let t=ci2.terminal();
+        cis.addCI(ci);
+        
+        let t=cis.last.terminal();
         t.show();
     }
 
