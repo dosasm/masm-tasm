@@ -12,6 +12,13 @@ export function createTerminal(ci: CommandInterface) {
       ci.events().onStdout((val) => {
         writeEmitter.fire(val);
       });
+      ci.events().onExit(
+        () => {
+          writeEmitter.fire(
+            "Jsdos Terminal \x1b[31m exited\x1b[0m \r\n"
+          );
+        }
+      )
     },
     close: () => { },
     handleInput: (datas) => {
@@ -26,7 +33,7 @@ export function createTerminal(ci: CommandInterface) {
           ci.simulateKeyPress(257)
         }
         else {
-          const keys = utils.string2jsdosKey(data,true,false);
+          const keys = utils.string2jsdosKey(data, true, false);
           console.log(keys)
           keys.forEach(k => ci.simulateKeyPress(...k));
         }

@@ -44,6 +44,7 @@ export async function runJsdos(jsdos:Jsdos,bundleData:Uint8Array,workspaceFolder
         autoexec.push(...before);
     }
     jsdos.updateAutoexec(autoexec);
+    jsdos.jszip=jszip;
     const ci = await jsdos.runInHost();
     return ci;
 }

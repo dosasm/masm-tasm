@@ -58,10 +58,9 @@ export async function activate(context: vscode.ExtensionContext) {
         let workspaceUri=getWorksapceUri(uri);
         const mountMode=conf.extConf.get<conf.MountMode>("ASM.mode", conf.MountMode.single);
         let ci=await runJsdos(jsdos_api,bundleData,workspaceUri,uri2,mountMode);
-        cis.addCI(ci);
-        
+        cis.addCI(ci);  
         let t=cis.last.terminal();
-        t.show();
+        cis.showWebview();
     }
 
     function runASM(uri:vscode.Uri){

@@ -92,6 +92,21 @@ export class CIManager {
             this.panel = show_webview(this._cis, context)
         }))
     }
+
+    showWebview(id?:number){
+        if(!this.panel?.visible){
+            this.panel = show_webview(this._cis, this.context)
+        }
+
+        if(this.panel?.visible){
+            if(id===undefined){
+                this.webviewingId=this._cis.length-1;
+            }
+            else{
+                this.webviewingId=id;
+            }
+        }
+    }
 }
 
 function show_webview(cis: JSdosCi[], context: vscode.ExtensionContext) {
@@ -104,7 +119,7 @@ function show_webview(cis: JSdosCi[], context: vscode.ExtensionContext) {
         viewColumn ?? vscode.ViewColumn.Beside,
         {
             enableScripts: true,
-            retainContextWhenHidden: true,
+            // retainContextWhenHidden: true,
             //hint: the below settings should be folder's uri
             localResourceRoots: [
                 vscode.Uri.joinPath(context.extensionUri, "dist"),
@@ -143,8 +158,7 @@ function show_webview(cis: JSdosCi[], context: vscode.ExtensionContext) {
         <input type="checkbox" id="sound">sound</input>
         <select id="ci-list">
         </select>
-        <span id="show"></span>
-        <p id='loadingInfo'>loading</p>
+        <span id="show">loading</span>
         <canvas id="display"></canvas>
         <script src='${asWeb("dist/index.js")}'></script>
         </body>
