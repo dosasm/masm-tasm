@@ -1,16 +1,14 @@
 import * as adapted from "emulators";
 import { CommandInterface } from "emulators";
 import * as vscode from "vscode";
-import * as api from "../vscode-dosbox-api";
 import { Conf } from "../dosbox/conf";
 import * as Jszip from "jszip";
-import { runInWebview } from "./runInWebview";
 import { isNode } from "browser-or-node";
 import { createTerminal } from "./utils/terminal";
 
 const fs = vscode.workspace.fs;
 
-export class Jsdos implements api.Jsdos {
+export class Jsdos {
   emulators:adapted.Emulators;
   public set pathPrefix(pathPrefix: string) {
     this.emulators = adapted.getEmulators(pathPrefix);
@@ -92,34 +90,6 @@ export class Jsdos implements api.Jsdos {
     }
     throw new Error(
       "bundle uri is not a uri with schema file or undefined/null"
-    );
-  }
-
-  async runInWebview(
-    bundle?: vscode.Uri | null | undefined
-  ): Promise<vscode.Webview> {
-    const panel = await this.runInWebviewPanel(bundle);
-    return panel.webview;
-  }
-  async runInWebviewPanel(
-    bundle?: vscode.Uri | null | undefined
-  ): Promise<vscode.WebviewPanel> {
-    if (bundle === undefined) {
-      const bundleData = await this.getBundleData();
-      return runInWebview(this.context, bundleData);
-    } else if (bundle === null) {
-      const bundleData = await new Jszip()
-        .file(".jsdos/dosbox.conf", "")
-        .generateAsync({ type: "uint8array" });
-      return runInWebview(this.context, bundleData);
-    } else if (bundle.scheme === "file") {
-      const bundleData = await fs.readFile(bundle);
-      return runInWebview(this.context, bundleData);
-    } else if (bundle.scheme === "http" || bundle.scheme === "https") {
-      return runInWebview(this.context, bundle.toString());
-    }
-    throw new Error(
-      "bundle uri is not a uri with schema file/http/https or undefined/null"
     );
   }
 }

@@ -15,6 +15,21 @@ class Logger {
         this.outputChannel.append('\n');
         return this.outputChannel;
     }
+
+    logExtensionInfo(context: vscode.ExtensionContext) {
+        const { platform, arch } = process;
+        const target =
+          platform === undefined && (process as any).browser
+            ? "web"
+            : platform + "-" + arch;
+    
+        logger.channel(`running at ${target}
+    extensionUri: ${context.extensionUri.fsPath}
+    globalStorageUri: ${context.globalStorageUri.fsPath}
+    extensionMode: ${context.extensionMode}
+    logUri: ${context.logUri.fsPath}
+            `);
+      }
 }
 
 export const logger = new Logger();

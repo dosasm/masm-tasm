@@ -11,6 +11,7 @@ Additionally, as more features have been requested in the [GitHub issues](https:
 - [ ] Remove support for MS-DOS.
 - [ ] Add support for more assembly languages, especially the **Symbol Rename** feature.
 - [ ] Use js-dos as the primary emulator.
+- [ ] To keep this project simple and easy to mantain, **only one emulator instance** is allowed in the simulation. (When use binary dosbox, the extension doesn't check this, but it is also highly recommmend)
 
 ## How to build these files
 
@@ -30,3 +31,12 @@ pnpm compile-dev
 - The js-dos emulator is based on <https://github.com/caiiiycuk/emulators>. My fork is available at <https://github.com/dosasm/emulators/>.
 - The frontend code is based on <https://github.com/caiiiycuk/js-dos>.
 - The reference manuals for DOSBox and DOSBox-X are also helpful.
+
+## DOS环境模拟程序运行逻辑 中文
+
+由于DOS模拟器一般都只支持8.3的文件格式，所以我们需要设置一个模拟器与设计系统的文件同步方案。
+本项目考虑到汇编语言的实际开发需求，一般做如下约定：
+
+1. C盘作为编程工具的目录
+2. D盘作为文件工作区的目录，默认使用workspace方式，即将当前的工作目录映射到D盘。
+

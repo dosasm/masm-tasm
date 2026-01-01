@@ -2,9 +2,12 @@ import * as vscode from 'vscode';
 import { localize, loadI18n } from './utils/i18n';
 
 import * as lan from './language/main';
-import * as asm from './ASM/main';
+import * as asm from './ASM2/main';
+import { logger } from './utils/logger';
 
 export function activate(context: vscode.ExtensionContext): void {
+
+	logger.logExtensionInfo(context);
 
 	loadI18n(context);
 
