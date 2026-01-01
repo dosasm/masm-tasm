@@ -1,0 +1,6279 @@
+{
+	"title": "x86 and amd64 instruction reference",
+	"from": "https://www.felixcloutier.com/x86/",
+	"linkprefix": "https://www.felixcloutier.com/x86/",
+	"sections": [
+		"Core Instructions",
+		"SGX Instructions",
+		"SMX Instructions",
+		"VMX Instructions",
+		"Xeon Phi™ Instructions"
+	],
+	"build": "2021-02-22T12:12:19.405Z",
+	"collection": [
+		[
+			0,
+			"AAA",
+			"ASCII Adjust After Addition",
+			"AAA.html"
+		],
+		[
+			0,
+			"AAD",
+			"ASCII Adjust AX Before Division",
+			"AAD.html"
+		],
+		[
+			0,
+			"AAM",
+			"ASCII Adjust AX After Multiply",
+			"AAM.html"
+		],
+		[
+			0,
+			"AAS",
+			"ASCII Adjust AL After Subtraction",
+			"AAS.html"
+		],
+		[
+			0,
+			"ADC",
+			"Add with Carry",
+			"ADC.html"
+		],
+		[
+			0,
+			"ADCX",
+			"Unsigned Integer Addition of Two Operands with Carry Flag",
+			"ADCX.html"
+		],
+		[
+			0,
+			"ADD",
+			"Add",
+			"ADD.html"
+		],
+		[
+			0,
+			"ADDPD",
+			"Add Packed Double-Precision Floating-Point Values",
+			"ADDPD.html"
+		],
+		[
+			0,
+			"ADDPS",
+			"Add Packed Single-Precision Floating-Point Values",
+			"ADDPS.html"
+		],
+		[
+			0,
+			"ADDSD",
+			"Add Scalar Double-Precision Floating-Point Values",
+			"ADDSD.html"
+		],
+		[
+			0,
+			"ADDSS",
+			"Add Scalar Single-Precision Floating-Point Values",
+			"ADDSS.html"
+		],
+		[
+			0,
+			"ADDSUBPD",
+			"Packed Double-FP Add/Subtract",
+			"ADDSUBPD.html"
+		],
+		[
+			0,
+			"ADDSUBPS",
+			"Packed Single-FP Add/Subtract",
+			"ADDSUBPS.html"
+		],
+		[
+			0,
+			"ADOX",
+			"Unsigned Integer Addition of Two Operands with Overflow Flag",
+			"ADOX.html"
+		],
+		[
+			0,
+			"AESDEC",
+			"Perform One Round of an AES Decryption Flow",
+			"AESDEC.html"
+		],
+		[
+			0,
+			"AESDECLAST",
+			"Perform Last Round of an AES Decryption Flow",
+			"AESDECLAST.html"
+		],
+		[
+			0,
+			"AESENC",
+			"Perform One Round of an AES Encryption Flow",
+			"AESENC.html"
+		],
+		[
+			0,
+			"AESENCLAST",
+			"Perform Last Round of an AES Encryption Flow",
+			"AESENCLAST.html"
+		],
+		[
+			0,
+			"AESIMC",
+			"Perform the AES InvMixColumn Transformation",
+			"AESIMC.html"
+		],
+		[
+			0,
+			"AESKEYGENASSIST",
+			"AES Round Key Generation Assist",
+			"AESKEYGENASSIST.html"
+		],
+		[
+			0,
+			"AND",
+			"Logical AND",
+			"AND.html"
+		],
+		[
+			0,
+			"ANDN",
+			"Logical AND NOT",
+			"ANDN.html"
+		],
+		[
+			0,
+			"ANDNPD",
+			"Bitwise Logical AND NOT of Packed Double Precision Floating-Point Values",
+			"ANDNPD.html"
+		],
+		[
+			0,
+			"ANDNPS",
+			"Bitwise Logical AND NOT of Packed Single Precision Floating-Point Values",
+			"ANDNPS.html"
+		],
+		[
+			0,
+			"ANDPD",
+			"Bitwise Logical AND of Packed Double Precision Floating-Point Values",
+			"ANDPD.html"
+		],
+		[
+			0,
+			"ANDPS",
+			"Bitwise Logical AND of Packed Single Precision Floating-Point Values",
+			"ANDPS.html"
+		],
+		[
+			0,
+			"ARPL",
+			"Adjust RPL Field of Segment Selector",
+			"ARPL.html"
+		],
+		[
+			0,
+			"BEXTR",
+			"Bit Field Extract",
+			"BEXTR.html"
+		],
+		[
+			0,
+			"BLENDPD",
+			"Blend Packed Double Precision Floating-Point Values",
+			"BLENDPD.html"
+		],
+		[
+			0,
+			"BLENDPS",
+			"Blend Packed Single Precision Floating-Point Values",
+			"BLENDPS.html"
+		],
+		[
+			0,
+			"BLENDVPD",
+			"Variable Blend Packed Double Precision Floating-Point Values",
+			"BLENDVPD.html"
+		],
+		[
+			0,
+			"BLENDVPS",
+			"Variable Blend Packed Single Precision Floating-Point Values",
+			"BLENDVPS.html"
+		],
+		[
+			0,
+			"BLSI",
+			"Extract Lowest Set Isolated Bit",
+			"BLSI.html"
+		],
+		[
+			0,
+			"BLSMSK",
+			"Get Mask Up to Lowest Set Bit",
+			"BLSMSK.html"
+		],
+		[
+			0,
+			"BLSR",
+			"Reset Lowest Set Bit",
+			"BLSR.html"
+		],
+		[
+			0,
+			"BNDCL",
+			"Check Lower Bound",
+			"BNDCL.html"
+		],
+		[
+			0,
+			"BNDCN",
+			"Check Upper Bound",
+			"BNDCU:BNDCN.html"
+		],
+		[
+			0,
+			"BNDCU",
+			"Check Upper Bound",
+			"BNDCU:BNDCN.html"
+		],
+		[
+			0,
+			"BNDLDX",
+			"Load Extended Bounds Using Address Translation",
+			"BNDLDX.html"
+		],
+		[
+			0,
+			"BNDMK",
+			"Make Bounds",
+			"BNDMK.html"
+		],
+		[
+			0,
+			"BNDMOV",
+			"Move Bounds",
+			"BNDMOV.html"
+		],
+		[
+			0,
+			"BNDSTX",
+			"Store Extended Bounds Using Address Translation",
+			"BNDSTX.html"
+		],
+		[
+			0,
+			"BOUND",
+			"Check Array Index Against Bounds",
+			"BOUND.html"
+		],
+		[
+			0,
+			"BSF",
+			"Bit Scan Forward",
+			"BSF.html"
+		],
+		[
+			0,
+			"BSR",
+			"Bit Scan Reverse",
+			"BSR.html"
+		],
+		[
+			0,
+			"BSWAP",
+			"Byte Swap",
+			"BSWAP.html"
+		],
+		[
+			0,
+			"BT",
+			"Bit Test",
+			"BT.html"
+		],
+		[
+			0,
+			"BTC",
+			"Bit Test and Complement",
+			"BTC.html"
+		],
+		[
+			0,
+			"BTR",
+			"Bit Test and Reset",
+			"BTR.html"
+		],
+		[
+			0,
+			"BTS",
+			"Bit Test and Set",
+			"BTS.html"
+		],
+		[
+			0,
+			"BZHI",
+			"Zero High Bits Starting with Specified Bit Position",
+			"BZHI.html"
+		],
+		[
+			0,
+			"CALL",
+			"Call Procedure",
+			"CALL.html"
+		],
+		[
+			0,
+			"CBW",
+			"Convert Byte to Word/Convert Word to Doubleword/Convert Doubleword to Quadword",
+			"CBW:CWDE:CDQE.html"
+		],
+		[
+			0,
+			"CDQ",
+			"Convert Word to Doubleword/Convert Doubleword to Quadword",
+			"CWD:CDQ:CQO.html"
+		],
+		[
+			0,
+			"CDQE",
+			"Convert Byte to Word/Convert Word to Doubleword/Convert Doubleword to Quadword",
+			"CBW:CWDE:CDQE.html"
+		],
+		[
+			0,
+			"CLAC",
+			"Clear AC Flag in EFLAGS Register",
+			"CLAC.html"
+		],
+		[
+			0,
+			"CLC",
+			"Clear Carry Flag",
+			"CLC.html"
+		],
+		[
+			0,
+			"CLD",
+			"Clear Direction Flag",
+			"CLD.html"
+		],
+		[
+			0,
+			"CLDEMOTE",
+			"Cache Line Demote",
+			"CLDEMOTE.html"
+		],
+		[
+			0,
+			"CLFLUSH",
+			"Flush Cache Line",
+			"CLFLUSH.html"
+		],
+		[
+			0,
+			"CLFLUSHOPT",
+			"Flush Cache Line Optimized",
+			"CLFLUSHOPT.html"
+		],
+		[
+			0,
+			"CLI",
+			"Clear Interrupt Flag",
+			"CLI.html"
+		],
+		[
+			0,
+			"CLTS",
+			"Clear Task-Switched Flag in CR0",
+			"CLTS.html"
+		],
+		[
+			0,
+			"CLWB",
+			"Cache Line Write Back",
+			"CLWB.html"
+		],
+		[
+			0,
+			"CMC",
+			"Complement Carry Flag",
+			"CMC.html"
+		],
+		[
+			0,
+			"CMOVcc",
+			"Conditional Move",
+			"CMOVcc.html"
+		],
+		[
+			0,
+			"CMP",
+			"Compare Two Operands",
+			"CMP.html"
+		],
+		[
+			0,
+			"CMPPD",
+			"Compare Packed Double-Precision Floating-Point Values",
+			"CMPPD.html"
+		],
+		[
+			0,
+			"CMPPS",
+			"Compare Packed Single-Precision Floating-Point Values",
+			"CMPPS.html"
+		],
+		[
+			0,
+			"CMPS",
+			"Compare String Operands",
+			"CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html"
+		],
+		[
+			0,
+			"CMPSB",
+			"Compare String Operands",
+			"CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html"
+		],
+		[
+			0,
+			"CMPSD",
+			"Compare String Operands",
+			"CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html"
+		],
+		[
+			0,
+			"CMPSD",
+			"Compare Scalar Double-Precision Floating-Point Value",
+			"CMPSD.html"
+		],
+		[
+			0,
+			"CMPSQ",
+			"Compare String Operands",
+			"CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html"
+		],
+		[
+			0,
+			"CMPSS",
+			"Compare Scalar Single-Precision Floating-Point Value",
+			"CMPSS.html"
+		],
+		[
+			0,
+			"CMPSW",
+			"Compare String Operands",
+			"CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html"
+		],
+		[
+			0,
+			"CMPXCHG",
+			"Compare and Exchange",
+			"CMPXCHG.html"
+		],
+		[
+			0,
+			"CMPXCHG16B",
+			"Compare and Exchange Bytes",
+			"CMPXCHG8B:CMPXCHG16B.html"
+		],
+		[
+			0,
+			"CMPXCHG8B",
+			"Compare and Exchange Bytes",
+			"CMPXCHG8B:CMPXCHG16B.html"
+		],
+		[
+			0,
+			"COMISD",
+			"Compare Scalar Ordered Double-Precision Floating-Point Values and Set EFLAGS",
+			"COMISD.html"
+		],
+		[
+			0,
+			"COMISS",
+			"Compare Scalar Ordered Single-Precision Floating-Point Values and Set EFLAGS",
+			"COMISS.html"
+		],
+		[
+			0,
+			"CPUID",
+			"CPU Identification",
+			"CPUID.html"
+		],
+		[
+			0,
+			"CQO",
+			"Convert Word to Doubleword/Convert Doubleword to Quadword",
+			"CWD:CDQ:CQO.html"
+		],
+		[
+			0,
+			"CRC32",
+			"Accumulate CRC32 Value",
+			"CRC32.html"
+		],
+		[
+			0,
+			"CVTDQ2PD",
+			"Convert Packed Doubleword Integers to Packed Double-Precision Floating-Point Values",
+			"CVTDQ2PD.html"
+		],
+		[
+			0,
+			"CVTDQ2PS",
+			"Convert Packed Doubleword Integers to Packed Single-Precision Floating-Point Values",
+			"CVTDQ2PS.html"
+		],
+		[
+			0,
+			"CVTPD2DQ",
+			"Convert Packed Double-Precision Floating-Point Values to Packed Doubleword Integers",
+			"CVTPD2DQ.html"
+		],
+		[
+			0,
+			"CVTPD2PI",
+			"Convert Packed Double-Precision FP Values to Packed Dword Integers",
+			"CVTPD2PI.html"
+		],
+		[
+			0,
+			"CVTPD2PS",
+			"Convert Packed Double-Precision Floating-Point Values to Packed Single-Precision Floating-Point Values",
+			"CVTPD2PS.html"
+		],
+		[
+			0,
+			"CVTPI2PD",
+			"Convert Packed Dword Integers to Packed Double-Precision FP Values",
+			"CVTPI2PD.html"
+		],
+		[
+			0,
+			"CVTPI2PS",
+			"Convert Packed Dword Integers to Packed Single-Precision FP Values",
+			"CVTPI2PS.html"
+		],
+		[
+			0,
+			"CVTPS2DQ",
+			"Convert Packed Single-Precision Floating-Point Values to Packed Signed Doubleword Integer Values",
+			"CVTPS2DQ.html"
+		],
+		[
+			0,
+			"CVTPS2PD",
+			"Convert Packed Single-Precision Floating-Point Values to Packed Double-Precision Floating-Point Values",
+			"CVTPS2PD.html"
+		],
+		[
+			0,
+			"CVTPS2PI",
+			"Convert Packed Single-Precision FP Values to Packed Dword Integers",
+			"CVTPS2PI.html"
+		],
+		[
+			0,
+			"CVTSD2SI",
+			"Convert Scalar Double-Precision Floating-Point Value to Doubleword Integer",
+			"CVTSD2SI.html"
+		],
+		[
+			0,
+			"CVTSD2SS",
+			"Convert Scalar Double-Precision Floating-Point Value to Scalar Single-Precision Floating-Point Value",
+			"CVTSD2SS.html"
+		],
+		[
+			0,
+			"CVTSI2SD",
+			"Convert Doubleword Integer to Scalar Double-Precision Floating-Point Value",
+			"CVTSI2SD.html"
+		],
+		[
+			0,
+			"CVTSI2SS",
+			"Convert Doubleword Integer to Scalar Single-Precision Floating-Point Value",
+			"CVTSI2SS.html"
+		],
+		[
+			0,
+			"CVTSS2SD",
+			"Convert Scalar Single-Precision Floating-Point Value to Scalar Double-Precision Floating-Point Value",
+			"CVTSS2SD.html"
+		],
+		[
+			0,
+			"CVTSS2SI",
+			"Convert Scalar Single-Precision Floating-Point Value to Doubleword Integer",
+			"CVTSS2SI.html"
+		],
+		[
+			0,
+			"CVTTPD2DQ",
+			"Convert with Truncation Packed Double-Precision Floating-Point Values to Packed Doubleword Integers",
+			"CVTTPD2DQ.html"
+		],
+		[
+			0,
+			"CVTTPD2PI",
+			"Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers",
+			"CVTTPD2PI.html"
+		],
+		[
+			0,
+			"CVTTPS2DQ",
+			"Convert with Truncation Packed Single-Precision Floating-Point Values to Packed Signed Doubleword Integer Values",
+			"CVTTPS2DQ.html"
+		],
+		[
+			0,
+			"CVTTPS2PI",
+			"Convert with Truncation Packed Single-Precision FP Values to Packed Dword Integers",
+			"CVTTPS2PI.html"
+		],
+		[
+			0,
+			"CVTTSD2SI",
+			"Convert with Truncation Scalar Double-Precision Floating-Point Value to Signed Integer",
+			"CVTTSD2SI.html"
+		],
+		[
+			0,
+			"CVTTSS2SI",
+			"Convert with Truncation Scalar Single-Precision Floating-Point Value to Integer",
+			"CVTTSS2SI.html"
+		],
+		[
+			0,
+			"CWD",
+			"Convert Word to Doubleword/Convert Doubleword to Quadword",
+			"CWD:CDQ:CQO.html"
+		],
+		[
+			0,
+			"CWDE",
+			"Convert Byte to Word/Convert Word to Doubleword/Convert Doubleword to Quadword",
+			"CBW:CWDE:CDQE.html"
+		],
+		[
+			0,
+			"DAA",
+			"Decimal Adjust AL after Addition",
+			"DAA.html"
+		],
+		[
+			0,
+			"DAS",
+			"Decimal Adjust AL after Subtraction",
+			"DAS.html"
+		],
+		[
+			0,
+			"DEC",
+			"Decrement by 1",
+			"DEC.html"
+		],
+		[
+			0,
+			"DIV",
+			"Unsigned Divide",
+			"DIV.html"
+		],
+		[
+			0,
+			"DIVPD",
+			"Divide Packed Double-Precision Floating-Point Values",
+			"DIVPD.html"
+		],
+		[
+			0,
+			"DIVPS",
+			"Divide Packed Single-Precision Floating-Point Values",
+			"DIVPS.html"
+		],
+		[
+			0,
+			"DIVSD",
+			"Divide Scalar Double-Precision Floating-Point Value",
+			"DIVSD.html"
+		],
+		[
+			0,
+			"DIVSS",
+			"Divide Scalar Single-Precision Floating-Point Values",
+			"DIVSS.html"
+		],
+		[
+			0,
+			"DPPD",
+			"Dot Product of Packed Double Precision Floating-Point Values",
+			"DPPD.html"
+		],
+		[
+			0,
+			"DPPS",
+			"Dot Product of Packed Single Precision Floating-Point Values",
+			"DPPS.html"
+		],
+		[
+			0,
+			"EMMS",
+			"Empty MMX Technology State",
+			"EMMS.html"
+		],
+		[
+			0,
+			"ENTER",
+			"Make Stack Frame for Procedure Parameters",
+			"ENTER.html"
+		],
+		[
+			0,
+			"EXTRACTPS",
+			"Extract Packed Floating-Point Values",
+			"EXTRACTPS.html"
+		],
+		[
+			0,
+			"F2XM1",
+			"Compute 2x–1",
+			"F2XM1.html"
+		],
+		[
+			0,
+			"FABS",
+			"Absolute Value",
+			"FABS.html"
+		],
+		[
+			0,
+			"FADD",
+			"Add",
+			"FADD:FADDP:FIADD.html"
+		],
+		[
+			0,
+			"FADDP",
+			"Add",
+			"FADD:FADDP:FIADD.html"
+		],
+		[
+			0,
+			"FBLD",
+			"Load Binary Coded Decimal",
+			"FBLD.html"
+		],
+		[
+			0,
+			"FBSTP",
+			"Store BCD Integer and Pop",
+			"FBSTP.html"
+		],
+		[
+			0,
+			"FCHS",
+			"Change Sign",
+			"FCHS.html"
+		],
+		[
+			0,
+			"FCLEX",
+			"Clear Exceptions",
+			"FCLEX:FNCLEX.html"
+		],
+		[
+			0,
+			"FCMOVcc",
+			"Floating-Point Conditional Move",
+			"FCMOVcc.html"
+		],
+		[
+			0,
+			"FCOM",
+			"Compare Floating Point Values",
+			"FCOM:FCOMP:FCOMPP.html"
+		],
+		[
+			0,
+			"FCOMI",
+			"Compare Floating Point Values and Set EFLAGS",
+			"FCOMI:FCOMIP:FUCOMI:FUCOMIP.html"
+		],
+		[
+			0,
+			"FCOMIP",
+			"Compare Floating Point Values and Set EFLAGS",
+			"FCOMI:FCOMIP:FUCOMI:FUCOMIP.html"
+		],
+		[
+			0,
+			"FCOMP",
+			"Compare Floating Point Values",
+			"FCOM:FCOMP:FCOMPP.html"
+		],
+		[
+			0,
+			"FCOMPP",
+			"Compare Floating Point Values",
+			"FCOM:FCOMP:FCOMPP.html"
+		],
+		[
+			0,
+			"FCOS",
+			"Cosine",
+			"FCOS.html"
+		],
+		[
+			0,
+			"FDECSTP",
+			"Decrement Stack-Top Pointer",
+			"FDECSTP.html"
+		],
+		[
+			0,
+			"FDIV",
+			"Divide",
+			"FDIV:FDIVP:FIDIV.html"
+		],
+		[
+			0,
+			"FDIVP",
+			"Divide",
+			"FDIV:FDIVP:FIDIV.html"
+		],
+		[
+			0,
+			"FDIVR",
+			"Reverse Divide",
+			"FDIVR:FDIVRP:FIDIVR.html"
+		],
+		[
+			0,
+			"FDIVRP",
+			"Reverse Divide",
+			"FDIVR:FDIVRP:FIDIVR.html"
+		],
+		[
+			0,
+			"FFREE",
+			"Free Floating-Point Register",
+			"FFREE.html"
+		],
+		[
+			0,
+			"FIADD",
+			"Add",
+			"FADD:FADDP:FIADD.html"
+		],
+		[
+			0,
+			"FICOM",
+			"Compare Integer",
+			"FICOM:FICOMP.html"
+		],
+		[
+			0,
+			"FICOMP",
+			"Compare Integer",
+			"FICOM:FICOMP.html"
+		],
+		[
+			0,
+			"FIDIV",
+			"Divide",
+			"FDIV:FDIVP:FIDIV.html"
+		],
+		[
+			0,
+			"FIDIVR",
+			"Reverse Divide",
+			"FDIVR:FDIVRP:FIDIVR.html"
+		],
+		[
+			0,
+			"FILD",
+			"Load Integer",
+			"FILD.html"
+		],
+		[
+			0,
+			"FIMUL",
+			"Multiply",
+			"FMUL:FMULP:FIMUL.html"
+		],
+		[
+			0,
+			"FINCSTP",
+			"Increment Stack-Top Pointer",
+			"FINCSTP.html"
+		],
+		[
+			0,
+			"FINIT",
+			"Initialize Floating-Point Unit",
+			"FINIT:FNINIT.html"
+		],
+		[
+			0,
+			"FIST",
+			"Store Integer",
+			"FIST:FISTP.html"
+		],
+		[
+			0,
+			"FISTP",
+			"Store Integer",
+			"FIST:FISTP.html"
+		],
+		[
+			0,
+			"FISTTP",
+			"Store Integer with Truncation",
+			"FISTTP.html"
+		],
+		[
+			0,
+			"FISUB",
+			"Subtract",
+			"FSUB:FSUBP:FISUB.html"
+		],
+		[
+			0,
+			"FISUBR",
+			"Reverse Subtract",
+			"FSUBR:FSUBRP:FISUBR.html"
+		],
+		[
+			0,
+			"FLD",
+			"Load Floating Point Value",
+			"FLD.html"
+		],
+		[
+			0,
+			"FLD1",
+			"Load Constant",
+			"FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html"
+		],
+		[
+			0,
+			"FLDCW",
+			"Load x87 FPU Control Word",
+			"FLDCW.html"
+		],
+		[
+			0,
+			"FLDENV",
+			"Load x87 FPU Environment",
+			"FLDENV.html"
+		],
+		[
+			0,
+			"FLDL2E",
+			"Load Constant",
+			"FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html"
+		],
+		[
+			0,
+			"FLDL2T",
+			"Load Constant",
+			"FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html"
+		],
+		[
+			0,
+			"FLDLG2",
+			"Load Constant",
+			"FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html"
+		],
+		[
+			0,
+			"FLDLN2",
+			"Load Constant",
+			"FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html"
+		],
+		[
+			0,
+			"FLDPI",
+			"Load Constant",
+			"FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html"
+		],
+		[
+			0,
+			"FLDZ",
+			"Load Constant",
+			"FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html"
+		],
+		[
+			0,
+			"FMUL",
+			"Multiply",
+			"FMUL:FMULP:FIMUL.html"
+		],
+		[
+			0,
+			"FMULP",
+			"Multiply",
+			"FMUL:FMULP:FIMUL.html"
+		],
+		[
+			0,
+			"FNCLEX",
+			"Clear Exceptions",
+			"FCLEX:FNCLEX.html"
+		],
+		[
+			0,
+			"FNINIT",
+			"Initialize Floating-Point Unit",
+			"FINIT:FNINIT.html"
+		],
+		[
+			0,
+			"FNOP",
+			"No Operation",
+			"FNOP.html"
+		],
+		[
+			0,
+			"FNSAVE",
+			"Store x87 FPU State",
+			"FSAVE:FNSAVE.html"
+		],
+		[
+			0,
+			"FNSTCW",
+			"Store x87 FPU Control Word",
+			"FSTCW:FNSTCW.html"
+		],
+		[
+			0,
+			"FNSTENV",
+			"Store x87 FPU Environment",
+			"FSTENV:FNSTENV.html"
+		],
+		[
+			0,
+			"FNSTSW",
+			"Store x87 FPU Status Word",
+			"FSTSW:FNSTSW.html"
+		],
+		[
+			0,
+			"FPATAN",
+			"Partial Arctangent",
+			"FPATAN.html"
+		],
+		[
+			0,
+			"FPREM",
+			"Partial Remainder",
+			"FPREM.html"
+		],
+		[
+			0,
+			"FPREM1",
+			"Partial Remainder",
+			"FPREM1.html"
+		],
+		[
+			0,
+			"FPTAN",
+			"Partial Tangent",
+			"FPTAN.html"
+		],
+		[
+			0,
+			"FRNDINT",
+			"Round to Integer",
+			"FRNDINT.html"
+		],
+		[
+			0,
+			"FRSTOR",
+			"Restore x87 FPU State",
+			"FRSTOR.html"
+		],
+		[
+			0,
+			"FSAVE",
+			"Store x87 FPU State",
+			"FSAVE:FNSAVE.html"
+		],
+		[
+			0,
+			"FSCALE",
+			"Scale",
+			"FSCALE.html"
+		],
+		[
+			0,
+			"FSIN",
+			"Sine",
+			"FSIN.html"
+		],
+		[
+			0,
+			"FSINCOS",
+			"Sine and Cosine",
+			"FSINCOS.html"
+		],
+		[
+			0,
+			"FSQRT",
+			"Square Root",
+			"FSQRT.html"
+		],
+		[
+			0,
+			"FST",
+			"Store Floating Point Value",
+			"FST:FSTP.html"
+		],
+		[
+			0,
+			"FSTCW",
+			"Store x87 FPU Control Word",
+			"FSTCW:FNSTCW.html"
+		],
+		[
+			0,
+			"FSTENV",
+			"Store x87 FPU Environment",
+			"FSTENV:FNSTENV.html"
+		],
+		[
+			0,
+			"FSTP",
+			"Store Floating Point Value",
+			"FST:FSTP.html"
+		],
+		[
+			0,
+			"FSTSW",
+			"Store x87 FPU Status Word",
+			"FSTSW:FNSTSW.html"
+		],
+		[
+			0,
+			"FSUB",
+			"Subtract",
+			"FSUB:FSUBP:FISUB.html"
+		],
+		[
+			0,
+			"FSUBP",
+			"Subtract",
+			"FSUB:FSUBP:FISUB.html"
+		],
+		[
+			0,
+			"FSUBR",
+			"Reverse Subtract",
+			"FSUBR:FSUBRP:FISUBR.html"
+		],
+		[
+			0,
+			"FSUBRP",
+			"Reverse Subtract",
+			"FSUBR:FSUBRP:FISUBR.html"
+		],
+		[
+			0,
+			"FTST",
+			"TEST",
+			"FTST.html"
+		],
+		[
+			0,
+			"FUCOM",
+			"Unordered Compare Floating Point Values",
+			"FUCOM:FUCOMP:FUCOMPP.html"
+		],
+		[
+			0,
+			"FUCOMI",
+			"Compare Floating Point Values and Set EFLAGS",
+			"FCOMI:FCOMIP:FUCOMI:FUCOMIP.html"
+		],
+		[
+			0,
+			"FUCOMIP",
+			"Compare Floating Point Values and Set EFLAGS",
+			"FCOMI:FCOMIP:FUCOMI:FUCOMIP.html"
+		],
+		[
+			0,
+			"FUCOMP",
+			"Unordered Compare Floating Point Values",
+			"FUCOM:FUCOMP:FUCOMPP.html"
+		],
+		[
+			0,
+			"FUCOMPP",
+			"Unordered Compare Floating Point Values",
+			"FUCOM:FUCOMP:FUCOMPP.html"
+		],
+		[
+			0,
+			"FWAIT",
+			"Wait",
+			"WAIT:FWAIT.html"
+		],
+		[
+			0,
+			"FXAM",
+			"Examine Floating-Point",
+			"FXAM.html"
+		],
+		[
+			0,
+			"FXCH",
+			"Exchange Register Contents",
+			"FXCH.html"
+		],
+		[
+			0,
+			"FXRSTOR",
+			"Restore x87 FPU, MMX, XMM, and MXCSR State",
+			"FXRSTOR.html"
+		],
+		[
+			0,
+			"FXSAVE",
+			"Save x87 FPU, MMX Technology, and SSE State",
+			"FXSAVE.html"
+		],
+		[
+			0,
+			"FXTRACT",
+			"Extract Exponent and Significand",
+			"FXTRACT.html"
+		],
+		[
+			0,
+			"FYL2X",
+			"Compute y ∗ log2x",
+			"FYL2X.html"
+		],
+		[
+			0,
+			"FYL2XP1",
+			"Compute y ∗ log2(x +1)",
+			"FYL2XP1.html"
+		],
+		[
+			0,
+			"GF2P8AFFINEINVQB",
+			"Galois Field Affine Transformation Inverse",
+			"GF2P8AFFINEINVQB.html"
+		],
+		[
+			0,
+			"GF2P8AFFINEQB",
+			"Galois Field Affine Transformation",
+			"GF2P8AFFINEQB.html"
+		],
+		[
+			0,
+			"GF2P8MULB",
+			"Galois Field Multiply Bytes",
+			"GF2P8MULB.html"
+		],
+		[
+			0,
+			"HADDPD",
+			"Packed Double-FP Horizontal Add",
+			"HADDPD.html"
+		],
+		[
+			0,
+			"HADDPS",
+			"Packed Single-FP Horizontal Add",
+			"HADDPS.html"
+		],
+		[
+			0,
+			"HLT",
+			"Halt",
+			"HLT.html"
+		],
+		[
+			0,
+			"HSUBPD",
+			"Packed Double-FP Horizontal Subtract",
+			"HSUBPD.html"
+		],
+		[
+			0,
+			"HSUBPS",
+			"Packed Single-FP Horizontal Subtract",
+			"HSUBPS.html"
+		],
+		[
+			0,
+			"IDIV",
+			"Signed Divide",
+			"IDIV.html"
+		],
+		[
+			0,
+			"IMUL",
+			"Signed Multiply",
+			"IMUL.html"
+		],
+		[
+			0,
+			"IN",
+			"Input from Port",
+			"IN.html"
+		],
+		[
+			0,
+			"INC",
+			"Increment by 1",
+			"INC.html"
+		],
+		[
+			0,
+			"INS",
+			"Input from Port to String",
+			"INS:INSB:INSW:INSD.html"
+		],
+		[
+			0,
+			"INSB",
+			"Input from Port to String",
+			"INS:INSB:INSW:INSD.html"
+		],
+		[
+			0,
+			"INSD",
+			"Input from Port to String",
+			"INS:INSB:INSW:INSD.html"
+		],
+		[
+			0,
+			"INSERTPS",
+			"Insert Scalar Single-Precision Floating-Point Value",
+			"INSERTPS.html"
+		],
+		[
+			0,
+			"INSW",
+			"Input from Port to String",
+			"INS:INSB:INSW:INSD.html"
+		],
+		[
+			0,
+			"INT n",
+			"Call to Interrupt Procedure",
+			"INTn:INTO:INT3:INT1.html"
+		],
+		[
+			0,
+			"INT1",
+			"Call to Interrupt Procedure",
+			"INTn:INTO:INT3:INT1.html"
+		],
+		[
+			0,
+			"INT3",
+			"Call to Interrupt Procedure",
+			"INTn:INTO:INT3:INT1.html"
+		],
+		[
+			0,
+			"INTO",
+			"Call to Interrupt Procedure",
+			"INTn:INTO:INT3:INT1.html"
+		],
+		[
+			0,
+			"INVD",
+			"Invalidate Internal Caches",
+			"INVD.html"
+		],
+		[
+			0,
+			"INVLPG",
+			"Invalidate TLB Entries",
+			"INVLPG.html"
+		],
+		[
+			0,
+			"INVPCID",
+			"Invalidate Process-Context Identifier",
+			"INVPCID.html"
+		],
+		[
+			0,
+			"IRET",
+			"Interrupt Return",
+			"IRET:IRETD.html"
+		],
+		[
+			0,
+			"IRETD",
+			"Interrupt Return",
+			"IRET:IRETD.html"
+		],
+		[
+			0,
+			"JMP",
+			"Jump",
+			"JMP.html"
+		],
+		[
+			0,
+			"Jcc",
+			"Jump if Condition Is Met",
+			"Jcc.html"
+		],
+		[
+			0,
+			"KADDB",
+			"ADD Two Masks",
+			"KADDW:KADDB:KADDQ:KADDD.html"
+		],
+		[
+			0,
+			"KADDD",
+			"ADD Two Masks",
+			"KADDW:KADDB:KADDQ:KADDD.html"
+		],
+		[
+			0,
+			"KADDQ",
+			"ADD Two Masks",
+			"KADDW:KADDB:KADDQ:KADDD.html"
+		],
+		[
+			0,
+			"KADDW",
+			"ADD Two Masks",
+			"KADDW:KADDB:KADDQ:KADDD.html"
+		],
+		[
+			0,
+			"KANDB",
+			"Bitwise Logical AND Masks",
+			"KANDW:KANDB:KANDQ:KANDD.html"
+		],
+		[
+			0,
+			"KANDD",
+			"Bitwise Logical AND Masks",
+			"KANDW:KANDB:KANDQ:KANDD.html"
+		],
+		[
+			0,
+			"KANDNB",
+			"Bitwise Logical AND NOT Masks",
+			"KANDNW:KANDNB:KANDNQ:KANDND.html"
+		],
+		[
+			0,
+			"KANDND",
+			"Bitwise Logical AND NOT Masks",
+			"KANDNW:KANDNB:KANDNQ:KANDND.html"
+		],
+		[
+			0,
+			"KANDNQ",
+			"Bitwise Logical AND NOT Masks",
+			"KANDNW:KANDNB:KANDNQ:KANDND.html"
+		],
+		[
+			0,
+			"KANDNW",
+			"Bitwise Logical AND NOT Masks",
+			"KANDNW:KANDNB:KANDNQ:KANDND.html"
+		],
+		[
+			0,
+			"KANDQ",
+			"Bitwise Logical AND Masks",
+			"KANDW:KANDB:KANDQ:KANDD.html"
+		],
+		[
+			0,
+			"KANDW",
+			"Bitwise Logical AND Masks",
+			"KANDW:KANDB:KANDQ:KANDD.html"
+		],
+		[
+			0,
+			"KMOVB",
+			"Move from and to Mask Registers",
+			"KMOVW:KMOVB:KMOVQ:KMOVD.html"
+		],
+		[
+			0,
+			"KMOVD",
+			"Move from and to Mask Registers",
+			"KMOVW:KMOVB:KMOVQ:KMOVD.html"
+		],
+		[
+			0,
+			"KMOVQ",
+			"Move from and to Mask Registers",
+			"KMOVW:KMOVB:KMOVQ:KMOVD.html"
+		],
+		[
+			0,
+			"KMOVW",
+			"Move from and to Mask Registers",
+			"KMOVW:KMOVB:KMOVQ:KMOVD.html"
+		],
+		[
+			0,
+			"KNOTB",
+			"NOT Mask Register",
+			"KNOTW:KNOTB:KNOTQ:KNOTD.html"
+		],
+		[
+			0,
+			"KNOTD",
+			"NOT Mask Register",
+			"KNOTW:KNOTB:KNOTQ:KNOTD.html"
+		],
+		[
+			0,
+			"KNOTQ",
+			"NOT Mask Register",
+			"KNOTW:KNOTB:KNOTQ:KNOTD.html"
+		],
+		[
+			0,
+			"KNOTW",
+			"NOT Mask Register",
+			"KNOTW:KNOTB:KNOTQ:KNOTD.html"
+		],
+		[
+			0,
+			"KORB",
+			"Bitwise Logical OR Masks",
+			"KORW:KORB:KORQ:KORD.html"
+		],
+		[
+			0,
+			"KORD",
+			"Bitwise Logical OR Masks",
+			"KORW:KORB:KORQ:KORD.html"
+		],
+		[
+			0,
+			"KORQ",
+			"Bitwise Logical OR Masks",
+			"KORW:KORB:KORQ:KORD.html"
+		],
+		[
+			0,
+			"KORTESTB",
+			"OR Masks And Set Flags",
+			"KORTESTW:KORTESTB:KORTESTQ:KORTESTD.html"
+		],
+		[
+			0,
+			"KORTESTD",
+			"OR Masks And Set Flags",
+			"KORTESTW:KORTESTB:KORTESTQ:KORTESTD.html"
+		],
+		[
+			0,
+			"KORTESTQ",
+			"OR Masks And Set Flags",
+			"KORTESTW:KORTESTB:KORTESTQ:KORTESTD.html"
+		],
+		[
+			0,
+			"KORTESTW",
+			"OR Masks And Set Flags",
+			"KORTESTW:KORTESTB:KORTESTQ:KORTESTD.html"
+		],
+		[
+			0,
+			"KORW",
+			"Bitwise Logical OR Masks",
+			"KORW:KORB:KORQ:KORD.html"
+		],
+		[
+			0,
+			"KSHIFTLB",
+			"Shift Left Mask Registers",
+			"KSHIFTLW:KSHIFTLB:KSHIFTLQ:KSHIFTLD.html"
+		],
+		[
+			0,
+			"KSHIFTLD",
+			"Shift Left Mask Registers",
+			"KSHIFTLW:KSHIFTLB:KSHIFTLQ:KSHIFTLD.html"
+		],
+		[
+			0,
+			"KSHIFTLQ",
+			"Shift Left Mask Registers",
+			"KSHIFTLW:KSHIFTLB:KSHIFTLQ:KSHIFTLD.html"
+		],
+		[
+			0,
+			"KSHIFTLW",
+			"Shift Left Mask Registers",
+			"KSHIFTLW:KSHIFTLB:KSHIFTLQ:KSHIFTLD.html"
+		],
+		[
+			0,
+			"KSHIFTRB",
+			"Shift Right Mask Registers",
+			"KSHIFTRW:KSHIFTRB:KSHIFTRQ:KSHIFTRD.html"
+		],
+		[
+			0,
+			"KSHIFTRD",
+			"Shift Right Mask Registers",
+			"KSHIFTRW:KSHIFTRB:KSHIFTRQ:KSHIFTRD.html"
+		],
+		[
+			0,
+			"KSHIFTRQ",
+			"Shift Right Mask Registers",
+			"KSHIFTRW:KSHIFTRB:KSHIFTRQ:KSHIFTRD.html"
+		],
+		[
+			0,
+			"KSHIFTRW",
+			"Shift Right Mask Registers",
+			"KSHIFTRW:KSHIFTRB:KSHIFTRQ:KSHIFTRD.html"
+		],
+		[
+			0,
+			"KTESTB",
+			"Packed Bit Test Masks and Set Flags",
+			"KTESTW:KTESTB:KTESTQ:KTESTD.html"
+		],
+		[
+			0,
+			"KTESTD",
+			"Packed Bit Test Masks and Set Flags",
+			"KTESTW:KTESTB:KTESTQ:KTESTD.html"
+		],
+		[
+			0,
+			"KTESTQ",
+			"Packed Bit Test Masks and Set Flags",
+			"KTESTW:KTESTB:KTESTQ:KTESTD.html"
+		],
+		[
+			0,
+			"KTESTW",
+			"Packed Bit Test Masks and Set Flags",
+			"KTESTW:KTESTB:KTESTQ:KTESTD.html"
+		],
+		[
+			0,
+			"KUNPCKBW",
+			"Unpack for Mask Registers",
+			"KUNPCKBW:KUNPCKWD:KUNPCKDQ.html"
+		],
+		[
+			0,
+			"KUNPCKDQ",
+			"Unpack for Mask Registers",
+			"KUNPCKBW:KUNPCKWD:KUNPCKDQ.html"
+		],
+		[
+			0,
+			"KUNPCKWD",
+			"Unpack for Mask Registers",
+			"KUNPCKBW:KUNPCKWD:KUNPCKDQ.html"
+		],
+		[
+			0,
+			"KXNORB",
+			"Bitwise Logical XNOR Masks",
+			"KXNORW:KXNORB:KXNORQ:KXNORD.html"
+		],
+		[
+			0,
+			"KXNORD",
+			"Bitwise Logical XNOR Masks",
+			"KXNORW:KXNORB:KXNORQ:KXNORD.html"
+		],
+		[
+			0,
+			"KXNORQ",
+			"Bitwise Logical XNOR Masks",
+			"KXNORW:KXNORB:KXNORQ:KXNORD.html"
+		],
+		[
+			0,
+			"KXNORW",
+			"Bitwise Logical XNOR Masks",
+			"KXNORW:KXNORB:KXNORQ:KXNORD.html"
+		],
+		[
+			0,
+			"KXORB",
+			"Bitwise Logical XOR Masks",
+			"KXORW:KXORB:KXORQ:KXORD.html"
+		],
+		[
+			0,
+			"KXORD",
+			"Bitwise Logical XOR Masks",
+			"KXORW:KXORB:KXORQ:KXORD.html"
+		],
+		[
+			0,
+			"KXORQ",
+			"Bitwise Logical XOR Masks",
+			"KXORW:KXORB:KXORQ:KXORD.html"
+		],
+		[
+			0,
+			"KXORW",
+			"Bitwise Logical XOR Masks",
+			"KXORW:KXORB:KXORQ:KXORD.html"
+		],
+		[
+			0,
+			"LAHF",
+			"Load Status Flags into AH Register",
+			"LAHF.html"
+		],
+		[
+			0,
+			"LAR",
+			"Load Access Rights Byte",
+			"LAR.html"
+		],
+		[
+			0,
+			"LDDQU",
+			"Load Unaligned Integer 128 Bits",
+			"LDDQU.html"
+		],
+		[
+			0,
+			"LDMXCSR",
+			"Load MXCSR Register",
+			"LDMXCSR.html"
+		],
+		[
+			0,
+			"LDS",
+			"Load Far Pointer",
+			"LDS:LES:LFS:LGS:LSS.html"
+		],
+		[
+			0,
+			"LEA",
+			"Load Effective Address",
+			"LEA.html"
+		],
+		[
+			0,
+			"LEAVE",
+			"High Level Procedure Exit",
+			"LEAVE.html"
+		],
+		[
+			0,
+			"LES",
+			"Load Far Pointer",
+			"LDS:LES:LFS:LGS:LSS.html"
+		],
+		[
+			0,
+			"LFENCE",
+			"Load Fence",
+			"LFENCE.html"
+		],
+		[
+			0,
+			"LFS",
+			"Load Far Pointer",
+			"LDS:LES:LFS:LGS:LSS.html"
+		],
+		[
+			0,
+			"LGDT",
+			"Load Global/Interrupt Descriptor Table Register",
+			"LGDT:LIDT.html"
+		],
+		[
+			0,
+			"LGS",
+			"Load Far Pointer",
+			"LDS:LES:LFS:LGS:LSS.html"
+		],
+		[
+			0,
+			"LIDT",
+			"Load Global/Interrupt Descriptor Table Register",
+			"LGDT:LIDT.html"
+		],
+		[
+			0,
+			"LLDT",
+			"Load Local Descriptor Table Register",
+			"LLDT.html"
+		],
+		[
+			0,
+			"LMSW",
+			"Load Machine Status Word",
+			"LMSW.html"
+		],
+		[
+			0,
+			"LOCK",
+			"Assert LOCK# Signal Prefix",
+			"LOCK.html"
+		],
+		[
+			0,
+			"LODS",
+			"Load String",
+			"LODS:LODSB:LODSW:LODSD:LODSQ.html"
+		],
+		[
+			0,
+			"LODSB",
+			"Load String",
+			"LODS:LODSB:LODSW:LODSD:LODSQ.html"
+		],
+		[
+			0,
+			"LODSD",
+			"Load String",
+			"LODS:LODSB:LODSW:LODSD:LODSQ.html"
+		],
+		[
+			0,
+			"LODSQ",
+			"Load String",
+			"LODS:LODSB:LODSW:LODSD:LODSQ.html"
+		],
+		[
+			0,
+			"LODSW",
+			"Load String",
+			"LODS:LODSB:LODSW:LODSD:LODSQ.html"
+		],
+		[
+			0,
+			"LOOP",
+			"Loop According to ECX Counter",
+			"LOOP:LOOPcc.html"
+		],
+		[
+			0,
+			"LOOPcc",
+			"Loop According to ECX Counter",
+			"LOOP:LOOPcc.html"
+		],
+		[
+			0,
+			"LSL",
+			"Load Segment Limit",
+			"LSL.html"
+		],
+		[
+			0,
+			"LSS",
+			"Load Far Pointer",
+			"LDS:LES:LFS:LGS:LSS.html"
+		],
+		[
+			0,
+			"LTR",
+			"Load Task Register",
+			"LTR.html"
+		],
+		[
+			0,
+			"LZCNT",
+			"Count the Number of Leading Zero Bits",
+			"LZCNT.html"
+		],
+		[
+			0,
+			"MASKMOVDQU",
+			"Store Selected Bytes of Double Quadword",
+			"MASKMOVDQU.html"
+		],
+		[
+			0,
+			"MASKMOVQ",
+			"Store Selected Bytes of Quadword",
+			"MASKMOVQ.html"
+		],
+		[
+			0,
+			"MAXPD",
+			"Maximum of Packed Double-Precision Floating-Point Values",
+			"MAXPD.html"
+		],
+		[
+			0,
+			"MAXPS",
+			"Maximum of Packed Single-Precision Floating-Point Values",
+			"MAXPS.html"
+		],
+		[
+			0,
+			"MAXSD",
+			"Return Maximum Scalar Double-Precision Floating-Point Value",
+			"MAXSD.html"
+		],
+		[
+			0,
+			"MAXSS",
+			"Return Maximum Scalar Single-Precision Floating-Point Value",
+			"MAXSS.html"
+		],
+		[
+			0,
+			"MFENCE",
+			"Memory Fence",
+			"MFENCE.html"
+		],
+		[
+			0,
+			"MINPD",
+			"Minimum of Packed Double-Precision Floating-Point Values",
+			"MINPD.html"
+		],
+		[
+			0,
+			"MINPS",
+			"Minimum of Packed Single-Precision Floating-Point Values",
+			"MINPS.html"
+		],
+		[
+			0,
+			"MINSD",
+			"Return Minimum Scalar Double-Precision Floating-Point Value",
+			"MINSD.html"
+		],
+		[
+			0,
+			"MINSS",
+			"Return Minimum Scalar Single-Precision Floating-Point Value",
+			"MINSS.html"
+		],
+		[
+			0,
+			"MONITOR",
+			"Set Up Monitor Address",
+			"MONITOR.html"
+		],
+		[
+			0,
+			"MOV",
+			"Move",
+			"MOV.html"
+		],
+		[
+			0,
+			"MOV",
+			"Move to/from Control Registers",
+			"MOV-1.html"
+		],
+		[
+			0,
+			"MOV",
+			"Move to/from Debug Registers",
+			"MOV-2.html"
+		],
+		[
+			0,
+			"MOVAPD",
+			"Move Aligned Packed Double-Precision Floating-Point Values",
+			"MOVAPD.html"
+		],
+		[
+			0,
+			"MOVAPS",
+			"Move Aligned Packed Single-Precision Floating-Point Values",
+			"MOVAPS.html"
+		],
+		[
+			0,
+			"MOVBE",
+			"Move Data After Swapping Bytes",
+			"MOVBE.html"
+		],
+		[
+			0,
+			"MOVD",
+			"Move Doubleword/Move Quadword",
+			"MOVD:MOVQ.html"
+		],
+		[
+			0,
+			"MOVDDUP",
+			"Replicate Double FP Values",
+			"MOVDDUP.html"
+		],
+		[
+			0,
+			"MOVDIR64B",
+			"Move 64 Bytes as Direct Store",
+			"MOVDIR64B.html"
+		],
+		[
+			0,
+			"MOVDIRI",
+			"Move Doubleword as Direct Store",
+			"MOVDIRI.html"
+		],
+		[
+			0,
+			"MOVDQ2Q",
+			"Move Quadword from XMM to MMX Technology Register",
+			"MOVDQ2Q.html"
+		],
+		[
+			0,
+			"MOVDQA",
+			"Move Aligned Packed Integer Values",
+			"MOVDQA:VMOVDQA32:VMOVDQA64.html"
+		],
+		[
+			0,
+			"MOVDQU",
+			"Move Unaligned Packed Integer Values",
+			"MOVDQU:VMOVDQU8:VMOVDQU16:VMOVDQU32:VMOVDQU64.html"
+		],
+		[
+			0,
+			"MOVHLPS",
+			"Move Packed Single-Precision Floating-Point Values High to Low",
+			"MOVHLPS.html"
+		],
+		[
+			0,
+			"MOVHPD",
+			"Move High Packed Double-Precision Floating-Point Value",
+			"MOVHPD.html"
+		],
+		[
+			0,
+			"MOVHPS",
+			"Move High Packed Single-Precision Floating-Point Values",
+			"MOVHPS.html"
+		],
+		[
+			0,
+			"MOVLHPS",
+			"Move Packed Single-Precision Floating-Point Values Low to High",
+			"MOVLHPS.html"
+		],
+		[
+			0,
+			"MOVLPD",
+			"Move Low Packed Double-Precision Floating-Point Value",
+			"MOVLPD.html"
+		],
+		[
+			0,
+			"MOVLPS",
+			"Move Low Packed Single-Precision Floating-Point Values",
+			"MOVLPS.html"
+		],
+		[
+			0,
+			"MOVMSKPD",
+			"Extract Packed Double-Precision Floating-Point Sign Mask",
+			"MOVMSKPD.html"
+		],
+		[
+			0,
+			"MOVMSKPS",
+			"Extract Packed Single-Precision Floating-Point Sign Mask",
+			"MOVMSKPS.html"
+		],
+		[
+			0,
+			"MOVNTDQ",
+			"Store Packed Integers Using Non-Temporal Hint",
+			"MOVNTDQ.html"
+		],
+		[
+			0,
+			"MOVNTDQA",
+			"Load Double Quadword Non-Temporal Aligned Hint",
+			"MOVNTDQA.html"
+		],
+		[
+			0,
+			"MOVNTI",
+			"Store Doubleword Using Non-Temporal Hint",
+			"MOVNTI.html"
+		],
+		[
+			0,
+			"MOVNTPD",
+			"Store Packed Double-Precision Floating-Point Values Using Non-Temporal Hint",
+			"MOVNTPD.html"
+		],
+		[
+			0,
+			"MOVNTPS",
+			"Store Packed Single-Precision Floating-Point Values Using Non-Temporal Hint",
+			"MOVNTPS.html"
+		],
+		[
+			0,
+			"MOVNTQ",
+			"Store of Quadword Using Non-Temporal Hint",
+			"MOVNTQ.html"
+		],
+		[
+			0,
+			"MOVQ",
+			"Move Doubleword/Move Quadword",
+			"MOVD:MOVQ.html"
+		],
+		[
+			0,
+			"MOVQ",
+			"Move Quadword",
+			"MOVQ.html"
+		],
+		[
+			0,
+			"MOVQ2DQ",
+			"Move Quadword from MMX Technology to XMM Register",
+			"MOVQ2DQ.html"
+		],
+		[
+			0,
+			"MOVS",
+			"Move Data from String to String",
+			"MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html"
+		],
+		[
+			0,
+			"MOVSB",
+			"Move Data from String to String",
+			"MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html"
+		],
+		[
+			0,
+			"MOVSD",
+			"Move Data from String to String",
+			"MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html"
+		],
+		[
+			0,
+			"MOVSD",
+			"Move or Merge Scalar Double-Precision Floating-Point Value",
+			"MOVSD.html"
+		],
+		[
+			0,
+			"MOVSHDUP",
+			"Replicate Single FP Values",
+			"MOVSHDUP.html"
+		],
+		[
+			0,
+			"MOVSLDUP",
+			"Replicate Single FP Values",
+			"MOVSLDUP.html"
+		],
+		[
+			0,
+			"MOVSQ",
+			"Move Data from String to String",
+			"MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html"
+		],
+		[
+			0,
+			"MOVSS",
+			"Move or Merge Scalar Single-Precision Floating-Point Value",
+			"MOVSS.html"
+		],
+		[
+			0,
+			"MOVSW",
+			"Move Data from String to String",
+			"MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html"
+		],
+		[
+			0,
+			"MOVSX",
+			"Move with Sign-Extension",
+			"MOVSX:MOVSXD.html"
+		],
+		[
+			0,
+			"MOVSXD",
+			"Move with Sign-Extension",
+			"MOVSX:MOVSXD.html"
+		],
+		[
+			0,
+			"MOVUPD",
+			"Move Unaligned Packed Double-Precision Floating-Point Values",
+			"MOVUPD.html"
+		],
+		[
+			0,
+			"MOVUPS",
+			"Move Unaligned Packed Single-Precision Floating-Point Values",
+			"MOVUPS.html"
+		],
+		[
+			0,
+			"MOVZX",
+			"Move with Zero-Extend",
+			"MOVZX.html"
+		],
+		[
+			0,
+			"MPSADBW",
+			"Compute Multiple Packed Sums of Absolute Difference",
+			"MPSADBW.html"
+		],
+		[
+			0,
+			"MUL",
+			"Unsigned Multiply",
+			"MUL.html"
+		],
+		[
+			0,
+			"MULPD",
+			"Multiply Packed Double-Precision Floating-Point Values",
+			"MULPD.html"
+		],
+		[
+			0,
+			"MULPS",
+			"Multiply Packed Single-Precision Floating-Point Values",
+			"MULPS.html"
+		],
+		[
+			0,
+			"MULSD",
+			"Multiply Scalar Double-Precision Floating-Point Value",
+			"MULSD.html"
+		],
+		[
+			0,
+			"MULSS",
+			"Multiply Scalar Single-Precision Floating-Point Values",
+			"MULSS.html"
+		],
+		[
+			0,
+			"MULX",
+			"Unsigned Multiply Without Affecting Flags",
+			"MULX.html"
+		],
+		[
+			0,
+			"MWAIT",
+			"Monitor Wait",
+			"MWAIT.html"
+		],
+		[
+			0,
+			"NEG",
+			"Two's Complement Negation",
+			"NEG.html"
+		],
+		[
+			0,
+			"NOP",
+			"No Operation",
+			"NOP.html"
+		],
+		[
+			0,
+			"NOT",
+			"One's Complement Negation",
+			"NOT.html"
+		],
+		[
+			0,
+			"OR",
+			"Logical Inclusive OR",
+			"OR.html"
+		],
+		[
+			0,
+			"ORPD",
+			"Bitwise Logical OR of Packed Double Precision Floating-Point Values",
+			"ORPD.html"
+		],
+		[
+			0,
+			"ORPS",
+			"Bitwise Logical OR of Packed Single Precision Floating-Point Values",
+			"ORPS.html"
+		],
+		[
+			0,
+			"OUT",
+			"Output to Port",
+			"OUT.html"
+		],
+		[
+			0,
+			"OUTS",
+			"Output String to Port",
+			"OUTS:OUTSB:OUTSW:OUTSD.html"
+		],
+		[
+			0,
+			"OUTSB",
+			"Output String to Port",
+			"OUTS:OUTSB:OUTSW:OUTSD.html"
+		],
+		[
+			0,
+			"OUTSD",
+			"Output String to Port",
+			"OUTS:OUTSB:OUTSW:OUTSD.html"
+		],
+		[
+			0,
+			"OUTSW",
+			"Output String to Port",
+			"OUTS:OUTSB:OUTSW:OUTSD.html"
+		],
+		[
+			0,
+			"PABSB",
+			"Packed Absolute Value",
+			"PABSB:PABSW:PABSD:PABSQ.html"
+		],
+		[
+			0,
+			"PABSD",
+			"Packed Absolute Value",
+			"PABSB:PABSW:PABSD:PABSQ.html"
+		],
+		[
+			0,
+			"PABSQ",
+			"Packed Absolute Value",
+			"PABSB:PABSW:PABSD:PABSQ.html"
+		],
+		[
+			0,
+			"PABSW",
+			"Packed Absolute Value",
+			"PABSB:PABSW:PABSD:PABSQ.html"
+		],
+		[
+			0,
+			"PACKSSDW",
+			"Pack with Signed Saturation",
+			"PACKSSWB:PACKSSDW.html"
+		],
+		[
+			0,
+			"PACKSSWB",
+			"Pack with Signed Saturation",
+			"PACKSSWB:PACKSSDW.html"
+		],
+		[
+			0,
+			"PACKUSDW",
+			"Pack with Unsigned Saturation",
+			"PACKUSDW.html"
+		],
+		[
+			0,
+			"PACKUSWB",
+			"Pack with Unsigned Saturation",
+			"PACKUSWB.html"
+		],
+		[
+			0,
+			"PADDB",
+			"Add Packed Integers",
+			"PADDB:PADDW:PADDD:PADDQ.html"
+		],
+		[
+			0,
+			"PADDD",
+			"Add Packed Integers",
+			"PADDB:PADDW:PADDD:PADDQ.html"
+		],
+		[
+			0,
+			"PADDQ",
+			"Add Packed Integers",
+			"PADDB:PADDW:PADDD:PADDQ.html"
+		],
+		[
+			0,
+			"PADDSB",
+			"Add Packed Signed Integers with Signed Saturation",
+			"PADDSB:PADDSW.html"
+		],
+		[
+			0,
+			"PADDSW",
+			"Add Packed Signed Integers with Signed Saturation",
+			"PADDSB:PADDSW.html"
+		],
+		[
+			0,
+			"PADDUSB",
+			"Add Packed Unsigned Integers with Unsigned Saturation",
+			"PADDUSB:PADDUSW.html"
+		],
+		[
+			0,
+			"PADDUSW",
+			"Add Packed Unsigned Integers with Unsigned Saturation",
+			"PADDUSB:PADDUSW.html"
+		],
+		[
+			0,
+			"PADDW",
+			"Add Packed Integers",
+			"PADDB:PADDW:PADDD:PADDQ.html"
+		],
+		[
+			0,
+			"PALIGNR",
+			"Packed Align Right",
+			"PALIGNR.html"
+		],
+		[
+			0,
+			"PAND",
+			"Logical AND",
+			"PAND.html"
+		],
+		[
+			0,
+			"PANDN",
+			"Logical AND NOT",
+			"PANDN.html"
+		],
+		[
+			0,
+			"PAUSE",
+			"Spin Loop Hint",
+			"PAUSE.html"
+		],
+		[
+			0,
+			"PAVGB",
+			"Average Packed Integers",
+			"PAVGB:PAVGW.html"
+		],
+		[
+			0,
+			"PAVGW",
+			"Average Packed Integers",
+			"PAVGB:PAVGW.html"
+		],
+		[
+			0,
+			"PBLENDVB",
+			"Variable Blend Packed Bytes",
+			"PBLENDVB.html"
+		],
+		[
+			0,
+			"PBLENDW",
+			"Blend Packed Words",
+			"PBLENDW.html"
+		],
+		[
+			0,
+			"PCLMULQDQ",
+			"Carry-Less Multiplication Quadword",
+			"PCLMULQDQ.html"
+		],
+		[
+			0,
+			"PCMPEQB",
+			"Compare Packed Data for Equal",
+			"PCMPEQB:PCMPEQW:PCMPEQD.html"
+		],
+		[
+			0,
+			"PCMPEQD",
+			"Compare Packed Data for Equal",
+			"PCMPEQB:PCMPEQW:PCMPEQD.html"
+		],
+		[
+			0,
+			"PCMPEQQ",
+			"Compare Packed Qword Data for Equal",
+			"PCMPEQQ.html"
+		],
+		[
+			0,
+			"PCMPEQW",
+			"Compare Packed Data for Equal",
+			"PCMPEQB:PCMPEQW:PCMPEQD.html"
+		],
+		[
+			0,
+			"PCMPESTRI",
+			"Packed Compare Explicit Length Strings, Return Index",
+			"PCMPESTRI.html"
+		],
+		[
+			0,
+			"PCMPESTRM",
+			"Packed Compare Explicit Length Strings, Return Mask",
+			"PCMPESTRM.html"
+		],
+		[
+			0,
+			"PCMPGTB",
+			"Compare Packed Signed Integers for Greater Than",
+			"PCMPGTB:PCMPGTW:PCMPGTD.html"
+		],
+		[
+			0,
+			"PCMPGTD",
+			"Compare Packed Signed Integers for Greater Than",
+			"PCMPGTB:PCMPGTW:PCMPGTD.html"
+		],
+		[
+			0,
+			"PCMPGTQ",
+			"Compare Packed Data for Greater Than",
+			"PCMPGTQ.html"
+		],
+		[
+			0,
+			"PCMPGTW",
+			"Compare Packed Signed Integers for Greater Than",
+			"PCMPGTB:PCMPGTW:PCMPGTD.html"
+		],
+		[
+			0,
+			"PCMPISTRI",
+			"Packed Compare Implicit Length Strings, Return Index",
+			"PCMPISTRI.html"
+		],
+		[
+			0,
+			"PCMPISTRM",
+			"Packed Compare Implicit Length Strings, Return Mask",
+			"PCMPISTRM.html"
+		],
+		[
+			0,
+			"PDEP",
+			"Parallel Bits Deposit",
+			"PDEP.html"
+		],
+		[
+			0,
+			"PEXT",
+			"Parallel Bits Extract",
+			"PEXT.html"
+		],
+		[
+			0,
+			"PEXTRB",
+			"Extract Byte/Dword/Qword",
+			"PEXTRB:PEXTRD:PEXTRQ.html"
+		],
+		[
+			0,
+			"PEXTRD",
+			"Extract Byte/Dword/Qword",
+			"PEXTRB:PEXTRD:PEXTRQ.html"
+		],
+		[
+			0,
+			"PEXTRQ",
+			"Extract Byte/Dword/Qword",
+			"PEXTRB:PEXTRD:PEXTRQ.html"
+		],
+		[
+			0,
+			"PEXTRW",
+			"Extract Word",
+			"PEXTRW.html"
+		],
+		[
+			0,
+			"PHADDD",
+			"Packed Horizontal Add",
+			"PHADDW:PHADDD.html"
+		],
+		[
+			0,
+			"PHADDSW",
+			"Packed Horizontal Add and Saturate",
+			"PHADDSW.html"
+		],
+		[
+			0,
+			"PHADDW",
+			"Packed Horizontal Add",
+			"PHADDW:PHADDD.html"
+		],
+		[
+			0,
+			"PHMINPOSUW",
+			"Packed Horizontal Word Minimum",
+			"PHMINPOSUW.html"
+		],
+		[
+			0,
+			"PHSUBD",
+			"Packed Horizontal Subtract",
+			"PHSUBW:PHSUBD.html"
+		],
+		[
+			0,
+			"PHSUBSW",
+			"Packed Horizontal Subtract and Saturate",
+			"PHSUBSW.html"
+		],
+		[
+			0,
+			"PHSUBW",
+			"Packed Horizontal Subtract",
+			"PHSUBW:PHSUBD.html"
+		],
+		[
+			0,
+			"PINSRB",
+			"Insert Byte/Dword/Qword",
+			"PINSRB:PINSRD:PINSRQ.html"
+		],
+		[
+			0,
+			"PINSRD",
+			"Insert Byte/Dword/Qword",
+			"PINSRB:PINSRD:PINSRQ.html"
+		],
+		[
+			0,
+			"PINSRQ",
+			"Insert Byte/Dword/Qword",
+			"PINSRB:PINSRD:PINSRQ.html"
+		],
+		[
+			0,
+			"PINSRW",
+			"Insert Word",
+			"PINSRW.html"
+		],
+		[
+			0,
+			"PMADDUBSW",
+			"Multiply and Add Packed Signed and Unsigned Bytes",
+			"PMADDUBSW.html"
+		],
+		[
+			0,
+			"PMADDWD",
+			"Multiply and Add Packed Integers",
+			"PMADDWD.html"
+		],
+		[
+			0,
+			"PMAXSB",
+			"Maximum of Packed Signed Integers",
+			"PMAXSB:PMAXSW:PMAXSD:PMAXSQ.html"
+		],
+		[
+			0,
+			"PMAXSD",
+			"Maximum of Packed Signed Integers",
+			"PMAXSB:PMAXSW:PMAXSD:PMAXSQ.html"
+		],
+		[
+			0,
+			"PMAXSQ",
+			"Maximum of Packed Signed Integers",
+			"PMAXSB:PMAXSW:PMAXSD:PMAXSQ.html"
+		],
+		[
+			0,
+			"PMAXSW",
+			"Maximum of Packed Signed Integers",
+			"PMAXSB:PMAXSW:PMAXSD:PMAXSQ.html"
+		],
+		[
+			0,
+			"PMAXUB",
+			"Maximum of Packed Unsigned Integers",
+			"PMAXUB:PMAXUW.html"
+		],
+		[
+			0,
+			"PMAXUD",
+			"Maximum of Packed Unsigned Integers",
+			"PMAXUD:PMAXUQ.html"
+		],
+		[
+			0,
+			"PMAXUQ",
+			"Maximum of Packed Unsigned Integers",
+			"PMAXUD:PMAXUQ.html"
+		],
+		[
+			0,
+			"PMAXUW",
+			"Maximum of Packed Unsigned Integers",
+			"PMAXUB:PMAXUW.html"
+		],
+		[
+			0,
+			"PMINSB",
+			"Minimum of Packed Signed Integers",
+			"PMINSB:PMINSW.html"
+		],
+		[
+			0,
+			"PMINSD",
+			"Minimum of Packed Signed Integers",
+			"PMINSD:PMINSQ.html"
+		],
+		[
+			0,
+			"PMINSQ",
+			"Minimum of Packed Signed Integers",
+			"PMINSD:PMINSQ.html"
+		],
+		[
+			0,
+			"PMINSW",
+			"Minimum of Packed Signed Integers",
+			"PMINSB:PMINSW.html"
+		],
+		[
+			0,
+			"PMINUB",
+			"Minimum of Packed Unsigned Integers",
+			"PMINUB:PMINUW.html"
+		],
+		[
+			0,
+			"PMINUD",
+			"Minimum of Packed Unsigned Integers",
+			"PMINUD:PMINUQ.html"
+		],
+		[
+			0,
+			"PMINUQ",
+			"Minimum of Packed Unsigned Integers",
+			"PMINUD:PMINUQ.html"
+		],
+		[
+			0,
+			"PMINUW",
+			"Minimum of Packed Unsigned Integers",
+			"PMINUB:PMINUW.html"
+		],
+		[
+			0,
+			"PMOVMSKB",
+			"Move Byte Mask",
+			"PMOVMSKB.html"
+		],
+		[
+			0,
+			"PMOVSX",
+			"Packed Move with Sign Extend",
+			"PMOVSX.html"
+		],
+		[
+			0,
+			"PMOVZX",
+			"Packed Move with Zero Extend",
+			"PMOVZX.html"
+		],
+		[
+			0,
+			"PMULDQ",
+			"Multiply Packed Doubleword Integers",
+			"PMULDQ.html"
+		],
+		[
+			0,
+			"PMULHRSW",
+			"Packed Multiply High with Round and Scale",
+			"PMULHRSW.html"
+		],
+		[
+			0,
+			"PMULHUW",
+			"Multiply Packed Unsigned Integers and Store High Result",
+			"PMULHUW.html"
+		],
+		[
+			0,
+			"PMULHW",
+			"Multiply Packed Signed Integers and Store High Result",
+			"PMULHW.html"
+		],
+		[
+			0,
+			"PMULLD",
+			"Multiply Packed Integers and Store Low Result",
+			"PMULLD:PMULLQ.html"
+		],
+		[
+			0,
+			"PMULLQ",
+			"Multiply Packed Integers and Store Low Result",
+			"PMULLD:PMULLQ.html"
+		],
+		[
+			0,
+			"PMULLW",
+			"Multiply Packed Signed Integers and Store Low Result",
+			"PMULLW.html"
+		],
+		[
+			0,
+			"PMULUDQ",
+			"Multiply Packed Unsigned Doubleword Integers",
+			"PMULUDQ.html"
+		],
+		[
+			0,
+			"POP",
+			"Pop a Value from the Stack",
+			"POP.html"
+		],
+		[
+			0,
+			"POPA",
+			"Pop All General-Purpose Registers",
+			"POPA:POPAD.html"
+		],
+		[
+			0,
+			"POPAD",
+			"Pop All General-Purpose Registers",
+			"POPA:POPAD.html"
+		],
+		[
+			0,
+			"POPCNT",
+			"Return the Count of Number of Bits Set to 1",
+			"POPCNT.html"
+		],
+		[
+			0,
+			"POPF",
+			"Pop Stack into EFLAGS Register",
+			"POPF:POPFD:POPFQ.html"
+		],
+		[
+			0,
+			"POPFD",
+			"Pop Stack into EFLAGS Register",
+			"POPF:POPFD:POPFQ.html"
+		],
+		[
+			0,
+			"POPFQ",
+			"Pop Stack into EFLAGS Register",
+			"POPF:POPFD:POPFQ.html"
+		],
+		[
+			0,
+			"POR",
+			"Bitwise Logical OR",
+			"POR.html"
+		],
+		[
+			0,
+			"PREFETCHW",
+			"Prefetch Data into Caches in Anticipation of a Write",
+			"PREFETCHW.html"
+		],
+		[
+			0,
+			"PREFETCHh",
+			"Prefetch Data Into Caches",
+			"PREFETCHh.html"
+		],
+		[
+			0,
+			"PSADBW",
+			"Compute Sum of Absolute Differences",
+			"PSADBW.html"
+		],
+		[
+			0,
+			"PSHUFB",
+			"Packed Shuffle Bytes",
+			"PSHUFB.html"
+		],
+		[
+			0,
+			"PSHUFD",
+			"Shuffle Packed Doublewords",
+			"PSHUFD.html"
+		],
+		[
+			0,
+			"PSHUFHW",
+			"Shuffle Packed High Words",
+			"PSHUFHW.html"
+		],
+		[
+			0,
+			"PSHUFLW",
+			"Shuffle Packed Low Words",
+			"PSHUFLW.html"
+		],
+		[
+			0,
+			"PSHUFW",
+			"Shuffle Packed Words",
+			"PSHUFW.html"
+		],
+		[
+			0,
+			"PSIGNB",
+			"Packed SIGN",
+			"PSIGNB:PSIGNW:PSIGND.html"
+		],
+		[
+			0,
+			"PSIGND",
+			"Packed SIGN",
+			"PSIGNB:PSIGNW:PSIGND.html"
+		],
+		[
+			0,
+			"PSIGNW",
+			"Packed SIGN",
+			"PSIGNB:PSIGNW:PSIGND.html"
+		],
+		[
+			0,
+			"PSLLD",
+			"Shift Packed Data Left Logical",
+			"PSLLW:PSLLD:PSLLQ.html"
+		],
+		[
+			0,
+			"PSLLDQ",
+			"Shift Double Quadword Left Logical",
+			"PSLLDQ.html"
+		],
+		[
+			0,
+			"PSLLQ",
+			"Shift Packed Data Left Logical",
+			"PSLLW:PSLLD:PSLLQ.html"
+		],
+		[
+			0,
+			"PSLLW",
+			"Shift Packed Data Left Logical",
+			"PSLLW:PSLLD:PSLLQ.html"
+		],
+		[
+			0,
+			"PSRAD",
+			"Shift Packed Data Right Arithmetic",
+			"PSRAW:PSRAD:PSRAQ.html"
+		],
+		[
+			0,
+			"PSRAQ",
+			"Shift Packed Data Right Arithmetic",
+			"PSRAW:PSRAD:PSRAQ.html"
+		],
+		[
+			0,
+			"PSRAW",
+			"Shift Packed Data Right Arithmetic",
+			"PSRAW:PSRAD:PSRAQ.html"
+		],
+		[
+			0,
+			"PSRLD",
+			"Shift Packed Data Right Logical",
+			"PSRLW:PSRLD:PSRLQ.html"
+		],
+		[
+			0,
+			"PSRLDQ",
+			"Shift Double Quadword Right Logical",
+			"PSRLDQ.html"
+		],
+		[
+			0,
+			"PSRLQ",
+			"Shift Packed Data Right Logical",
+			"PSRLW:PSRLD:PSRLQ.html"
+		],
+		[
+			0,
+			"PSRLW",
+			"Shift Packed Data Right Logical",
+			"PSRLW:PSRLD:PSRLQ.html"
+		],
+		[
+			0,
+			"PSUBB",
+			"Subtract Packed Integers",
+			"PSUBB:PSUBW:PSUBD.html"
+		],
+		[
+			0,
+			"PSUBD",
+			"Subtract Packed Integers",
+			"PSUBB:PSUBW:PSUBD.html"
+		],
+		[
+			0,
+			"PSUBQ",
+			"Subtract Packed Quadword Integers",
+			"PSUBQ.html"
+		],
+		[
+			0,
+			"PSUBSB",
+			"Subtract Packed Signed Integers with Signed Saturation",
+			"PSUBSB:PSUBSW.html"
+		],
+		[
+			0,
+			"PSUBSW",
+			"Subtract Packed Signed Integers with Signed Saturation",
+			"PSUBSB:PSUBSW.html"
+		],
+		[
+			0,
+			"PSUBUSB",
+			"Subtract Packed Unsigned Integers with Unsigned Saturation",
+			"PSUBUSB:PSUBUSW.html"
+		],
+		[
+			0,
+			"PSUBUSW",
+			"Subtract Packed Unsigned Integers with Unsigned Saturation",
+			"PSUBUSB:PSUBUSW.html"
+		],
+		[
+			0,
+			"PSUBW",
+			"Subtract Packed Integers",
+			"PSUBB:PSUBW:PSUBD.html"
+		],
+		[
+			0,
+			"PTEST",
+			"Logical Compare",
+			"PTEST.html"
+		],
+		[
+			0,
+			"PTWRITE",
+			"Write Data to a Processor Trace Packet",
+			"PTWRITE.html"
+		],
+		[
+			0,
+			"PUNPCKHBW",
+			"Unpack High Data",
+			"PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html"
+		],
+		[
+			0,
+			"PUNPCKHDQ",
+			"Unpack High Data",
+			"PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html"
+		],
+		[
+			0,
+			"PUNPCKHQDQ",
+			"Unpack High Data",
+			"PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html"
+		],
+		[
+			0,
+			"PUNPCKHWD",
+			"Unpack High Data",
+			"PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html"
+		],
+		[
+			0,
+			"PUNPCKLBW",
+			"Unpack Low Data",
+			"PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html"
+		],
+		[
+			0,
+			"PUNPCKLDQ",
+			"Unpack Low Data",
+			"PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html"
+		],
+		[
+			0,
+			"PUNPCKLQDQ",
+			"Unpack Low Data",
+			"PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html"
+		],
+		[
+			0,
+			"PUNPCKLWD",
+			"Unpack Low Data",
+			"PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html"
+		],
+		[
+			0,
+			"PUSH",
+			"Push Word, Doubleword or Quadword Onto the Stack",
+			"PUSH.html"
+		],
+		[
+			0,
+			"PUSHA",
+			"Push All General-Purpose Registers",
+			"PUSHA:PUSHAD.html"
+		],
+		[
+			0,
+			"PUSHAD",
+			"Push All General-Purpose Registers",
+			"PUSHA:PUSHAD.html"
+		],
+		[
+			0,
+			"PUSHF",
+			"Push EFLAGS Register onto the Stack",
+			"PUSHF:PUSHFD:PUSHFQ.html"
+		],
+		[
+			0,
+			"PUSHFD",
+			"Push EFLAGS Register onto the Stack",
+			"PUSHF:PUSHFD:PUSHFQ.html"
+		],
+		[
+			0,
+			"PUSHFQ",
+			"Push EFLAGS Register onto the Stack",
+			"PUSHF:PUSHFD:PUSHFQ.html"
+		],
+		[
+			0,
+			"PXOR",
+			"Logical Exclusive OR",
+			"PXOR.html"
+		],
+		[
+			0,
+			"RCL",
+			"Rotate",
+			"RCL:RCR:ROL:ROR.html"
+		],
+		[
+			0,
+			"RCPPS",
+			"Compute Reciprocals of Packed Single-Precision Floating-Point Values",
+			"RCPPS.html"
+		],
+		[
+			0,
+			"RCPSS",
+			"Compute Reciprocal of Scalar Single-Precision Floating-Point Values",
+			"RCPSS.html"
+		],
+		[
+			0,
+			"RCR",
+			"Rotate",
+			"RCL:RCR:ROL:ROR.html"
+		],
+		[
+			0,
+			"RDFSBASE",
+			"Read FS/GS Segment Base",
+			"RDFSBASE:RDGSBASE.html"
+		],
+		[
+			0,
+			"RDGSBASE",
+			"Read FS/GS Segment Base",
+			"RDFSBASE:RDGSBASE.html"
+		],
+		[
+			0,
+			"RDMSR",
+			"Read from Model Specific Register",
+			"RDMSR.html"
+		],
+		[
+			0,
+			"RDPID",
+			"Read Processor ID",
+			"RDPID.html"
+		],
+		[
+			0,
+			"RDPKRU",
+			"Read Protection Key Rights for User Pages",
+			"RDPKRU.html"
+		],
+		[
+			0,
+			"RDPMC",
+			"Read Performance-Monitoring Counters",
+			"RDPMC.html"
+		],
+		[
+			0,
+			"RDRAND",
+			"Read Random Number",
+			"RDRAND.html"
+		],
+		[
+			0,
+			"RDSEED",
+			"Read Random SEED",
+			"RDSEED.html"
+		],
+		[
+			0,
+			"RDTSC",
+			"Read Time-Stamp Counter",
+			"RDTSC.html"
+		],
+		[
+			0,
+			"RDTSCP",
+			"Read Time-Stamp Counter and Processor ID",
+			"RDTSCP.html"
+		],
+		[
+			0,
+			"REP",
+			"Repeat String Operation Prefix",
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
+		],
+		[
+			0,
+			"REPE",
+			"Repeat String Operation Prefix",
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
+		],
+		[
+			0,
+			"REPNE",
+			"Repeat String Operation Prefix",
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
+		],
+		[
+			0,
+			"REPNZ",
+			"Repeat String Operation Prefix",
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
+		],
+		[
+			0,
+			"REPZ",
+			"Repeat String Operation Prefix",
+			"REP:REPE:REPZ:REPNE:REPNZ.html"
+		],
+		[
+			0,
+			"RET",
+			"Return from Procedure",
+			"RET.html"
+		],
+		[
+			0,
+			"ROL",
+			"Rotate",
+			"RCL:RCR:ROL:ROR.html"
+		],
+		[
+			0,
+			"ROR",
+			"Rotate",
+			"RCL:RCR:ROL:ROR.html"
+		],
+		[
+			0,
+			"RORX",
+			"Rotate Right Logical Without Affecting Flags",
+			"RORX.html"
+		],
+		[
+			0,
+			"ROUNDPD",
+			"Round Packed Double Precision Floating-Point Values",
+			"ROUNDPD.html"
+		],
+		[
+			0,
+			"ROUNDPS",
+			"Round Packed Single Precision Floating-Point Values",
+			"ROUNDPS.html"
+		],
+		[
+			0,
+			"ROUNDSD",
+			"Round Scalar Double Precision Floating-Point Values",
+			"ROUNDSD.html"
+		],
+		[
+			0,
+			"ROUNDSS",
+			"Round Scalar Single Precision Floating-Point Values",
+			"ROUNDSS.html"
+		],
+		[
+			0,
+			"RSM",
+			"Resume from System Management Mode",
+			"RSM.html"
+		],
+		[
+			0,
+			"RSQRTPS",
+			"Compute Reciprocals of Square Roots of Packed Single-Precision Floating-Point Values",
+			"RSQRTPS.html"
+		],
+		[
+			0,
+			"RSQRTSS",
+			"Compute Reciprocal of Square Root of Scalar Single-Precision Floating-Point Value",
+			"RSQRTSS.html"
+		],
+		[
+			0,
+			"SAHF",
+			"Store AH into Flags",
+			"SAHF.html"
+		],
+		[
+			0,
+			"SAL",
+			"Shift",
+			"SAL:SAR:SHL:SHR.html"
+		],
+		[
+			0,
+			"SAR",
+			"Shift",
+			"SAL:SAR:SHL:SHR.html"
+		],
+		[
+			0,
+			"SARX",
+			"Shift Without Affecting Flags",
+			"SARX:SHLX:SHRX.html"
+		],
+		[
+			0,
+			"SBB",
+			"Integer Subtraction with Borrow",
+			"SBB.html"
+		],
+		[
+			0,
+			"SCAS",
+			"Scan String",
+			"SCAS:SCASB:SCASW:SCASD.html"
+		],
+		[
+			0,
+			"SCASB",
+			"Scan String",
+			"SCAS:SCASB:SCASW:SCASD.html"
+		],
+		[
+			0,
+			"SCASD",
+			"Scan String",
+			"SCAS:SCASB:SCASW:SCASD.html"
+		],
+		[
+			0,
+			"SCASW",
+			"Scan String",
+			"SCAS:SCASB:SCASW:SCASD.html"
+		],
+		[
+			0,
+			"SETcc",
+			"Set Byte on Condition",
+			"SETcc.html"
+		],
+		[
+			0,
+			"SFENCE",
+			"Store Fence",
+			"SFENCE.html"
+		],
+		[
+			0,
+			"SGDT",
+			"Store Global Descriptor Table Register",
+			"SGDT.html"
+		],
+		[
+			0,
+			"SHA1MSG1",
+			"Perform an Intermediate Calculation for the Next Four SHA1 Message Dwords",
+			"SHA1MSG1.html"
+		],
+		[
+			0,
+			"SHA1MSG2",
+			"Perform a Final Calculation for the Next Four SHA1 Message Dwords",
+			"SHA1MSG2.html"
+		],
+		[
+			0,
+			"SHA1NEXTE",
+			"Calculate SHA1 State Variable E after Four Rounds",
+			"SHA1NEXTE.html"
+		],
+		[
+			0,
+			"SHA1RNDS4",
+			"Perform Four Rounds of SHA1 Operation",
+			"SHA1RNDS4.html"
+		],
+		[
+			0,
+			"SHA256MSG1",
+			"Perform an Intermediate Calculation for the Next Four SHA256 Message Dwords",
+			"SHA256MSG1.html"
+		],
+		[
+			0,
+			"SHA256MSG2",
+			"Perform a Final Calculation for the Next Four SHA256 Message Dwords",
+			"SHA256MSG2.html"
+		],
+		[
+			0,
+			"SHA256RNDS2",
+			"Perform Two Rounds of SHA256 Operation",
+			"SHA256RNDS2.html"
+		],
+		[
+			0,
+			"SHL",
+			"Shift",
+			"SAL:SAR:SHL:SHR.html"
+		],
+		[
+			0,
+			"SHLD",
+			"Double Precision Shift Left",
+			"SHLD.html"
+		],
+		[
+			0,
+			"SHLX",
+			"Shift Without Affecting Flags",
+			"SARX:SHLX:SHRX.html"
+		],
+		[
+			0,
+			"SHR",
+			"Shift",
+			"SAL:SAR:SHL:SHR.html"
+		],
+		[
+			0,
+			"SHRD",
+			"Double Precision Shift Right",
+			"SHRD.html"
+		],
+		[
+			0,
+			"SHRX",
+			"Shift Without Affecting Flags",
+			"SARX:SHLX:SHRX.html"
+		],
+		[
+			0,
+			"SHUFPD",
+			"Packed Interleave Shuffle of Pairs of Double-Precision Floating-Point Values",
+			"SHUFPD.html"
+		],
+		[
+			0,
+			"SHUFPS",
+			"Packed Interleave Shuffle of Quadruplets of Single-Precision Floating-Point Values",
+			"SHUFPS.html"
+		],
+		[
+			0,
+			"SIDT",
+			"Store Interrupt Descriptor Table Register",
+			"SIDT.html"
+		],
+		[
+			0,
+			"SLDT",
+			"Store Local Descriptor Table Register",
+			"SLDT.html"
+		],
+		[
+			0,
+			"SMSW",
+			"Store Machine Status Word",
+			"SMSW.html"
+		],
+		[
+			0,
+			"SQRTPD",
+			"Square Root of Double-Precision Floating-Point Values",
+			"SQRTPD.html"
+		],
+		[
+			0,
+			"SQRTPS",
+			"Square Root of Single-Precision Floating-Point Values",
+			"SQRTPS.html"
+		],
+		[
+			0,
+			"SQRTSD",
+			"Compute Square Root of Scalar Double-Precision Floating-Point Value",
+			"SQRTSD.html"
+		],
+		[
+			0,
+			"SQRTSS",
+			"Compute Square Root of Scalar Single-Precision Value",
+			"SQRTSS.html"
+		],
+		[
+			0,
+			"STAC",
+			"Set AC Flag in EFLAGS Register",
+			"STAC.html"
+		],
+		[
+			0,
+			"STC",
+			"Set Carry Flag",
+			"STC.html"
+		],
+		[
+			0,
+			"STD",
+			"Set Direction Flag",
+			"STD.html"
+		],
+		[
+			0,
+			"STI",
+			"Set Interrupt Flag",
+			"STI.html"
+		],
+		[
+			0,
+			"STMXCSR",
+			"Store MXCSR Register State",
+			"STMXCSR.html"
+		],
+		[
+			0,
+			"STOS",
+			"Store String",
+			"STOS:STOSB:STOSW:STOSD:STOSQ.html"
+		],
+		[
+			0,
+			"STOSB",
+			"Store String",
+			"STOS:STOSB:STOSW:STOSD:STOSQ.html"
+		],
+		[
+			0,
+			"STOSD",
+			"Store String",
+			"STOS:STOSB:STOSW:STOSD:STOSQ.html"
+		],
+		[
+			0,
+			"STOSQ",
+			"Store String",
+			"STOS:STOSB:STOSW:STOSD:STOSQ.html"
+		],
+		[
+			0,
+			"STOSW",
+			"Store String",
+			"STOS:STOSB:STOSW:STOSD:STOSQ.html"
+		],
+		[
+			0,
+			"STR",
+			"Store Task Register",
+			"STR.html"
+		],
+		[
+			0,
+			"SUB",
+			"Subtract",
+			"SUB.html"
+		],
+		[
+			0,
+			"SUBPD",
+			"Subtract Packed Double-Precision Floating-Point Values",
+			"SUBPD.html"
+		],
+		[
+			0,
+			"SUBPS",
+			"Subtract Packed Single-Precision Floating-Point Values",
+			"SUBPS.html"
+		],
+		[
+			0,
+			"SUBSD",
+			"Subtract Scalar Double-Precision Floating-Point Value",
+			"SUBSD.html"
+		],
+		[
+			0,
+			"SUBSS",
+			"Subtract Scalar Single-Precision Floating-Point Value",
+			"SUBSS.html"
+		],
+		[
+			0,
+			"SWAPGS",
+			"Swap GS Base Register",
+			"SWAPGS.html"
+		],
+		[
+			0,
+			"SYSCALL",
+			"Fast System Call",
+			"SYSCALL.html"
+		],
+		[
+			0,
+			"SYSENTER",
+			"Fast System Call",
+			"SYSENTER.html"
+		],
+		[
+			0,
+			"SYSEXIT",
+			"Fast Return from Fast System Call",
+			"SYSEXIT.html"
+		],
+		[
+			0,
+			"SYSRET",
+			"Return From Fast System Call",
+			"SYSRET.html"
+		],
+		[
+			0,
+			"TEST",
+			"Logical Compare",
+			"TEST.html"
+		],
+		[
+			0,
+			"TPAUSE",
+			"Timed PAUSE",
+			"TPAUSE.html"
+		],
+		[
+			0,
+			"TZCNT",
+			"Count the Number of Trailing Zero Bits",
+			"TZCNT.html"
+		],
+		[
+			0,
+			"UCOMISD",
+			"Unordered Compare Scalar Double-Precision Floating-Point Values and Set EFLAGS",
+			"UCOMISD.html"
+		],
+		[
+			0,
+			"UCOMISS",
+			"Unordered Compare Scalar Single-Precision Floating-Point Values and Set EFLAGS",
+			"UCOMISS.html"
+		],
+		[
+			0,
+			"UD",
+			"Undefined Instruction",
+			"UD.html"
+		],
+		[
+			0,
+			"UMONITOR",
+			"User Level Set Up Monitor Address",
+			"UMONITOR.html"
+		],
+		[
+			0,
+			"UMWAIT",
+			"User Level Monitor Wait",
+			"UMWAIT.html"
+		],
+		[
+			0,
+			"UNPCKHPD",
+			"Unpack and Interleave High Packed Double-Precision Floating-Point Values",
+			"UNPCKHPD.html"
+		],
+		[
+			0,
+			"UNPCKHPS",
+			"Unpack and Interleave High Packed Single-Precision Floating-Point Values",
+			"UNPCKHPS.html"
+		],
+		[
+			0,
+			"UNPCKLPD",
+			"Unpack and Interleave Low Packed Double-Precision Floating-Point Values",
+			"UNPCKLPD.html"
+		],
+		[
+			0,
+			"UNPCKLPS",
+			"Unpack and Interleave Low Packed Single-Precision Floating-Point Values",
+			"UNPCKLPS.html"
+		],
+		[
+			0,
+			"VALIGND",
+			"Align Doubleword/Quadword Vectors",
+			"VALIGND:VALIGNQ.html"
+		],
+		[
+			0,
+			"VALIGNQ",
+			"Align Doubleword/Quadword Vectors",
+			"VALIGND:VALIGNQ.html"
+		],
+		[
+			0,
+			"VBLENDMPD",
+			"Blend Float64/Float32 Vectors Using an OpMask Control",
+			"VBLENDMPD:VBLENDMPS.html"
+		],
+		[
+			0,
+			"VBLENDMPS",
+			"Blend Float64/Float32 Vectors Using an OpMask Control",
+			"VBLENDMPD:VBLENDMPS.html"
+		],
+		[
+			0,
+			"VBROADCAST",
+			"Load with Broadcast Floating-Point Data",
+			"VBROADCAST.html"
+		],
+		[
+			0,
+			"VCOMPRESSPD",
+			"Store Sparse Packed Double-Precision Floating-Point Values into Dense Memory",
+			"VCOMPRESSPD.html"
+		],
+		[
+			0,
+			"VCOMPRESSPS",
+			"Store Sparse Packed Single-Precision Floating-Point Values into Dense Memory",
+			"VCOMPRESSPS.html"
+		],
+		[
+			0,
+			"VCVTPD2QQ",
+			"Convert Packed Double-Precision Floating-Point Values to Packed Quadword Integers",
+			"VCVTPD2QQ.html"
+		],
+		[
+			0,
+			"VCVTPD2UDQ",
+			"Convert Packed Double-Precision Floating-Point Values to Packed Unsigned Doubleword Integers",
+			"VCVTPD2UDQ.html"
+		],
+		[
+			0,
+			"VCVTPD2UQQ",
+			"Convert Packed Double-Precision Floating-Point Values to Packed Unsigned Quadword Integers",
+			"VCVTPD2UQQ.html"
+		],
+		[
+			0,
+			"VCVTPH2PS",
+			"Convert 16-bit FP values to Single-Precision FP values",
+			"VCVTPH2PS.html"
+		],
+		[
+			0,
+			"VCVTPS2PH",
+			"Convert Single-Precision FP value to 16-bit FP value",
+			"VCVTPS2PH.html"
+		],
+		[
+			0,
+			"VCVTPS2QQ",
+			"Convert Packed Single Precision Floating-Point Values to Packed Singed Quadword Integer Values",
+			"VCVTPS2QQ.html"
+		],
+		[
+			0,
+			"VCVTPS2UDQ",
+			"Convert Packed Single-Precision Floating-Point Values to Packed Unsigned Doubleword Integer Values",
+			"VCVTPS2UDQ.html"
+		],
+		[
+			0,
+			"VCVTPS2UQQ",
+			"Convert Packed Single Precision Floating-Point Values to Packed Unsigned Quadword Integer Values",
+			"VCVTPS2UQQ.html"
+		],
+		[
+			0,
+			"VCVTQQ2PD",
+			"Convert Packed Quadword Integers to Packed Double-Precision Floating-Point Values",
+			"VCVTQQ2PD.html"
+		],
+		[
+			0,
+			"VCVTQQ2PS",
+			"Convert Packed Quadword Integers to Packed Single-Precision Floating-Point Values",
+			"VCVTQQ2PS.html"
+		],
+		[
+			0,
+			"VCVTSD2USI",
+			"Convert Scalar Double-Precision Floating-Point Value to Unsigned Doubleword Integer",
+			"VCVTSD2USI.html"
+		],
+		[
+			0,
+			"VCVTSS2USI",
+			"Convert Scalar Single-Precision Floating-Point Value to Unsigned Doubleword Integer",
+			"VCVTSS2USI.html"
+		],
+		[
+			0,
+			"VCVTTPD2QQ",
+			"Convert with Truncation Packed Double-Precision Floating-Point Values to Packed Quadword Integers",
+			"VCVTTPD2QQ.html"
+		],
+		[
+			0,
+			"VCVTTPD2UDQ",
+			"Convert with Truncation Packed Double-Precision Floating-Point Values to Packed Unsigned Doubleword Integers",
+			"VCVTTPD2UDQ.html"
+		],
+		[
+			0,
+			"VCVTTPD2UQQ",
+			"Convert with Truncation Packed Double-Precision Floating-Point Values to Packed Unsigned Quadword Integers",
+			"VCVTTPD2UQQ.html"
+		],
+		[
+			0,
+			"VCVTTPS2QQ",
+			"Convert with Truncation Packed Single Precision Floating-Point Values to Packed Singed Quadword Integer Values",
+			"VCVTTPS2QQ.html"
+		],
+		[
+			0,
+			"VCVTTPS2UDQ",
+			"Convert with Truncation Packed Single-Precision Floating-Point Values to Packed Unsigned Doubleword Integer Values",
+			"VCVTTPS2UDQ.html"
+		],
+		[
+			0,
+			"VCVTTPS2UQQ",
+			"Convert with Truncation Packed Single Precision Floating-Point Values to Packed Unsigned Quadword Integer Values",
+			"VCVTTPS2UQQ.html"
+		],
+		[
+			0,
+			"VCVTTSD2USI",
+			"Convert with Truncation Scalar Double-Precision Floating-Point Value to Unsigned Integer",
+			"VCVTTSD2USI.html"
+		],
+		[
+			0,
+			"VCVTTSS2USI",
+			"Convert with Truncation Scalar Single-Precision Floating-Point Value to Unsigned Integer",
+			"VCVTTSS2USI.html"
+		],
+		[
+			0,
+			"VCVTUDQ2PD",
+			"Convert Packed Unsigned Doubleword Integers to Packed Double-Precision Floating-Point Values",
+			"VCVTUDQ2PD.html"
+		],
+		[
+			0,
+			"VCVTUDQ2PS",
+			"Convert Packed Unsigned Doubleword Integers to Packed Single-Precision Floating-Point Values",
+			"VCVTUDQ2PS.html"
+		],
+		[
+			0,
+			"VCVTUQQ2PD",
+			"Convert Packed Unsigned Quadword Integers to Packed Double-Precision Floating-Point Values",
+			"VCVTUQQ2PD.html"
+		],
+		[
+			0,
+			"VCVTUQQ2PS",
+			"Convert Packed Unsigned Quadword Integers to Packed Single-Precision Floating-Point Values",
+			"VCVTUQQ2PS.html"
+		],
+		[
+			0,
+			"VCVTUSI2SD",
+			"Convert Unsigned Integer to Scalar Double-Precision Floating-Point Value",
+			"VCVTUSI2SD.html"
+		],
+		[
+			0,
+			"VCVTUSI2SS",
+			"Convert Unsigned Integer to Scalar Single-Precision Floating-Point Value",
+			"VCVTUSI2SS.html"
+		],
+		[
+			0,
+			"VDBPSADBW",
+			"Double Block Packed Sum-Absolute-Differences (SAD) on Unsigned Bytes",
+			"VDBPSADBW.html"
+		],
+		[
+			0,
+			"VERR",
+			"Verify a Segment for Reading or Writing",
+			"VERR:VERW.html"
+		],
+		[
+			0,
+			"VERW",
+			"Verify a Segment for Reading or Writing",
+			"VERR:VERW.html"
+		],
+		[
+			0,
+			"VEXPANDPD",
+			"Load Sparse Packed Double-Precision Floating-Point Values from Dense Memory",
+			"VEXPANDPD.html"
+		],
+		[
+			0,
+			"VEXPANDPS",
+			"Load Sparse Packed Single-Precision Floating-Point Values from Dense Memory",
+			"VEXPANDPS.html"
+		],
+		[
+			0,
+			"VEXTRACTF128",
+			"Extra ct Packed Floating-Point Values",
+			"VEXTRACTF128:VEXTRACTF32x4:VEXTRACTF64x2:VEXTRACTF32x8:VEXTRACTF64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTF32x4",
+			"Extra ct Packed Floating-Point Values",
+			"VEXTRACTF128:VEXTRACTF32x4:VEXTRACTF64x2:VEXTRACTF32x8:VEXTRACTF64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTF32x8",
+			"Extra ct Packed Floating-Point Values",
+			"VEXTRACTF128:VEXTRACTF32x4:VEXTRACTF64x2:VEXTRACTF32x8:VEXTRACTF64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTF64x2",
+			"Extra ct Packed Floating-Point Values",
+			"VEXTRACTF128:VEXTRACTF32x4:VEXTRACTF64x2:VEXTRACTF32x8:VEXTRACTF64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTF64x4",
+			"Extra ct Packed Floating-Point Values",
+			"VEXTRACTF128:VEXTRACTF32x4:VEXTRACTF64x2:VEXTRACTF32x8:VEXTRACTF64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTI128",
+			"Extract packed Integer Values",
+			"VEXTRACTI128:VEXTRACTI32x4:VEXTRACTI64x2:VEXTRACTI32x8:VEXTRACTI64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTI32x4",
+			"Extract packed Integer Values",
+			"VEXTRACTI128:VEXTRACTI32x4:VEXTRACTI64x2:VEXTRACTI32x8:VEXTRACTI64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTI32x8",
+			"Extract packed Integer Values",
+			"VEXTRACTI128:VEXTRACTI32x4:VEXTRACTI64x2:VEXTRACTI32x8:VEXTRACTI64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTI64x2",
+			"Extract packed Integer Values",
+			"VEXTRACTI128:VEXTRACTI32x4:VEXTRACTI64x2:VEXTRACTI32x8:VEXTRACTI64x4.html"
+		],
+		[
+			0,
+			"VEXTRACTI64x4",
+			"Extract packed Integer Values",
+			"VEXTRACTI128:VEXTRACTI32x4:VEXTRACTI64x2:VEXTRACTI32x8:VEXTRACTI64x4.html"
+		],
+		[
+			0,
+			"VFIXUPIMMPD",
+			"Fix Up Special Packed Float64 Values",
+			"VFIXUPIMMPD.html"
+		],
+		[
+			0,
+			"VFIXUPIMMPS",
+			"Fix Up Special Packed Float32 Values",
+			"VFIXUPIMMPS.html"
+		],
+		[
+			0,
+			"VFIXUPIMMSD",
+			"Fix Up Special Scalar Float64 Value",
+			"VFIXUPIMMSD.html"
+		],
+		[
+			0,
+			"VFIXUPIMMSS",
+			"Fix Up Special Scalar Float32 Value",
+			"VFIXUPIMMSS.html"
+		],
+		[
+			0,
+			"VFMADD132PD",
+			"Fused Multiply-Add of Packed Double- Precision Floating-Point Values",
+			"VFMADD132PD:VFMADD213PD:VFMADD231PD.html"
+		],
+		[
+			0,
+			"VFMADD132PS",
+			"Fused Multiply-Add of Packed Single- Precision Floating-Point Values",
+			"VFMADD132PS:VFMADD213PS:VFMADD231PS.html"
+		],
+		[
+			0,
+			"VFMADD132SD",
+			"Fused Multiply-Add of Scalar Double- Precision Floating-Point Values",
+			"VFMADD132SD:VFMADD213SD:VFMADD231SD.html"
+		],
+		[
+			0,
+			"VFMADD132SS",
+			"Fused Multiply-Add of Scalar Single-Precision Floating-Point Values",
+			"VFMADD132SS:VFMADD213SS:VFMADD231SS.html"
+		],
+		[
+			0,
+			"VFMADD213PD",
+			"Fused Multiply-Add of Packed Double- Precision Floating-Point Values",
+			"VFMADD132PD:VFMADD213PD:VFMADD231PD.html"
+		],
+		[
+			0,
+			"VFMADD213PS",
+			"Fused Multiply-Add of Packed Single- Precision Floating-Point Values",
+			"VFMADD132PS:VFMADD213PS:VFMADD231PS.html"
+		],
+		[
+			0,
+			"VFMADD213SD",
+			"Fused Multiply-Add of Scalar Double- Precision Floating-Point Values",
+			"VFMADD132SD:VFMADD213SD:VFMADD231SD.html"
+		],
+		[
+			0,
+			"VFMADD213SS",
+			"Fused Multiply-Add of Scalar Single-Precision Floating-Point Values",
+			"VFMADD132SS:VFMADD213SS:VFMADD231SS.html"
+		],
+		[
+			0,
+			"VFMADD231PD",
+			"Fused Multiply-Add of Packed Double- Precision Floating-Point Values",
+			"VFMADD132PD:VFMADD213PD:VFMADD231PD.html"
+		],
+		[
+			0,
+			"VFMADD231PS",
+			"Fused Multiply-Add of Packed Single- Precision Floating-Point Values",
+			"VFMADD132PS:VFMADD213PS:VFMADD231PS.html"
+		],
+		[
+			0,
+			"VFMADD231SD",
+			"Fused Multiply-Add of Scalar Double- Precision Floating-Point Values",
+			"VFMADD132SD:VFMADD213SD:VFMADD231SD.html"
+		],
+		[
+			0,
+			"VFMADD231SS",
+			"Fused Multiply-Add of Scalar Single-Precision Floating-Point Values",
+			"VFMADD132SS:VFMADD213SS:VFMADD231SS.html"
+		],
+		[
+			0,
+			"VFMADDSUB132PD",
+			"Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values",
+			"VFMADDSUB132PD:VFMADDSUB213PD:VFMADDSUB231PD.html"
+		],
+		[
+			0,
+			"VFMADDSUB132PS",
+			"Fused Multiply-Alternating Add/Subtract of Packed Single-Precision Floating-Point Values",
+			"VFMADDSUB132PS:VFMADDSUB213PS:VFMADDSUB231PS.html"
+		],
+		[
+			0,
+			"VFMADDSUB213PD",
+			"Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values",
+			"VFMADDSUB132PD:VFMADDSUB213PD:VFMADDSUB231PD.html"
+		],
+		[
+			0,
+			"VFMADDSUB213PS",
+			"Fused Multiply-Alternating Add/Subtract of Packed Single-Precision Floating-Point Values",
+			"VFMADDSUB132PS:VFMADDSUB213PS:VFMADDSUB231PS.html"
+		],
+		[
+			0,
+			"VFMADDSUB231PD",
+			"Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values",
+			"VFMADDSUB132PD:VFMADDSUB213PD:VFMADDSUB231PD.html"
+		],
+		[
+			0,
+			"VFMADDSUB231PS",
+			"Fused Multiply-Alternating Add/Subtract of Packed Single-Precision Floating-Point Values",
+			"VFMADDSUB132PS:VFMADDSUB213PS:VFMADDSUB231PS.html"
+		],
+		[
+			0,
+			"VFMSUB132PD",
+			"Fused Multiply-Subtract of Packed Double- Precision Floating-Point Values",
+			"VFMSUB132PD:VFMSUB213PD:VFMSUB231PD.html"
+		],
+		[
+			0,
+			"VFMSUB132PS",
+			"Fused Multiply-Subtract of Packed Single- Precision Floating-Point Values",
+			"VFMSUB132PS:VFMSUB213PS:VFMSUB231PS.html"
+		],
+		[
+			0,
+			"VFMSUB132SD",
+			"Fused Multiply-Subtract of Scalar Double- Precision Floating-Point Values",
+			"VFMSUB132SD:VFMSUB213SD:VFMSUB231SD.html"
+		],
+		[
+			0,
+			"VFMSUB132SS",
+			"Fused Multiply-Subtract of Scalar Single- Precision Floating-Point Values",
+			"VFMSUB132SS:VFMSUB213SS:VFMSUB231SS.html"
+		],
+		[
+			0,
+			"VFMSUB213PD",
+			"Fused Multiply-Subtract of Packed Double- Precision Floating-Point Values",
+			"VFMSUB132PD:VFMSUB213PD:VFMSUB231PD.html"
+		],
+		[
+			0,
+			"VFMSUB213PS",
+			"Fused Multiply-Subtract of Packed Single- Precision Floating-Point Values",
+			"VFMSUB132PS:VFMSUB213PS:VFMSUB231PS.html"
+		],
+		[
+			0,
+			"VFMSUB213SD",
+			"Fused Multiply-Subtract of Scalar Double- Precision Floating-Point Values",
+			"VFMSUB132SD:VFMSUB213SD:VFMSUB231SD.html"
+		],
+		[
+			0,
+			"VFMSUB213SS",
+			"Fused Multiply-Subtract of Scalar Single- Precision Floating-Point Values",
+			"VFMSUB132SS:VFMSUB213SS:VFMSUB231SS.html"
+		],
+		[
+			0,
+			"VFMSUB231PD",
+			"Fused Multiply-Subtract of Packed Double- Precision Floating-Point Values",
+			"VFMSUB132PD:VFMSUB213PD:VFMSUB231PD.html"
+		],
+		[
+			0,
+			"VFMSUB231PS",
+			"Fused Multiply-Subtract of Packed Single- Precision Floating-Point Values",
+			"VFMSUB132PS:VFMSUB213PS:VFMSUB231PS.html"
+		],
+		[
+			0,
+			"VFMSUB231SD",
+			"Fused Multiply-Subtract of Scalar Double- Precision Floating-Point Values",
+			"VFMSUB132SD:VFMSUB213SD:VFMSUB231SD.html"
+		],
+		[
+			0,
+			"VFMSUB231SS",
+			"Fused Multiply-Subtract of Scalar Single- Precision Floating-Point Values",
+			"VFMSUB132SS:VFMSUB213SS:VFMSUB231SS.html"
+		],
+		[
+			0,
+			"VFMSUBADD132PD",
+			"Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values",
+			"VFMSUBADD132PD:VFMSUBADD213PD:VFMSUBADD231PD.html"
+		],
+		[
+			0,
+			"VFMSUBADD132PS",
+			"Fused Multiply-Alternating Subtract/Add of Packed Single-Precision Floating-Point Values",
+			"VFMSUBADD132PS:VFMSUBADD213PS:VFMSUBADD231PS.html"
+		],
+		[
+			0,
+			"VFMSUBADD213PD",
+			"Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values",
+			"VFMSUBADD132PD:VFMSUBADD213PD:VFMSUBADD231PD.html"
+		],
+		[
+			0,
+			"VFMSUBADD213PS",
+			"Fused Multiply-Alternating Subtract/Add of Packed Single-Precision Floating-Point Values",
+			"VFMSUBADD132PS:VFMSUBADD213PS:VFMSUBADD231PS.html"
+		],
+		[
+			0,
+			"VFMSUBADD231PD",
+			"Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values",
+			"VFMSUBADD132PD:VFMSUBADD213PD:VFMSUBADD231PD.html"
+		],
+		[
+			0,
+			"VFMSUBADD231PS",
+			"Fused Multiply-Alternating Subtract/Add of Packed Single-Precision Floating-Point Values",
+			"VFMSUBADD132PS:VFMSUBADD213PS:VFMSUBADD231PS.html"
+		],
+		[
+			0,
+			"VFNMADD132PD",
+			"Fused Negative Multiply-Add of Packed Double-Precision Floating-Point Values",
+			"VFNMADD132PD:VFNMADD213PD:VFNMADD231PD.html"
+		],
+		[
+			0,
+			"VFNMADD132PS",
+			"Fused Negative Multiply-Add of Packed Single-Precision Floating-Point Values",
+			"VFNMADD132PS:VFNMADD213PS:VFNMADD231PS.html"
+		],
+		[
+			0,
+			"VFNMADD132SD",
+			"Fused Negative Multiply-Add of Scalar Double-Precision Floating-Point Values",
+			"VFNMADD132SD:VFNMADD213SD:VFNMADD231SD.html"
+		],
+		[
+			0,
+			"VFNMADD132SS",
+			"Fused Negative Multiply-Add of Scalar Single-Precision Floating-Point Values",
+			"VFNMADD132SS:VFNMADD213SS:VFNMADD231SS.html"
+		],
+		[
+			0,
+			"VFNMADD213PD",
+			"Fused Negative Multiply-Add of Packed Double-Precision Floating-Point Values",
+			"VFNMADD132PD:VFNMADD213PD:VFNMADD231PD.html"
+		],
+		[
+			0,
+			"VFNMADD213PS",
+			"Fused Negative Multiply-Add of Packed Single-Precision Floating-Point Values",
+			"VFNMADD132PS:VFNMADD213PS:VFNMADD231PS.html"
+		],
+		[
+			0,
+			"VFNMADD213SD",
+			"Fused Negative Multiply-Add of Scalar Double-Precision Floating-Point Values",
+			"VFNMADD132SD:VFNMADD213SD:VFNMADD231SD.html"
+		],
+		[
+			0,
+			"VFNMADD213SS",
+			"Fused Negative Multiply-Add of Scalar Single-Precision Floating-Point Values",
+			"VFNMADD132SS:VFNMADD213SS:VFNMADD231SS.html"
+		],
+		[
+			0,
+			"VFNMADD231PD",
+			"Fused Negative Multiply-Add of Packed Double-Precision Floating-Point Values",
+			"VFNMADD132PD:VFNMADD213PD:VFNMADD231PD.html"
+		],
+		[
+			0,
+			"VFNMADD231PS",
+			"Fused Negative Multiply-Add of Packed Single-Precision Floating-Point Values",
+			"VFNMADD132PS:VFNMADD213PS:VFNMADD231PS.html"
+		],
+		[
+			0,
+			"VFNMADD231SD",
+			"Fused Negative Multiply-Add of Scalar Double-Precision Floating-Point Values",
+			"VFNMADD132SD:VFNMADD213SD:VFNMADD231SD.html"
+		],
+		[
+			0,
+			"VFNMADD231SS",
+			"Fused Negative Multiply-Add of Scalar Single-Precision Floating-Point Values",
+			"VFNMADD132SS:VFNMADD213SS:VFNMADD231SS.html"
+		],
+		[
+			0,
+			"VFNMSUB132PD",
+			"Fused Negative Multiply-Subtract of Packed Double-Precision Floating-Point Values",
+			"VFNMSUB132PD:VFNMSUB213PD:VFNMSUB231PD.html"
+		],
+		[
+			0,
+			"VFNMSUB132PS",
+			"Fused Negative Multiply-Subtract of Packed Single-Precision Floating-Point Values",
+			"VFNMSUB132PS:VFNMSUB213PS:VFNMSUB231PS.html"
+		],
+		[
+			0,
+			"VFNMSUB132SD",
+			"Fused Negative Multiply-Subtract of Scalar Double-Precision Floating-Point Values",
+			"VFNMSUB132SD:VFNMSUB213SD:VFNMSUB231SD.html"
+		],
+		[
+			0,
+			"VFNMSUB132SS",
+			"Fused Negative Multiply-Subtract of Scalar Single-Precision Floating-Point Values",
+			"VFNMSUB132SS:VFNMSUB213SS:VFNMSUB231SS.html"
+		],
+		[
+			0,
+			"VFNMSUB213PD",
+			"Fused Negative Multiply-Subtract of Packed Double-Precision Floating-Point Values",
+			"VFNMSUB132PD:VFNMSUB213PD:VFNMSUB231PD.html"
+		],
+		[
+			0,
+			"VFNMSUB213PS",
+			"Fused Negative Multiply-Subtract of Packed Single-Precision Floating-Point Values",
+			"VFNMSUB132PS:VFNMSUB213PS:VFNMSUB231PS.html"
+		],
+		[
+			0,
+			"VFNMSUB213SD",
+			"Fused Negative Multiply-Subtract of Scalar Double-Precision Floating-Point Values",
+			"VFNMSUB132SD:VFNMSUB213SD:VFNMSUB231SD.html"
+		],
+		[
+			0,
+			"VFNMSUB213SS",
+			"Fused Negative Multiply-Subtract of Scalar Single-Precision Floating-Point Values",
+			"VFNMSUB132SS:VFNMSUB213SS:VFNMSUB231SS.html"
+		],
+		[
+			0,
+			"VFNMSUB231PD",
+			"Fused Negative Multiply-Subtract of Packed Double-Precision Floating-Point Values",
+			"VFNMSUB132PD:VFNMSUB213PD:VFNMSUB231PD.html"
+		],
+		[
+			0,
+			"VFNMSUB231PS",
+			"Fused Negative Multiply-Subtract of Packed Single-Precision Floating-Point Values",
+			"VFNMSUB132PS:VFNMSUB213PS:VFNMSUB231PS.html"
+		],
+		[
+			0,
+			"VFNMSUB231SD",
+			"Fused Negative Multiply-Subtract of Scalar Double-Precision Floating-Point Values",
+			"VFNMSUB132SD:VFNMSUB213SD:VFNMSUB231SD.html"
+		],
+		[
+			0,
+			"VFNMSUB231SS",
+			"Fused Negative Multiply-Subtract of Scalar Single-Precision Floating-Point Values",
+			"VFNMSUB132SS:VFNMSUB213SS:VFNMSUB231SS.html"
+		],
+		[
+			0,
+			"VFPCLASSPD",
+			"Tests Types Of a Packed Float64 Values",
+			"VFPCLASSPD.html"
+		],
+		[
+			0,
+			"VFPCLASSPS",
+			"Tests Types Of a Packed Float32 Values",
+			"VFPCLASSPS.html"
+		],
+		[
+			0,
+			"VFPCLASSSD",
+			"Tests Types Of a Scalar Float64 Values",
+			"VFPCLASSSD.html"
+		],
+		[
+			0,
+			"VFPCLASSSS",
+			"Tests Types Of a Scalar Float32 Values",
+			"VFPCLASSSS.html"
+		],
+		[
+			0,
+			"VGATHERDPD",
+			"Gather Packed DP FP Values Using Signed Dword/Qword Indices",
+			"VGATHERDPD:VGATHERQPD.html"
+		],
+		[
+			0,
+			"VGATHERDPD",
+			"Gather Packed Single, Packed Double with Signed Dword",
+			"VGATHERDPS:VGATHERDPD.html"
+		],
+		[
+			0,
+			"VGATHERDPS",
+			"Gather Packed SP FP values Using Signed Dword/Qword Indices",
+			"VGATHERDPS:VGATHERQPS.html"
+		],
+		[
+			0,
+			"VGATHERDPS",
+			"Gather Packed Single, Packed Double with Signed Dword",
+			"VGATHERDPS:VGATHERDPD.html"
+		],
+		[
+			0,
+			"VGATHERQPD",
+			"Gather Packed DP FP Values Using Signed Dword/Qword Indices",
+			"VGATHERDPD:VGATHERQPD.html"
+		],
+		[
+			0,
+			"VGATHERQPD",
+			"Gather Packed Single, Packed Double with Signed Qword Indices",
+			"VGATHERQPS:VGATHERQPD.html"
+		],
+		[
+			0,
+			"VGATHERQPS",
+			"Gather Packed SP FP values Using Signed Dword/Qword Indices",
+			"VGATHERDPS:VGATHERQPS.html"
+		],
+		[
+			0,
+			"VGATHERQPS",
+			"Gather Packed Single, Packed Double with Signed Qword Indices",
+			"VGATHERQPS:VGATHERQPD.html"
+		],
+		[
+			0,
+			"VGETEXPPD",
+			"Convert Exponents of Packed DP FP Values to DP FP Values",
+			"VGETEXPPD.html"
+		],
+		[
+			0,
+			"VGETEXPPS",
+			"Convert Exponents of Packed SP FP Values to SP FP Values",
+			"VGETEXPPS.html"
+		],
+		[
+			0,
+			"VGETEXPSD",
+			"Convert Exponents of Scalar DP FP Values to DP FP Value",
+			"VGETEXPSD.html"
+		],
+		[
+			0,
+			"VGETEXPSS",
+			"Convert Exponents of Scalar SP FP Values to SP FP Value",
+			"VGETEXPSS.html"
+		],
+		[
+			0,
+			"VGETMANTPD",
+			"Extract Float64 Vector of Normalized Mantissas from Float64 Vector",
+			"VGETMANTPD.html"
+		],
+		[
+			0,
+			"VGETMANTPS",
+			"Extract Float32 Vector of Normalized Mantissas from Float32 Vector",
+			"VGETMANTPS.html"
+		],
+		[
+			0,
+			"VGETMANTSD",
+			"Extract Float64 of Normalized Mantissas from Float64 Scalar",
+			"VGETMANTSD.html"
+		],
+		[
+			0,
+			"VGETMANTSS",
+			"Extract Float32 Vector of Normalized Mantissa from Float32 Vector",
+			"VGETMANTSS.html"
+		],
+		[
+			0,
+			"VINSERTF128",
+			"Insert Packed Floating-Point Values",
+			"VINSERTF128:VINSERTF32x4:VINSERTF64x2:VINSERTF32x8:VINSERTF64x4.html"
+		],
+		[
+			0,
+			"VINSERTF32x4",
+			"Insert Packed Floating-Point Values",
+			"VINSERTF128:VINSERTF32x4:VINSERTF64x2:VINSERTF32x8:VINSERTF64x4.html"
+		],
+		[
+			0,
+			"VINSERTF32x8",
+			"Insert Packed Floating-Point Values",
+			"VINSERTF128:VINSERTF32x4:VINSERTF64x2:VINSERTF32x8:VINSERTF64x4.html"
+		],
+		[
+			0,
+			"VINSERTF64x2",
+			"Insert Packed Floating-Point Values",
+			"VINSERTF128:VINSERTF32x4:VINSERTF64x2:VINSERTF32x8:VINSERTF64x4.html"
+		],
+		[
+			0,
+			"VINSERTF64x4",
+			"Insert Packed Floating-Point Values",
+			"VINSERTF128:VINSERTF32x4:VINSERTF64x2:VINSERTF32x8:VINSERTF64x4.html"
+		],
+		[
+			0,
+			"VINSERTI128",
+			"Insert Packed Integer Values",
+			"VINSERTI128:VINSERTI32x4:VINSERTI64x2:VINSERTI32x8:VINSERTI64x4.html"
+		],
+		[
+			0,
+			"VINSERTI32x4",
+			"Insert Packed Integer Values",
+			"VINSERTI128:VINSERTI32x4:VINSERTI64x2:VINSERTI32x8:VINSERTI64x4.html"
+		],
+		[
+			0,
+			"VINSERTI32x8",
+			"Insert Packed Integer Values",
+			"VINSERTI128:VINSERTI32x4:VINSERTI64x2:VINSERTI32x8:VINSERTI64x4.html"
+		],
+		[
+			0,
+			"VINSERTI64x2",
+			"Insert Packed Integer Values",
+			"VINSERTI128:VINSERTI32x4:VINSERTI64x2:VINSERTI32x8:VINSERTI64x4.html"
+		],
+		[
+			0,
+			"VINSERTI64x4",
+			"Insert Packed Integer Values",
+			"VINSERTI128:VINSERTI32x4:VINSERTI64x2:VINSERTI32x8:VINSERTI64x4.html"
+		],
+		[
+			0,
+			"VMASKMOV",
+			"Conditional SIMD Packed Loads and Stores",
+			"VMASKMOV.html"
+		],
+		[
+			0,
+			"VMOVDQA32",
+			"Move Aligned Packed Integer Values",
+			"MOVDQA:VMOVDQA32:VMOVDQA64.html"
+		],
+		[
+			0,
+			"VMOVDQA64",
+			"Move Aligned Packed Integer Values",
+			"MOVDQA:VMOVDQA32:VMOVDQA64.html"
+		],
+		[
+			0,
+			"VMOVDQU16",
+			"Move Unaligned Packed Integer Values",
+			"MOVDQU:VMOVDQU8:VMOVDQU16:VMOVDQU32:VMOVDQU64.html"
+		],
+		[
+			0,
+			"VMOVDQU32",
+			"Move Unaligned Packed Integer Values",
+			"MOVDQU:VMOVDQU8:VMOVDQU16:VMOVDQU32:VMOVDQU64.html"
+		],
+		[
+			0,
+			"VMOVDQU64",
+			"Move Unaligned Packed Integer Values",
+			"MOVDQU:VMOVDQU8:VMOVDQU16:VMOVDQU32:VMOVDQU64.html"
+		],
+		[
+			0,
+			"VMOVDQU8",
+			"Move Unaligned Packed Integer Values",
+			"MOVDQU:VMOVDQU8:VMOVDQU16:VMOVDQU32:VMOVDQU64.html"
+		],
+		[
+			0,
+			"VPBLENDD",
+			"Blend Packed Dwords",
+			"VPBLENDD.html"
+		],
+		[
+			0,
+			"VPBLENDMB",
+			"Blend Byte/Word Vectors Using an Opmask Control",
+			"VPBLENDMB:VPBLENDMW.html"
+		],
+		[
+			0,
+			"VPBLENDMD",
+			"Blend Int32/Int64 Vectors Using an OpMask Control",
+			"VPBLENDMD:VPBLENDMQ.html"
+		],
+		[
+			0,
+			"VPBLENDMQ",
+			"Blend Int32/Int64 Vectors Using an OpMask Control",
+			"VPBLENDMD:VPBLENDMQ.html"
+		],
+		[
+			0,
+			"VPBLENDMW",
+			"Blend Byte/Word Vectors Using an Opmask Control",
+			"VPBLENDMB:VPBLENDMW.html"
+		],
+		[
+			0,
+			"VPBROADCAST",
+			"Load Integer and Broadcast",
+			"VPBROADCAST.html"
+		],
+		[
+			0,
+			"VPBROADCASTB",
+			"Load with Broadcast Integer Data from General Purpose Register",
+			"VPBROADCASTB:VPBROADCASTW:VPBROADCASTD:VPBROADCASTQ.html"
+		],
+		[
+			0,
+			"VPBROADCASTD",
+			"Load with Broadcast Integer Data from General Purpose Register",
+			"VPBROADCASTB:VPBROADCASTW:VPBROADCASTD:VPBROADCASTQ.html"
+		],
+		[
+			0,
+			"VPBROADCASTM",
+			"Broadcast Mask to Vector Register",
+			"VPBROADCASTM.html"
+		],
+		[
+			0,
+			"VPBROADCASTQ",
+			"Load with Broadcast Integer Data from General Purpose Register",
+			"VPBROADCASTB:VPBROADCASTW:VPBROADCASTD:VPBROADCASTQ.html"
+		],
+		[
+			0,
+			"VPBROADCASTW",
+			"Load with Broadcast Integer Data from General Purpose Register",
+			"VPBROADCASTB:VPBROADCASTW:VPBROADCASTD:VPBROADCASTQ.html"
+		],
+		[
+			0,
+			"VPCMPB",
+			"Compare Packed Byte Values Into Mask",
+			"VPCMPB:VPCMPUB.html"
+		],
+		[
+			0,
+			"VPCMPD",
+			"Compare Packed Integer Values into Mask",
+			"VPCMPD:VPCMPUD.html"
+		],
+		[
+			0,
+			"VPCMPQ",
+			"Compare Packed Integer Values into Mask",
+			"VPCMPQ:VPCMPUQ.html"
+		],
+		[
+			0,
+			"VPCMPUB",
+			"Compare Packed Byte Values Into Mask",
+			"VPCMPB:VPCMPUB.html"
+		],
+		[
+			0,
+			"VPCMPUD",
+			"Compare Packed Integer Values into Mask",
+			"VPCMPD:VPCMPUD.html"
+		],
+		[
+			0,
+			"VPCMPUQ",
+			"Compare Packed Integer Values into Mask",
+			"VPCMPQ:VPCMPUQ.html"
+		],
+		[
+			0,
+			"VPCMPUW",
+			"Compare Packed Word Values Into Mask",
+			"VPCMPW:VPCMPUW.html"
+		],
+		[
+			0,
+			"VPCMPW",
+			"Compare Packed Word Values Into Mask",
+			"VPCMPW:VPCMPUW.html"
+		],
+		[
+			0,
+			"VPCOMPRESSD",
+			"Store Sparse Packed Doubleword Integer Values into Dense Memory/Register",
+			"VPCOMPRESSD.html"
+		],
+		[
+			0,
+			"VPCOMPRESSQ",
+			"Store Sparse Packed Quadword Integer Values into Dense Memory/Register",
+			"VPCOMPRESSQ.html"
+		],
+		[
+			0,
+			"VPCONFLICTD",
+			"Detect Conflicts Within a Vector of Packed Dword/Qword Values into Dense Memory/ Register",
+			"VPCONFLICTD:VPCONFLICTQ.html"
+		],
+		[
+			0,
+			"VPCONFLICTQ",
+			"Detect Conflicts Within a Vector of Packed Dword/Qword Values into Dense Memory/ Register",
+			"VPCONFLICTD:VPCONFLICTQ.html"
+		],
+		[
+			0,
+			"VPERM2F128",
+			"Permute Floating-Point Values",
+			"VPERM2F128.html"
+		],
+		[
+			0,
+			"VPERM2I128",
+			"Permute Integer Values",
+			"VPERM2I128.html"
+		],
+		[
+			0,
+			"VPERMB",
+			"Permute Packed Bytes Elements",
+			"VPERMB.html"
+		],
+		[
+			0,
+			"VPERMD",
+			"Permute Packed Doublewords/Words Elements",
+			"VPERMD:VPERMW.html"
+		],
+		[
+			0,
+			"VPERMI2B",
+			"Full Permute of Bytes from Two Tables Overwriting the Index",
+			"VPERMI2B.html"
+		],
+		[
+			0,
+			"VPERMI2D",
+			"Full Permute From Two Tables Overwriting the Index",
+			"VPERMI2W:VPERMI2D:VPERMI2Q:VPERMI2PS:VPERMI2PD.html"
+		],
+		[
+			0,
+			"VPERMI2PD",
+			"Full Permute From Two Tables Overwriting the Index",
+			"VPERMI2W:VPERMI2D:VPERMI2Q:VPERMI2PS:VPERMI2PD.html"
+		],
+		[
+			0,
+			"VPERMI2PS",
+			"Full Permute From Two Tables Overwriting the Index",
+			"VPERMI2W:VPERMI2D:VPERMI2Q:VPERMI2PS:VPERMI2PD.html"
+		],
+		[
+			0,
+			"VPERMI2Q",
+			"Full Permute From Two Tables Overwriting the Index",
+			"VPERMI2W:VPERMI2D:VPERMI2Q:VPERMI2PS:VPERMI2PD.html"
+		],
+		[
+			0,
+			"VPERMI2W",
+			"Full Permute From Two Tables Overwriting the Index",
+			"VPERMI2W:VPERMI2D:VPERMI2Q:VPERMI2PS:VPERMI2PD.html"
+		],
+		[
+			0,
+			"VPERMILPD",
+			"Permute In-Lane of Pairs of Double-Precision Floating-Point Values",
+			"VPERMILPD.html"
+		],
+		[
+			0,
+			"VPERMILPS",
+			"Permute In-Lane of Quadruples of Single-Precision Floating-Point Values",
+			"VPERMILPS.html"
+		],
+		[
+			0,
+			"VPERMPD",
+			"Permute Double-Precision Floating-Point Elements",
+			"VPERMPD.html"
+		],
+		[
+			0,
+			"VPERMPS",
+			"Permute Single-Precision Floating-Point Elements",
+			"VPERMPS.html"
+		],
+		[
+			0,
+			"VPERMQ",
+			"Qwords Element Permutation",
+			"VPERMQ.html"
+		],
+		[
+			0,
+			"VPERMT2B",
+			"Full Permute of Bytes from Two Tables Overwriting a Table",
+			"VPERMT2B.html"
+		],
+		[
+			0,
+			"VPERMT2D",
+			"Full Permute from Two Tables Overwriting one Table",
+			"VPERMT2W:VPERMT2D:VPERMT2Q:VPERMT2PS:VPERMT2PD.html"
+		],
+		[
+			0,
+			"VPERMT2PD",
+			"Full Permute from Two Tables Overwriting one Table",
+			"VPERMT2W:VPERMT2D:VPERMT2Q:VPERMT2PS:VPERMT2PD.html"
+		],
+		[
+			0,
+			"VPERMT2PS",
+			"Full Permute from Two Tables Overwriting one Table",
+			"VPERMT2W:VPERMT2D:VPERMT2Q:VPERMT2PS:VPERMT2PD.html"
+		],
+		[
+			0,
+			"VPERMT2Q",
+			"Full Permute from Two Tables Overwriting one Table",
+			"VPERMT2W:VPERMT2D:VPERMT2Q:VPERMT2PS:VPERMT2PD.html"
+		],
+		[
+			0,
+			"VPERMT2W",
+			"Full Permute from Two Tables Overwriting one Table",
+			"VPERMT2W:VPERMT2D:VPERMT2Q:VPERMT2PS:VPERMT2PD.html"
+		],
+		[
+			0,
+			"VPERMW",
+			"Permute Packed Doublewords/Words Elements",
+			"VPERMD:VPERMW.html"
+		],
+		[
+			0,
+			"VPEXPANDD",
+			"Load Sparse Packed Doubleword Integer Values from Dense Memory / Register",
+			"VPEXPANDD.html"
+		],
+		[
+			0,
+			"VPEXPANDQ",
+			"Load Sparse Packed Quadword Integer Values from Dense Memory / Register",
+			"VPEXPANDQ.html"
+		],
+		[
+			0,
+			"VPGATHERDD",
+			"Gather Packed Dword Values Using Signed Dword/Qword Indices",
+			"VPGATHERDD:VPGATHERQD.html"
+		],
+		[
+			0,
+			"VPGATHERDD",
+			"Gather Packed Dword, Packed Qword with Signed Dword Indices",
+			"VPGATHERDD:VPGATHERDQ.html"
+		],
+		[
+			0,
+			"VPGATHERDQ",
+			"Gather Packed Dword, Packed Qword with Signed Dword Indices",
+			"VPGATHERDD:VPGATHERDQ.html"
+		],
+		[
+			0,
+			"VPGATHERDQ",
+			"Gather Packed Qword Values Using Signed Dword/Qword Indices",
+			"VPGATHERDQ:VPGATHERQQ.html"
+		],
+		[
+			0,
+			"VPGATHERQD",
+			"Gather Packed Dword Values Using Signed Dword/Qword Indices",
+			"VPGATHERDD:VPGATHERQD.html"
+		],
+		[
+			0,
+			"VPGATHERQD",
+			"Gather Packed Dword, Packed Qword with Signed Qword Indices",
+			"VPGATHERQD:VPGATHERQQ.html"
+		],
+		[
+			0,
+			"VPGATHERQQ",
+			"Gather Packed Qword Values Using Signed Dword/Qword Indices",
+			"VPGATHERDQ:VPGATHERQQ.html"
+		],
+		[
+			0,
+			"VPGATHERQQ",
+			"Gather Packed Dword, Packed Qword with Signed Qword Indices",
+			"VPGATHERQD:VPGATHERQQ.html"
+		],
+		[
+			0,
+			"VPLZCNTD",
+			"Count the Number of Leading Zero Bits for Packed Dword, Packed Qword Values",
+			"VPLZCNTD:VPLZCNTQ.html"
+		],
+		[
+			0,
+			"VPLZCNTQ",
+			"Count the Number of Leading Zero Bits for Packed Dword, Packed Qword Values",
+			"VPLZCNTD:VPLZCNTQ.html"
+		],
+		[
+			0,
+			"VPMADD52HUQ",
+			"Packed Multiply of Unsigned 52-bit Unsigned Integers and Add High 52-bit Products to 64-bit Accumulators",
+			"VPMADD52HUQ.html"
+		],
+		[
+			0,
+			"VPMADD52LUQ",
+			"Packed Multiply of Unsigned 52-bit Integers and Add the Low 52-bit Products to Qword Accumulators",
+			"VPMADD52LUQ.html"
+		],
+		[
+			0,
+			"VPMASKMOV",
+			"Conditional SIMD Integer Packed Loads and Stores",
+			"VPMASKMOV.html"
+		],
+		[
+			0,
+			"VPMOVB2M",
+			"Convert a Vector Register to a Mask",
+			"VPMOVB2M:VPMOVW2M:VPMOVD2M:VPMOVQ2M.html"
+		],
+		[
+			0,
+			"VPMOVD2M",
+			"Convert a Vector Register to a Mask",
+			"VPMOVB2M:VPMOVW2M:VPMOVD2M:VPMOVQ2M.html"
+		],
+		[
+			0,
+			"VPMOVDB",
+			"Down Convert DWord to Byte",
+			"VPMOVDB:VPMOVSDB:VPMOVUSDB.html"
+		],
+		[
+			0,
+			"VPMOVDW",
+			"Down Convert DWord to Word",
+			"VPMOVDW:VPMOVSDW:VPMOVUSDW.html"
+		],
+		[
+			0,
+			"VPMOVM2B",
+			"Convert a Mask Register to a Vector Register",
+			"VPMOVM2B:VPMOVM2W:VPMOVM2D:VPMOVM2Q.html"
+		],
+		[
+			0,
+			"VPMOVM2D",
+			"Convert a Mask Register to a Vector Register",
+			"VPMOVM2B:VPMOVM2W:VPMOVM2D:VPMOVM2Q.html"
+		],
+		[
+			0,
+			"VPMOVM2Q",
+			"Convert a Mask Register to a Vector Register",
+			"VPMOVM2B:VPMOVM2W:VPMOVM2D:VPMOVM2Q.html"
+		],
+		[
+			0,
+			"VPMOVM2W",
+			"Convert a Mask Register to a Vector Register",
+			"VPMOVM2B:VPMOVM2W:VPMOVM2D:VPMOVM2Q.html"
+		],
+		[
+			0,
+			"VPMOVQ2M",
+			"Convert a Vector Register to a Mask",
+			"VPMOVB2M:VPMOVW2M:VPMOVD2M:VPMOVQ2M.html"
+		],
+		[
+			0,
+			"VPMOVQB",
+			"Down Convert QWord to Byte",
+			"VPMOVQB:VPMOVSQB:VPMOVUSQB.html"
+		],
+		[
+			0,
+			"VPMOVQD",
+			"Down Convert QWord to DWord",
+			"VPMOVQD:VPMOVSQD:VPMOVUSQD.html"
+		],
+		[
+			0,
+			"VPMOVQW",
+			"Down Convert QWord to Word",
+			"VPMOVQW:VPMOVSQW:VPMOVUSQW.html"
+		],
+		[
+			0,
+			"VPMOVSDB",
+			"Down Convert DWord to Byte",
+			"VPMOVDB:VPMOVSDB:VPMOVUSDB.html"
+		],
+		[
+			0,
+			"VPMOVSDW",
+			"Down Convert DWord to Word",
+			"VPMOVDW:VPMOVSDW:VPMOVUSDW.html"
+		],
+		[
+			0,
+			"VPMOVSQB",
+			"Down Convert QWord to Byte",
+			"VPMOVQB:VPMOVSQB:VPMOVUSQB.html"
+		],
+		[
+			0,
+			"VPMOVSQD",
+			"Down Convert QWord to DWord",
+			"VPMOVQD:VPMOVSQD:VPMOVUSQD.html"
+		],
+		[
+			0,
+			"VPMOVSQW",
+			"Down Convert QWord to Word",
+			"VPMOVQW:VPMOVSQW:VPMOVUSQW.html"
+		],
+		[
+			0,
+			"VPMOVSWB",
+			"Down Convert Word to Byte",
+			"VPMOVWB:VPMOVSWB:VPMOVUSWB.html"
+		],
+		[
+			0,
+			"VPMOVUSDB",
+			"Down Convert DWord to Byte",
+			"VPMOVDB:VPMOVSDB:VPMOVUSDB.html"
+		],
+		[
+			0,
+			"VPMOVUSDW",
+			"Down Convert DWord to Word",
+			"VPMOVDW:VPMOVSDW:VPMOVUSDW.html"
+		],
+		[
+			0,
+			"VPMOVUSQB",
+			"Down Convert QWord to Byte",
+			"VPMOVQB:VPMOVSQB:VPMOVUSQB.html"
+		],
+		[
+			0,
+			"VPMOVUSQD",
+			"Down Convert QWord to DWord",
+			"VPMOVQD:VPMOVSQD:VPMOVUSQD.html"
+		],
+		[
+			0,
+			"VPMOVUSQW",
+			"Down Convert QWord to Word",
+			"VPMOVQW:VPMOVSQW:VPMOVUSQW.html"
+		],
+		[
+			0,
+			"VPMOVUSWB",
+			"Down Convert Word to Byte",
+			"VPMOVWB:VPMOVSWB:VPMOVUSWB.html"
+		],
+		[
+			0,
+			"VPMOVW2M",
+			"Convert a Vector Register to a Mask",
+			"VPMOVB2M:VPMOVW2M:VPMOVD2M:VPMOVQ2M.html"
+		],
+		[
+			0,
+			"VPMOVWB",
+			"Down Convert Word to Byte",
+			"VPMOVWB:VPMOVSWB:VPMOVUSWB.html"
+		],
+		[
+			0,
+			"VPMULTISHIFTQB",
+			"Select Packed Unaligned Bytes from Quadword Sources",
+			"VPMULTISHIFTQB.html"
+		],
+		[
+			0,
+			"VPROLD",
+			"Bit Rotate Left",
+			"VPROLD:VPROLVD:VPROLQ:VPROLVQ.html"
+		],
+		[
+			0,
+			"VPROLQ",
+			"Bit Rotate Left",
+			"VPROLD:VPROLVD:VPROLQ:VPROLVQ.html"
+		],
+		[
+			0,
+			"VPROLVD",
+			"Bit Rotate Left",
+			"VPROLD:VPROLVD:VPROLQ:VPROLVQ.html"
+		],
+		[
+			0,
+			"VPROLVQ",
+			"Bit Rotate Left",
+			"VPROLD:VPROLVD:VPROLQ:VPROLVQ.html"
+		],
+		[
+			0,
+			"VPRORD",
+			"Bit Rotate Right",
+			"VPRORD:VPRORVD:VPRORQ:VPRORVQ.html"
+		],
+		[
+			0,
+			"VPRORQ",
+			"Bit Rotate Right",
+			"VPRORD:VPRORVD:VPRORQ:VPRORVQ.html"
+		],
+		[
+			0,
+			"VPRORVD",
+			"Bit Rotate Right",
+			"VPRORD:VPRORVD:VPRORQ:VPRORVQ.html"
+		],
+		[
+			0,
+			"VPRORVQ",
+			"Bit Rotate Right",
+			"VPRORD:VPRORVD:VPRORQ:VPRORVQ.html"
+		],
+		[
+			0,
+			"VPSCATTERDD",
+			"Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices",
+			"VPSCATTERDD:VPSCATTERDQ:VPSCATTERQD:VPSCATTERQQ.html"
+		],
+		[
+			0,
+			"VPSCATTERDQ",
+			"Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices",
+			"VPSCATTERDD:VPSCATTERDQ:VPSCATTERQD:VPSCATTERQQ.html"
+		],
+		[
+			0,
+			"VPSCATTERQD",
+			"Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices",
+			"VPSCATTERDD:VPSCATTERDQ:VPSCATTERQD:VPSCATTERQQ.html"
+		],
+		[
+			0,
+			"VPSCATTERQQ",
+			"Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices",
+			"VPSCATTERDD:VPSCATTERDQ:VPSCATTERQD:VPSCATTERQQ.html"
+		],
+		[
+			0,
+			"VPSLLVD",
+			"Variable Bit Shift Left Logical",
+			"VPSLLVW:VPSLLVD:VPSLLVQ.html"
+		],
+		[
+			0,
+			"VPSLLVQ",
+			"Variable Bit Shift Left Logical",
+			"VPSLLVW:VPSLLVD:VPSLLVQ.html"
+		],
+		[
+			0,
+			"VPSLLVW",
+			"Variable Bit Shift Left Logical",
+			"VPSLLVW:VPSLLVD:VPSLLVQ.html"
+		],
+		[
+			0,
+			"VPSRAVD",
+			"Variable Bit Shift Right Arithmetic",
+			"VPSRAVW:VPSRAVD:VPSRAVQ.html"
+		],
+		[
+			0,
+			"VPSRAVQ",
+			"Variable Bit Shift Right Arithmetic",
+			"VPSRAVW:VPSRAVD:VPSRAVQ.html"
+		],
+		[
+			0,
+			"VPSRAVW",
+			"Variable Bit Shift Right Arithmetic",
+			"VPSRAVW:VPSRAVD:VPSRAVQ.html"
+		],
+		[
+			0,
+			"VPSRLVD",
+			"Variable Bit Shift Right Logical",
+			"VPSRLVW:VPSRLVD:VPSRLVQ.html"
+		],
+		[
+			0,
+			"VPSRLVQ",
+			"Variable Bit Shift Right Logical",
+			"VPSRLVW:VPSRLVD:VPSRLVQ.html"
+		],
+		[
+			0,
+			"VPSRLVW",
+			"Variable Bit Shift Right Logical",
+			"VPSRLVW:VPSRLVD:VPSRLVQ.html"
+		],
+		[
+			0,
+			"VPTERNLOGD",
+			"Bitwise Ternary Logic",
+			"VPTERNLOGD:VPTERNLOGQ.html"
+		],
+		[
+			0,
+			"VPTERNLOGQ",
+			"Bitwise Ternary Logic",
+			"VPTERNLOGD:VPTERNLOGQ.html"
+		],
+		[
+			0,
+			"VPTESTMB",
+			"Logical AND and Set Mask",
+			"VPTESTMB:VPTESTMW:VPTESTMD:VPTESTMQ.html"
+		],
+		[
+			0,
+			"VPTESTMD",
+			"Logical AND and Set Mask",
+			"VPTESTMB:VPTESTMW:VPTESTMD:VPTESTMQ.html"
+		],
+		[
+			0,
+			"VPTESTMQ",
+			"Logical AND and Set Mask",
+			"VPTESTMB:VPTESTMW:VPTESTMD:VPTESTMQ.html"
+		],
+		[
+			0,
+			"VPTESTMW",
+			"Logical AND and Set Mask",
+			"VPTESTMB:VPTESTMW:VPTESTMD:VPTESTMQ.html"
+		],
+		[
+			0,
+			"VPTESTNMB",
+			"Logical NAND and Set",
+			"VPTESTNMB:VPTESTNMW:VPTESTNMD:VPTESTNMQ.html"
+		],
+		[
+			0,
+			"VPTESTNMD",
+			"Logical NAND and Set",
+			"VPTESTNMB:VPTESTNMW:VPTESTNMD:VPTESTNMQ.html"
+		],
+		[
+			0,
+			"VPTESTNMQ",
+			"Logical NAND and Set",
+			"VPTESTNMB:VPTESTNMW:VPTESTNMD:VPTESTNMQ.html"
+		],
+		[
+			0,
+			"VPTESTNMW",
+			"Logical NAND and Set",
+			"VPTESTNMB:VPTESTNMW:VPTESTNMD:VPTESTNMQ.html"
+		],
+		[
+			0,
+			"VRANGEPD",
+			"Range Restriction Calculation For Packed Pairs of Float64 Values",
+			"VRANGEPD.html"
+		],
+		[
+			0,
+			"VRANGEPS",
+			"Range Restriction Calculation For Packed Pairs of Float32 Values",
+			"VRANGEPS.html"
+		],
+		[
+			0,
+			"VRANGESD",
+			"Range Restriction Calculation From a pair of Scalar Float64 Values",
+			"VRANGESD.html"
+		],
+		[
+			0,
+			"VRANGESS",
+			"Range Restriction Calculation From a Pair of Scalar Float32 Values",
+			"VRANGESS.html"
+		],
+		[
+			0,
+			"VRCP14PD",
+			"Compute Approximate Reciprocals of Packed Float64 Values",
+			"VRCP14PD.html"
+		],
+		[
+			0,
+			"VRCP14PS",
+			"Compute Approximate Reciprocals of Packed Float32 Values",
+			"VRCP14PS.html"
+		],
+		[
+			0,
+			"VRCP14SD",
+			"Compute Approximate Reciprocal of Scalar Float64 Value",
+			"VRCP14SD.html"
+		],
+		[
+			0,
+			"VRCP14SS",
+			"Compute Approximate Reciprocal of Scalar Float32 Value",
+			"VRCP14SS.html"
+		],
+		[
+			0,
+			"VREDUCEPD",
+			"Perform Reduction Transformation on Packed Float64 Values",
+			"VREDUCEPD.html"
+		],
+		[
+			0,
+			"VREDUCEPS",
+			"Perform Reduction Transformation on Packed Float32 Values",
+			"VREDUCEPS.html"
+		],
+		[
+			0,
+			"VREDUCESD",
+			"Perform a Reduction Transformation on a Scalar Float64 Value",
+			"VREDUCESD.html"
+		],
+		[
+			0,
+			"VREDUCESS",
+			"Perform a Reduction Transformation on a Scalar Float32 Value",
+			"VREDUCESS.html"
+		],
+		[
+			0,
+			"VRNDSCALEPD",
+			"Round Packed Float64 Values To Include A Given Number Of Fraction Bits",
+			"VRNDSCALEPD.html"
+		],
+		[
+			0,
+			"VRNDSCALEPS",
+			"Round Packed Float32 Values To Include A Given Number Of Fraction Bits",
+			"VRNDSCALEPS.html"
+		],
+		[
+			0,
+			"VRNDSCALESD",
+			"Round Scalar Float64 Value To Include A Given Number Of Fraction Bits",
+			"VRNDSCALESD.html"
+		],
+		[
+			0,
+			"VRNDSCALESS",
+			"Round Scalar Float32 Value To Include A Given Number Of Fraction Bits",
+			"VRNDSCALESS.html"
+		],
+		[
+			0,
+			"VRSQRT14PD",
+			"Compute Approximate Reciprocals of Square Roots of Packed Float64 Values",
+			"VRSQRT14PD.html"
+		],
+		[
+			0,
+			"VRSQRT14PS",
+			"Compute Approximate Reciprocals of Square Roots of Packed Float32 Values",
+			"VRSQRT14PS.html"
+		],
+		[
+			0,
+			"VRSQRT14SD",
+			"Compute Approximate Reciprocal of Square Root of Scalar Float64 Value",
+			"VRSQRT14SD.html"
+		],
+		[
+			0,
+			"VRSQRT14SS",
+			"Compute Approximate Reciprocal of Square Root of Scalar Float32 Value",
+			"VRSQRT14SS.html"
+		],
+		[
+			0,
+			"VSCALEFPD",
+			"Scale Packed Float64 Values With Float64 Values",
+			"VSCALEFPD.html"
+		],
+		[
+			0,
+			"VSCALEFPS",
+			"Scale Packed Float32 Values With Float32 Values",
+			"VSCALEFPS.html"
+		],
+		[
+			0,
+			"VSCALEFSD",
+			"Scale Scalar Float64 Values With Float64 Values",
+			"VSCALEFSD.html"
+		],
+		[
+			0,
+			"VSCALEFSS",
+			"Scale Scalar Float32 Value With Float32 Value",
+			"VSCALEFSS.html"
+		],
+		[
+			0,
+			"VSCATTERDPD",
+			"Scatter Packed Single, Packed Double with Signed Dword and Qword Indices",
+			"VSCATTERDPS:VSCATTERDPD:VSCATTERQPS:VSCATTERQPD.html"
+		],
+		[
+			0,
+			"VSCATTERDPS",
+			"Scatter Packed Single, Packed Double with Signed Dword and Qword Indices",
+			"VSCATTERDPS:VSCATTERDPD:VSCATTERQPS:VSCATTERQPD.html"
+		],
+		[
+			0,
+			"VSCATTERQPD",
+			"Scatter Packed Single, Packed Double with Signed Dword and Qword Indices",
+			"VSCATTERDPS:VSCATTERDPD:VSCATTERQPS:VSCATTERQPD.html"
+		],
+		[
+			0,
+			"VSCATTERQPS",
+			"Scatter Packed Single, Packed Double with Signed Dword and Qword Indices",
+			"VSCATTERDPS:VSCATTERDPD:VSCATTERQPS:VSCATTERQPD.html"
+		],
+		[
+			0,
+			"VSHUFF32x4",
+			"Shuffle Packed Values at 128-bit Granularity",
+			"VSHUFF32x4:VSHUFF64x2:VSHUFI32x4:VSHUFI64x2.html"
+		],
+		[
+			0,
+			"VSHUFF64x2",
+			"Shuffle Packed Values at 128-bit Granularity",
+			"VSHUFF32x4:VSHUFF64x2:VSHUFI32x4:VSHUFI64x2.html"
+		],
+		[
+			0,
+			"VSHUFI32x4",
+			"Shuffle Packed Values at 128-bit Granularity",
+			"VSHUFF32x4:VSHUFF64x2:VSHUFI32x4:VSHUFI64x2.html"
+		],
+		[
+			0,
+			"VSHUFI64x2",
+			"Shuffle Packed Values at 128-bit Granularity",
+			"VSHUFF32x4:VSHUFF64x2:VSHUFI32x4:VSHUFI64x2.html"
+		],
+		[
+			0,
+			"VTESTPD",
+			"Packed Bit Test",
+			"VTESTPD:VTESTPS.html"
+		],
+		[
+			0,
+			"VTESTPS",
+			"Packed Bit Test",
+			"VTESTPD:VTESTPS.html"
+		],
+		[
+			0,
+			"VZEROALL",
+			"Zero All YMM Registers",
+			"VZEROALL.html"
+		],
+		[
+			0,
+			"VZEROUPPER",
+			"Zero Upper Bits of YMM Registers",
+			"VZEROUPPER.html"
+		],
+		[
+			0,
+			"WAIT",
+			"Wait",
+			"WAIT:FWAIT.html"
+		],
+		[
+			0,
+			"WBINVD",
+			"Write Back and Invalidate Cache",
+			"WBINVD.html"
+		],
+		[
+			0,
+			"WRFSBASE",
+			"Write FS/GS Segment Base",
+			"WRFSBASE:WRGSBASE.html"
+		],
+		[
+			0,
+			"WRGSBASE",
+			"Write FS/GS Segment Base",
+			"WRFSBASE:WRGSBASE.html"
+		],
+		[
+			0,
+			"WRMSR",
+			"Write to Model Specific Register",
+			"WRMSR.html"
+		],
+		[
+			0,
+			"WRPKRU",
+			"Write Data to User Page Key Register",
+			"WRPKRU.html"
+		],
+		[
+			0,
+			"XABORT",
+			"Transactional Abort",
+			"XABORT.html"
+		],
+		[
+			0,
+			"XACQUIRE",
+			"Hardware Lock Elision Prefix Hints",
+			"XACQUIRE:XRELEASE.html"
+		],
+		[
+			0,
+			"XADD",
+			"Exchange and Add",
+			"XADD.html"
+		],
+		[
+			0,
+			"XBEGIN",
+			"Transactional Begin",
+			"XBEGIN.html"
+		],
+		[
+			0,
+			"XCHG",
+			"Exchange Register/Memory with Register",
+			"XCHG.html"
+		],
+		[
+			0,
+			"XEND",
+			"Transactional End",
+			"XEND.html"
+		],
+		[
+			0,
+			"XGETBV",
+			"Get Value of Extended Control Register",
+			"XGETBV.html"
+		],
+		[
+			0,
+			"XLAT",
+			"Table Look-up Translation",
+			"XLAT:XLATB.html"
+		],
+		[
+			0,
+			"XLATB",
+			"Table Look-up Translation",
+			"XLAT:XLATB.html"
+		],
+		[
+			0,
+			"XOR",
+			"Logical Exclusive OR",
+			"XOR.html"
+		],
+		[
+			0,
+			"XORPD",
+			"Bitwise Logical XOR of Packed Double Precision Floating-Point Values",
+			"XORPD.html"
+		],
+		[
+			0,
+			"XORPS",
+			"Bitwise Logical XOR of Packed Single Precision Floating-Point Values",
+			"XORPS.html"
+		],
+		[
+			0,
+			"XRELEASE",
+			"Hardware Lock Elision Prefix Hints",
+			"XACQUIRE:XRELEASE.html"
+		],
+		[
+			0,
+			"XRSTOR",
+			"Restore Processor Extended States",
+			"XRSTOR.html"
+		],
+		[
+			0,
+			"XRSTORS",
+			"Restore Processor Extended States Supervisor",
+			"XRSTORS.html"
+		],
+		[
+			0,
+			"XSAVE",
+			"Save Processor Extended States",
+			"XSAVE.html"
+		],
+		[
+			0,
+			"XSAVEC",
+			"Save Processor Extended States with Compaction",
+			"XSAVEC.html"
+		],
+		[
+			0,
+			"XSAVEOPT",
+			"Save Processor Extended States Optimized",
+			"XSAVEOPT.html"
+		],
+		[
+			0,
+			"XSAVES",
+			"Save Processor Extended States Supervisor",
+			"XSAVES.html"
+		],
+		[
+			0,
+			"XSETBV",
+			"Set Extended Control Register",
+			"XSETBV.html"
+		],
+		[
+			0,
+			"XTEST",
+			"Test If In Transactional Execution",
+			"XTEST.html"
+		],
+		[
+			1,
+			"ENCLS",
+			"Execute an Enclave System Function of Specified Leaf Number",
+			"ENCLS.html"
+		],
+		[
+			1,
+			"ENCLS\\[EADD\\]",
+			"Add a Page to an Uninitialized Enclave",
+			"EADD.html"
+		],
+		[
+			1,
+			"ENCLS\\[EAUG\\]",
+			"Add a Page to an Initialized Enclave",
+			"EAUG.html"
+		],
+		[
+			1,
+			"ENCLS\\[EBLOCK\\]",
+			"Mark a page in EPC as Blocked",
+			"EBLOCK.html"
+		],
+		[
+			1,
+			"ENCLS\\[ECREATE\\]",
+			"Create an SECS page in the Enclave Page Cache",
+			"ECREATE.html"
+		],
+		[
+			1,
+			"ENCLS\\[EDBGRD\\]",
+			"Read From a Debug Enclave",
+			"EDBGRD.html"
+		],
+		[
+			1,
+			"ENCLS\\[EDBGWR\\]",
+			"Write to a Debug Enclave",
+			"EDBGWR.html"
+		],
+		[
+			1,
+			"ENCLS\\[EEXTEND\\]",
+			"Extend Uninitialized Enclave Measurement by 256 Bytes",
+			"EEXTEND.html"
+		],
+		[
+			1,
+			"ENCLS\\[EINIT\\]",
+			"Initialize an Enclave for Execution",
+			"EINIT.html"
+		],
+		[
+			1,
+			"ENCLS\\[ELBUC\\]",
+			"Load an EPC Page and Mark its State",
+			"ELDB:ELDU:ELDBC:ELBUC.html"
+		],
+		[
+			1,
+			"ENCLS\\[ELDBC\\]",
+			"Load an EPC Page and Mark its State",
+			"ELDB:ELDU:ELDBC:ELBUC.html"
+		],
+		[
+			1,
+			"ENCLS\\[ELDB\\]",
+			"Load an EPC Page and Mark its State",
+			"ELDB:ELDU:ELDBC:ELBUC.html"
+		],
+		[
+			1,
+			"ENCLS\\[ELDU\\]",
+			"Load an EPC Page and Mark its State",
+			"ELDB:ELDU:ELDBC:ELBUC.html"
+		],
+		[
+			1,
+			"ENCLS\\[EMODPR\\]",
+			"Restrict the Permissions of an EPC Page",
+			"EMODPR.html"
+		],
+		[
+			1,
+			"ENCLS\\[EMODT\\]",
+			"Change the Type of an EPC Page",
+			"EMODT.html"
+		],
+		[
+			1,
+			"ENCLS\\[EPA\\]",
+			"Add Version Array",
+			"EPA.html"
+		],
+		[
+			1,
+			"ENCLS\\[ERDINFO\\]",
+			"Read Type and Status Information About an EPC Page",
+			"ERDINFO.html"
+		],
+		[
+			1,
+			"ENCLS\\[EREMOVE\\]",
+			"Remove a page from the EPC",
+			"EREMOVE.html"
+		],
+		[
+			1,
+			"ENCLS\\[ETRACKC\\]",
+			"Activates EBLOCK Checks",
+			"ETRACKC.html"
+		],
+		[
+			1,
+			"ENCLS\\[ETRACK\\]",
+			"Activates EBLOCK Checks",
+			"ETRACK.html"
+		],
+		[
+			1,
+			"ENCLS\\[EWB\\]",
+			"Invalidate an EPC Page and Write out to Main Memory",
+			"EWB.html"
+		],
+		[
+			1,
+			"ENCLU",
+			"Execute an Enclave User Function of Specified Leaf Number",
+			"ENCLU.html"
+		],
+		[
+			1,
+			"ENCLU\\[EACCEPTCOPY\\]",
+			"Initialize a Pending Page",
+			"EACCEPTCOPY.html"
+		],
+		[
+			1,
+			"ENCLU\\[EACCEPT\\]",
+			"Accept Changes to an EPC Page",
+			"EACCEPT.html"
+		],
+		[
+			1,
+			"ENCLU\\[EENTER\\]",
+			"Enters an Enclave",
+			"EENTER.html"
+		],
+		[
+			1,
+			"ENCLU\\[EEXIT\\]",
+			"Exits an Enclave",
+			"EEXIT.html"
+		],
+		[
+			1,
+			"ENCLU\\[EGETKEY\\]",
+			"Retrieves a Cryptographic Key",
+			"EGETKEY.html"
+		],
+		[
+			1,
+			"ENCLU\\[EMODPE\\]",
+			"Extend an EPC Page Permissions",
+			"EMODPE.html"
+		],
+		[
+			1,
+			"ENCLU\\[EREPORT\\]",
+			"Create a Cryptographic Report of the Enclave",
+			"EREPORT.html"
+		],
+		[
+			1,
+			"ENCLU\\[ERESUME\\]",
+			"Re-Enters an Enclave",
+			"ERESUME.html"
+		],
+		[
+			1,
+			"ENCLV",
+			"Execute an Enclave VMM Function of Specified Leaf Number",
+			"ENCLV.html"
+		],
+		[
+			1,
+			"ENCLV\\[EDECVIRTCHILD\\]",
+			"Decrement VIRTCHILDCNT in SECS",
+			"EDECVIRTCHILD.html"
+		],
+		[
+			1,
+			"ENCLV\\[EINCVIRTCHILD\\]",
+			"Increment VIRTCHILDCNT in SECS",
+			"EINCVIRTCHILD.html"
+		],
+		[
+			1,
+			"ENCLV\\[ESETCONTEXT\\]",
+			"Set the ENCLAVECONTEXT Field in SECS",
+			"ESETCONTEXT.html"
+		],
+		[
+			2,
+			"GETSEC\\[CAPABILITIES\\]",
+			"Report the SMX Capabilities",
+			"CAPABILITIES.html"
+		],
+		[
+			2,
+			"GETSEC\\[ENTERACCS\\]",
+			"Execute Authenticated Chipset Code",
+			"ENTERACCS.html"
+		],
+		[
+			2,
+			"GETSEC\\[EXITAC\\]",
+			"Exit Authenticated Code Execution Mode",
+			"EXITAC.html"
+		],
+		[
+			2,
+			"GETSEC\\[PARAMETERS\\]",
+			"Report the SMX Parameters",
+			"PARAMETERS.html"
+		],
+		[
+			2,
+			"GETSEC\\[SENTER\\]",
+			"Enter a Measured Environment",
+			"SENTER.html"
+		],
+		[
+			2,
+			"GETSEC\\[SEXIT\\]",
+			"Exit Measured Environment",
+			"SEXIT.html"
+		],
+		[
+			2,
+			"GETSEC\\[SMCTRL\\]",
+			"SMX Mode Control",
+			"SMCTRL.html"
+		],
+		[
+			2,
+			"GETSEC\\[WAKEUP\\]",
+			"Wake up sleeping processors in measured environment",
+			"WAKEUP.html"
+		],
+		[
+			3,
+			"INVEPT",
+			"Invalidate Translations Derived from EPT",
+			"INVEPT.html"
+		],
+		[
+			3,
+			"INVVPID",
+			"Invalidate Translations Based on VPID",
+			"INVVPID.html"
+		],
+		[
+			3,
+			"VMCALL",
+			"Call to VM Monitor",
+			"VMCALL.html"
+		],
+		[
+			3,
+			"VMCLEAR",
+			"Clear Virtual-Machine Control Structure",
+			"VMCLEAR.html"
+		],
+		[
+			3,
+			"VMFUNC",
+			"Invoke VM function",
+			"VMFUNC.html"
+		],
+		[
+			3,
+			"VMLAUNCH",
+			"Launch/Resume Virtual Machine",
+			"VMLAUNCH:VMRESUME.html"
+		],
+		[
+			3,
+			"VMPTRLD",
+			"Load Pointer to Virtual-Machine Control Structure",
+			"VMPTRLD.html"
+		],
+		[
+			3,
+			"VMPTRST",
+			"Store Pointer to Virtual-Machine Control Structure",
+			"VMPTRST.html"
+		],
+		[
+			3,
+			"VMREAD",
+			"Read Field from Virtual-Machine Control Structure",
+			"VMREAD.html"
+		],
+		[
+			3,
+			"VMRESUME",
+			"Launch/Resume Virtual Machine",
+			"VMLAUNCH:VMRESUME.html"
+		],
+		[
+			3,
+			"VMRESUME",
+			"Resume Virtual Machine",
+			"VMRESUME.html"
+		],
+		[
+			3,
+			"VMWRITE",
+			"Write Field to Virtual-Machine Control Structure",
+			"VMWRITE.html"
+		],
+		[
+			3,
+			"VMXOFF",
+			"Leave VMX Operation",
+			"VMXOFF.html"
+		],
+		[
+			3,
+			"VMXON",
+			"Enter VMX Operation",
+			"VMXON.html"
+		],
+		[
+			4,
+			"PREFETCHWT1",
+			"Prefetch Vector Data Into Caches with Intent to Write and T1 Hint",
+			"PREFETCHWT1.html"
+		],
+		[
+			4,
+			"V4FMADDPS",
+			"Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)",
+			"V4FMADDPS:V4FNMADDPS.html"
+		],
+		[
+			4,
+			"V4FMADDSS",
+			"Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)",
+			"V4FMADDSS:V4FNMADDSS.html"
+		],
+		[
+			4,
+			"V4FNMADDPS",
+			"Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)",
+			"V4FMADDPS:V4FNMADDPS.html"
+		],
+		[
+			4,
+			"V4FNMADDSS",
+			"Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)",
+			"V4FMADDSS:V4FNMADDSS.html"
+		],
+		[
+			4,
+			"VEXP2PD",
+			"Approximation to the Exponential 2^x of Packed Double-Precision Floating-Point Values with Less Than 2^-23 Relative Error",
+			"VEXP2PD.html"
+		],
+		[
+			4,
+			"VEXP2PS",
+			"Approximation to the Exponential 2^x of Packed Single-Precision Floating-Point Values with Less Than 2^-23 Relative Error",
+			"VEXP2PS.html"
+		],
+		[
+			4,
+			"VGATHERPF0DPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint",
+			"VGATHERPF0DPS:VGATHERPF0QPS:VGATHERPF0DPD:VGATHERPF0QPD.html"
+		],
+		[
+			4,
+			"VGATHERPF0DPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint",
+			"VGATHERPF0DPS:VGATHERPF0QPS:VGATHERPF0DPD:VGATHERPF0QPD.html"
+		],
+		[
+			4,
+			"VGATHERPF0QPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint",
+			"VGATHERPF0DPS:VGATHERPF0QPS:VGATHERPF0DPD:VGATHERPF0QPD.html"
+		],
+		[
+			4,
+			"VGATHERPF0QPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint",
+			"VGATHERPF0DPS:VGATHERPF0QPS:VGATHERPF0DPD:VGATHERPF0QPD.html"
+		],
+		[
+			4,
+			"VGATHERPF1DPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint",
+			"VGATHERPF1DPS:VGATHERPF1QPS:VGATHERPF1DPD:VGATHERPF1QPD.html"
+		],
+		[
+			4,
+			"VGATHERPF1DPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint",
+			"VGATHERPF1DPS:VGATHERPF1QPS:VGATHERPF1DPD:VGATHERPF1QPD.html"
+		],
+		[
+			4,
+			"VGATHERPF1QPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint",
+			"VGATHERPF1DPS:VGATHERPF1QPS:VGATHERPF1DPD:VGATHERPF1QPD.html"
+		],
+		[
+			4,
+			"VGATHERPF1QPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint",
+			"VGATHERPF1DPS:VGATHERPF1QPS:VGATHERPF1DPD:VGATHERPF1QPD.html"
+		],
+		[
+			4,
+			"VP4DPWSSD",
+			"Dot Product of Signed Words with Dword Accumulation (4-iterations)",
+			"VP4DPWSSD.html"
+		],
+		[
+			4,
+			"VP4DPWSSDS",
+			"Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)",
+			"VP4DPWSSDS.html"
+		],
+		[
+			4,
+			"VRCP28PD",
+			"Approximation to the Reciprocal of Packed Double-Precision Floating-Point Values with Less Than 2^-28 Relative Error",
+			"VRCP28PD.html"
+		],
+		[
+			4,
+			"VRCP28PS",
+			"Approximation to the Reciprocal of Packed Single-Precision Floating-Point Values with Less Than 2^-28 Relative Error",
+			"VRCP28PS.html"
+		],
+		[
+			4,
+			"VRCP28SD",
+			"Approximation to the Reciprocal of Scalar Double-Precision Floating-Point Value with Less Than 2^-28 Relative Error",
+			"VRCP28SD.html"
+		],
+		[
+			4,
+			"VRCP28SS",
+			"Approximation to the Reciprocal of Scalar Single-Precision Floating-Point Value with Less Than 2^-28 Relative Error",
+			"VRCP28SS.html"
+		],
+		[
+			4,
+			"VRSQRT28PD",
+			"Approximation to the Reciprocal Square Root of Packed Double-Precision Floating-Point Values with Less Than 2^-28 Relative Error",
+			"VRSQRT28PD.html"
+		],
+		[
+			4,
+			"VRSQRT28PS",
+			"Approximation to the Reciprocal Square Root of Packed Single-Precision Floating-Point Values with Less Than 2^-28 Relative Error",
+			"VRSQRT28PS.html"
+		],
+		[
+			4,
+			"VRSQRT28SD",
+			"Approximation to the Reciprocal Square Root of Scalar Double-Precision Floating-Point Value with Less Than 2^-28 Relative Error",
+			"VRSQRT28SD.html"
+		],
+		[
+			4,
+			"VRSQRT28SS",
+			"Approximation to the Reciprocal Square Root of Scalar Single-Precision Floating- Point Value with Less Than 2^-28 Relative Error",
+			"VRSQRT28SS.html"
+		],
+		[
+			4,
+			"VSCATTERPF0DPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write",
+			"VSCATTERPF0DPS:VSCATTERPF0QPS:VSCATTERPF0DPD:VSCATTERPF0QPD.html"
+		],
+		[
+			4,
+			"VSCATTERPF0DPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write",
+			"VSCATTERPF0DPS:VSCATTERPF0QPS:VSCATTERPF0DPD:VSCATTERPF0QPD.html"
+		],
+		[
+			4,
+			"VSCATTERPF0QPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write",
+			"VSCATTERPF0DPS:VSCATTERPF0QPS:VSCATTERPF0DPD:VSCATTERPF0QPD.html"
+		],
+		[
+			4,
+			"VSCATTERPF0QPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write",
+			"VSCATTERPF0DPS:VSCATTERPF0QPS:VSCATTERPF0DPD:VSCATTERPF0QPD.html"
+		],
+		[
+			4,
+			"VSCATTERPF1DPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write",
+			"VSCATTERPF1DPS:VSCATTERPF1QPS:VSCATTERPF1DPD:VSCATTERPF1QPD.html"
+		],
+		[
+			4,
+			"VSCATTERPF1DPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write",
+			"VSCATTERPF1DPS:VSCATTERPF1QPS:VSCATTERPF1DPD:VSCATTERPF1QPD.html"
+		],
+		[
+			4,
+			"VSCATTERPF1QPD",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write",
+			"VSCATTERPF1DPS:VSCATTERPF1QPS:VSCATTERPF1DPD:VSCATTERPF1QPD.html"
+		],
+		[
+			4,
+			"VSCATTERPF1QPS",
+			"Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write",
+			"VSCATTERPF1DPS:VSCATTERPF1QPS:VSCATTERPF1DPD:VSCATTERPF1QPD.html"
+		]
+	]
+}

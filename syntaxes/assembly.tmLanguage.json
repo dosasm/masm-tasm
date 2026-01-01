@@ -1,0 +1,266 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Microsoft Macro Assembler",
+	"patterns": [
+		{
+			"name": "comment.line.semicolon",
+			"match": ";.*$"
+		},
+		{
+			"include": "#basic"
+		},
+		{
+			"include": "#register"
+		},
+		{
+			"include": "#PseudoInstruction"
+		},
+		{
+			"include": "#instruction"
+		},
+		{
+			"include": "#storage"
+		},
+		{
+			"include": "#MMX"
+		},
+		{
+			"include": "#operator"
+		}
+	],
+	"repository": {
+		"basic": {
+			"patterns": [
+				{
+					"name": "constant.language.asm",
+					"match": "\\.((?i)(386|386P|387|486|486P|586|586P|686|686P|K3D|MMX|XMM))\\b"
+				},
+				{
+					"name": "constant.numeric",
+					"match": "\\b([01]+B|[0-7]+[Qq]|[0-9][0-9A-Fa-f]*[Hh]|[0-9]+[Dd]?)\\b"
+				},
+				{
+					"name": "storage.type.key",
+					"match": "\\b((?i)(MACRO|ENDM|PROC|ENDP|SEGMENT|ENDS|STRUCT))\\b"
+				},
+				{
+					"name": "string.quoted.double",
+					"match": "\".*\""
+				},
+				{
+					"name": "string.quoted.single",
+					"match": "'.*?'"
+				}
+			]
+		},
+		"register": {
+			"patterns": [
+				{
+					"name": "constant.language.register.general",
+					"match": "\\b((?i)(EAX|EBX|ECX|EDX|AX|BX|CX|DX|AL|AH|BL|BH|CL|CH|DL|DH))\\b"
+				},
+				{
+					"name": "constant.language.register.segment",
+					"match": "\\b((?i)(CS|DS|ES|FS|GS|SS))\\b"
+				},
+				{
+					"name": "constant.language.register.pointer",
+					"match": "\\b((?i)(DI|SI|BP|SP|IP))\\b"
+				},
+				{
+					"name": "constant.language.register.control",
+					"match": "\\b((?i)(CR[01234]))\\b"
+				},
+				{
+					"name": "constant.language.register.ProtectedMode",
+					"match": "\\b((?i)(GDTR|IDTR|LDTR|TR))\\b"
+				},
+				{
+					"name": "constant.language.register.DebugTest",
+					"match": "\\b((?i)(DR[0-7]|TR[3-7]))\\b"
+				},
+				{
+					"name": "constant.language.register.float",
+					"match": "\\b((?i)(R[0-7]))\\b"
+				}
+			]
+		},
+		"operator": {
+			"patterns": [
+				{
+					"name": "keyword.operator.arithmatic",
+					"match": "\\b((?i)(\\+|-|\\*|\\\\|MOD))\\b"
+				},
+				{
+					"name": "keyword.operator.logic",
+					"match": "\\b((?i)(AND|OR|XOR|NOT|SHL|SHR))\\b"
+				},
+				{
+					"name": "keyword.operator.compare",
+					"match": "\\b((?i)(EQ|NE|GT|LT|GE|LE))\\b"
+				},
+				{
+					"name": "keyword.operator.number",
+					"match": "\\b((?i)(SEG|OFFSET|ADDR|TYPE|LENGTH|SIZE))\\b"
+				},
+				{
+					"name": "keyword.operator.type",
+					"match": "\\b((?i)(PTR|LOW|HIGH|SHORT|THIS))\\b"
+				},
+				{
+					"name": "keyword.operator.other",
+					"match": "\\b((?i)(DUP|REP))\\b"
+				}
+			]
+		},
+		"PseudoInstruction": {
+			"patterns": [
+				{
+					"name": "storage.type",
+					"match": "\\b((?i)(BYTE|SBYTE|WORD|SWORD|DWORD|SDWORD|QWORD|SQWORD|MMWORD|XMMWORD|YMMWORD))\\b"
+				},
+				{
+					"name": "storage.modifier",
+					"match": "\\b((?i)(ALIGN|BYTE|SBYTE|DWORD|SDWORD|EVEN|FWORD|LABEL|ORG|QWORD|REAL4|REAL8|REAL10|TBYTE|WORD|SWORD|MMWORD|XMMWORD|YMMWORD))\\b"
+				},
+				{
+					"name": "storage.other.define.data",
+					"match": "\\b((?i)(DB|DW|DD|DQ|DF|DT))\\b"
+				},
+				{
+					"name": "storage.other.define.symbol",
+					"match": "\\b((?i)(EQU|=))\\b"
+				},
+				{
+					"name": "storage.other.define.struct",
+					"match": "\\b((?i)(STRUCT|ENDS))\\b"
+				},
+				{
+					"name": "variable.parameter",
+					"match": "<.*>"
+				}
+			]
+		},
+		"instruction": {
+			"patterns": [
+				{
+					"name": "keyword.control.DataMovement",
+					"match": "\\b((?i)(MOV|MOVSX|MOVZX|LEA|L[DEFGS]S|LASF|SAHF|XCHG|BSWAP|XLAT))\\b"
+				},
+				{
+					"name": "keyword.control.stack",
+					"match": "\\b((?i)(PUSH|POP|PUSHF|POPF|PUSHFD|POPFD|PUSHA|POPA|PUSHAD|POPAD))\\b"
+				},
+				{
+					"name": "keyword.control.arithmatic",
+					"match": "\\b((?i)(ADD|ADC|SUB|SBB|INC|DEC|NEG|XADD|MUL|IMUL|DIV|IDIV|CBW|CWD|CWDE|CDQ|CMP))\\b"
+				},
+				{
+					"name": "keyword.control.BCDadjust",
+					"match": "\\b((?i)(DAA|DAS|AAA|AAS|AAM|AAD))\\b"
+				},
+				{
+					"name": "keyword.control.flow.jump",
+					"match": "\\b((?i)(JMP|JC|JNC|JZ|JNZ|JS|JNS|JP|JNP|JO|JNO|JA|JNA|JG|JGE|JL|JLE|JEXZ|JECXZ|JB|JNAE|JNB|JAE|JE|JNE|JPE|JPO|JA|JBE|JNLE|JNL|JNGE|JNG))\\b"
+				},
+				{
+					"name": "keyword.control.flow.loop",
+					"match": "\\b((?i)(LOOP|LOOPZ|LOOPNZ|LOOPE|LOOPNE))\\b"
+				},
+				{
+					"name": "keyword.control.ProcInt",
+					"match": "\\b((?i)(CALL|RET|INT|IRET))\\b"
+				},
+				{
+					"name": "keyword.control.logic",
+					"match": "\\b((?i)(NOT|AND|OR|XOR))\\b"
+				},
+				{
+					"name": "keyword.control.shift",
+					"match": "\\b((?i)(SAL|SAR|SHL|SHR|RCL|RCR|ROL|ROR))\\b"
+				},
+				{
+					"name": "keyword.control.test",
+					"match": "\\b((?i)(TEST|BT[RSC]?))\\b"
+				},
+				{
+					"name": "keyword.control.scan",
+					"match": "\\b((?i)(BSF|BSR))\\b"
+				},
+				{
+					"name": "keyword.control.string.move",
+					"match": "\\b((?i)(MOVSB|MOVSW|MOVSD))\\b"
+				},
+				{
+					"name": "keyword.control.string.load",
+					"match": "\\b((?i)(LODSB|LODSW|LODSD))\\b"
+				},
+				{
+					"name": "keyword.control.string.save",
+					"match": "\\b((?i)(STOSB|STOSW|STOSD))\\b"
+				},
+				{
+					"name": "keyword.control.string.compare",
+					"match": "\\b((?i)(CMPSB|CMPSW|CMPSD))\\b"
+				},
+				{
+					"name": "keyword.control.string.search",
+					"match": "\\b((?i)(SCASB|SCASW|SCASD))\\b"
+				},
+				{
+					"name": "keyword.operator.string.repeat",
+					"match": "\\b((?i)(REP|REPZ|REPNZ|REPE|REPNE))\\b"
+				},
+				{
+					"name": "keyword.control.port",
+					"match": "\\b((?i)(IN|OUT|INS|OUTS))\\b"
+				},
+				{
+					"name": "keyword.control.flag",
+					"match": "\\b((?i)(CLC|CTC|CMC|CLD|STD|CLI|STI))\\b"
+				},
+				{
+					"name": "keyword.control.other",
+					"match": "\\b((?i)(NOP|HLT|WAIT|ESC|LOCK|ASSUME))\\b"
+				}
+			]
+		},
+		"MMX": {
+			"patterns": [
+				{
+					"name": "keyword.control.DataMovement",
+					"match": "\\b((?i)(MOVD|MOVQ))\\b"
+				},
+				{
+					"name": "keyword.control.arithmatic",
+					"match": "\\b((?i)(PADD[BWD]|PSUB[BWD]|PADDUS[BW]|PSUBUS[BW]|PADDS[BW]|PSUBS[BW]))\\b"
+				},
+				{
+					"name": "keyword.control.arithmatic.multi",
+					"match": "\\b((?i)(PMADDWD|PMULLUW|PMULHUW|PMULLW|PMULHW))\\b"
+				},
+				{
+					"name": "keyword.control.compare",
+					"match": "\\b((?i)(PCMPEQ[BWD]|PCMPGT[BWD]))\\b"
+				},
+				{
+					"name": "keyword.control.transfer",
+					"match": "\\b((?i)(PACKUSWB|PACKSSWB|PACKSSDW|PUNPCKHBW|PUNPCKHWD|PUNPCKHDQ|PUNPCKLBW|PUNPCKLWD|PUNPCKLDQ))\\b"
+				},
+				{
+					"name": "keyword.control.logic",
+					"match": "\\b((?i)(PAND|PANDN|POR|PXOR))\\b"
+				},
+				{
+					"name": "keyword.control.shift",
+					"match": "\\b((?i)(PSLL[WDQ]|PSRL[WDQ]|PSRA[WD]))\\b"
+				},
+				{
+					"name": "keyword.control.clear",
+					"match": "\\b((?i)(EMMS))\\b"
+				}
+			]
+		}
+	},
+	"scopeName": "source.asm"
+}

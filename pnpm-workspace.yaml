@@ -1,0 +1,2 @@
+ignoredBuiltDependencies:
+  - '@playwright/browser-chromium'
