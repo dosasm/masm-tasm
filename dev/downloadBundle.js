@@ -5,7 +5,7 @@ const pkg = require("../package.json");
 const actions = pkg.contributes.configuration.properties['masmtasm.ASM.actions'].default
 const assemblers = Object.keys(actions).map(key => actions[key].baseBundle.replace('<built-in>/', ""));
 
-const srcFolder = path.resolve(__dirname,"..","..","bundles")
+const srcFolder = path.resolve(__dirname,"..","..","assembly-tool","build")
 const dstFolder = path.resolve(__dirname, "..", "resources");
 
 async function main() {
