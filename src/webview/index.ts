@@ -1,7 +1,7 @@
 import { VscodeApi } from "./api";
 import { webGl } from "./webgl"
 import { audioNode } from "./audio-node"
-import { bindKeyboardMouse } from "./keyboard";
+import { bindKeyboard, bindSmallSoftKeyboard } from "./keyboard";
 
 const canvasEle = document.getElementById("display") as HTMLCanvasElement;
 const ciSelectEle = document.getElementById("ci-list") as HTMLSelectElement;
@@ -33,7 +33,8 @@ if (vapi) {
         let soundFrequency=await vapi.soundFrequency();
         soundPush=audioNode(soundFrequency);
     }, 100);
-    bindKeyboardMouse(vapi,canvasEle);
+    bindKeyboard(vapi,canvasEle);
+    document.addEventListener("DOMContentLoaded",()=>bindSmallSoftKeyboard(vapi))
     
     setInterval(async () => {
         const cis: { id: number, time: string, lastFrameTimeMs: number }[] = await vapi.exec("get-ci-list", [])

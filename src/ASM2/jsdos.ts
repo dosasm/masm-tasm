@@ -2,6 +2,7 @@ import { CommandInterface } from "emulators";
 import { FsNode } from "emulators/build/src/protocol/protocol";
 import * as vscode from "vscode";
 import { createTerminal } from "./jsdos/main";
+import { logger } from "../utils/logger";
 
 
 
@@ -168,9 +169,11 @@ function show_webview(cis: CIManager, webviewingId: number, context: vscode.Exte
             enableScripts: true,
             // retainContextWhenHidden: true,
             //hint: the below settings should be folder's uri
+            enableFindWidget: false,
             localResourceRoots: [
                 vscode.Uri.joinPath(context.extensionUri, "dist"),
                 vscode.Uri.joinPath(context.extensionUri, "src"),
+                vscode.Uri.joinPath(context.extensionUri, "resources"),
             ],
         }
     );
@@ -200,6 +203,7 @@ function show_webview(cis: CIManager, webviewingId: number, context: vscode.Exte
                     padding: 0;
                 }
             </style>
+            <link rel="stylesheet" type="text/css" href="${asWeb("resources/webview.css")}">
         </head>
             
         <body>
@@ -211,6 +215,15 @@ function show_webview(cis: CIManager, webviewingId: number, context: vscode.Exte
         <span id="show">loading</span>
         <canvas id="display"></canvas>
         <script src='${asWeb("dist/index.js")}'></script>
+        <!-- Virtual keyboard with function keys (single row) - each button has unique ID -->
+        <div class="soft-keyboard">
+            <button class="key-btn esc" data-key="Escape" id="key-esc">ESC</button>
+            <button class="key-btn modifier" data-key="Shift" id="key-shift">Shift</button>
+            <button class="key-btn modifier" data-key="Control" id="key-ctrl">Ctrl</button>
+            <button class="key-btn modifier" data-key="Alt" id="key-alt">Alt</button>
+            <button class="key-btn modifier" data-key="CapsLock" id="key-capslock">CapsLock</button>
+            <button class="key-btn modifier" data-key="Tab" id="key-tab">Tab</button>
+        </div>
         <p id="ci-stat">loading stats</p>
         </body>
         </html>`;
@@ -233,6 +246,9 @@ function show_webview(cis: CIManager, webviewingId: number, context: vscode.Exte
                 case "send-ci-command":
                     const { ciId, ciCommand, ciArgs } = message;
                     let ci = cis.ci(ciId);
+                    if(ciCommand!=="asyncifyStats"){
+                        logger.channel("ci-command "+ciCommand+" "+JSON.stringify(ciArgs));
+                    }
                     if (ci) {
                         try {
                             const result = await (ci.ci as any)[ciCommand](...ciArgs);
