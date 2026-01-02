@@ -7,7 +7,7 @@ export function createTerminal(ci: CommandInterface) {
     onDidWrite: writeEmitter.event,
     open: () => {
       writeEmitter.fire(
-        "Jsdos Terminal all changes after launch \x1b[31mwill not\x1b[0m be applied to this shell\r\n"
+        "Jsdos Terminal \x1b[31m opened at "+new Date()+" \x1b[0m \r\n"
       );
       ci.events().onStdout((val) => {
         writeEmitter.fire(val);

@@ -83,19 +83,24 @@ export class CIManager {
         this._cis.push(w);
         w.ci.events().onFrame((rgb, rgba) => {
             if (w.id === this.webviewingId) {
-                this.panel?.webview?.postMessage({ rgb, date: Date.now(), width: ci.width(), height: ci.height() });
+                this.panel?.webview?.postMessage({name:"frame", rgb, date: Date.now(), width: ci.width(), height: ci.height() });
             }
         })
     }
     constructor(public context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand('masm-tasm.show-jsdos', () => {
             this.panel = show_webview(this._cis, context)
+            this.panel.onDidDispose(()=>this.panel=undefined)
         }))
     }
 
     showWebview(id?:number){
-        if(!this.panel?.visible){
+        if(!this.panel){
             this.panel = show_webview(this._cis, this.context)
+            this.panel.onDidDispose(()=>this.panel=undefined)
+        }
+        if(!this.panel.visible){
+            this.panel.reveal()
         }
 
         if(this.panel?.visible){
@@ -172,6 +177,7 @@ function show_webview(cis: JSdosCi[], context: vscode.ExtensionContext) {
                 case "get-ci-list":
                     panel.webview.postMessage({
                         command,
+                        uid:message.uid,
                         value: cis.map(ci => {
                             return { id: ci.id, time: ci.time }
                         })
