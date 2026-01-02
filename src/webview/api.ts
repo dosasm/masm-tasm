@@ -19,16 +19,20 @@ type PromisifyAllMethods<T> = {
 
 export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   command_count = 0
-  resolvers: Record<number, (result: any) => void> = {};
+  resolvers: Record<number, {resolve:(result: any) => void,reject:(error: any) => void,}> = {};
   constructor(public api: Api) {
     window.addEventListener("message", (msg) => {
       const data = msg.data;
       const uid = msg.data.uid;
       if (this.resolvers[uid]) {
-        this.resolvers[uid](data.value)
+        if(data.error){
+          this.resolvers[uid].resolve(data.error)
+        }
+        else if(data.value){
+          this.resolvers[uid].resolve(data.value)
+        }
       }
     })
-
   }
   
   config(): Promise<DosConfig> {
@@ -152,16 +156,16 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   exec(command: string, args: any[]): Promise<any> {
     let uid = ++this.command_count;
     this.api.postMessage({ command, args, uid })
-    return new Promise(resolve => {
-      this.resolvers[uid] = resolve
+    return new Promise((resolve,reject) => {
+      this.resolvers[uid] = {resolve,reject}
     })
   }
 
   _exec_ci_command(ciCommand: string, ciArgs: any[]): Promise<any> {
     let uid = ++this.command_count;
     this.api.postMessage({ command:"send-ci-command", ciArgs, uid,ciCommand })
-    return new Promise(resolve => {
-      this.resolvers[uid] = resolve
+    return new Promise((resolve,reject) => {
+      this.resolvers[uid] = {resolve,reject}
     })
   }
 }

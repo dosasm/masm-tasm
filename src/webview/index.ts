@@ -14,36 +14,36 @@ window.addEventListener("message", (msg) => {
         }
         frame.onFrameSize(data.width, data.height);
         frame.onFrame(data.rgb, null);
-        ciSelectEle.selectedIndex=data.ciIdx;
+        ciSelectEle.selectedIndex = data.ciIdx;
     }
 
 })
 
 
 console.log("masm-tasm webview debugger")
-let vapi=VscodeApi.create()
+let vapi = VscodeApi.create()
 
 if (vapi) {
-   
+
     setInterval(async () => {
-        const cis:{id:number,time:string,lastFrameTimeMs:number}[]=await vapi.exec("get-ci-list",[])
-        for(let i=0;i<cis.length;i++){
-            if (i<ciSelectEle.options.length){
-                const optionEle=ciSelectEle.options[i];
-                let alive=Date.now()-cis[i].lastFrameTimeMs<2000 // assume the emulator is working if last frame data is transfered within 2s
-                optionEle.innerText=`${cis[i].id} ${alive?"running":"stopped"}`
-            }else{
-                const o=document.createElement("option")
-                let alive=Date.now()-cis[i].lastFrameTimeMs<2000 // assume the emulator is working if last frame data is transfered within 2s
-                o.innerText=`${cis[i].id} ${alive?"running":"stopped"}`
+        const cis: { id: number, time: string, lastFrameTimeMs: number }[] = await vapi.exec("get-ci-list", [])
+        for (let i = 0; i < cis.length; i++) {
+            if (i < ciSelectEle.options.length) {
+                const optionEle = ciSelectEle.options[i];
+                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
+                optionEle.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
+            } else {
+                const o = document.createElement("option")
+                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
+                o.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
                 ciSelectEle.appendChild(o)
             }
         }
     }, 1000);
-    ciSelectEle.addEventListener("input",()=>{
-        vapi.exec("change-viewing-id",[ciSelectEle.selectedIndex])
+    ciSelectEle.addEventListener("input", () => {
+        vapi.exec("change-viewing-id", [ciSelectEle.selectedIndex])
     })
-    
+
     let intervalStartedAt = Date.now();
     let prevNonSkippableSleepCount = 0;
     let prevSleepCount = 0;
@@ -62,8 +62,8 @@ if (vapi) {
 
             const statEle = document.getElementById("ci-stat") as HTMLSpanElement;
             statEle.innerText = "Avg sleep p/sec: " + Math.round(avgSleep) +
-                    ", avg non skippable sleep p/sec: " + Math.round(avgNonSkippableSleep) +
-                    ", cycles p/ms: " + Math.round(avgCycles);
+                ", avg non skippable sleep p/sec: " + Math.round(avgNonSkippableSleep) +
+                ", cycles p/ms: " + Math.round(avgCycles);
         });
     }, 3000);
 }

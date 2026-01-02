@@ -110,7 +110,25 @@ export class CIManager {
         w.ci.events().onFrame((rgb, rgba) => {
             w.lastFrameTimeMs = Date.now()
             if (w.id === this.webviewingId) {
-                this.panel?.webview?.postMessage({ name: "frame", rgb, date: Date.now(), width: ci.width(), height: ci.height(),ciIdx:this.webviewingId });
+                this.panel?.webview?.postMessage({
+                    name: "frame",
+                    rgb,
+                    date: w.lastFrameTimeMs,
+                    width: ci.width(),
+                    height: ci.height(),
+                    ciIdx: this.webviewingId
+                });
+            }
+        })
+        w.ci.events().onSoundPush(samples => {
+            if (w.id === this.webviewingId) {
+                this.panel?.webview?.postMessage({
+                    name: "soundPush",
+                    samples,
+                    date: Date.now(),
+                    soundFrequency: ci.soundFrequency(),
+                    ciIdx: this.webviewingId
+                });
             }
         })
     }
@@ -215,12 +233,23 @@ function show_webview(cis: CIManager, webviewingId: number, context: vscode.Exte
                 case "send-ci-command":
                     const { ciId, ciCommand, ciArgs } = message;
                     let ci = cis.ci(ciId);
-                    const result = await (ci as any)[ciCommand](...ciArgs);
-                    panel.webview.postMessage({
-                        command,
-                        uid: message.uid,
-                        value: result
-                    })
+                    if (ci) {
+                        try {
+                            const result = await (ci.ci as any)[ciCommand](...ciArgs);
+                            panel.webview.postMessage({
+                                command,
+                                uid: message.uid,
+                                value: result
+                            })
+                        } catch (error) {
+                            panel.webview.postMessage({
+                                command,
+                                uid: message.uid,
+                                error
+                            })
+                        }
+                    }
+
                     break
             }
         },

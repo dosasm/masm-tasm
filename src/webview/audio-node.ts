@@ -1,6 +1,5 @@
 //https://github.com/caiiiycuk/js-dos/blob/564e7dcbed88a08c4b2af548d3b4282799d497a3/src/window/dos/sound/audio-node.ts
 
-import { CommandInterface } from "emulators";
 
 class SamplesQueue {
     private samplesQueue: Float32Array[] = [];
@@ -43,9 +42,8 @@ class SamplesQueue {
     }
 }
 
-export function audioNode(ci: CommandInterface,
+export function audioNode(sampleRate:number,
                           bindVolumeFn?: (fn: (volume: number) => void) => () => void) {
-    const sampleRate = ci.soundFrequency();
     const channels = 1;
 
     if (sampleRate === 0) {
@@ -76,11 +74,11 @@ export function audioNode(ci: CommandInterface,
     const bufferSize = 2048;
     const preBufferSize = 2048;
 
-    ci.events().onSoundPush((samples) => {
+    const onSoundPush=(samples:Float32Array) => {
         if (samplesQueue.length() < bufferSize * 2 + preBufferSize) {
             samplesQueue.push(samples);
         }
-    });
+    };
 
     const audioNode = audioContext.createScriptProcessor(bufferSize, 0, channels);
     let started = false;
@@ -128,8 +126,7 @@ export function audioNode(ci: CommandInterface,
     document.addEventListener("pointerdown", resumeWebAudio, { once: true });
     document.addEventListener("keydown", resumeWebAudio, { once: true });
 
-    return () => {
-        ci.events().onSoundPush(() => {});
+    const removeAudio=() => {
 
         if (audioContext !== null) {
             audioNode.disconnect();
@@ -146,5 +143,7 @@ export function audioNode(ci: CommandInterface,
 
         document.removeEventListener("pointerdown", resumeWebAudio);
         document.removeEventListener("keydown", resumeWebAudio);
-    };
+    }
+
+    return {onSoundPush,removeAudio};
 }

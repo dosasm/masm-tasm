@@ -6,14 +6,15 @@ import { uriUtils } from "../utils/util";
 import { activateJSdos } from "./jsdos/main";
 import { runJsdos } from "./jsdos-run";
 import { CIManager, JSdosCi } from "./jsdos";
+import * as path from "path";
 
-async function ensureFileOpenn(uri:vscode.Uri){
-    let _uri=uri;
-    if(_uri===undefined && vscode.window.activeTextEditor){
-        _uri=vscode.window.activeTextEditor.document.uri;
+async function ensureFileOpenn(uri: vscode.Uri) {
+    let _uri = uri;
+    if (_uri === undefined && vscode.window.activeTextEditor) {
+        _uri = vscode.window.activeTextEditor.document.uri;
     }
-    if(_uri===undefined){
-        logger.channel("cannot find the file",uri.fsPath);
+    if (_uri === undefined) {
+        logger.channel("cannot find the file", uri.fsPath);
         return undefined;
     }
 
@@ -24,7 +25,7 @@ async function ensureFileOpenn(uri:vscode.Uri){
     return _uri;
 }
 
-async function getBundle(context:vscode.ExtensionContext){
+async function getBundle(context: vscode.ExtensionContext) {
     const bundlePath = vscode.Uri.joinPath(
         context.extensionUri,
         conf.extConf.action["baseBundle"].replace('<built-in>/', "resources/")
@@ -33,7 +34,7 @@ async function getBundle(context:vscode.ExtensionContext){
     return bundleData
 }
 
-function getWorksapceUri(_uri:vscode.Uri){
+function getWorksapceUri(_uri: vscode.Uri) {
     const workspaceFolder = vscode.workspace.workspaceFolders?.find(val => _uri.fsPath.includes(val.uri.fsPath));
     let workspaceFolderUri = uriUtils.dirname(_uri);
     if (workspaceFolder === undefined) {
@@ -48,27 +49,56 @@ export async function activate(context: vscode.ExtensionContext) {
     statusBar.activate(context);
     const timeStamp = new Date().getTime().toString();
     const seperateSpaceFolder = uriUtils.joinPath(context.globalStorageUri, "workspace");
-    const jsdos_api=activateJSdos(context);
-    const cis=new CIManager(context);
+    const jsdos_api = activateJSdos(context);
+    const cis = new CIManager(context);
 
-    async function openEmulator(uri:vscode.Uri){
-        logger.channel("open file",uri.fsPath);
-        let uri2=await ensureFileOpenn(uri);
-        let bundleData=await getBundle(context);
-        let workspaceUri=getWorksapceUri(uri);
-        const mountMode=conf.extConf.get<conf.MountMode>("ASM.mode", conf.MountMode.single);
-        let ci=await runJsdos(jsdos_api,bundleData,workspaceUri,uri2,mountMode);
-        cis.addCI(ci);  
-        let t=cis.last.terminal();
+    async function openEmulator(uri: vscode.Uri,
+        manipulateAutoexec?: (autoexec: string[], fileInJsdos: string) => void) {
+        logger.channel("open emulator at file", uri.fsPath);
+        let uri2 = await ensureFileOpenn(uri);
+        let bundleData = await getBundle(context);
+        let workspaceUri = getWorksapceUri(uri);
+        const mountMode = conf.extConf.get<conf.MountMode>("ASM.mode", conf.MountMode.single);
+        let ci = await runJsdos(jsdos_api, bundleData, workspaceUri, uri2, mountMode,manipulateAutoexec);
+        cis.addCI(ci);
+        let t = cis.last.terminal();
         cis.showWebview();
     }
 
-    function runASM(uri:vscode.Uri){
-
+    function manipulateAutoexecRun(autoexec: string[], fileInJsdos: string) {
+        const fileinfo = path.parse(fileInJsdos);
+        function cb(val: string) {
+            const r = val
+                .replace("${file}", fileInJsdos)
+                .replace("${filename}", fileInJsdos.replace(fileinfo.ext, ""));
+            if (val.startsWith('>')) {
+                return r.replace(">", "");
+            }
+            return r;
+        }
+        autoexec.push(...conf.extConf.action.run.map(cb));
     }
 
-    function debugASM(uri:vscode.Uri){
+    function runASM(uri: vscode.Uri) {
+        openEmulator(uri,manipulateAutoexecRun)
+    }
 
+    function manipulateAutoexecDebug(autoexec: string[], fileInJsdos: string) {
+        const fileinfo = path.parse(fileInJsdos);
+        function cb(val: string) {
+            const r = val
+                .replace("${file}", fileInJsdos)
+                .replace("${filename}", fileInJsdos.replace(fileinfo.ext, ""));
+            if (val.startsWith('>')) {
+                return r.replace(">", "");
+            }
+            return r;
+        }
+        autoexec.push(...conf.extConf.action.debug.map(cb));
+    }
+
+    function debugASM(uri: vscode.Uri) {
+        openEmulator(uri,manipulateAutoexecDebug)
     }
 
     context.subscriptions.push(

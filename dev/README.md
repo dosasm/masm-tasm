@@ -27,6 +27,14 @@ pnpm compile-webview
 pnpm compile-dev
 ```
 
+To generate `visx` package
+
+```sh
+npx vsce package
+```
+
+Press <kbd>F5</kbd> or Click `run` -> `Start Debugging`
+
 ## Main references
 
 - The js-dos emulator is based on <https://github.com/caiiiycuk/emulators>. My fork is available at <https://github.com/dosasm/emulators/>.
