@@ -2,6 +2,7 @@ import { VscodeApi } from "./api";
 import { webGl } from "./webgl"
 
 const canvasEle = document.getElementById("display") as HTMLCanvasElement;
+const ciSelectEle = document.getElementById("ci-list") as HTMLSelectElement;
 const frame = webGl(canvasEle, 600, 400);
 
 window.addEventListener("message", (msg) => {
@@ -13,6 +14,7 @@ window.addEventListener("message", (msg) => {
         }
         frame.onFrameSize(data.width, data.height);
         frame.onFrame(data.rgb, null);
+        ciSelectEle.selectedIndex=data.ciIdx;
     }
 
 })
@@ -22,10 +24,47 @@ console.log("masm-tasm webview debugger")
 let vapi=VscodeApi.create()
 
 if (vapi) {
-    const ciEle = document.getElementById("ci-list") as HTMLSelectElement;
+   
     setInterval(async () => {
-        const cis:{id:number,time:string}[]=await vapi.exec("get-ci-list",[])
-        ciEle.innerHTML=cis.map(o=>`<option>${o.id}</option>`).join("\n")
-    }, 10000);
+        const cis:{id:number,time:string,lastFrameTimeMs:number}[]=await vapi.exec("get-ci-list",[])
+        for(let i=0;i<cis.length;i++){
+            if (i<ciSelectEle.options.length){
+                const optionEle=ciSelectEle.options[i];
+                let alive=Date.now()-cis[i].lastFrameTimeMs<2000 // assume the emulator is working if last frame data is transfered within 2s
+                optionEle.innerText=`${cis[i].id} ${alive?"running":"stopped"}`
+            }else{
+                const o=document.createElement("option")
+                let alive=Date.now()-cis[i].lastFrameTimeMs<2000 // assume the emulator is working if last frame data is transfered within 2s
+                o.innerText=`${cis[i].id} ${alive?"running":"stopped"}`
+                ciSelectEle.appendChild(o)
+            }
+        }
+    }, 1000);
+    ciSelectEle.addEventListener("input",()=>{
+        vapi.exec("change-viewing-id",[ciSelectEle.selectedIndex])
+    })
+    
+    let intervalStartedAt = Date.now();
+    let prevNonSkippableSleepCount = 0;
+    let prevSleepCount = 0;
+    let prevCycles = 0;
+    setInterval(() => {
+        vapi.asyncifyStats().then((stats) => {
+            const dt = Date.now() - intervalStartedAt;
+            const nonSkippableSleep = stats.nonSkippableSleepCount - prevNonSkippableSleepCount;
+            const avgSleep = (stats.sleepCount - prevSleepCount) * 1000 / dt;
+            const avgNonSkippableSleep = (stats.nonSkippableSleepCount - prevNonSkippableSleepCount) * 1000 / dt;
+            const avgCycles = (stats.cycles - prevCycles) / dt;
+            intervalStartedAt = Date.now();
+            prevNonSkippableSleepCount = stats.nonSkippableSleepCount;
+            prevSleepCount = stats.sleepCount;
+            prevCycles = stats.cycles;
+
+            const statEle = document.getElementById("ci-stat") as HTMLSpanElement;
+            statEle.innerText = "Avg sleep p/sec: " + Math.round(avgSleep) +
+                    ", avg non skippable sleep p/sec: " + Math.round(avgNonSkippableSleep) +
+                    ", cycles p/ms: " + Math.round(avgCycles);
+        });
+    }, 3000);
 }
 

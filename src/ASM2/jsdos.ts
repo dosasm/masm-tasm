@@ -30,6 +30,7 @@ function flattenFSNodes(parent: string, nodes: FsNode[]) {
 export class JSdosCi {
     // The mount is a key-value map, key is the disk name in the enumlator and value is the information of the folder and files
     mount: Record<string, MountFolder> = {}
+    public lastFrameTimeMs: number = 0
     public get ci() {
         return this._ci
     }
@@ -74,47 +75,70 @@ export class CIManager {
     private panel: vscode.WebviewPanel | undefined
     webviewingId = 0;
 
-    public get last(){
-        return this._cis[this._cis.length-1]
+    public get last() {
+        return this._cis[this._cis.length - 1]
+    }
+
+    public ci(idx?: number) {
+        if (idx === undefined) {
+            return this._cis[this.webviewingId]
+        }
+        if (typeof idx === "number") {
+            return this._cis[idx]
+        }
+    }
+
+    public ciInfomation(html = false) {
+        if (html) {
+            const ciSelectInnerHTML = this._cis.map((o, idx) => {
+                let alive = Date.now() - o.lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
+                return `<option ${idx === this.webviewingId ? "selected" : ""}>${o.id} ${alive ? "running" : "stopped"}</option>`
+            }).join("\n")
+            return ciSelectInnerHTML
+        }
+        else {
+            return this._cis.map(ci => {
+                return { id: ci.id, time: ci.time, lastFrameTimeMs: ci.lastFrameTimeMs }
+            })
+        }
+
     }
 
     addCI(ci: CommandInterface) {
         const w = new JSdosCi(ci)
         this._cis.push(w);
         w.ci.events().onFrame((rgb, rgba) => {
+            w.lastFrameTimeMs = Date.now()
             if (w.id === this.webviewingId) {
-                this.panel?.webview?.postMessage({name:"frame", rgb, date: Date.now(), width: ci.width(), height: ci.height() });
+                this.panel?.webview?.postMessage({ name: "frame", rgb, date: Date.now(), width: ci.width(), height: ci.height(),ciIdx:this.webviewingId });
             }
         })
     }
     constructor(public context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand('masm-tasm.show-jsdos', () => {
-            this.panel = show_webview(this._cis, context)
-            this.panel.onDidDispose(()=>this.panel=undefined)
+            this.panel = show_webview(this, this.webviewingId, context)
+            this.panel.onDidDispose(() => this.panel = undefined)
         }))
     }
 
-    showWebview(id?:number){
-        if(!this.panel){
-            this.panel = show_webview(this._cis, this.context)
-            this.panel.onDidDispose(()=>this.panel=undefined)
+    showWebview(id?: number) {
+        if (id === undefined) {
+            this.webviewingId = this._cis.length - 1;
         }
-        if(!this.panel.visible){
+        else {
+            this.webviewingId = id;
+        }
+        if (!this.panel) {
+            this.panel = show_webview(this, this.webviewingId, this.context)
+            this.panel.onDidDispose(() => this.panel = undefined)
+        }
+        if (!this.panel.visible) {
             this.panel.reveal()
-        }
-
-        if(this.panel?.visible){
-            if(id===undefined){
-                this.webviewingId=this._cis.length-1;
-            }
-            else{
-                this.webviewingId=id;
-            }
         }
     }
 }
 
-function show_webview(cis: JSdosCi[], context: vscode.ExtensionContext) {
+function show_webview(cis: CIManager, webviewingId: number, context: vscode.ExtensionContext) {
     const viewColumn: vscode.ViewColumn | undefined = vscode.workspace
         .getConfiguration("vscode-dosbox")
         .get("jsdosWeb.viewColumn");
@@ -140,6 +164,8 @@ function show_webview(cis: JSdosCi[], context: vscode.ExtensionContext) {
         return link;
     };
 
+
+
     panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -162,34 +188,40 @@ function show_webview(cis: JSdosCi[], context: vscode.ExtensionContext) {
         <input type="checkbox" id="debug">pause</input>
         <input type="checkbox" id="sound">sound</input>
         <select id="ci-list">
+        ${cis.ciInfomation(true)}
         </select>
         <span id="show">loading</span>
         <canvas id="display"></canvas>
         <script src='${asWeb("dist/index.js")}'></script>
+        <p id="ci-stat">loading stats</p>
         </body>
         </html>`;
 
     // Handle messages from the webview
     panel.webview.onDidReceiveMessage(
-        (message) => {
-            const { command, value } = message;
+        async (message) => {
+            const { command, args } = message;
             switch (command) {
+                case "change-viewing-id":
+                    cis.webviewingId = args[0];
+                    break
                 case "get-ci-list":
                     panel.webview.postMessage({
                         command,
-                        uid:message.uid,
-                        value: cis.map(ci => {
-                            return { id: ci.id, time: ci.time }
-                        })
+                        uid: message.uid,
+                        value: cis.ciInfomation()
                     })
                     break
-                case "sendKeyEvent":
-                    cis[message.ci_id].ci.sendKeyEvent(value.keyCode, value.pressed);
+                case "send-ci-command":
+                    const { ciId, ciCommand, ciArgs } = message;
+                    let ci = cis.ci(ciId);
+                    const result = await (ci as any)[ciCommand](...ciArgs);
+                    panel.webview.postMessage({
+                        command,
+                        uid: message.uid,
+                        value: result
+                    })
                     break
-                case "sendMouseButton":
-                    cis[message.ci_id].ci.sendMouseButton(value.button, value.pressed)
-                    break
-
             }
         },
         undefined,
