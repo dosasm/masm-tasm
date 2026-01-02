@@ -4,6 +4,7 @@ import * as cp from "child_process";
 import { Conf } from "./conf";
 import * as nodefs from "fs";
 import { logger } from "../../utils/logger";
+export { DOSBox } from "./dosbox"
 
 const fs = vscode.workspace.fs;
 
@@ -20,7 +21,7 @@ function updateDosboxConf(box: db.DOSBox, confSting: string) {
   }
 }
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activateDosbox(context: vscode.ExtensionContext) {
   const dosboxConfigurationFile = {
     box: vscode.Uri.joinPath(
       context.extensionUri,
