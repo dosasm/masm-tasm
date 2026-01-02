@@ -1,9 +1,12 @@
 import { VscodeApi } from "./api";
 import { webGl } from "./webgl"
+import { audioNode } from "./audio-node"
+import { bindKeyboardMouse } from "./keyboard";
 
 const canvasEle = document.getElementById("display") as HTMLCanvasElement;
 const ciSelectEle = document.getElementById("ci-list") as HTMLSelectElement;
 const frame = webGl(canvasEle, 600, 400);
+let soundPush:ReturnType<typeof audioNode>|undefined = undefined
 
 window.addEventListener("message", (msg) => {
     const show = document.getElementById("show")
@@ -16,7 +19,9 @@ window.addEventListener("message", (msg) => {
         frame.onFrame(data.rgb, null);
         ciSelectEle.selectedIndex = data.ciIdx;
     }
-
+    if (data.name === "soundPush"){
+        soundPush?.onSoundPush(data.samples)
+    }
 })
 
 
@@ -24,7 +29,12 @@ console.log("masm-tasm webview debugger")
 let vapi = VscodeApi.create()
 
 if (vapi) {
-
+    setTimeout(async () => {
+        let soundFrequency=await vapi.soundFrequency();
+        soundPush=audioNode(soundFrequency);
+    }, 100);
+    bindKeyboardMouse(vapi,canvasEle);
+    
     setInterval(async () => {
         const cis: { id: number, time: string, lastFrameTimeMs: number }[] = await vapi.exec("get-ci-list", [])
         for (let i = 0; i < cis.length; i++) {

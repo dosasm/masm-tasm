@@ -45,26 +45,37 @@ export function getWorksapceUri(_uri: vscode.Uri) {
     return workspaceFolderUri;
 }
 
-function actionMessage(act: conf.ActionType, file: string): string {
+export function logActionMessage(act: conf.ActionType, file: string) {
+    let log = "";
     switch (act) {
         case conf.ActionType.open:
-            return logger.localize("ASM.openemu.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+            log = logger.localize("ASM.openemu.msg", file, conf.extConf.asmType, conf.extConf.emulator);
         case conf.ActionType.run:
-            return logger.localize("ASM.run.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+            log = logger.localize("ASM.run.msg", file, conf.extConf.asmType, conf.extConf.emulator);
         case conf.ActionType.debug:
-            return logger.localize("ASM.debug.msg", file, conf.extConf.asmType, conf.extConf.emulator);
+            log = logger.localize("ASM.debug.msg", file, conf.extConf.asmType, conf.extConf.emulator);
     }
+    logger.channel(log)
 }
 
-export async function openEmulator(
+export async function openEmulatorRunDebug(
+    openOrRunOrDebug: conf.ActionType,
     uri: vscode.Uri, cis: CIManager,
-    context: vscode.ExtensionContext, jsdos_api: Jsdos,
-    manipulateAutoexec?: (autoexec: string[], fileInJsdos: string) => void) {
-    logger.channel("open emulator at file", uri.fsPath);
+    context: vscode.ExtensionContext, jsdos_api: Jsdos,) {
     let uri2 = await ensureFileOpenn(uri);
+    logActionMessage(openOrRunOrDebug,uri2?uri2.fsPath:"undefined");
     let bundleData = await getBundle(context);
     let workspaceUri = getWorksapceUri(uri);
     const mountMode = conf.extConf.get<conf.MountMode>("ASM.mode", conf.MountMode.single);
+    let manipulateAutoexec = undefined;
+    switch (openOrRunOrDebug) {
+        case conf.ActionType.run:
+            manipulateAutoexec = manipulateAutoexecRun
+            break;
+        case conf.ActionType.debug:
+            manipulateAutoexec = manipulateAutoexecDebug
+            break;
+    }
     let ci = await runJsdos(jsdos_api, bundleData, workspaceUri, uri2, mountMode, manipulateAutoexec);
     cis.addCI(ci);
     let t = cis.last.terminal();
@@ -104,14 +115,17 @@ export async function activate(context: vscode.ExtensionContext) {
     const jsdos_api = activateJSdos(context);
     const cis = new CIManager(context);
 
+    function openEmulator(uri: vscode.Uri) {
+        openEmulatorRunDebug(conf.ActionType.open, uri, cis, context, jsdos_api)
+    }
 
     function runASM(uri: vscode.Uri) {
-        openEmulator(uri, cis, context, jsdos_api, manipulateAutoexecRun)
+        openEmulatorRunDebug(conf.ActionType.run, uri, cis, context, jsdos_api)
     }
 
 
     function debugASM(uri: vscode.Uri) {
-        openEmulator(uri, cis, context, jsdos_api, manipulateAutoexecDebug)
+        openEmulatorRunDebug(conf.ActionType.debug, uri, cis, context, jsdos_api)
     }
 
     context.subscriptions.push(

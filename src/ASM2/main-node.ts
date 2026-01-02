@@ -108,9 +108,12 @@ export async function makeDosboxActionContext(actionType: conf.ActionType, _uri:
         seperateSpaceFolder,
         workspaceFolderUri,
     };
+
+    return ctx;
 }
 
 async function runDosboxOrX(context: ExtensionContext, ctx: ActionContext, box: DOSBox): Promise<AsmResult> {
+    jsdos.logActionMessage(ctx.actionType,ctx.fileUri?ctx.fileUri.fsPath:"undefined");
     if (ctx.mountMode === conf.MountMode.single) {
         await emptyFolder(ctx.seperateSpaceFolder);
         await fs.copy(ctx.fileUri, ctx.fileCopyUri);
@@ -225,34 +228,35 @@ async function runDosboxOrX(context: ExtensionContext, ctx: ActionContext, box: 
     return { message, result };
 }
 
+
 export async function activate(context: vscode.ExtensionContext) {
     statusBar.activate(context);
     const jsdos_api = activateJSdos(context);
     const dosbox_api = await activateDosbox(context);
     const cis = new CIManager(context);
 
-    async function openEmulator(uri: vscode.Uri) {
-        logger.channel(logger.localize("ASM.openemu.msg", uri.fsPath, conf.extConf.asmType, conf.extConf.emulator));
-        const ctx=makeDosboxActionContext(ActionType,uri,contex)
+    async function openEmulatorRunDebug(openOrRunOrDebug:conf.ActionType,uri: vscode.Uri) {
+        const ctx=await makeDosboxActionContext(openOrRunOrDebug,uri,context)
         if (conf.extConf.emulator === conf.DosEmulatorType.dosboxX || conf.extConf.emulator === conf.DosEmulatorType.dosbox) {
             const box = conf.extConf.emulator === conf.DosEmulatorType.dosboxX ? dosbox_api.dosboxX : dosbox_api.dosbox;
             await runDosboxOrX(context, ctx, box)
         }
         if (conf.extConf.emulator === conf.DosEmulatorType.jsdos) {
-            await jsdos.openEmulator(uri, cis, context, jsdos_api)
+            await jsdos.openEmulatorRunDebug(openOrRunOrDebug,uri, cis, context, jsdos_api)
         }
     }
 
+    function openEmulator(uri:vscode.Uri){
+        openEmulatorRunDebug(conf.ActionType.open,uri)
+    }
 
     function runASM(uri: vscode.Uri) {
-        
-        jsdos.openEmulator(uri, cis, context, jsdos_api, jsdos.manipulateAutoexecRun)
+        openEmulatorRunDebug(conf.ActionType.run,uri)
     }
 
 
     function debugASM(uri: vscode.Uri) {
-        logger.channel(logger.localize("ASM.openemu.msg", file, conf.extConf.asmType, conf.extConf.emulator));
-        jsdos.openEmulator(uri, cis, context, jsdos_api, jsdos.manipulateAutoexecDebug)
+        openEmulatorRunDebug(conf.ActionType.debug,uri)
     }
 
     context.subscriptions.push(

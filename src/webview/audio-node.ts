@@ -48,7 +48,7 @@ export function audioNode(sampleRate:number,
 
     if (sampleRate === 0) {
         console.warn("Can't create audio node with sampleRate === 0, ingnoring");
-        return () => {};
+        return undefined;
     }
 
     let audioContext: AudioContext | null = null;
@@ -67,7 +67,7 @@ export function audioNode(sampleRate:number,
     }
 
     if (audioContext == null) {
-        return () => {};
+        return undefined;
     }
 
     const samplesQueue = new SamplesQueue();
