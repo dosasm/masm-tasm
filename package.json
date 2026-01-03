@@ -538,7 +538,6 @@
     "yarn": false
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.9",
     "@types/mocha": "^10.0.10",
     "@types/node-fetch": "^2.6.13",
     "@types/vscode": "^1.105.0",
@@ -554,7 +553,6 @@
     "emulators": "https://github.com/dosasm/emulators/releases/download/v8.3.9-dosasm4.0/emulators-v8.3.9-dosasm4.0.tgz",
     "eslint": "^9.39.1",
     "glob": "^11.0.3",
-    "js-yaml": "^4.1.1",
     "jszip": "^3.10.1",
     "mocha": "^11.7.5",
     "node-fetch": "^3.3.2",

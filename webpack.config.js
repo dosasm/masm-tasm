@@ -28,8 +28,15 @@ const extensionConfig = {
     },
     devtool: 'source-map',
     externals: [
-        nodeExternals(),
-        { vscode: "commonjs vscode" }
+        // nodeExternals({allowlist: ['yaml','jszip','vscode-uri',"emulators"]}),
+        { vscode: "commonjs vscode" },
+        ({context, request}, callback) => {
+            if (request.startsWith('node:')) {
+                const moduleName = request.slice(5);
+                return callback(null, `commonjs ${moduleName}`);
+            }
+            callback();
+        }
     ],
     resolve: {
         extensions: ['.ts', '.js',],

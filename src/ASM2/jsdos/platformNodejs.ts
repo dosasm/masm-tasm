@@ -30,7 +30,7 @@ export class VScodeNodeJsPlatform implements Platform {
         })
     }
     node_require(path: string) {
-        return __webpack_require__(path)
+        return __non_webpack_require__(path)
     }
     createWorker(workerUrl: string, onerror: (e: ErrorEvent) => void, onmessage: (e: MessageEvent) => void): Promise<Worker> {
         const w = new nWorker(workerUrl)
