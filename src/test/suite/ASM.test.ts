@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { DosEmulatorType, MountMode } from '../../utils/configuration';
 
 import assert = require("assert");
-import { AsmResult } from "../../ASM/manager";
+import { AsmResult } from "../../ASM2/main";
 
 const folders = vscode.workspace.workspaceFolders;
 if (folders === undefined) { throw new Error(); }

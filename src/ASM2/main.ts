@@ -8,6 +8,13 @@ import { runJsdos } from "./jsdos-run";
 import { CIManager } from "./jsdos";
 import * as path from "path";
 
+export interface AsmResult {
+    message: string,
+    error?: number,
+    warn?: number,
+    [id: string]: unknown,
+}
+
 export async function ensureFileOpenn(uri: vscode.Uri) {
     let _uri = uri;
     if (_uri === undefined && vscode.window.activeTextEditor) {

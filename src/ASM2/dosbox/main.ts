@@ -54,7 +54,7 @@ async function createDosboxXlocalConf(context: vscode.ExtensionContext, basedCon
     const lang = _lang === "follow" ? vscode.env.language : _lang;
     switch (lang) {
       case "zh-cn":
-        confPath = basedConfPath;
+        confPath = boxXzh;
     }
   }
   return confPath

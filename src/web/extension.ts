@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { localize, loadI18n } from '../utils/i18n';
 
 import * as lan from '../language/main';
-import * as asm from './ASM';
+import * as asm from '../ASM2/main';
 
 export function activate(context: vscode.ExtensionContext): void {
 

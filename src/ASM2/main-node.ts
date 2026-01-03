@@ -15,7 +15,6 @@ import { uriUtils } from "../utils/util";
 import { activateJSdos } from "./jsdos/main";
 import { CIManager } from "./jsdos";
 import * as jsdos from "./main";
-import { runJsdos } from "./jsdos-run";
 
 let USE_NODEFS_WATCH = true;
 
@@ -45,12 +44,7 @@ export class Dosbox {
     ];
 }
 
-export interface AsmResult {
-    message: string,
-    error?: number,
-    warn?: number,
-    [id: string]: unknown,
-}
+
 
 export interface ActionContext {
     actionType: conf.ActionType,
@@ -112,7 +106,7 @@ export async function makeDosboxActionContext(actionType: conf.ActionType, _uri:
     return ctx;
 }
 
-async function runDosboxOrX(context: ExtensionContext, ctx: ActionContext, box: DOSBox): Promise<AsmResult> {
+async function runDosboxOrX(context: ExtensionContext, ctx: ActionContext, box: DOSBox): Promise<jsdos.AsmResult> {
     jsdos.logActionMessage(ctx.actionType,ctx.fileUri?ctx.fileUri.fsPath:"undefined");
     if (ctx.mountMode === conf.MountMode.single) {
         await emptyFolder(ctx.seperateSpaceFolder);

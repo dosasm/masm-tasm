@@ -53,7 +53,7 @@ export class DOSBox {
         if (error) {
           logger.error(JSON.stringify(error), p, this);
           vscode.window.showErrorMessage(
-            "can't open dosbox with command: " + command + "cwd:" + this.cwd
+            "can't open dosbox with command: " + command + " cwd:" + this.cwd
           );
           reject(error);
         } else {
