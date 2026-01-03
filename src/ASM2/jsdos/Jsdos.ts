@@ -71,9 +71,9 @@ export class Jsdos {
     bundle?: vscode.Uri | null | undefined,
   ): Promise<adapted.CommandInterface> {
 
-    let func=this.emulators.dosboxWorker;
+    let func=this.emulators.dosboxWorker.bind(this.emulators);
     if(useX){
-      func=this.emulators.dosboxXWorker;
+      func=this.emulators.dosboxXWorker.bind(this.emulators);
     }
 
     if (bundle === undefined) {

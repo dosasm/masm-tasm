@@ -29,3 +29,31 @@ The `uint8Arr.buffer` property returns the **entire parent `ArrayBuffer`** (not 
 - Unintended inclusion of extra bytes (e.g., prefixes/suffixes in the original buffer).  
 - Wasted memory (processing larger buffers than needed).  
 - Incorrect data parsing (e.g., magic word detection or text decoding fails due to extra bytes).  
+
+
+# `this.func(x)` vs. `let f = this.func; f(x)` in JavaScript
+## Core Difference
+Rooted in JavaScript’s **dynamic `this` binding**:
+- `this.func(x)`: Function is called as an object method → `this` binds to the owning object.
+- `let f = this.func; f(x)`: Function reference is assigned to a variable and called standalone → `this` binds to the global object (browser: `window`; Node.js: `global`), or `undefined` in strict mode.
+
+## Solutions to Achieve Consistent Behavior
+Enforce explicit `this` binding via three methods:
+1. **`bind()` (Permanent Binding)**:  
+   `let f = this.func.bind(this); f(x);`
+2. **`call()`/`apply()` (Temporary Binding for Immediate Calls)**:  
+   `f.call(this, x);` / `f.apply(this, [x]);`
+3. **Arrow Function (ES6+, Lexical `this` Inheritance)**:  
+   `let f = (x) => this.func(x); f(x);`
+
+## Scenario Quick Reference
+| Method       | Features                                  | Use Case                          |
+|--------------|-------------------------------------------|-----------------------------------|
+| `bind()`     | Permanent binding, reusable function      | Repeated calls with same context  |
+| `call()`/`apply()` | Temporary binding, one-time execution | Single call with discrete/array args |
+| Arrow Function | Concise, inherits outer `this`         | Simple ES6+ binding scenarios     |
+
+## Summary
+The two call styles differ because of `this` binding rules at call time. Explicit binding with `bind()`, `call()`, `apply()`, or arrow functions ensures consistent behavior.
+
+是否需要我帮你把这份精简说明**提炼成一张速记卡片**，方便快速查阅？

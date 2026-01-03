@@ -5,6 +5,7 @@ const bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
 const emu = [
     conf.DosEmulatorType.jsdos,
+    conf.DosEmulatorType.jsdosX,
     conf.DosEmulatorType.dosbox,
     conf.DosEmulatorType.dosboxX
 ];
