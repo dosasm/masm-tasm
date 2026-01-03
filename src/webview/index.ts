@@ -2,6 +2,7 @@ import { VscodeApi } from "./api";
 import { webGl } from "./webgl"
 import { audioNode } from "./audio-node"
 import { bindKeyboard, bindSmallSoftKeyboard } from "./keyboard";
+import { bindMouse } from "./mouse";
 
 const eles={
     ciPause:document.getElementById("ci-pause") as HTMLInputElement,
@@ -39,9 +40,10 @@ if (vapi) {
         let soundFrequency=await vapi.soundFrequency();
         soundPush=audioNode(soundFrequency);
     }, 100);
-    // init the keyboard
+    // init the keyboard and mouse
     bindKeyboard(vapi,eles.canvas);
     document.addEventListener("DOMContentLoaded",()=>bindSmallSoftKeyboard(vapi))
+    bindMouse(eles.canvas,vapi);
     
     // init the ci select
     setInterval(async () => {
