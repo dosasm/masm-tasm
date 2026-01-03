@@ -13,9 +13,9 @@ function uint8ArrayToArrayBuffer(uint8Arr: Uint8Array): ArrayBuffer {
   return uint8Arr.buffer.slice(uint8Arr.byteOffset, uint8Arr.byteOffset + uint8Arr.byteLength) as ArrayBuffer;
 }
 
-class WebVscodePlatform extends Browser {
-  constructor(private dist: vscode.Uri) {
-    super()
+class WebVscodePlatform implements Platform {
+  resolveJSpath(a: { prefix: string; js: string; suffix: string }): string {
+    throw new Error("Method not implemented.")
   }
   name = "vscode"
   httpRequest = async function (url: string, options: adapted.XhrOptions): Promise<string | ArrayBuffer> {
@@ -32,6 +32,25 @@ class WebVscodePlatform extends Browser {
     }
     return ""
   }
+  node_require(path: string) {
+    return require(path)
+  }
+  async createWorker(workerUrl: string, onerror: (e: ErrorEvent) => void, onmessage: (e: MessageEvent) => void): Promise<Worker> {
+    const response = await fetch(workerUrl);
+    if (response.status !== 200) {
+      throw new Error("Unable to download '" + workerUrl + "' (" +
+        response.status + "): " + response.statusText);
+    }
+    const b = await response.blob()
+    const localUrl = URL.createObjectURL(b);
+    const worker = new Worker(localUrl);
+    worker.onerror = onerror;
+    worker.onmessage = onmessage
+    return worker
+  }
+  constructor(private dist: vscode.Uri) {
+  }
+
 }
 
 export class Jsdos {

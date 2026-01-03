@@ -1,4 +1,4 @@
-import * as yaml from 'js-yaml';
+import * as yaml from 'yaml';
 import { env, Uri, workspace } from 'vscode';
 import { keywordType } from './Hover';
 const fs = workspace.fs;
@@ -25,7 +25,7 @@ export class HoverFromMarkdown {
         let re = regex.exec(str);
         while (re?.length === 3) {
             const [, yamlcode, content] = re;
-            const head = yaml.load(yamlcode);
+            const head = yaml.parse(yamlcode);
             if (content.includes('---')) {
                 const info = content.split('\n---\n');
                 target.push({ head, info } as HoverInfoItem);

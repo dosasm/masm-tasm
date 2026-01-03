@@ -525,7 +525,7 @@
     "watch-tsc": "tsc -watch -p ./",
     "watch": "webpack --mode development --watch",
     "compile": "webpack --mode production",
-    "compile-dev": "tsc -p ./ && webpack --mode development",
+    "compile-dev": "webpack --mode development",
     "test": "node ./dist/test/runTest.js",
     "test-web": "vscode-test-web --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../masm-tasm --open-devtools ./samples",
     "run-in-browser": "vscode-test-web --extensionDevelopmentPath=. --extensionPath=../masm-tasm .",
@@ -554,7 +554,7 @@
     "emulators": "https://github.com/dosasm/emulators/releases/download/v8.3.9-dosasm4.0/emulators-v8.3.9-dosasm4.0.tgz",
     "eslint": "^9.39.1",
     "glob": "^11.0.3",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "jszip": "^3.10.1",
     "mocha": "^11.7.5",
     "node-fetch": "^3.3.2",
@@ -576,5 +576,8 @@
     "url": "https://github.com/dosasm/masm-tasm/issues",
     "email": "xsro@foxmail.com"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "yaml": "^2.8.2"
+  }
 }
