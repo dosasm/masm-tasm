@@ -65,6 +65,7 @@ const webExtensionConfig = {
         filename: '[name].js',
         path: path.join(__dirname, './dist/web'),
         libraryTarget: 'commonjs',
+        devtoolModuleFilenameTemplate: '../../[resource-path]'
     },
     resolve: {
         mainFields: ['browser', 'module', 'main'],
@@ -99,23 +100,6 @@ const webExtensionConfig = {
             process: 'process/browser',
             Buffer: ['buffer', 'Buffer'], // 提供 Buffer 全局变量
         }),
-        // 关键修复：处理 node: 协议的模块解析
-        new webpack.NormalModuleReplacementPlugin(
-            /^node:/,
-            (resource) => {
-                const mod = resource.request.replace(/^node:/, '');
-                switch (mod) {
-                    case 'process':
-                        resource.request = 'process/browser';
-                        break;
-                    case 'buffer':
-                        resource.request = 'buffer/';
-                        break;
-                    default:
-                        resource.request = mod;
-                }
-            }
-        )
     ],
     externals: {
         vscode: 'commonjs vscode',

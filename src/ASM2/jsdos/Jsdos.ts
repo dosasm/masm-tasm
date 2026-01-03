@@ -1,15 +1,49 @@
 import * as adapted from "emulators";
-import { CommandInterface } from "emulators";
+import { platform, Platform, Browser } from "emulators";
 import * as vscode from "vscode";
 import { Conf } from "../dosbox/conf";
 import * as Jszip from "jszip";
-import { isNode } from "browser-or-node";
+import { isBrowser, isNode, isWebWorker } from "browser-or-node";
 import { createTerminal } from "./utils/terminal";
+import { logger } from "../../utils/logger";
 
 const fs = vscode.workspace.fs;
 
+function uint8ArrayToArrayBuffer(uint8Arr: Uint8Array): ArrayBuffer {
+  return uint8Arr.buffer.slice(uint8Arr.byteOffset, uint8Arr.byteOffset + uint8Arr.byteLength) as ArrayBuffer;
+}
+
+function printFirst10BytesHex(uint8Arr: Uint8Array): void {
+  const first10 = uint8Arr.subarray(0, 10);
+  const hexStr = Array.from(first10).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+  console.log(hexStr);
+}
+
+class WebVscodePlatform extends Browser {
+  constructor(private dist: vscode.Uri) {
+    super()
+  }
+  name = "vscode"
+  httpRequest = async function (url: string, options: adapted.XhrOptions): Promise<string | ArrayBuffer> {
+    const uri = vscode.Uri.parse(url);
+    const data = await fs.readFile(uri);
+    console.log(uri)
+    printFirst10BytesHex(data);
+    if (uri.path.endsWith("wasm")) {
+      return uint8ArrayToArrayBuffer(data);
+    }
+    else if (uri.path.endsWith("js")) {
+      const decoder = new TextDecoder('utf-8');
+      return decoder.decode(data);
+    } else {
+      logger.channel("error cannot download" + uri.toString(),)
+    }
+    return ""
+  }
+}
+
 export class Jsdos {
-  emulators:adapted.Emulators;
+  emulators: adapted.Emulators;
   public set pathPrefix(pathPrefix: string) {
     this.emulators = adapted.getEmulators(pathPrefix);
   }
@@ -19,9 +53,15 @@ export class Jsdos {
   constructor(private context: vscode.ExtensionContext) {
     const dist = vscode.Uri.joinPath(context.extensionUri, "node_modules/emulators/build/wasm/");
     this.pathPrefix = isNode ? dist.fsPath : dist.toString();
-    this.emulators=adapted.getEmulators(this.pathPrefix)
+    this.emulators = adapted.getEmulators(this.pathPrefix)
+    if (isWebWorker) {
+      platform.current = new WebVscodePlatform(dist)
+    }
   }
-  createTerminal=createTerminal;
+
+
+
+  createTerminal = createTerminal;
 
   async setBundle(
     bundle: vscode.Uri | Uint8Array,

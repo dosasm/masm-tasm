@@ -66,6 +66,7 @@ export function logActionMessage(act: conf.ActionType, file: string) {
             log = logger.localize("ASM.debug.msg", file, conf.extConf.asmType, conf.extConf.emulator);
     }
     logger.channel(log)
+    console.log(log)
 }
 
 export async function openEmulatorRunDebug(
