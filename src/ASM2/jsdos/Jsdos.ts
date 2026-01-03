@@ -13,12 +13,6 @@ function uint8ArrayToArrayBuffer(uint8Arr: Uint8Array): ArrayBuffer {
   return uint8Arr.buffer.slice(uint8Arr.byteOffset, uint8Arr.byteOffset + uint8Arr.byteLength) as ArrayBuffer;
 }
 
-function printFirst10BytesHex(uint8Arr: Uint8Array): void {
-  const first10 = uint8Arr.subarray(0, 10);
-  const hexStr = Array.from(first10).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
-  console.log(hexStr);
-}
-
 class WebVscodePlatform extends Browser {
   constructor(private dist: vscode.Uri) {
     super()
@@ -27,8 +21,6 @@ class WebVscodePlatform extends Browser {
   httpRequest = async function (url: string, options: adapted.XhrOptions): Promise<string | ArrayBuffer> {
     const uri = vscode.Uri.parse(url);
     const data = await fs.readFile(uri);
-    console.log(uri)
-    printFirst10BytesHex(data);
     if (uri.path.endsWith("wasm")) {
       return uint8ArrayToArrayBuffer(data);
     }

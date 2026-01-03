@@ -49,12 +49,13 @@ export function bindKeyboard(ci: VscodeApi,el:HTMLCanvasElement) {
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-    // el.addEventListener("blur", onBlur);
+    el.addEventListener("blur", onBlur);
+    el.addEventListener("click", ()=>{window.focus()});
 
     return () => {
         releaseKeys();
-        el.removeEventListener("keydown", onKeyDown);
-        el.removeEventListener("keyup", onKeyUp);
+        window.removeEventListener("keydown", onKeyDown);
+        window.removeEventListener("keyup", onKeyUp);
         el.removeEventListener("blur", onBlur);
     };
 }
