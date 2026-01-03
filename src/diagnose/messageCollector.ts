@@ -1,4 +1,7 @@
-
+import * as vscode from "vscode"
+import {AssemblerMessageDiagnose} from "./main"
+import { logger } from "../utils/logger";
+import * as conf from '../utils/configuration';
 
 export function messageCollector(): [(msg: string) => void, Promise<string>] {
     let allmsg = "";
@@ -26,5 +29,23 @@ export function messageCollector(): [(msg: string) => void, Promise<string>] {
         new Promise<string>(
             _resolve => resolve = _resolve
         )];
+}
 
+export async function messageDiagnose(message:string,doc:vscode.TextDocument,diag:AssemblerMessageDiagnose){
+    const diagnose = diag.process(message, doc, conf.extConf.asmType);
+    if (diagnose) {
+        if (diagnose?.error > 0) {
+            vscode.window.showErrorMessage(logger.localize("ASM.error"));
+            logger.outputChannel.show();
+        }
+        logger.channel(
+            logger.localize('diag.msg', diagnose.error.toString(), diagnose.warn.toString()),
+            "\n\t" + message.replace(/\r/g, "").replace(/[\n]+/g, "\n\t")
+        );
+    }
+    return {
+        message,
+        error: diagnose?.error,
+        warn: diagnose?.warn
+    };
 }

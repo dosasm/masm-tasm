@@ -258,7 +258,7 @@
             "TASM": {
               "baseBundle": "<built-in>/TASM.jsdos",
               "before": [
-                "set PATH=C:\\TASM"
+                "PATH %PATH%;C:\\TASM"
               ],
               "run": [
                 "TASM ${file}",
@@ -275,7 +275,7 @@
             "MASM-v6.11": {
               "baseBundle": "<built-in>/MASM-v6.11.jsdos",
               "before": [
-                "set PATH=C:\\MASM"
+                "PATH %PATH%;C:\\MASM"
               ],
               "run": [
                 "masm ${file};",
@@ -291,7 +291,7 @@
             "MASM-v5.00": {
               "baseBundle": "<built-in>/MASM-v5.00.jsdos",
               "before": [
-                "set PATH=C:\\MASM"
+                "PATH %PATH%;C:\\MASM"
               ],
               "run": [
                 "masm ${file};",

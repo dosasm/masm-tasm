@@ -2,7 +2,6 @@ import { ExtensionContext, workspace } from "vscode";
 import { activateDosbox, DOSBox } from "./dosbox/main";
 import { Utils } from 'vscode-uri';
 import * as path from "path";
-import { messageCollector } from "../diagnose/messageCollector";
 
 import * as nodefs from "fs";
 import * as conf from "../utils/configuration";
@@ -15,6 +14,7 @@ import { uriUtils } from "../utils/util";
 import { activateJSdos } from "./jsdos/main";
 import { CIManager } from "./jsdos";
 import * as jsdos from "./main";
+import * as Diag from "../diagnose/main";
 
 let USE_NODEFS_WATCH = true;
 
@@ -187,7 +187,7 @@ async function runDosboxOrX(context: ExtensionContext, ctx: ActionContext, box: 
 
     let result = undefined;
 
-    const [hook, promise] = messageCollector();
+    const [hook, promise] = Diag.messageCollector();
     if (ctx.actionType !== conf.ActionType.open && USE_NODEFS_WATCH) {
         nodefs.watchFile(logUri.fsPath, () => {
             try {
@@ -228,15 +228,17 @@ export async function activate(context: vscode.ExtensionContext) {
     const jsdos_api = activateJSdos(context);
     const dosbox_api = await activateDosbox(context);
     const cis = new CIManager(context);
+    const diag = Diag.activate(context);
 
     async function openEmulatorRunDebug(openOrRunOrDebug:conf.ActionType,uri: vscode.Uri) {
         const ctx=await makeDosboxActionContext(openOrRunOrDebug,uri,context)
         if (conf.extConf.emulator === conf.DosEmulatorType.dosboxX || conf.extConf.emulator === conf.DosEmulatorType.dosbox) {
             const box = conf.extConf.emulator === conf.DosEmulatorType.dosboxX ? dosbox_api.dosboxX : dosbox_api.dosbox;
-            await runDosboxOrX(context, ctx, box)
+            const result=await runDosboxOrX(context, ctx, box);
+            Diag.messageDiagnose(result.message,ctx.doc,diag);
         }
         if (conf.extConf.emulator === conf.DosEmulatorType.jsdos) {
-            await jsdos.openEmulatorRunDebug(openOrRunOrDebug,uri, cis, context, jsdos_api)
+            await jsdos.openEmulatorRunDebug(openOrRunOrDebug,uri, cis, context, jsdos_api,diag)
         }
     }
 

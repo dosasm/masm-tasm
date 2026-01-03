@@ -11,6 +11,8 @@ import { getInternetlink } from './diagnoseMasm-error-list';
 import { tasmDiagnose } from './diagnoseTASM';
 import { SeeinCPPDOCS } from './codeAction';
 
+export {messageCollector,messageDiagnose} from "./messageCollector"
+
 export enum Assembler {
     MASM = "MASM",
     TASM = "TASM"

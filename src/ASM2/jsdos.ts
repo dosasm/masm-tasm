@@ -31,6 +31,8 @@ function flattenFSNodes(parent: string, nodes: FsNode[]) {
 export class JSdosCi {
     // The mount is a key-value map, key is the disk name in the enumlator and value is the information of the folder and files
     mount: Record<string, MountFolder> = {}
+    public stdout=""
+    public onStdout:Record<string,(data:string,stdout:string)=>void>={}
     public lastFrameTimeMs: number = 0
     public get ci() {
         return this._ci
@@ -43,6 +45,12 @@ export class JSdosCi {
         this.time = new Date();
         this.id = JSdosCi.global_id;
         JSdosCi.global_id++;
+        this.ci.events().onStdout((data)=>{
+            this.stdout+=data;
+            for(const l in this.onStdout){
+                this.onStdout[l](data,this.stdout)
+            }
+        })
     }
 
     addMount(disk: string, m: MountFolder) {
