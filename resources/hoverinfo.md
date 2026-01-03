@@ -44,7 +44,7 @@ syntax: `int [interruptIndex]`
 
 ---
 
-软件中断指令（中断调用指令），[常见中断表](https://gitee.com/dosasm/masm-tasm/wikis/Interrupt-list)
+软件中断指令（中断调用指令），[常见中断表](https://github.com/dosasm/masm-tasm/wikis/Interrupt-list)
 
 syntax: `int [interruptIndex]`
 

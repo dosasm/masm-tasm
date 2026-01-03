@@ -1,6 +1,6 @@
 # 16 位/32 位 DOS 汇编语言支持
 
-[中文](README.zh.md)|[English](README.md)
+[中文](README.md)|[English](README.md)
 
 :raising_hand:实现对 DOSBox 等汇编工具的快速调用。主要针对 DOS 下的单文件汇编语言学习，可能适合学习《汇编语言》、《微机原理》等课程，主要功能特性如下：
 
@@ -94,7 +94,6 @@ VSCode 文档中关于插件安装路径的说明[VSCode-doc](https://code.visua
 - 插件通过[DOSBox](https://www.dosbox.com)、[caiiiycuk](https://github.com/caiiiycuk)的[JS DOS](https://js-dos.com/) 和[MSDOS player](http://takeda-toshiya.my.coocan.jp/msdos)模拟 DOS 环境
 - 插件使用了[Roncho](https://marketplace.visualstudio.com/publishers/Roncho)的[Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086)中的汇编语法信息
 - 一些[相关信息](doc/license_and_info.md)和[鸣谢](doc/Thanks.md)
-- gitee 上的一些笔记和代码: [笔记](https://dosasm.gitee.io/),[代码](https://gitee.com/dosasm/asmcodes)
 - 一些相关资料：[wiki](https://github.com/dosasm/masm-tasm/wiki)
 - 插件难免会有一些 bug，欢迎到 github 发[issue](https://github.com/dosasm/masm-tasm/issues)或者邮件`xsro@foxmail.com`，一起交流和完善。
 

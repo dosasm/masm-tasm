@@ -43,7 +43,7 @@ export class Jsdos {
   public jszip: Jszip = new Jszip();
 
   constructor(private context: vscode.ExtensionContext) {
-    const dist = vscode.Uri.joinPath(context.extensionUri, "node_modules/emulators/build/wasm/");
+    const dist = vscode.Uri.joinPath(context.extensionUri, "resources/node_modules/emulators/build/wasm/");
     this.pathPrefix = isNode ? dist.fsPath : dist.toString();
     this.emulators = adapted.getEmulators(this.pathPrefix)
     if (isWebWorker) {

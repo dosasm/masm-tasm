@@ -3,7 +3,8 @@
   "displayName": "MASM/TASM",
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
-  "version": "1.1.1",
+  "preview": true,
+  "version": "2.0.0-beta1.0",
   "keywords": [
     "dosbox",
     "16位",
@@ -15,7 +16,7 @@
   ],
   "icon": "resources/dosboxasm.png",
   "engines": {
-    "vscode": "^1.61.0"
+    "vscode": "^1.105.0"
   },
   "categories": [
     "Programming Languages",
@@ -29,7 +30,6 @@
     }
   ],
   "activationEvents": [
-    "onLanguage:assembly",
     "onLanguage:asm-collection",
     "onLanguage:tasm",
     "onLanguage:masm",

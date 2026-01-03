@@ -30,7 +30,7 @@ pnpm compile-dev
 To generate `visx` package
 
 ```sh
-npx vsce package
+pnpx vsce package
 ```
 
 Press <kbd>F5</kbd> or Click `run` -> `Start Debugging`

@@ -1,6 +1,6 @@
 <img align="right"  src="./resources/dosboxasm.png">
 
-# Basic support for MASM/TASM v1.x
+# Basic support for MASM/TASM v2.x
 
 [Chinese](README.zh.md)|[English](README.md)|
 [中文 in gitee](https://gitee.com/dosasm/masm-tasm/)

@@ -1,4 +1,4 @@
-const { existsSync,copyFileSync } = require('fs');
+const { existsSync,copyFileSync,mkdirSync,readdirSync } = require('fs');
 const path = require('path');
 const pkg = require("../package.json");
 
@@ -25,4 +25,18 @@ async function main() {
     }
 }
 
+async function copyEmulator(){
+    const src=path.resolve(__dirname,"../node_modules/emulators/build/wasm/")
+    const dest=path.resolve(__dirname,"../resources/node_modules/emulators/build/wasm/")
+    mkdirSync(dest,{recursive:true})
+    const files=readdirSync(src);
+    for(const file of files){
+        copyFileSync(
+            path.resolve(src,file),
+            path.resolve(dest,file),
+        )
+    }
+}
+
 main()
+copyEmulator()
