@@ -28,6 +28,7 @@ const extensionConfig = {
     },
     devtool: 'source-map',
     externals: [
+        nodeExternals(),
         { vscode: "commonjs vscode" }
     ],
     resolve: {
