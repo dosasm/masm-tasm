@@ -102,7 +102,7 @@
         "title": "%command.cleanalldianose%"
       },
       {
-        "command":"masm-tasm.show-jsdos",
+        "command": "masm-tasm.show-jsdos",
         "title": "show the jsdos instances"
       },
       {
@@ -119,57 +119,73 @@
       "title": "MASM/TASM",
       "properties": {
         "masm-tasm.command.dosbox": {
-            "default": "dosbox",
-            "type": "string",
-            "markdownDescription": "The command for open your DOSBox\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
+          "default": "dosbox",
+          "type": "string",
+          "markdownDescription": "The command for open your DOSBox\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
+        },
+        "masm-tasm.command.dosboxX": {
+          "default": "dosbox-x -nopromptfolder",
+          "type": "string",
+          "markdownDescription": "The command for open your DOSBox-x\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
+        },
+        "masm-tasm.paths.dosbox": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
           },
-          "masm-tasm.command.dosboxX": {
-            "default": "dosbox-x -nopromptfolder",
-            "type": "string",
-            "markdownDescription": "The command for open your DOSBox-x\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
+          "markdownDescription": "Path variable to inserted in env for open dosbox"
+        },
+        "masm-tasm.paths.dosboxX": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
           },
-          "masm-tasm.dosbox.config": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "default": {},
-            "markdownDescription": "The configurations for dosbox, will be write to the `dosbox.conf` file"
+          "markdownDescription": "Path variable to inserted in env for open dosbox-x"
+        },
+        "masm-tasm.dosbox.config": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           },
-          "masm-tasm.dosboxX.config": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "default": {},
-            "markdownDescription": "The configurations for dosbox-x,will be write to the `dosbox-x.conf` file"
+          "default": {},
+          "markdownDescription": "The configurations for dosbox, will be write to the `dosbox.conf` file"
+        },
+        "masm-tasm.dosboxX.config": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           },
-          "masm-tasm.dosboxX.lang": {
-            "type": "string",
-            "default": "follow",
-            "enum": [
-              "en",
-              "zh_CN",
-              "follow"
-            ],
-            "markdownDescription": "set builtin DOSBoxX configuration",
-            "markdownEnumDescriptions": [
-              "use default English config",
-              "use zh_CN config",
-              "follow vscode's language config"
-            ]
+          "default": {},
+          "markdownDescription": "The configurations for dosbox-x,will be write to the `dosbox-x.conf` file"
+        },
+        "masm-tasm.dosboxX.lang": {
+          "type": "string",
+          "default": "follow",
+          "enum": [
+            "en",
+            "zh_CN",
+            "follow"
+          ],
+          "markdownDescription": "set builtin DOSBoxX configuration",
+          "markdownEnumDescriptions": [
+            "use default English config",
+            "use zh_CN config",
+            "follow vscode's language config"
+          ]
+        },
+        "masm-tasm.jsdos.ignore": {
+          "type": "array",
+          "items": {
+            "type": "string"
           },
-          "masm-tasm.jsdos.ignore": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "default": [
-              "\\.git",
-              "\\.vscode",
-              "node_modules"
-            ]
-          },
+          "default": [
+            "\\.git",
+            "\\.vscode",
+            "node_modules"
+          ]
+        },
         "masmtasm.ASM.mode": {
           "type": "string",
           "default": "single file",
@@ -510,7 +526,7 @@
     "watch": "webpack --mode development --watch",
     "compile": "webpack --mode production",
     "compile-dev": "tsc -p ./ && webpack --mode development",
-    "compile-webview":"webpack --mode development --config webview.webpack.config.js",
+    "compile-webview": "webpack --mode development --config webview.webpack.config.js",
     "test": "node ./dist/test/runTest.js",
     "test-web": "vscode-test-web --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../masm-tasm --open-devtools ./samples",
     "run-in-browser": "vscode-test-web --extensionDevelopmentPath=. --extensionPath=../masm-tasm .",
