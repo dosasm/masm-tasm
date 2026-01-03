@@ -6,7 +6,7 @@ export function runInWebview(
   bundle: Uint8Array | string
 ): vscode.WebviewPanel {
   const viewColumn: vscode.ViewColumn | undefined = vscode.workspace
-    .getConfiguration("vscode-dosbox")
+    .getConfiguration("masm-tasm")
     .get("jsdosWeb.viewColumn");
   const panel = vscode.window.createWebviewPanel(
     "jsdos pannel",

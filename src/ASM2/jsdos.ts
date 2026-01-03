@@ -159,7 +159,7 @@ export class CIManager {
 
 function show_webview(cis: CIManager, webviewingId: number, context: vscode.ExtensionContext) {
     const viewColumn: vscode.ViewColumn | undefined = vscode.workspace
-        .getConfiguration("vscode-dosbox")
+        .getConfiguration("masm-tasm")
         .get("jsdosWeb.viewColumn");
     const panel = vscode.window.createWebviewPanel(
         "jsdos pannel",

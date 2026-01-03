@@ -46,7 +46,7 @@ async function allFiles(
 ) {
   const dirs = await fs.readDirectory(dir);
   const r: string[] | undefined = vscode.workspace
-    .getConfiguration("vscode-dosbox")
+    .getConfiguration("masm-tasm")
     .get("jsdos.ignore");
   const regs = r ? r.map((val) => new RegExp(val)) : [/\.git/, /\.vscode/];
   for (const [term, type] of dirs) {

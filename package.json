@@ -32,7 +32,9 @@
     "onLanguage:assembly",
     "onLanguage:asm-collection",
     "onLanguage:tasm",
-    "onLanguage:masm"
+    "onLanguage:masm",
+    "onCommand:masm-tasm.openDosbox",
+    "onCommand:masm-tasm.openDosboxX"
   ],
   "main": "./dist/extension.js",
   "browser": "./dist/web/extension.js",
@@ -102,12 +104,72 @@
       {
         "command":"masm-tasm.show-jsdos",
         "title": "show the jsdos instances"
+      },
+      {
+        "command": "dosbox.openDosbox",
+        "title": "Open Dosbox"
+      },
+      {
+        "command": "dosbox.openDosboxX",
+        "title": "Open Dosbox-x"
       }
     ],
     "configuration": {
       "type": "object",
       "title": "MASM/TASM",
       "properties": {
+        "masm-tasm.command.dosbox": {
+            "default": "dosbox",
+            "type": "string",
+            "markdownDescription": "The command for open your DOSBox\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
+          },
+          "masm-tasm.command.dosboxX": {
+            "default": "dosbox-x -nopromptfolder",
+            "type": "string",
+            "markdownDescription": "The command for open your DOSBox-x\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
+          },
+          "masm-tasm.dosbox.config": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "markdownDescription": "The configurations for dosbox, will be write to the `dosbox.conf` file"
+          },
+          "masm-tasm.dosboxX.config": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "markdownDescription": "The configurations for dosbox-x,will be write to the `dosbox-x.conf` file"
+          },
+          "masm-tasm.dosboxX.lang": {
+            "type": "string",
+            "default": "follow",
+            "enum": [
+              "en",
+              "zh_CN",
+              "follow"
+            ],
+            "markdownDescription": "set builtin DOSBoxX configuration",
+            "markdownEnumDescriptions": [
+              "use default English config",
+              "use zh_CN config",
+              "follow vscode's language config"
+            ]
+          },
+          "masm-tasm.jsdos.ignore": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "\\.git",
+              "\\.vscode",
+              "node_modules"
+            ]
+          },
         "masmtasm.ASM.mode": {
           "type": "string",
           "default": "single file",
@@ -224,12 +286,6 @@
                 "masm ${file};",
                 "link ${filename}.OBJ;",
                 ">debug ${filename}.exe"
-              ],
-              "support": [
-                "jsdos",
-                "dosbox",
-                "dosbox-x",
-                "msdos player"
               ]
             }
           }
@@ -241,14 +297,12 @@
           "enum": [
             "jsdos",
             "dosbox",
-            "dosbox-x",
-            "msdos player"
+            "dosbox-x"
           ],
           "enumDescriptions": [
             "%config.emulator.jsdos%",
             "%config.emulator.dosbox%",
-            "%config.emulator.dosboxX%",
-            "%config.emulator.player%"
+            "%config.emulator.dosboxX%"
           ]
         },
         "masmtasm.ASM.savefirst": {
@@ -458,8 +512,8 @@
     "compile-dev": "tsc -p ./ && webpack --mode development",
     "compile-webview":"webpack --mode development --config webview.webpack.config.js",
     "test": "node ./dist/test/runTest.js",
-    "test-web": "vscode-test-web --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../vscode-dosbox --open-devtools ./samples",
-    "run-in-browser": "vscode-test-web --extensionDevelopmentPath=. --extensionPath=../vscode-dosbox .",
+    "test-web": "vscode-test-web --extensionDevelopmentPath=.  --extensionTestsPath=dist/web/test/suite/index.js --extensionPath=../masm-tasm --open-devtools ./samples",
+    "run-in-browser": "vscode-test-web --extensionDevelopmentPath=. --extensionPath=../masm-tasm .",
     "lint": "eslint src --ext ts",
     "lint-fix": "eslint src --ext ts --fix",
     "vscode:prepublish": "pnpm clean && pnpm compile"
