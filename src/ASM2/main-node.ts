@@ -237,8 +237,9 @@ export async function activate(context: vscode.ExtensionContext) {
             const result=await runDosboxOrX(context, ctx, box);
             Diag.messageDiagnose(result.message,ctx.doc,diag);
         }
-        if (conf.extConf.emulator === conf.DosEmulatorType.jsdos) {
-            await jsdos.openEmulatorRunDebug(openOrRunOrDebug,uri, cis, context, jsdos_api,diag)
+        if (conf.extConf.emulator === conf.DosEmulatorType.jsdos||conf.extConf.emulator === conf.DosEmulatorType.jsdosX) {
+            const useX=conf.extConf.emulator === conf.DosEmulatorType.jsdosX;
+            await jsdos.openEmulatorRunDebug(openOrRunOrDebug,uri, cis,useX, context, jsdos_api,diag)
         }
     }
 

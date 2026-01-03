@@ -1,5 +1,13 @@
 # Developping Blog
 
+### where-are-extensions-installed
+
+According to [VSCode-doc](https://code.visualstudio.com/docs/editor/extension-gallery#_where-are-extensions-installed), the extension will be installed in following folder:
+
+- Windows `%USERPROFILE%\.vscode\extensions`
+- mac-OS `~/.vscode/extensions`
+- Linux `~/.vscode/extensions`
+
 ## 2026/1/3 Happy New Year
 
 - to test the sound, we can use `ctrl`+`G`.

@@ -41,8 +41,12 @@
 
 ## 平台支持
 
-插件依赖[vscode-dosbox](https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox) 来与 DOS 模拟器交互。
-`vscode-dosbox`打包了 win 平台上的二进制文件，参考[它的文档](https://github.com/dosasm/vscode-dosbox/blob/main/README.zh.md#安装依赖) 在其他平台安装相关 DOS 模拟器。
+该扩展通过 [Node.js 的 `child_process` 模块](https://nodejs.org/api/child_process.html) 与 DOSBox(-X) 二进制程序进行交互。
+若要使用此功能，你必须预先安装 DOSBox 或 DOSBox-X。
+
+由于 VS Code 主要基于 JavaScript（TypeScript）构建，因此我们支持 DOSBox(-X) 的 WebAssembly（Wasm）版本——即 [js-dos](https://js-dos.com/overview.html)。
+本扩展内置了运行 js-dos 所需的全部文件，并将其作为 Web 平台下的默认 DOS 模拟器。
+
 
 ## 自定义 Actions
 
@@ -53,7 +57,7 @@
      "TASM-com": {
       "baseBundle": "<built-in>/TASM.jsdos",
       "before": [
-        "set PATH=C:\\TASM"
+        "PATH %PATH%;C:\\TASM"
       ],
       "run": [
         "TASM ${file}",

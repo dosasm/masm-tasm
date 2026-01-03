@@ -67,29 +67,27 @@ export class Jsdos {
     return bundleData;
   }
 
-  public async runInHost(
+  public async runInHost(useX:boolean,
     bundle?: vscode.Uri | null | undefined,
-    useWorker?: boolean
   ): Promise<adapted.CommandInterface> {
-    const ci = await this._runInHost(bundle, useWorker);
-    return ci;
-  }
-  private async _runInHost(
-    bundle?: vscode.Uri | null | undefined,
-    useWorker?: boolean
-  ): Promise<adapted.CommandInterface> {
+
+    let func=this.emulators.dosboxWorker;
+    if(useX){
+      func=this.emulators.dosboxXWorker;
+    }
+
     if (bundle === undefined) {
       const bundleData = await this.getBundleData();
-      const ci = await this.emulators.dosboxWorker(bundleData);
+      const ci = await func(bundleData);
       return ci;
     } else if (bundle === null) {
       const bundleData = await new Jszip()
         .file(".jsdos/dosbox.conf", "")
         .generateAsync({ type: "uint8array" });
-      return await this.emulators.dosboxWorker(bundleData);
+      return await func(bundleData);
     } else if (bundle.scheme === "file") {
       const bundleData = await fs.readFile(bundle);
-      return await this.emulators.dosboxWorker(bundleData);
+      return await func(bundleData);
     }
     throw new Error(
       "bundle uri is not a uri with schema file or undefined/null"

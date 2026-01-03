@@ -72,12 +72,13 @@ export function logActionMessage(act: conf.ActionType, file: string) {
 export async function openEmulatorRunDebug(
     openOrRunOrDebug: conf.ActionType,
     uri: vscode.Uri, cis: CIManager,
-    context: vscode.ExtensionContext, 
+    useX: boolean,
+    context: vscode.ExtensionContext,
     jsdos_api: Jsdos,
-    diag:Diag.AssemblerMessageDiagnose
-):Promise<AsmResult|undefined> {
+    diag: Diag.AssemblerMessageDiagnose
+): Promise<AsmResult | undefined> {
     let uri2 = await ensureFileOpenn(uri);
-    logActionMessage(openOrRunOrDebug,uri2?uri2.fsPath:"undefined");
+    logActionMessage(openOrRunOrDebug, uri2 ? uri2.fsPath : "undefined");
     let bundleData = await getBundle(context);
     let workspaceUri = getWorksapceUri(uri);
     const mountMode = conf.extConf.get<conf.MountMode>("ASM.mode", conf.MountMode.single);
@@ -90,20 +91,20 @@ export async function openEmulatorRunDebug(
             manipulateAutoexec = manipulateAutoexecDebug
             break;
     }
-    let ci = await runJsdos(jsdos_api, bundleData, workspaceUri, uri2, mountMode, manipulateAutoexec);
+    let ci = await runJsdos(jsdos_api, bundleData, useX, workspaceUri, uri2, mountMode, manipulateAutoexec);
     cis.addCI(ci);
     let t = cis.last.terminal();
     cis.showWebview();
 
-    if (openOrRunOrDebug===conf.ActionType.run||openOrRunOrDebug===conf.ActionType.debug){
+    if (openOrRunOrDebug === conf.ActionType.run || openOrRunOrDebug === conf.ActionType.debug) {
         const [hook, promise] = Diag.messageCollector();
-        cis.last.onStdout["ASM2/main"]=(data:string,stdout:string)=>{
+        cis.last.onStdout["ASM2/main"] = (data: string, stdout: string) => {
             hook(data)
         }
-        const message=await promise;
-        const doc=await vscode.workspace.openTextDocument(uri);
-        Diag.messageDiagnose(message,doc,diag)
-        return { message, result:cis.last.stdout };
+        const message = await promise;
+        const doc = await vscode.workspace.openTextDocument(uri);
+        Diag.messageDiagnose(message, doc, diag)
+        return { message, result: cis.last.stdout };
     }
 }
 
@@ -141,17 +142,19 @@ export async function activate(context: vscode.ExtensionContext) {
     const cis = new CIManager(context);
     const diag = Diag.activate(context);
 
+    const useX = conf.extConf.emulator === conf.DosEmulatorType.jsdosX;
+
     function openEmulator(uri: vscode.Uri) {
-        openEmulatorRunDebug(conf.ActionType.open, uri, cis, context, jsdos_api,diag)
+        openEmulatorRunDebug(conf.ActionType.open, uri, cis, useX, context, jsdos_api, diag)
     }
 
     function runASM(uri: vscode.Uri) {
-        openEmulatorRunDebug(conf.ActionType.run, uri, cis, context, jsdos_api,diag)
+        openEmulatorRunDebug(conf.ActionType.run, uri, cis, useX, context, jsdos_api, diag)
     }
 
 
     function debugASM(uri: vscode.Uri) {
-        openEmulatorRunDebug(conf.ActionType.debug, uri, cis, context, jsdos_api,diag)
+        openEmulatorRunDebug(conf.ActionType.debug, uri, cis, useX, context, jsdos_api, diag)
     }
 
     context.subscriptions.push(

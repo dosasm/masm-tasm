@@ -109,23 +109,3 @@ export const workspaceTestSuite = suite("workspace mode test", function () {
 	}
 });
 
-if (process.platform === 'win32') {
-	const emu = DosEmulatorType.msdos;
-	suite(`test in ${emu}`, async function () {
-		this.timeout("60s");
-		this.beforeEach(async function () {
-			await vscode.commands.executeCommand('workbench.action.closeAllEditors');
-		});
-		for (const asm of [profileId[0]]) {
-			for (const [file, shouldErr] of [filelist[0], filelist[1]]) {
-				const _test = testAsmCommand([file, shouldErr], emu, asm, MountMode.single);
-				test(_test[0], _test[1]);
-			}
-			for (const [file, shouldErr] of [filelist[0], filelist[2]]) {
-				const _test = testAsmCommand([file, shouldErr], emu, asm, MountMode.workspace);
-				test(_test[0], _test[1]);
-			}
-		}
-	});
-}
-

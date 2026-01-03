@@ -312,11 +312,13 @@
           "description": "%config.emulator.description%",
           "enum": [
             "jsdos",
+            "jsdos-x",
             "dosbox",
             "dosbox-x"
           ],
           "enumDescriptions": [
             "%config.emulator.jsdos%",
+            "%config.emulator.jsdosX%",
             "%config.emulator.dosbox%",
             "%config.emulator.dosboxX%"
           ]

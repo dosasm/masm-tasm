@@ -7,6 +7,7 @@ import { Jsdos } from "./jsdos/main";
 import { CommandInterface } from "emulators";
 
 export async function runJsdos(jsdos:Jsdos,bundleData:Uint8Array,
+    useX:boolean,
     workspaceFolderUri: vscode.Uri, fileUri: vscode.Uri|undefined,mountMode: conf.MountMode,
     manipulateAutoexec?:(autoexec:string[],fileInJsdos:string)=>void)
     : Promise<CommandInterface> {
@@ -52,6 +53,6 @@ export async function runJsdos(jsdos:Jsdos,bundleData:Uint8Array,
 
     jsdos.updateAutoexec(autoexec);
     jsdos.jszip=jszip;
-    const ci = await jsdos.runInHost();
+    const ci = await jsdos.runInHost(useX);
     return ci;
 }

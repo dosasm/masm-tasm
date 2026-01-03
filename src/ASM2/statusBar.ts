@@ -18,16 +18,6 @@ for (const a of Object.keys(conf.extConf.actions)) {
             continue;
         }
 
-        //ignore msdos player by default
-        if (conf.extConf.actions[a].support === undefined && e === conf.DosEmulatorType.msdos) {
-            continue;
-        }
-
-        //hide msdos player in nonwin system
-        if (process.platform !== "win32" && e === conf.DosEmulatorType.msdos) {
-            continue;
-        }
-
         if (conf.extConf.actions[a].support) {
             if (!conf.extConf.actions[a].support?.includes(e))
                 continue;

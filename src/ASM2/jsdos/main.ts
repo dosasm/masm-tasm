@@ -23,7 +23,7 @@ export function activateJSdos(context: vscode.ExtensionContext) {
     async (bundle?: vscode.Uri) => {
       if (bundle) {
         jsdos.setBundle(bundle);
-        jsdos.runInHost(undefined);
+        jsdos.runInHost(false,undefined);
       } else {
         const items = webresources.map((val) => val.name);
         items.unshift(input, empty);
@@ -43,7 +43,7 @@ export function activateJSdos(context: vscode.ExtensionContext) {
           }
         }
         if (picked !== undefined) {
-          jsdos.runInHost(picked);
+          jsdos.runInHost(false,picked);
         }
       }
     }
@@ -71,7 +71,7 @@ export function activateJSdos(context: vscode.ExtensionContext) {
           bundle = undefined;
         }
       }
-      const ci = await jsdos.runInHost(bundle);
+      const ci = await jsdos.runInHost(false,bundle);
     }
   );
 

@@ -30,8 +30,8 @@ export type ACTIONS = {
 export enum DosEmulatorType {
     dosbox = 'dosbox',
     dosboxX = 'dosbox-x',
-    msdos = 'msdos player',
     jsdos = 'jsdos',
+    jsdosX = 'jsdos-x',
 }
 
 /**the action type for run a assembly file */
