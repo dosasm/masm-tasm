@@ -3,9 +3,14 @@ import { webGl } from "./webgl"
 import { audioNode } from "./audio-node"
 import { bindKeyboard, bindSmallSoftKeyboard } from "./keyboard";
 
-const canvasEle = document.getElementById("display") as HTMLCanvasElement;
-const ciSelectEle = document.getElementById("ci-list") as HTMLSelectElement;
-const frame = webGl(canvasEle, 600, 400);
+const eles={
+    ciPause:document.getElementById("ci-pause") as HTMLInputElement,
+    uiMute:document.getElementById("ui-mute") as HTMLInputElement,
+    canvas: document.getElementById("display") as HTMLCanvasElement,
+    ciSelect: document.getElementById("ci-list") as HTMLSelectElement,
+}
+
+const frame = webGl(eles.canvas, 600, 400);
 let soundPush:ReturnType<typeof audioNode>|undefined = undefined
 
 window.addEventListener("message", (msg) => {
@@ -17,7 +22,7 @@ window.addEventListener("message", (msg) => {
         }
         frame.onFrameSize(data.width, data.height);
         frame.onFrame(data.rgb, null);
-        ciSelectEle.selectedIndex = data.ciIdx;
+        eles.ciSelect.selectedIndex = data.ciIdx;
     }
     if (data.name === "soundPush"){
         soundPush?.onSoundPush(data.samples)
@@ -29,32 +34,50 @@ console.log("masm-tasm webview debugger")
 let vapi = VscodeApi.create()
 
 if (vapi) {
+    // init the sound push
     setTimeout(async () => {
         let soundFrequency=await vapi.soundFrequency();
         soundPush=audioNode(soundFrequency);
     }, 100);
-    bindKeyboard(vapi,canvasEle);
+    // init the keyboard
+    bindKeyboard(vapi,eles.canvas);
     document.addEventListener("DOMContentLoaded",()=>bindSmallSoftKeyboard(vapi))
     
+    // init the ci select
     setInterval(async () => {
         const cis: { id: number, time: string, lastFrameTimeMs: number }[] = await vapi.exec("get-ci-list", [])
         for (let i = 0; i < cis.length; i++) {
-            if (i < ciSelectEle.options.length) {
-                const optionEle = ciSelectEle.options[i];
+            if (i < eles.ciSelect.options.length) {
+                const optionEle = eles.ciSelect.options[i];
                 let alive = Date.now() - cis[i].lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
                 optionEle.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
             } else {
                 const o = document.createElement("option")
                 let alive = Date.now() - cis[i].lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
                 o.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
-                ciSelectEle.appendChild(o)
+                eles.ciSelect.appendChild(o)
             }
         }
     }, 1000);
-    ciSelectEle.addEventListener("input", () => {
-        vapi.exec("change-viewing-id", [ciSelectEle.selectedIndex])
+    eles.ciSelect.addEventListener("input", () => {
+        vapi.exec("change-viewing-id", [eles.ciSelect.selectedIndex])
     })
 
+    //pause or resume the program
+    eles.ciPause.addEventListener("input",()=>{
+        if (eles.ciPause.checked){
+            vapi.pause()
+        }else{
+            vapi.resume()
+        }
+    })
+
+    //mute or unmute the program
+    eles.uiMute.addEventListener("input",()=>{
+        vapi.exec("mute-sound",[eles.uiMute.checked])
+    })
+
+    //display the data
     let intervalStartedAt = Date.now();
     let prevNonSkippableSleepCount = 0;
     let prevSleepCount = 0;

@@ -83,6 +83,7 @@ export class CIManager {
     private _cis: JSdosCi[] = []
     private panel: vscode.WebviewPanel | undefined
     webviewingId = 0;
+    webviewingMute=false;
 
     public get last() {
         return this._cis[this._cis.length - 1]
@@ -130,7 +131,7 @@ export class CIManager {
             }
         })
         w.ci.events().onSoundPush(samples => {
-            if (w.id === this.webviewingId) {
+            if (w.id === this.webviewingId && !this.webviewingMute) {
                 this.panel?.webview?.postMessage({
                     name: "soundPush",
                     samples,
@@ -143,7 +144,7 @@ export class CIManager {
     }
     constructor(public context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand('masm-tasm.show-jsdos', () => {
-            this.panel = show_webview(this, this.webviewingId, context)
+            this.panel = show_webview(this, context)
             this.panel.onDidDispose(() => this.panel = undefined)
         }))
     }
@@ -156,7 +157,7 @@ export class CIManager {
             this.webviewingId = id;
         }
         if (!this.panel) {
-            this.panel = show_webview(this, this.webviewingId, this.context)
+            this.panel = show_webview(this, this.context)
             this.panel.onDidDispose(() => this.panel = undefined)
         }
         if (!this.panel.visible) {
@@ -165,7 +166,7 @@ export class CIManager {
     }
 }
 
-function show_webview(cis: CIManager, webviewingId: number, context: vscode.ExtensionContext) {
+function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
     const viewColumn: vscode.ViewColumn | undefined = vscode.workspace
         .getConfiguration("masm-tasm")
         .get("jsdosWeb.viewColumn");
@@ -215,8 +216,8 @@ function show_webview(cis: CIManager, webviewingId: number, context: vscode.Exte
         </head>
             
         <body>
-        <input type="checkbox" id="debug">pause</input>
-        <input type="checkbox" id="sound">sound</input>
+        <input type="checkbox" id="ci-pause">pause</input>
+        <input type="checkbox" id="ui-mute">mute</input>
         <select id="ci-list">
         ${cis.ciInfomation(true)}
         </select>
@@ -243,6 +244,9 @@ function show_webview(cis: CIManager, webviewingId: number, context: vscode.Exte
             switch (command) {
                 case "change-viewing-id":
                     cis.webviewingId = args[0];
+                    break
+                case "mute-sound":
+                    cis.webviewingMute = args[0];
                     break
                 case "get-ci-list":
                     panel.webview.postMessage({
