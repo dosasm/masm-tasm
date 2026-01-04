@@ -2,13 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-//@ts-check
+//@ts-nocheck
 
 
 'use strict';
 
 const path = require('path');
-const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
 
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
@@ -28,7 +27,6 @@ const extensionConfig = {
     },
     devtool: 'source-map',
     externals: [
-        // nodeExternals({allowlist: ['yaml','jszip','vscode-uri',"emulators"]}),
         { vscode: "commonjs vscode" },
         ({ context, request }, callback) => {
             if (request.startsWith('node:')) {
@@ -205,15 +203,18 @@ const extensionTestFiles = {
         extensions: ['.ts', '.js']
     },
     mode: 'development',
-     externals: [
-    function({context, request}, callback) {
-      if (/^[^./]/.test(request) && !path.isAbsolute(request)) {
-        callback(null, 'commonjs ' + request);
-      } else {
-        callback();
-      }
+    externals: [
+        function ({ context, request }, callback) {
+            if (/^[^./]/.test(request) && !path.isAbsolute(request)) {
+                callback(null, 'commonjs ' + request);
+            } else {
+                callback();
+            }
+        }
+    ],
+    node:{
+        __dirname: false,
     }
-  ]
 };
 
 module.exports = [
@@ -222,7 +223,7 @@ module.exports = [
     webviewConfig,
 ];
 
-if (!process.argv.includes("--mode=production")) {
+if (process.argv.includes("--mode=production")) {
     module.exports = [
         extensionConfig,
         webExtensionConfig,

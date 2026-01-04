@@ -23,7 +23,8 @@ export function run(): Promise<void> {
 	const testsRoot = path.resolve(__dirname, '..');
 
 	return new Promise(async (c, e) => {
-		const files = await glob.glob('**/*.test.js');
+		const files = await glob.glob('**/*.test.js',{cwd:testsRoot});
+		// console.log(__dirname,process.cwd(),files)
 
 
 		// Add files to the test suite

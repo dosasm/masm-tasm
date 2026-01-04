@@ -508,7 +508,6 @@
   "scripts": {
     "clean": "rimraf dist/ web/dist",
     "postinstall": "node dev/downloadBundle.js",
-    "watch-tsc": "tsc -watch -p ./",
     "watch": "webpack --mode development --watch",
     "compile": "webpack --mode production",
     "compile-dev": "webpack --mode development",
@@ -532,6 +531,7 @@
     "@typescript-eslint/parser": "^8.46.3",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/test-web": "^0.0.77",
+    "@xterm/addon-image": "^0.9.0",
     "assert": "^2.1.0",
     "browser-or-node": "^3.0.0",
     "del": "^8.0.1",
@@ -549,8 +549,7 @@
     "typescript": "^5.9.3",
     "vscode-uri": "^3.1.0",
     "webpack": "^5.102.1",
-    "webpack-cli": "^6.0.1",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-cli": "^6.0.1"
   },
   "repository": {
     "type": "git",
