@@ -118,17 +118,17 @@
       "type": "object",
       "title": "MASM/TASM",
       "properties": {
-        "masm-tasm.command.dosbox": {
+        "masmtasm.command.dosbox": {
           "default": "dosbox",
           "type": "string",
           "markdownDescription": "The command for open your DOSBox\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
         },
-        "masm-tasm.command.dosboxX": {
+        "masmtasm.command.dosboxX": {
           "default": "dosbox-x -nopromptfolder",
           "type": "string",
           "markdownDescription": "The command for open your DOSBox-x\n\n By default the extension will pass dosbox parameters after the command, use `<param>` if you want to insert"
         },
-        "masm-tasm.paths.dosbox": {
+        "masmtasm.paths.dosbox": {
           "default": [],
           "type": "array",
           "items": {
@@ -136,7 +136,7 @@
           },
           "markdownDescription": "Path variable to inserted in env for open dosbox"
         },
-        "masm-tasm.paths.dosboxX": {
+        "masmtasm.paths.dosboxX": {
           "default": [],
           "type": "array",
           "items": {
@@ -144,23 +144,7 @@
           },
           "markdownDescription": "Path variable to inserted in env for open dosbox-x"
         },
-        "masm-tasm.dosbox.config": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "default": {},
-          "markdownDescription": "The configurations for dosbox, will be write to the `dosbox.conf` file"
-        },
-        "masm-tasm.dosboxX.config": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "default": {},
-          "markdownDescription": "The configurations for dosbox-x,will be write to the `dosbox-x.conf` file"
-        },
-        "masm-tasm.dosboxX.lang": {
+        "masmtasm.dosboxX.lang": {
           "type": "string",
           "default": "follow",
           "enum": [
@@ -175,7 +159,7 @@
             "follow vscode's language config"
           ]
         },
-        "masm-tasm.jsdos.ignore": {
+        "masmtasm.jsdos.ignore": {
           "type": "array",
           "items": {
             "type": "string"

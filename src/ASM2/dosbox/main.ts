@@ -75,9 +75,9 @@ export async function activateDosbox(context: vscode.ExtensionContext) {
 
 
   const _cmd: string | undefined = vscode.workspace
-    .getConfiguration("masm-tasm")
+    .getConfiguration("masmtasm")
     .get("command.dosbox");
-  const _paths:string[]|undefined=vscode.workspace.getConfiguration("masm-tasm").get("paths.dosbox")
+  const _paths:string[]|undefined=vscode.workspace.getConfiguration("masmtasm").get("paths.dosbox")
   const cmd = _cmd ? _cmd : "dosbox";
   const confpath = vscode.Uri.joinPath(context.globalStorageUri, "dosbox.conf");
   const dosbox = new db.DOSBox(cmd, confpath);
@@ -88,9 +88,9 @@ export async function activateDosbox(context: vscode.ExtensionContext) {
   await dosbox.setConf(dosboxConfigurationFile.box);
 
   const _xcmd: string | undefined = vscode.workspace
-    .getConfiguration("masm-tasm")
+    .getConfiguration("masmtasm")
     .get("command.dosboxX");
-  const _xpaths:string[]|undefined=vscode.workspace.getConfiguration("masm-tasm").get("paths.dosboxX")
+  const _xpaths:string[]|undefined=vscode.workspace.getConfiguration("masmtasm").get("paths.dosboxX")
   const xcmd = _xcmd ? _xcmd : "dosbox-x";
   const xconfpath = vscode.Uri.joinPath(
     context.globalStorageUri,
