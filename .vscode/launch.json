@@ -19,20 +19,20 @@
 			"preLaunchTask": "npm: watch"
 		},
 		{
-			"name": "Extension Tests",
+			"name": "Run Extension Tests",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
+				"--disable-extensions",
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/dist/test/suite/index",
+				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
 				"${workspaceFolder}/samples"
 			],
-			"outFiles": [
-				"${workspaceFolder}/dist/**/*.js"
-			],
-			"preLaunchTask": "npm: watch-tsc",
-		},{
+			"outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+			"preLaunchTask": "npm: watch"
+		},
+		{
 			"name": "Run Web Extension in VS Code",
 			"type": "extensionHost",
 			"debugWebWorkerHost": true,
@@ -40,6 +40,22 @@
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
 				"--extensionDevelopmentKind=web"
+			],
+			"outFiles": [
+				"${workspaceFolder}/dist/web/**/*.js"
+			],
+			"preLaunchTask": "npm: watch"
+		},
+		{
+			"name": "Run Web Extension Tests in VS Code",
+			"type": "extensionHost",
+			"debugWebWorkerHost": true,
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionDevelopmentKind=web",
+				"--extensionTestsPath=${workspaceFolder}/dist/web/test/suite/index",
+				"${workspaceFolder}/samples"
 			],
 			"outFiles": [
 				"${workspaceFolder}/dist/web/**/*.js"

@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 //@ts-check
+
 
 'use strict';
 
@@ -30,7 +30,7 @@ const extensionConfig = {
     externals: [
         // nodeExternals({allowlist: ['yaml','jszip','vscode-uri',"emulators"]}),
         { vscode: "commonjs vscode" },
-        ({context, request}, callback) => {
+        ({ context, request }, callback) => {
             if (request.startsWith('node:')) {
                 const moduleName = request.slice(5);
                 return callback(null, `commonjs ${moduleName}`);
@@ -164,8 +164,76 @@ const webviewConfig = {
     },
 };
 
+function getEntry() {
+    const entry = {};
+    const srcDir = path.resolve(__dirname, 'src/test');
+    const fs = require('fs');
+    function scanDir(currentDir) {
+        const files = fs.readdirSync(currentDir);
+        files.forEach(file => {
+            const filePath = path.join(currentDir, file);
+            const stats = fs.statSync(filePath);
+            if (stats.isDirectory()) {
+                scanDir(filePath);
+            } else if (path.extname(file) === '.ts') {
+                const entryName = path.relative(srcDir, filePath).replace(/\.ts$/, '');
+                entry[entryName] = filePath;
+            }
+        });
+    }
+    scanDir(srcDir);
+    return entry;
+}
+
+const extensionTestFiles = {
+    entry: getEntry(),
+    output: {
+        path: path.resolve(__dirname, 'dist/test'),
+        filename: '[name].js',
+        libraryTarget: 'commonjs2'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
+            }
+        ]
+    },
+    resolve: {
+        extensions: ['.ts', '.js']
+    },
+    mode: 'development',
+     externals: [
+    function({context, request}, callback) {
+      if (/^[^./]/.test(request) && !path.isAbsolute(request)) {
+        callback(null, 'commonjs ' + request);
+      } else {
+        callback();
+      }
+    }
+  ]
+};
+
 module.exports = [
     extensionConfig,
     webExtensionConfig,
-    webviewConfig
+    webviewConfig,
 ];
+
+if (!process.argv.includes("--mode=production")) {
+    module.exports = [
+        extensionConfig,
+        webExtensionConfig,
+        webviewConfig,
+    ];
+
+} else {
+    module.exports = [
+        extensionConfig,
+        webExtensionConfig,
+        webviewConfig,
+        extensionTestFiles,
+    ];
+}

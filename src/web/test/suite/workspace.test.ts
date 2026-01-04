@@ -9,12 +9,6 @@ import { DosEmulatorType, Assembler } from '../../../utils/configuration';
 
 // import * as myExtension from '../../extension';
 
-const folders = vscode.workspace.workspaceFolders;
-if (folders === undefined) {
-	throw new Error();
-}
-const samplesUri = folders[0].uri;
-
 suite('workspace mode Test Suite', function () {
 	vscode.window.showInformationMessage('Start all tests.');
 	const MASMorTASM = [
@@ -55,6 +49,12 @@ function testAsmCode(file: string, shouldErr: number, emu: DosEmulatorType, asm:
 		async function () {
 			this.timeout('60s');
 			this.slow('20s');
+					
+			const folders = vscode.workspace.workspaceFolders;
+			if (folders === undefined) {
+				throw new Error();
+			}
+			const samplesUri = folders[0].uri;
 
 			//open test file. NOTE: the extension will be activated when open .asm file
 			const samplefile = vscode.Uri.joinPath(samplesUri, file);

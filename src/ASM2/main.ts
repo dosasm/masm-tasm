@@ -145,16 +145,16 @@ export async function activate(context: vscode.ExtensionContext) {
     const useX = conf.extConf.emulator === conf.DosEmulatorType.jsdosX;
 
     function openEmulator(uri: vscode.Uri) {
-        openEmulatorRunDebug(conf.ActionType.open, uri, cis, useX, context, jsdos_api, diag)
+        return openEmulatorRunDebug(conf.ActionType.open, uri, cis, useX, context, jsdos_api, diag)
     }
 
     function runASM(uri: vscode.Uri) {
-        openEmulatorRunDebug(conf.ActionType.run, uri, cis, useX, context, jsdos_api, diag)
+        return openEmulatorRunDebug(conf.ActionType.run, uri, cis, useX, context, jsdos_api, diag)
     }
 
 
     function debugASM(uri: vscode.Uri) {
-        openEmulatorRunDebug(conf.ActionType.debug, uri, cis, useX, context, jsdos_api, diag)
+        return openEmulatorRunDebug(conf.ActionType.debug, uri, cis, useX, context, jsdos_api, diag)
     }
 
     context.subscriptions.push(
