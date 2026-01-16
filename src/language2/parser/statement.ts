@@ -19,8 +19,21 @@ export function parseStatement(parser: Parser): ASTNode {
       } };
   }
 
-  if (parser.current.value === "MACRO") {
+  const curVal = (parser.current.value ?? "").toUpperCase();
+  if (curVal === "MACRO") {
     return parseMacro(parser, id, startIndex);
+  }
+
+  if (curVal === "PROC") {
+    return parseProc(parser, id, startIndex);
+  }
+
+  if (curVal === "SEGMENT") {
+    return parseSegment(parser, id, startIndex);
+  }
+
+  if (curVal === "STRUCT") {
+    return parseStruct(parser, id, startIndex);
   }
 
   if (id === "IFDEF" || id === "IFNDEF") {
@@ -62,7 +75,7 @@ function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
   }
 
   const body: ASTNode[] = [];
-  while (!(parser.current.value === "ENDM")) {
+  while (!((parser.current.value ?? "").toUpperCase() === "ENDM")) {
     body.push(parser.parseStatement());
   }
 
@@ -73,22 +86,99 @@ function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
     end:parser.current.pos } };
 }
 
+function parseProc(parser: Parser, name: string, startIndex: number): ASTNode {
+  parser.eat(TokenType.Identifier); // PROC
+  const body: ASTNode[] = [];
+  let state:ASTNode|undefined=undefined;
+  while (true) {
+    state=parser.parseStatement();
+    if(state.type==="Instruction"){
+      if(state.mnemonic===name){
+        if(state.operands[0].kind==="Identifier"){
+          if(state.operands[0].name.toUpperCase()==="ENDP"){
+            break
+          }
+        }
+      }
+    }
+    body.push(state);
+  }
+  return {
+    type: "Procedure",
+    name,
+    body,
+    trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
+  };
+}
+
+function parseSegment(parser: Parser, name: string, startIndex: number): ASTNode {
+  parser.eat(TokenType.Identifier); // SEGMENT
+  const body: ASTNode[] = [];
+  let state:ASTNode|undefined=undefined;
+  while (true) {
+    state=parser.parseStatement();
+    if(state.type==="Instruction"){
+      if(state.mnemonic===name){
+        if(state.operands[0].kind==="Identifier"){
+          if(state.operands[0].name.toUpperCase()==="ENDS"){
+            break
+          }
+        }
+      }
+    }
+    body.push(state);
+  }
+  parser.eat(TokenType.Identifier); // ENDS
+  return {
+    type: "Segment",
+    name,
+    body,
+    trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
+  };
+}
+
+function parseStruct(parser: Parser, name: string, startIndex: number): ASTNode {
+  parser.eat(TokenType.Identifier); // STRUCT
+  const body: ASTNode[] = [];
+  let state:ASTNode|undefined=undefined;
+  while (true) {
+    state=parser.parseStatement();
+    if(state.type==="Instruction"){
+      if(state.mnemonic===name){
+        if(state.operands[0].kind==="Identifier"){
+          if(state.operands[0].name.toUpperCase()==="ENDS"){
+            break
+          }
+        }
+      }
+    }
+    body.push(state);
+  }
+  parser.eat(TokenType.Identifier); // ENDS
+  return {
+    type: "Struct",
+    name,
+    body,
+    trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
+  };
+}
+
 function parseConditional(parser: Parser, kind: string, startIndex: number): ASTNode {
   const symbol = parser.eat(TokenType.Identifier).value!;
   const thenBody: ASTNode[] = [];
   const elseBody: ASTNode[] = [];
 
   while (
-    parser.current.value !== "ELSE" &&
-    parser.current.value !== "ENDIF"
+    ((parser.current.value ?? "").toUpperCase() !== "ELSE") &&
+    ((parser.current.value ?? "").toUpperCase() !== "ENDIF")
   ) {
     thenBody.push(parser.parseStatement());
   }
 
-  if (parser.current.value === "ELSE") {
+  if (((parser.current.value ?? "").toUpperCase() === "ELSE")) {
     parser.eat(TokenType.Identifier);
     // @ts-ignore
-    while (parser.current.value !== "ENDIF") {
+    while (((parser.current.value ?? "").toUpperCase() !== "ENDIF")) {
       elseBody.push(parser.parseStatement());
     }
   }

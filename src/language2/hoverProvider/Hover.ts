@@ -50,7 +50,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
         const index = document.offsetAt(position);
         const node = search(ast, index);
 
-        const DEBUG_AST = false;
+        const DEBUG_AST = true;
 
         if (DEBUG_AST) {
             const md = new MarkdownString();

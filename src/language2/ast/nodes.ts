@@ -11,7 +11,10 @@ export type ASTNode =
   | InstructionNode
   | LabelNode
   | MacroNode
-  | ConditionalNode;
+  | ConditionalNode
+  | ProcedureNode
+  | SegmentNode
+  | StructNode;
 
 export interface ProgramNode {
   type: "Program";
@@ -36,6 +39,27 @@ export interface MacroNode {
   type: "Macro";
   name: string;
   params: string[];
+  body: ASTNode[];
+  trace: Trace;
+}
+
+export interface ProcedureNode {
+  type: "Procedure";
+  name: string;
+  body: ASTNode[];
+  trace: Trace;
+}
+
+export interface SegmentNode {
+  type: "Segment";
+  name: string;
+  body: ASTNode[];
+  trace: Trace;
+}
+
+export interface StructNode {
+  type: "Struct";
+  name: string;
   body: ASTNode[];
   trace: Trace;
 }

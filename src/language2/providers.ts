@@ -46,9 +46,9 @@ function SymbolVSCfy(asmType: string): vscode.SymbolKind {
     switch (asmType) {
         //"Macro" | "Label" | "Program" | "Instruction" | "Conditional"
         case "Macro": return vscode.SymbolKind.Module; break;
-        // case KeywordType.Segment: return vscode.SymbolKind.Class; break;
+        case "Segment": return vscode.SymbolKind.Class; break;
         case "Program": return vscode.SymbolKind.Function; break;
-        // case KeywordType.Structure: return vscode.SymbolKind.Struct; break;
+        case "Struct": return vscode.SymbolKind.Struct; break;
         case "Label": return vscode.SymbolKind.Key; break;
         // case KeywordType.Variable: return vscode.SymbolKind.Variable; break;
     }
@@ -61,27 +61,29 @@ function search_symbol(doc:vscode.TextDocument,output:vscode.DocumentSymbol[],no
             const kind = SymbolVSCfy(node.type);
             const selStart = doc.positionAt(node.trace.index);
             const selEnd = doc.positionAt(node.trace.index + node.name.length);
-            const fullEnd = doc.positionAt(node.trace.end);
+            const fullEnd = doc.positionAt(node.trace.end-1);
+            const a=doc.validateRange(new vscode.Range(selStart, selEnd));
+            const b=doc.validateRange(new vscode.Range(selStart, fullEnd));
             const sym = new vscode.DocumentSymbol(
                 node.name,
                 "",
                 kind,
-                new vscode.Range(selStart, selEnd),
-                new vscode.Range(selStart, fullEnd)
+                a,a
             );
             output.push(sym);
         }
-        if (node.type === "Macro") {
+        if (node.type === "Macro"||node.type === "Procedure"||node.type === "Segment"||node.type === "Struct") {
             const kind = SymbolVSCfy(node.type);
             const selStart = doc.positionAt(node.trace.index);
             const selEnd = doc.positionAt(node.trace.index + node.name.length);
             const fullEnd = doc.positionAt(node.trace.end);
+            const a=doc.validateRange(new vscode.Range(selStart, selEnd));
+            const b=doc.validateRange(new vscode.Range(selStart, fullEnd));
             const sym = new vscode.DocumentSymbol(
                 node.name,
                 "",
                 kind,
-                new vscode.Range(selStart, selEnd),
-                new vscode.Range(selStart, fullEnd)
+                a,a
             );
             output.push(sym);
             // recurse into macro body
