@@ -19,4 +19,5 @@ export enum TokenType {
 export interface Token {
   type: TokenType;
   value?: string;
+  pos:number
 }

@@ -24,16 +24,18 @@ export class Lexer {
   nextToken(): Token {
     while (/\s/.test(this.peek())) {
       if (this.peek() === "\n") {
+        const pos=this.pos;
         this.advance();
-        return { type: TokenType.NewLine };
+        return { type: TokenType.NewLine,pos };
       }
       this.advance();
     }
 
     const ch = this.peek();
-    if (!ch) return { type: TokenType.EOF };
+    if (!ch) return { type: TokenType.EOF ,pos:this.pos};
 
     if (ch === "'") {
+      const pos=this.pos;
       this.advance(); // eat '
       let value = "";
       while (this.peek() !== "'" && this.peek() !== "\n" && this.peek() !== "") {
@@ -42,47 +44,50 @@ export class Lexer {
       if (this.peek() === "'") {
         this.advance(); // eat '
       }
-      return { type: TokenType.String, value };
+      return { type: TokenType.String, value,pos };
     }
 
     if (/[A-Za-z_.]/.test(ch)) {
       let value = "";
+      const pos=this.pos;
       while (/[A-Za-z0-9_.]/.test(this.peek())) {
         value += this.advance();
       }
-      return { type: TokenType.Identifier, value };
+      return { type: TokenType.Identifier, value,pos };
     }
 
     if (/[0-9]/.test(ch)) {
       let value = "";
-      while (/[0-9A-Fa-f]/.test(this.peek())) {
+      const pos=this.pos;
+      while (/[0-9A-Fa-fHhOoQqBbx]/.test(this.peek())) {
         value += this.advance();
       }
-      return { type: TokenType.Number, value };
+      return { type: TokenType.Number, value,pos };
     }
 
+    const pos=this.pos;
     const char=this.advance();
     switch (char) {
       case ",":
-        return { type: TokenType.Comma };
+        return { type: TokenType.Comma,pos };
       case ":":
-        return { type: TokenType.Colon };
+        return { type: TokenType.Colon,pos };
       case "[":
-        return { type: TokenType.LBracket };
+        return { type: TokenType.LBracket,pos };
       case "]":
-        return { type: TokenType.RBracket };
+        return { type: TokenType.RBracket,pos };
       case "(":
-        return { type: TokenType.LParen };
+        return { type: TokenType.LParen,pos };
       case ")":
-        return { type: TokenType.RParen };
+        return { type: TokenType.RParen,pos };
       case "+":
-        return { type: TokenType.Plus };
+        return { type: TokenType.Plus,pos };
       case "-":
-        return { type: TokenType.Minus };
+        return { type: TokenType.Minus,pos };
       case "*":
-        return { type: TokenType.Star };
+        return { type: TokenType.Star,pos };
       case "/":
-        return { type: TokenType.Slash };
+        return { type: TokenType.Slash,pos };
       case ";":
         // Skip comment until end of line
         while (this.peek() !== "\n" && this.peek() !== "") {

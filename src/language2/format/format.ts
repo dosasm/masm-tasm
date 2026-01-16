@@ -13,6 +13,8 @@ function applyCasing(mode: CasingMode, text: string): string {
 function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): string {
   switch (operand.kind) {
     case 'Immediate':
+      if (operand.expr)
+        return operand.expr;
       return operand.value.toString();
     case 'Identifier':
       // Apply casing based on type, but for simplicity, use directive casing
@@ -38,12 +40,27 @@ function formatExpression(expr: any): string {
   return '';
 }
 
-function formatInstruction(node: InstructionNode, config: MasmtasmFormatConfig, indent:string): string {
+function formatInstruction(node: InstructionNode, config: MasmtasmFormatConfig, indent: string): string {
   const mnemonic = applyCasing(config.casing.instruction, node.mnemonic);
-  const operands = node.operands.map(op => formatOperand(op, config)).join(', ');
+  const operands_ = node.operands.map(op => formatOperand(op, config));
 
-  if (mnemonic.startsWith(".")||mnemonic.toLowerCase()==="data"|| mnemonic.toLowerCase()==="code"){
-      return `${mnemonic} ${operands}`;
+  let operands = "";
+  if (operands_.length >= 1) {
+    operands = operands_[0]
+  }
+  if (operands_.length >= 2) {
+    for (let i = 1; i < operands_.length; i++) {
+      if (i == 1 && ["segment", "db", "dw", "dd"].some(a => operands_[i-1].toLocaleLowerCase() === a)) {
+        operands += " " + operands_[i];
+      } else {
+        operands += ", " + operands_[i];
+      }
+    }
+  }
+
+
+  if (mnemonic.startsWith(".") || mnemonic.toLowerCase() === "data" || mnemonic.toLowerCase() === "code") {
+    return `${mnemonic} ${operands}`;
   }
   return `${indent}${mnemonic} ${operands}`;
 }
@@ -79,6 +96,6 @@ function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"):
   }
 }
 
-export function format(config: MasmtasmFormatConfig, ast: ProgramNode,indent:string): string {
-  return ast.body.map(node => formatNode(node, config,indent)).join('\n');
+export function format(config: MasmtasmFormatConfig, ast: ProgramNode, indent: string): string {
+  return ast.body.map(node => formatNode(node, config, indent)).join('\n');
 }

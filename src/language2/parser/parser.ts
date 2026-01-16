@@ -6,10 +6,6 @@ import { parseStatement } from "./statement";
 export class Parser {
   current: Token;
 
-  public get currentPos(){
-    return this.lexer.currentPos
-  }
-
   constructor(private lexer: Lexer, public filePath: string) {
     this.current = lexer.nextToken();
   }
@@ -49,6 +45,14 @@ export class Parser {
         body.push(stmt);
       }
     }
-    return { type: "Program", body, trace: { filePath: this.filePath, index: 0 } };
+    return {
+      type: "Program",
+      body,
+      trace: {
+        filePath: this.filePath,
+        index: 0,
+        end: this.lexer.currentPos
+      }
+    };
   }
 }

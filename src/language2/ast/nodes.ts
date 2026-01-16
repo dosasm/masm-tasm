@@ -3,6 +3,7 @@ import { ExprNode } from "./expr";
 export interface Trace {
   filePath: string;
   index: number;
+  end:number;
 }
 
 export type ASTNode =
@@ -49,7 +50,7 @@ export interface ConditionalNode {
 }
 
 export type OperandNode =
-  | { kind: "Immediate"; value: number }
+  | { kind: "Immediate"; value: number, type:"hex"|"oct"|"dec"|"bin",expr:string,parseError?:string }
   | { kind: "Identifier"; name: string }
   | { kind: "String"; value: string }
   | { kind: "Memory"; expr: ExprNode }

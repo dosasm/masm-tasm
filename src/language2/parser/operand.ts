@@ -5,10 +5,31 @@ import { Parser } from "./parser";
 
 export function parseOperand(parser: Parser): OperandNode {
   if (parser.current.type === TokenType.Number) {
-    return {
+    let radix = 10; let type: "hex" | "oct" | "dec" | "bin" = "dec";
+    if (parser.current.value?.endsWith("h") || parser.current.value?.endsWith("H")) {
+      radix = 16;
+      type = "hex";
+    }
+    if (parser.current.value?.endsWith("b") || parser.current.value?.endsWith("B")) {
+      radix = 2;
+    }
+    if (["o", "O", "q", "Q"].some(a => parser.current.value?.endsWith(a))) {
+      radix = 8;
+      type = "oct";
+    }
+    let str = parser.eat(TokenType.Number).value!
+    let output: OperandNode = {
       kind: "Immediate",
-      value: parseInt(parser.eat(TokenType.Number).value!, 16),
+      value: 0,
+      type,
+      expr:str,
     };
+    
+    if (type !== "dec") {
+      str = str.substring(0, str.length - 1)
+    }
+    output.value = parseInt(str, radix)
+    return output;
   }
 
   if (parser.current.type === TokenType.String) {

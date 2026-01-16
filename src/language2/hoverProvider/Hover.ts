@@ -45,54 +45,71 @@ export class AsmHoverProvider implements vscode.HoverProvider {
 
     async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover | null | undefined> {
         const range = document.getWordRangeAtPosition(position);
-        const ast = parser_code(document.getText(),document.uri.toString()); //scan the document
-        const index=document.offsetAt(position);
-        const node=search(ast,index);
+        const ast = parser_code(document.getText(), document.uri.toString()); //scan the document
+        const index = document.offsetAt(position);
+        const node = search(ast, index);
 
-        const md = new MarkdownString();
-        if (range) {
-            const wordGet = document.getText(range);
-            const wordLowCase = wordGet.toLowerCase();
-            md.appendMarkdown("- word:"+wordGet+'\n');
+        const DEBUG_AST = false;
+
+        if (DEBUG_AST) {
+            const md = new MarkdownString();
+            if (range) {
+                const wordGet = document.getText(range);
+                md.appendMarkdown("- word:" + wordGet + '\n');
+            }
+            md.appendMarkdown(`- position (${position.line},${position.character})\n`);
+            md.appendMarkdown(`- offset (${document.offsetAt(position)})\n`);
+
+            md.appendMarkdown('```\n' + JSON.stringify(node, undefined, "  ") + '\n```');
+            return new vscode.Hover(md);
         }
-        md.appendMarkdown(`- position (${position.line},${position.character})\n`);
-        
-        md.appendMarkdown('```\n'+JSON.stringify(node,undefined,"  ")+'\n```');
-        return new vscode.Hover(md);
+
 
         if (range) {
             const wordGet = document.getText(range);
             const wordLowCase = wordGet.toLowerCase();
 
-            // if (line && line.operator?.includes(wordGet)) {
-            //     const h = await this.getHover(wordGet, [keywordType.instruction]);
-            //     if (h) { return h; }
-            // }
+            if (node?.type === "Instruction") {
+                if(wordLowCase===node.mnemonic.toLowerCase()){
+                    const h = await this.getHover(wordGet, [keywordType.instruction]);
+                    if (h) { return h; }
+                }
+                const a1 = node.operands.some(a => {
+                    if (a.kind === "Identifier") {
+                        return a.name === wordGet
+                    }
+                })
+                if (a1) {
+                    const h = await this.getHover(wordGet, [keywordType.instruction]);
+                    if (h) { return h; }
+                }
 
-            // if (line && line.operand?.includes(wordGet)) {
+                const a2 = node.operands.some(a => {
+                    if (a.kind === "Immediate") {
+                        return a.expr === wordGet
+                    }
+                })
+                const md = new MarkdownString();
+                if (a2 && info.isNumberStr(wordLowCase)) {
+                    md.appendMarkdown(info.getNumMsg(wordLowCase));
+                    return new vscode.Hover(md);
+                }
 
-            //     const md = new MarkdownString();
-            //     if (info.isNumberStr(wordLowCase)) {
-            //         md.appendMarkdown(info.getNumMsg(wordLowCase));
-            //         return new vscode.Hover(md);
-            //     }
-                
+                //hover for char
+                let wordGet2 = wordGet;
+                if (range.start.character > 0 && range.end.character - range.start.character === 1) {
+                    const range2 = new vscode.Range(range.start.line, range.start.character - 1, range.end.line, range.end.character + 1);
+                    wordGet2 = document.getText(range2);
+                }
+                const char = /['"](.)['"]/.exec(wordGet2);
+                if (char) {
+                    md.appendMarkdown(info.getcharMsg(char[1]));
+                    return new vscode.Hover(md);
+                }
 
-            //     //hover for char
-            //     let wordGet2=wordGet;
-            //     if(range.start.character>0 && range.end.character-range.start.character===1){
-            //         const range2=new vscode.Range(range.start.line,range.start.character-1,range.end.line,range.end.character+1);
-            //         wordGet2=document.getText(range2);
-            //     }
-            //     const char = /['"](.)['"]/.exec(wordGet2);
-            //     if (char && line.operand?.includes(wordGet2)) {
-            //         md.appendMarkdown(info.getcharMsg(char[1]));
-            //         return new vscode.Hover(md);
-            //     }
-
-            //     const h = await this.getHover(wordGet, [keywordType.operator, keywordType.register, keywordType.symbol]);
-            //     if (h) { return h; }
-            // }
+                const h = await this.getHover(wordGet, [keywordType.operator, keywordType.register, keywordType.symbol]);
+                if (h) { return h; }
+            }
 
             // const asmsymbol = docinfo.findSymbol(wordGet); //the word is a symbol?
             // if (asmsymbol) {

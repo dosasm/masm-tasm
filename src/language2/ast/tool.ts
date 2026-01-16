@@ -44,7 +44,7 @@ export function search(ast:ProgramNode,index:number,allowTypes=undefined){
         if(allowTypes!==undefined){
             allowed=n.type in allowTypes;
         }
-        if(allowed && n.trace.index<index&&n.trace.index>index-10){
+        if(allowed && n.trace.index<=index&&index<n.trace.end){
             return n
         }
     }

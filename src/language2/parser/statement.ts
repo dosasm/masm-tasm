@@ -4,12 +4,19 @@ import { TokenType } from "../lexer/token";
 import { parseOperand } from "./operand";
 
 export function parseStatement(parser: Parser): ASTNode {
-  const startIndex = parser.currentPos;
+  const startIndex = parser.current.pos;
   const id = parser.eat(TokenType.Identifier).value!;
 
   if (parser.current.type === TokenType.Colon) {
     parser.eat(TokenType.Colon);
-    return { type: "Label", name: id, trace: { filePath: parser.filePath, index: startIndex } };
+    return { 
+      type: "Label", 
+      name: id, 
+      trace: { 
+        filePath: parser.filePath, 
+        index: startIndex,
+        end:parser.current.pos
+      } };
   }
 
   if (parser.current.value === "MACRO") {
@@ -32,7 +39,14 @@ export function parseStatement(parser: Parser): ASTNode {
     operands.push(parseOperand(parser));
   }
 
-  return { type: "Instruction", mnemonic: id, operands, trace: { filePath: parser.filePath, index: startIndex } };
+  return { type: "Instruction", 
+    mnemonic: id, operands, 
+    trace: { 
+      filePath: parser.filePath, 
+      index: startIndex,
+      end:parser.current.pos
+    } 
+  };
 }
 
 function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
@@ -53,7 +67,10 @@ function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
   }
 
   parser.eat(TokenType.Identifier);
-  return { type: "Macro", name, params, body, trace: { filePath: parser.filePath, index: startIndex } };
+  return { type: "Macro", name, params, body, trace: { 
+    filePath: parser.filePath, 
+    index: startIndex,
+    end:parser.current.pos } };
 }
 
 function parseConditional(parser: Parser, kind: string, startIndex: number): ASTNode {
@@ -83,6 +100,9 @@ function parseConditional(parser: Parser, kind: string, startIndex: number): AST
     symbol,
     thenBody,
     elseBody: elseBody.length ? elseBody : undefined,
-    trace: { filePath: parser.filePath, index: startIndex }
+    trace: { 
+      filePath: parser.filePath, 
+      index: startIndex ,
+      end:parser.current.pos}
   };
 }
