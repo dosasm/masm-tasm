@@ -5,10 +5,15 @@ import { ASTNode, ProgramNode } from './ast';
 import { format } from './format/format';
 import { MasmtasmFormatConfig } from './format/config';
 
-export function parser_code(code:string,path:string):ProgramNode{
+export function parser_code(code:string,path:string):ProgramNode|undefined{
     const parser = new Parser(new Lexer(code), path);
-    const ast = parser.parseProgram();
-    return ast;
+    try{
+        const ast = parser.parseProgram();
+        return ast;
+    }catch(e){
+        console.error(e);
+        return undefined
+    }
 }
 
 export class AsmDefProvider implements vscode.DefinitionProvider {
@@ -51,23 +56,36 @@ function SymbolVSCfy(asmType: string): vscode.SymbolKind {
 }
 
 function search_symbol(doc:vscode.TextDocument,output:vscode.DocumentSymbol[],nodes:ASTNode[]){
-    for(const node of nodes){
-        if(node.type==="Label"){
-            const sym=new vscode.DocumentSymbol(
-                node.name,"",vscode.SymbolKind.Key,
-                new vscode.Range(doc.positionAt(node.trace.index),doc.positionAt(node.trace.index+node.name.length)),
-                new vscode.Range(doc.positionAt(node.trace.index),doc.positionAt(node.trace.index+node.name.length))
-            )
-            output.push(sym)
+    for (const node of nodes) {
+        if (node.type === "Label") {
+            const kind = SymbolVSCfy(node.type);
+            const selStart = doc.positionAt(node.trace.index);
+            const selEnd = doc.positionAt(node.trace.index + node.name.length);
+            const fullEnd = doc.positionAt(node.trace.end);
+            const sym = new vscode.DocumentSymbol(
+                node.name,
+                "",
+                kind,
+                new vscode.Range(selStart, selEnd),
+                new vscode.Range(selStart, fullEnd)
+            );
+            output.push(sym);
         }
-        if(node.type==="Macro"){
-            const sym=new vscode.DocumentSymbol(
-                node.name,"",vscode.SymbolKind.Key,
-                new vscode.Range(doc.positionAt(node.trace.index),doc.positionAt(node.trace.index+node.name.length)),
-                new vscode.Range(doc.positionAt(node.trace.index),doc.positionAt(node.trace.index+node.name.length))
-            )
-            output.push(sym)
-            search_symbol(doc,sym.children,node.body)
+        if (node.type === "Macro") {
+            const kind = SymbolVSCfy(node.type);
+            const selStart = doc.positionAt(node.trace.index);
+            const selEnd = doc.positionAt(node.trace.index + node.name.length);
+            const fullEnd = doc.positionAt(node.trace.end);
+            const sym = new vscode.DocumentSymbol(
+                node.name,
+                "",
+                kind,
+                new vscode.Range(selStart, selEnd),
+                new vscode.Range(selStart, fullEnd)
+            );
+            output.push(sym);
+            // recurse into macro body
+            search_symbol(doc, sym.children, node.body);
         }
     }
 }
@@ -75,6 +93,7 @@ function search_symbol(doc:vscode.TextDocument,output:vscode.DocumentSymbol[],no
 export class Asmsymbolprovider implements vscode.DocumentSymbolProvider {
     provideDocumentSymbols(doc: vscode.TextDocument): vscode.DocumentSymbol[] {
         const ast=parser_code(doc.getText(),doc.uri.toString());
+        if(!ast) return [];
         const output:vscode.DocumentSymbol[]=[];
         search_symbol(doc,output,ast.body);
         return output;
@@ -93,6 +112,7 @@ export class AsmDocFormat implements vscode.DocumentFormattingEditProvider {
         const textedits: vscode.TextEdit[] = [];
         const t=doc.getText();
         const ast = parser_code(t,doc.uri.toString());
+        if(!ast) return [];
         let indent="\t";
         if(options.insertSpaces){
             indent="";

@@ -49,6 +49,7 @@ export interface ConditionalNode {
   trace: Trace;
 }
 
+
 export type OperandNode =
   | { kind: "Immediate"; value: number, type:"hex"|"oct"|"dec"|"bin",expr:string,parseError?:string }
   | { kind: "Identifier"; name: string }
@@ -56,4 +57,5 @@ export type OperandNode =
   | { kind: "Memory"; expr: ExprNode }
   | { kind: "Offset"; expr: ExprNode }
   | { kind: "Dup"; value: OperandNode }
+  | { kind: "QuestionExpr"; value: "?" }
   | { kind: "SegmentRegister"; segment: string; register: string };

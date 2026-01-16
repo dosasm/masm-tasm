@@ -46,6 +46,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
     async provideHover(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover | null | undefined> {
         const range = document.getWordRangeAtPosition(position);
         const ast = parser_code(document.getText(), document.uri.toString()); //scan the document
+        if(!ast) return undefined;
         const index = document.offsetAt(position);
         const node = search(ast, index);
 

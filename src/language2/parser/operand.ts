@@ -4,6 +4,16 @@ import { parseExpression } from "./expression";
 import { Parser } from "./parser";
 
 export function parseOperand(parser: Parser): OperandNode {
+  if (parser.current.type===TokenType.Question){
+    parser.eat(TokenType.Question)
+    return {kind:"QuestionExpr",value:"?"}
+  }
+  
+  // support @DATA style identifiers produced by lexer
+  if (parser.current.type === TokenType.AtIdentifier) {
+    const v = parser.eat(TokenType.AtIdentifier).value!;
+    return { kind: "Identifier", name: "@" + v };
+  }
   if (parser.current.type === TokenType.Number) {
     let radix = 10; let type: "hex" | "oct" | "dec" | "bin" = "dec";
     if (parser.current.value?.endsWith("h") || parser.current.value?.endsWith("H")) {
@@ -52,11 +62,25 @@ export function parseOperand(parser: Parser): OperandNode {
         throw new Error("Expected identifier after colon in segment:register");
       }
     } else {
-      if (name === "OFFSET") {
+      // support size specifier + ptr, e.g. "BYTE PTR [BX]" or "WORD PTR var"
+      if ((parser.current.type as number) === TokenType.Ptr) {
+        parser.eat(TokenType.Ptr);
+        // If it's a bracketed memory, parse and return Memory node (ignore size for now)
+        // ts-ignore
+        if ((parser.current.type as number) === TokenType.LBracket) {
+          parser.eat(TokenType.LBracket);
+          const expr = parseExpression(parser);
+          parser.eat(TokenType.RBracket);
+          return { kind: "Memory", expr };
+        }
+        // Otherwise parse the following operand and return it (size info ignored)
+        return parseOperand(parser);
+      }
+      if (name.toUpperCase() === "OFFSET") {
         const expr = parseExpression(parser);
         return { kind: "Offset", expr };
       }
-      if (name === "DUP") {
+      if (name.toUpperCase() === "DUP") {
         parser.eat(TokenType.LParen);
         const value = parseOperand(parser);
         parser.eat(TokenType.RParen);

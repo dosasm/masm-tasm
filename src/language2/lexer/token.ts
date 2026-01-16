@@ -8,10 +8,13 @@ export enum TokenType {
   RBracket,
   LParen,
   RParen,
+  Question,
   Plus,
   Minus,
   Star,
   Slash,
+  Ptr,
+  AtIdentifier,
   NewLine,
   EOF,
 }

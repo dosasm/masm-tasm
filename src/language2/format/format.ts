@@ -27,6 +27,8 @@ function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): stri
       return `OFFSET ${formatExpression(operand.expr)}`;
     case 'Dup':
       return `DUP(${formatOperand(operand.value, config)})`;
+    case 'QuestionExpr':
+      return "?"
     case 'SegmentRegister':
       return `${applyCasing(config.casing.register, operand.segment)}:${applyCasing(config.casing.register, operand.register)}`;
   }

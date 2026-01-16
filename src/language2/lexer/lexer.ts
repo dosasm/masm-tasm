@@ -47,13 +47,39 @@ export class Lexer {
       return { type: TokenType.String, value,pos };
     }
 
-    if (/[A-Za-z_.]/.test(ch)) {
-      let value = "";
+    if (ch === '"') {
       const pos=this.pos;
+      this.advance(); // eat '
+      let value = "";
+      while (this.peek() !== '"' && this.peek() !== "\n" && this.peek() !== "") {
+        value += this.advance();
+      }
+      if (this.peek() === '"') {
+        this.advance(); // eat '
+      }
+      return { type: TokenType.String, value,pos };
+    }
+
+    if (ch === "@") {
+      const pos = this.pos;
+      this.advance(); // eat '@'
+      let value = "";
       while (/[A-Za-z0-9_.]/.test(this.peek())) {
         value += this.advance();
       }
-      return { type: TokenType.Identifier, value,pos };
+      return { type: TokenType.AtIdentifier, value, pos };
+    }
+
+    if (/[A-Za-z_.]/.test(ch)) {
+      let value = "";
+      const pos = this.pos;
+      while (/[A-Za-z0-9_.]/.test(this.peek())) {
+        value += this.advance();
+      }
+      if (value.toLowerCase() === "ptr") {
+        return { type: TokenType.Ptr, value, pos };
+      }
+      return { type: TokenType.Identifier, value, pos };
     }
 
     if (/[0-9]/.test(ch)) {
@@ -88,6 +114,8 @@ export class Lexer {
         return { type: TokenType.Star,pos };
       case "/":
         return { type: TokenType.Slash,pos };
+      case "?":
+        return { type: TokenType.Question,pos };
       case ";":
         // Skip comment until end of line
         while (this.peek() !== "\n" && this.peek() !== "") {
