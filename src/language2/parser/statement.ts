@@ -75,37 +75,119 @@ function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
   }
 
   const body: ASTNode[] = [];
-  while (!((parser.current.value ?? "").toUpperCase() === "ENDM")) {
-    body.push(parser.parseStatement());
+  while (true) {
+    let a=parser.parseStatement();
+    if (a.type==="Instruction" && a.mnemonic.toUpperCase()==="ENDM"){
+      break
+    }
+    body.push(a);
   }
 
-  parser.eat(TokenType.Identifier);
-  return { type: "Macro", name, params, body, trace: { 
-    filePath: parser.filePath, 
-    index: startIndex,
-    end:parser.current.pos } };
+  // parser.eat(TokenType.Identifier);
+  return { 
+    type: "Macro", name, params, body, 
+    trace: { 
+      filePath: parser.filePath, 
+      index: startIndex,
+      end:parser.current.pos } 
+  };
 }
 
 function parseProc(parser: Parser, name: string, startIndex: number): ASTNode {
   parser.eat(TokenType.Identifier); // PROC
+  // parse optional attributes and parameter list on the same line
+  const attributes: string[] = [];
+  const params: string[] = [];
+
+  if (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+    const parts: string[] = [];
+    let curPart = "";
+    //@ts-ignore
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+      if (parser.current.type === TokenType.Comma) {
+        parts.push(curPart.trim());
+        curPart = "";
+        parser.eat(TokenType.Comma);
+        continue;
+      }
+      const tok = parser.eat(parser.current.type);
+      let txt = tok.value ?? "";
+      switch (tok.type) {
+        case TokenType.LParen:
+          txt = "(";
+          break;
+        case TokenType.RParen:
+          txt = ")";
+          break;
+        case TokenType.LBracket:
+          txt = "[";
+          break;
+        case TokenType.RBracket:
+          txt = "]";
+          break;
+        case TokenType.Colon:
+          txt = ":";
+          break;
+        case TokenType.Plus:
+          txt = "+";
+          break;
+        case TokenType.Minus:
+          txt = "-";
+          break;
+        case TokenType.Star:
+          txt = "*";
+          break;
+        case TokenType.Slash:
+          txt = "/";
+          break;
+        case TokenType.AtIdentifier:
+          txt = "@" + txt;
+          break;
+        case TokenType.String:
+          txt = '"' + txt + '"';
+          break;
+        case TokenType.Ptr:
+          txt = txt;
+          break;
+        default:
+          txt = txt;
+      }
+      curPart += (curPart ? " " : "") + txt;
+    }
+    if (curPart.trim()) parts.push(curPart.trim());
+
+    // classify parts into attributes vs params. Heuristic: if a part contains
+    // any of these characters it's likely a parameter (':', '(', '@', '[' or digits)
+    for (const p of parts) {
+      if (/[\(\)@:\[\]0-9]/.test(p) || p.toUpperCase().indexOf("PTR") >= 0 || p.indexOf('"')>=0) {
+        params.push(p);
+      } else if (p) {
+        attributes.push(p);
+      }
+    }
+  }
+
   const body: ASTNode[] = [];
-  let state:ASTNode|undefined=undefined;
+  let state: ASTNode | undefined = undefined;
   while (true) {
-    state=parser.parseStatement();
-    if(state.type==="Instruction"){
-      if(state.mnemonic===name){
-        if(state.operands[0].kind==="Identifier"){
-          if(state.operands[0].name.toUpperCase()==="ENDP"){
-            break
+    state = parser.parseStatement();
+    if (state.type === "Instruction") {
+      if (state.mnemonic === name) {
+        if (state.operands[0].kind === "Identifier") {
+          if (state.operands[0].name.toUpperCase() === "ENDP") {
+            break;
           }
         }
       }
     }
     body.push(state);
   }
+
   return {
     type: "Procedure",
     name,
+    attributes: attributes.length ? attributes : undefined,
+    params: params.length ? params : undefined,
     body,
     trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
   };

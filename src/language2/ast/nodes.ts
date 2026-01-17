@@ -47,6 +47,8 @@ export interface ProcedureNode {
   type: "Procedure";
   name: string;
   body: ASTNode[];
+  attributes?: string[];
+  params?: string[];
   trace: Trace;
 }
 

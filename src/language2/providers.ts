@@ -4,6 +4,7 @@ import { Lexer } from './lexer/lexer';
 import { ASTNode, ProgramNode } from './ast';
 import { format } from './format/format';
 import { MasmtasmFormatConfig } from './format/config';
+import { logger } from '../utils/logger';
 
 export function parser_code(code:string,path:string):ProgramNode|undefined{
     const parser = new Parser(new Lexer(code), path);
@@ -12,6 +13,7 @@ export function parser_code(code:string,path:string):ProgramNode|undefined{
         return ast;
     }catch(e){
         console.error(e);
+        logger.channel("ERROR"+JSON.stringify(e,undefined,"  "))
         return undefined
     }
 }

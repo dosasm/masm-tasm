@@ -73,7 +73,7 @@ export class Lexer {
     if (/[A-Za-z_.]/.test(ch)) {
       let value = "";
       const pos = this.pos;
-      while (/[A-Za-z0-9_.]/.test(this.peek())) {
+      while (/[A-Za-z0-9_.\/\\]/.test(this.peek())) {
         value += this.advance();
       }
       if (value.toLowerCase() === "ptr") {

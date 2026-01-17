@@ -52,7 +52,7 @@ function formatInstruction(node: InstructionNode, config: MasmtasmFormatConfig, 
   }
   if (operands_.length >= 2) {
     for (let i = 1; i < operands_.length; i++) {
-      if (i == 1 && ["segment", "db", "dw", "dd"].some(a => operands_[i-1].toLocaleLowerCase() === a)) {
+      if (i == 1 && ["segment", "db", "dw", "dd","dq","dt"].some(a => operands_[i-1].toLocaleLowerCase() === a)) {
         operands += " " + operands_[i];
       } else {
         operands += ", " + operands_[i];
