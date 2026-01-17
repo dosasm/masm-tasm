@@ -58,6 +58,21 @@ export function parseOperand(parser: Parser): OperandNode {
         parser.eat(TokenType.RBracket);
         return { kind: "Memory", expr, segment: name };
       }
+      // CASE segment:@DATA
+      if (parser.current.type===TokenType.AtIdentifier){
+        
+        const n=parser.eat(TokenType.AtIdentifier);
+        return {
+          kind:"Memory",
+          expr:{
+            type: "Identifier",
+            name: n.value!,
+          },
+          base:n.value!,
+          at:true, 
+          segment: name
+        }
+      }
       // CASE: segment:size PTR ...  (e.g., ES: WORD PTR [DI])
       if (parser.current.type === TokenType.Identifier) {
         const ident = parser.eat(TokenType.Identifier).value!;

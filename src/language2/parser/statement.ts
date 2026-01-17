@@ -249,6 +249,7 @@ function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,sta
       params:[],
       body: [],
       trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
+      simplified: true,
     };
   
   if (idUpper === ".DATA" || idUpper === ".DATA?" || idUpper === ".CONST") {
@@ -272,7 +273,6 @@ function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,sta
       parser.eat(parser.current.type);
     }
     output.name=segName;
-    output.params=["CODE"]
   }
   //-------------------
   const body: ASTNode[] = [];

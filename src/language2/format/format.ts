@@ -38,7 +38,10 @@ function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): stri
         const seg = (operand as any).segment as string | undefined;
         const base = (operand as any).base as string | undefined;
         const inner = `[${formatExpression((operand as any).expr)}]`;
-        const basePart = base ? `${applyCasing(config.casing.register, base)}${inner}` : inner;
+        let basePart = base ? `${applyCasing(config.casing.register, base)}${inner}` : inner;
+        if(operand.at){
+          basePart="@"+formatExpression((operand as any).expr);
+        }
         if (seg) {
           return `${applyCasing(config.casing.register, seg)}:${basePart}`;
         }
@@ -113,6 +116,14 @@ function formatProcedure(node: ProcedureNode, config: MasmtasmFormatConfig, inde
 }
 
 function formatSegment(node: SegmentNode, config: MasmtasmFormatConfig, indent = ""): string {
+  if(node.simplified){
+    const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
+    let params="";
+    if(node.params.length>0 && node.params[0]==="?"){
+      params+="?"
+    }
+    return `.${node.name}${params}\n${body}\n`;
+  }
   const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
   return `${node.name} SEGMENT ${node.params.join(" ")}\n${body}\n${node.name} ENDS`;
 }
