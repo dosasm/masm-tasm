@@ -155,3 +155,20 @@ function loadFormatConfig(): MasmtasmFormatConfig {
         spaceAfterComma: config.get<'always' | 'never' | 'off'>('spaceAfterComma') ?? 'off',
     };
 }
+
+export class AsmReferenceProvider implements vscode.ReferenceProvider {
+    provideReferences(document: vscode.TextDocument, position: vscode.Position): vscode.Location[] {
+        const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
+        let output: vscode.Location[] = [];
+        return output;
+    }
+}
+
+export class AsmRenameProvider implements vscode.RenameProvider {
+    provideRenameEdits(document: vscode.TextDocument, position: vscode.Position, newName: string, token: vscode.CancellationToken): vscode.ProviderResult<vscode.WorkspaceEdit> {
+        throw new Error('Method not implemented.');
+    }
+    prepareRename?(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Range | { range: vscode.Range; placeholder: string; }> {
+        throw new Error('Method not implemented.');
+    }
+}

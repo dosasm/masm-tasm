@@ -11,7 +11,8 @@ export function activate(context: vscode.ExtensionContext): void {
     if (programmaticFeatures.get("programmaticFeatures")) {
         context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("assembly", new providers.Asmsymbolprovider()));
         context.subscriptions.push(vscode.languages.registerDefinitionProvider("assembly", new providers.AsmDefProvider()));
-        // context.subscriptions.push(vscode.languages.registerReferenceProvider("assembly", new providers.AsmReferenceProvider()));
+        context.subscriptions.push(vscode.languages.registerReferenceProvider("assembly", new providers.AsmReferenceProvider()));
+        context.subscriptions.push(vscode.languages.registerRenameProvider("assembly", new providers.AsmRenameProvider()));
         context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider("assembly", new providers.AsmDocFormat()));
     }
 }
