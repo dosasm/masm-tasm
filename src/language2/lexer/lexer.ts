@@ -1,4 +1,4 @@
-import { Token, TokenType } from "./token";
+import { Position, Token, TokenType } from "./token";
 
 export class Lexer {
   private pos = 0;
@@ -13,7 +13,7 @@ export class Lexer {
     return this.pos;
   }
 
-  get currentPos2(){
+  get currentPos2():Position{
     return {...this.position,offset:this.pos}
   }
 
