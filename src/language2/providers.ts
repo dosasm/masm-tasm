@@ -5,6 +5,7 @@ import { ASTNode, ProgramNode } from './ast';
 import { format } from './format/format';
 import { MasmtasmFormatConfig } from './format/config';
 import { logger } from '../utils/logger';
+import { FlattenTree, search } from './ast/tool';
 
 export function parser_code(code:string,path:string):ProgramNode|undefined{
     const parser = new Parser(new Lexer(code), path);
@@ -21,14 +22,152 @@ export function parser_code(code:string,path:string):ProgramNode|undefined{
 export class AsmDefProvider implements vscode.DefinitionProvider {
     provideDefinition(document: vscode.TextDocument, position: vscode.Position): vscode.Definition {
         const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-        const ast=parser_code(document.getText(),document.uri.toString());
-
+        const ast=parser_code(document.getText(),document.uri.toString())
+        const output:vscode.Location[]=[];
+        if(!ast) return output;
+        const offset=document.offsetAt(position);
+        const tree=new FlattenTree(ast);
+        const node=tree.search(offset);
         const wordo = document.getText(range);
-        // const tasmsymbol = docinfo.findSymbol(wordo);
-        // if (tasmsymbol) {
-        //     return tasmsymbol.location(document.uri);
-        // }
-        return [];
+        if(node?.type==="Instruction"){
+            const node=tree.nodes.find(a=>{
+                if(a.type==="Label"){
+                    return a.name===wordo
+                }
+                if(a.type==="Macro"){
+                    return a.name===wordo
+                }
+                if(a.type==="Procedure"){
+                    return a.name===wordo
+                }
+                return false
+            })
+            if(node){
+                output.push(new vscode.Location(
+                    document.uri,document.positionAt(node?.trace.index)
+                ))
+            }
+        }
+        return output;
+    }
+}
+
+
+export class AsmReferenceProvider implements vscode.ReferenceProvider {
+    provideReferences(document: vscode.TextDocument, position: vscode.Position): vscode.Location[] {
+        const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
+        const word=document.getText(range);
+        let output: vscode.Location[] = [];
+
+
+        const ast=parser_code(document.getText(),document.uri.toString())
+        if(!ast) return output;
+        const offset=document.offsetAt(position);
+        const tree=new FlattenTree(ast);
+        const node=tree.search(offset);
+        if (node?.type==="Label"){
+            for(const n of tree.nodes){
+                if(n.type==="Instruction"){
+                    for(const o of n.operands){
+                        if(o.kind==="Identifier" && o.name===word){
+                            output.push(new vscode.Location(
+                                document.uri,document.positionAt(n.trace.index)
+                            ))
+                        }
+                    }
+                }
+            }
+        }
+        return output;
+    }
+}
+
+export class AsmRenameProvider implements vscode.RenameProvider {
+    provideRenameEdits(document: vscode.TextDocument, position: vscode.Position, newName: string, token: vscode.CancellationToken): vscode.ProviderResult<vscode.WorkspaceEdit> {
+        const ast = parser_code(document.getText(), document.uri.toString());
+        if(!ast) return undefined;
+        const offset = document.offsetAt(position);
+        const tree = new FlattenTree(ast);
+        const node = tree.search(offset);
+        if(!node) return undefined;
+
+        const oldName = (() => {
+            if((node as any).name) return (node as any).name as string;
+            // fallback: word at position
+            const range = document.getWordRangeAtPosition(position);
+            return range ? document.getText(range) : undefined;
+        })();
+        if(!oldName) return undefined;
+
+        const edit = new vscode.WorkspaceEdit();
+
+        function escapeRegExp(s: string) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+        const nameRe = new RegExp(escapeRegExp(oldName), 'g');
+
+        // replace definitions for same-type symbols
+        for(const n of tree.nodes){
+            if((n.type === 'Label' || n.type === 'Macro' || n.type === 'Procedure' || n.type === 'Segment' || n.type === 'Struct') && (n as any).name === oldName){
+                const start = document.positionAt(n.trace.index);
+                const end = document.positionAt(n.trace.index + (n as any).name.length);
+                edit.replace(document.uri, new vscode.Range(start,end), newName);
+            }
+        }
+
+        // replace instruction-level occurrences: mnemonic and operand identifiers
+        for(const n of tree.nodes){
+            if(n.type === 'Instruction'){
+                // replace mnemonic when it matches
+                try{
+                    const instrStart = n.trace.index;
+                    const instrEnd = n.trace.end;
+                    const r = new vscode.Range(document.positionAt(instrStart), document.positionAt(instrEnd));
+                    const text = document.getText(r);
+
+                    // check mnemonic (first token)
+                    const m = text.match(/^\s*([^\s]+)/);
+                    if(m && m[1] === oldName){
+                        const idx = text.indexOf(m[1]);
+                        const abs = instrStart + idx;
+                        edit.replace(document.uri, new vscode.Range(document.positionAt(abs), document.positionAt(abs + oldName.length)), newName);
+                    }
+
+                    // replace operand identifier occurrences (best-effort within instruction text)
+                    const instrOperands = (n as any).operands as any[] || [];
+                    if(instrOperands.length>0){
+                        let match: RegExpExecArray | null;
+                        const re = nameRe;
+                        while((match = re.exec(text))){
+                            // best-effort: ensure this occurrence corresponds to an Identifier operand
+                            // if any operand has the same name, accept replacement
+                            const hasOperand = instrOperands.some(o=>o.kind === 'Identifier' && o.name === oldName);
+                            if(hasOperand){
+                                const abs = instrStart + match.index;
+                                edit.replace(document.uri, new vscode.Range(document.positionAt(abs), document.positionAt(abs + oldName.length)), newName);
+                            }
+                        }
+                    }
+                }catch(e){
+                    // ignore per-instruction errors
+                }
+            }
+        }
+
+        return edit;
+    }
+    prepareRename?(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Range | { range: vscode.Range; placeholder: string; }> {
+        const ast = parser_code(document.getText(), document.uri.toString());
+        if(!ast) return undefined;
+        const offset = document.offsetAt(position);
+        const tree = new FlattenTree(ast);
+        const node = tree.search(offset);
+        if(!node) return undefined;
+        if(node.type === 'Label' || node.type === 'Macro' || node.type === 'Procedure' || node.type === 'Segment' || node.type === 'Struct'){
+            const name = (node as any).name as string;
+            const start = document.positionAt(node.trace.index);
+            const end = document.positionAt(node.trace.index + name.length);
+            return { range: new vscode.Range(start,end), placeholder: name };
+        }
+        return undefined;
     }
 }
 
@@ -154,21 +293,4 @@ function loadFormatConfig(): MasmtasmFormatConfig {
         alignSingleLineComment: config.get<boolean>('alignSingleLineComment') ?? true,
         spaceAfterComma: config.get<'always' | 'never' | 'off'>('spaceAfterComma') ?? 'off',
     };
-}
-
-export class AsmReferenceProvider implements vscode.ReferenceProvider {
-    provideReferences(document: vscode.TextDocument, position: vscode.Position): vscode.Location[] {
-        const range = document.getWordRangeAtPosition(new vscode.Position(position.line, position.character));
-        let output: vscode.Location[] = [];
-        return output;
-    }
-}
-
-export class AsmRenameProvider implements vscode.RenameProvider {
-    provideRenameEdits(document: vscode.TextDocument, position: vscode.Position, newName: string, token: vscode.CancellationToken): vscode.ProviderResult<vscode.WorkspaceEdit> {
-        throw new Error('Method not implemented.');
-    }
-    prepareRename?(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Range | { range: vscode.Range; placeholder: string; }> {
-        throw new Error('Method not implemented.');
-    }
 }
