@@ -1,171 +1,183 @@
-import { ProgramNode, ASTNode, InstructionNode, LabelNode, MacroNode, ConditionalNode, OperandNode, StructNode, ProcedureNode, SegmentNode, ExprNode } from "../ast";
+import { ProgramNode, ASTNode, InstructionNode, LabelNode, MacroNode, ConditionalNode, OperandNode, StructNode, ProcedureNode, SegmentNode, ExprNode, CommentNode } from "../ast";
 import { MasmtasmFormatConfig, CasingMode } from "./config";
 
-function applyCasing(mode: CasingMode, text: string): string {
+function applyCasing(s: string, mode: CasingMode): string {
+  if (!s) return s;
   switch (mode) {
-    case 'lower': return text.toLowerCase();
-    case 'upper': return text.toUpperCase();
-    case 'title': return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    case 'off': return text;
+    case 'lower': return s.toLowerCase();
+    case 'upper': return s.toUpperCase();
+    case 'title': return s[0].toUpperCase() + s.slice(1).toLowerCase();
+    default: return s;
   }
 }
 
-function formatExpr(expr: ExprNode): string {
-  switch (expr.type) {
-    case 'Identifier':
-      return expr.name;
-    case 'Number':
-      return expr.value.toString();
-    case 'BinaryExpr':
-      return `${formatExpr(expr.left)} ${expr.operator} ${formatExpr(expr.right)}`;
-    case 'UnaryExpr':
-      return `${expr.operator}${formatExpr(expr.operand)}`;
-    default:
-      return '';
+function formatExpr(e: ExprNode): string {
+  switch (e.type) {
+    case 'Identifier': return e.name;
+    case 'Number': return e.expr ?? String(e.value);
+    case 'UnaryExpr': return e.operator + formatExpr(e.operand);
+    case 'BinaryExpr': return `${formatExpr(e.left)} ${e.operator} ${formatExpr(e.right)}`;
   }
 }
 
-function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): string {
-  switch (operand.kind) {
-    case 'Immediate':
-      return formatExpr(operand.value);
-    case 'Identifier':
-      // Apply casing based on type, but for simplicity, use directive casing
-      return applyCasing(config.casing.directive, operand.name);
-    case 'String':
-      return `'${operand.value}'`;
-    case "StructAssign":
-      return "<"+operand.exprs.map(formatExpr).join(",")+">"
-    case 'Memory':
-        const seg = (operand as any).segment as string | undefined;
-        const base = (operand as any).base as string | undefined;
-        const inner = `[${formatExpression((operand as any).expr)}]`;
-        let basePart = base ? `${applyCasing(config.casing.register, base)}${inner}` : inner;
-        if(operand.at){
-          basePart="@"+formatExpression((operand as any).expr);
-        }
-        if (seg) {
-          return `${applyCasing(config.casing.register, seg)}:${basePart}`;
-        }
-        return basePart;
-    case 'Offset':
-      return `OFFSET ${formatExpression(operand.expr)}`;
-    case 'Seg':
-      return `OFFSET ${formatExpression(operand.expr)}`;
-    case 'Dup':
-      return `${operand.prefix ? formatExpr(operand.prefix) : ""} DUP(${formatOperand(operand.value, config)})`;
-    case 'QuestionExpr':
-      return "?"
-    case 'SegmentRegister':
-      return `${applyCasing(config.casing.register, operand.segment)}:${applyCasing(config.casing.register, operand.register)}`;
+function formatOperand(o: OperandNode, config: MasmtasmFormatConfig): string {
+  switch (o.kind) {
+    case 'Immediate': return formatExpr(o.value);
+    case 'Identifier': return o.name;
+    case 'String': return '"' + o.value + '"';
+    case 'Memory': {
+      const seg = o.segment ? o.segment + ':' : '';
+      const inner = formatExpr(o.expr);
+      if (o.base) return `${seg}${o.base}[${inner}]`;
+      return `${seg}[${inner}]`;
+    }
+    case 'StructAssign': return '<' + o.exprs.map(e=>formatExpr(e)).join(', ') + '>';
+    case 'Offset': return 'OFFSET ' + formatExpr(o.expr);
+    case 'Seg': return 'SEG ' + formatExpr(o.expr);
+    case 'Dup': return (o.prefix ? formatExpr(o.prefix) + ' ' : '') + 'DUP(' + formatOperand(o.value, config) + ')';
+    case 'QuestionExpr': return '?';
+    case 'SegmentRegister': return `${o.segment}:${applyCasing(o.register, config.casing.register)}`;
   }
 }
 
-function formatExpression(expr: any): string {
-  try {
-    return formatExpr(expr as ExprNode);
-  } catch {
-    return '';
-  }
+function joinOperands(ops: OperandNode[], config: MasmtasmFormatConfig){
+  const sep = config.spaceAfterComma === 'never' ? ',' : ', ';
+  return ops.map(o=>formatOperand(o, config)).join(sep);
 }
 
-function formatInstruction(node: InstructionNode, config: MasmtasmFormatConfig, indent: string): string {
-  const mnemonic = applyCasing(config.casing.instruction, node.mnemonic);
-  const operands_ = node.operands.map(op => formatOperand(op, config));
+type LineItem = { kind: 'code'|'comment'|'blank', text?:string, trailingComment?:string };
 
-  let operands = "";
-  if (operands_.length >= 1) {
-    operands = operands_[0]
+function collectLines(nodes: ASTNode[]): LineItem[]{
+  const out: LineItem[] = [];
+  for (let i=0;i<nodes.length;i++){
+    const n = nodes[i] as any;
+    if (n.type === 'Comment'){
+      out.push({kind:'comment', text: n.value});
+      continue;
+    }
+    if (n.type === 'Instruction' || n.type === 'Label' || n.type==='Macro' || n.type==='Procedure' || n.type==='Segment' || n.type==='Struct' || n.type==='Conditional'){
+      // detect trailing comment: next node is Comment and on same line
+      let trailing:String|undefined = undefined;
+      const next = nodes[i+1] as any;
+      if (next && next.type === 'Comment'){
+        try{
+          if (next.trace && n.trace && next.trace.index && n.trace.end && next.trace.index.line === n.trace.end.line){
+            trailing = next.value;
+            i++; // consume comment
+          }
+        }catch(e){/* ignore */}
+      }
+      // produce code text via formatNode
+      const text = formatNode(n, DEFAULT_SAFE_CONFIG, "\t");
+      out.push({kind:'code', text, trailingComment: trailing as any});
+      continue;
+    }
+    out.push({kind:'blank'});
   }
-  if (operands_.length >= 2) {
-    for (let i = 1; i < operands_.length; i++) {
-      if (i == 1 && ["segment", "db", "dw", "dd", "dq", "dt"].some(a => operands_[i - 1].toLocaleLowerCase() === a)) {
-        operands += " " + operands_[i];
+  return out;
+}
+
+const DEFAULT_SAFE_CONFIG: MasmtasmFormatConfig = {
+  align: 'segment',
+  casing: { instruction: 'off', register: 'off', directive: 'off', operator: 'off' },
+  alignOperand: true,
+  alignTrailingComment: true,
+  alignSingleLineComment: true,
+  spaceAfterComma: 'off'
+};
+
+export function format(config: MasmtasmFormatConfig, ast: ProgramNode, indent: string): string {
+  // First, collect flat lines and detect trailing comments
+  const lines = collectLines(ast.body);
+
+  // compute max code length for trailing comment alignment
+  let maxCodeLen = 0;
+  for (const l of lines) {
+    if (l.kind === 'code' && l.text) maxCodeLen = Math.max(maxCodeLen, l.text.length);
+  }
+
+  const out: string[] = [];
+  for (const l of lines) {
+    if (l.kind === 'blank') { out.push(''); continue; }
+    if (l.kind === 'comment') {
+      if (config.alignSingleLineComment) {
+        out.push(l.text || '');
       } else {
-        operands += ", " + operands_[i];
+        out.push(l.text || '');
+      }
+      continue;
+    }
+    // code line
+    if (l.text) {
+      if (l.trailingComment && config.alignTrailingComment) {
+        const padding = Math.max(1, maxCodeLen - l.text.length + 1);
+        out.push(l.text + ' '.repeat(padding) + l.trailingComment);
+      } else if (l.trailingComment) {
+        out.push(l.text + ' ' + l.trailingComment);
+      } else {
+        out.push(l.text);
       }
     }
   }
 
-
-  if (mnemonic.startsWith(".") || mnemonic.toLowerCase() === "data" || mnemonic.toLowerCase() === "code") {
-    return `${mnemonic} ${operands}`;
-  }
-  return `${indent}${mnemonic} ${operands}`;
+  return out.join('\n');
 }
 
-function formatLabel(node: LabelNode): string {
-  return `${node.name}:`;
-}
-
-function formatMacro(node: MacroNode, config: MasmtasmFormatConfig, indent = ""): string {
-  const params = node.params.join(', ');
-  const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  return `${indent}${node.name} MACRO ${params}\n${body}\n${indent}ENDM`;
-}
-
-function formatConditional(node: ConditionalNode, config: MasmtasmFormatConfig, indent = ""): string {
-  const thenBody = node.thenBody.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  const elseBody = node.elseBody ? `\n${indent}ELSE\n${node.elseBody.map(n => formatNode(n, config, indent + "\t")).join('\n')}` : '';
-  return `${indent}${node.kind} ${node.symbol}\n${thenBody}${elseBody}\n${indent}ENDIF`;
-}
-
-function formatProcedure(node: ProcedureNode, config: MasmtasmFormatConfig, indent = ""): string {
-  const params = node.params ? node.params.join(', ') : '';
-  const attributes = node.attributes ? ' ' + node.attributes.join(' ') : '';
-  const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  return `${node.name} PROC${attributes}${params ? ' ' + params : ''}\n${body}\n${node.name} ENDP`;
-}
-
-function formatSegment(node: SegmentNode, config: MasmtasmFormatConfig, indent = ""): string {
-  if(node.simplified){
-    const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-    let params="";
-    if(node.params.length>0 && node.params[0]==="?"){
-      params+="?"
-    }
-    return `.${node.name}${params}\n${body}\n`;
-  }
-  const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  return `${node.name} SEGMENT ${node.params.join(" ")}\n${body}\n${node.name} ENDS`;
-}
-
-function formatStruct(node: StructNode, config: MasmtasmFormatConfig, indent = ""): string {
-  const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  return `${node.name} STRUCT\n${body}\n${node.name} ENDS`;
-}
-
-function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"): string {
-  let result = '';
+function formatNode(node: ASTNode | any, config: MasmtasmFormatConfig, indent: string): string {
   switch (node.type) {
-    case 'Instruction':
-      result += formatInstruction(node, config, indent);
-      break;
+    case 'Program':
+      return node.body.map((n:ASTNode) => formatNode(n, config, indent)).join('\n');
+    case 'Comment':
+      if (node.value){
+        return node.value.trim();
+      }
+      return ""
     case 'Label':
-      result += formatLabel(node);
-      break;
-    case 'Macro':
-      result += formatMacro(node, config, indent);
-      break;
-    case 'Conditional':
-      result += formatConditional(node, config, indent);
-      break;
-    case 'Procedure':
-      result += formatProcedure(node, config, indent);
-      break;
-    case 'Segment':
-      result += formatSegment(node, config, indent);
-      break;
-    case 'Struct':
-      result += formatStruct(node, config, indent);
-      break;
-    default:
-      result += '';
+      return `${node.name}:`;
+    case 'Instruction': {
+      const m = applyCasing(node.mnemonic, config.casing.instruction);
+      const ops = node.operands && node.operands.length ? joinOperands(node.operands, config) : '';
+      const text = ops ? `${indent}${m} ${ops}` : `${indent}${m}`;
+      return text;
+    }
+    case 'Macro': {
+      const hdr = `${node.name} MACRO${node.params && node.params.length ? ' ' + node.params.join(', ') : ''}`;
+      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const end = `${node.name} ENDM`;
+      return [hdr, body, end].join('\n');
+    }
+    case 'Procedure': {
+      const attrs = node.attributes && node.attributes.length ? ' ' + node.attributes.join(' ') : '';
+      const params = node.params && node.params.length ? ' ' + node.params.join(', ') : '';
+      const hdr = `${node.name} PROC${attrs}${params}`;
+      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const end = `${node.name} ENDP`;
+      return [hdr, body, end].join('\n');
+    }
+    case 'Segment': {
+      if (node.simplified) {
+        const hdr = `.${node.name}`;
+        const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+        return [hdr, body, ''].join('\n');
+      }
+      const hdr = `${node.name} SEGMENT${node.params && node.params.length ? ' ' + node.params.join(' ') : ''}`;
+      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const end = `${node.name} ENDS`;
+      return [hdr, body, end].join('\n');
+    }
+    case 'Struct': {
+      const hdr = `${node.name} STRUCT`;
+      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const end = `${node.name} ENDS`;
+      return [hdr, body, end].join('\n');
+    }
+    case 'Conditional': {
+      const hdr = `${node.kind} ${node.symbol}`;
+      const thenBody = node.thenBody.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const elseBody = node.elseBody ? node.elseBody.map((b:ASTNode) => formatNode(b, config, indent + indent)).join('\n') : undefined;
+      const end = `ENDIF`;
+      return [hdr, thenBody, ...(elseBody ? ['ELSE', elseBody] : []), end].join('\n');
+    }
   }
-
-  return result;
-}
-
-export function format(config: MasmtasmFormatConfig, ast: ProgramNode, indent: string): string {
-  return ast.body.map(node => formatNode(node, config, indent)).join('\n');
+  return '';
 }

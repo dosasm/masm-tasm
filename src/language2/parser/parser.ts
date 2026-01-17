@@ -6,15 +6,15 @@ import { parseStatement } from "./statement";
 export class Parser {
   current: Token;
 
-  debug_current(){
+  debug_current() {
     return this.lexer.debug_current()
   }
 
-  substring(start:number,end:number){
-    return this.lexer.input.substring(start,end)
+  substring(start: number, end: number) {
+    return this.lexer.input.substring(start, end)
   }
 
-  public currentPos(){
+  public currentPos() {
     return this.lexer.currentPos
   }
 
@@ -34,18 +34,20 @@ export class Parser {
     return t;
   }
 
-  parseStatement():ASTNode {
+  parseStatement(): ASTNode {
     while (this.current.type === TokenType.NewLine || this.current.type === TokenType.Comment) {
-      const t=this.eat(this.current.type);
-      const trace={
-        filePath: this.filePath,
-        index: t.pos,
-        end:positionOffset(t.pos,t.value?t.value.length:0),
-      }
-      return {
-        type:"Comment",
-        value:t.value!,
-        trace,
+      const t = this.eat(this.current.type);
+      if (t.type === TokenType.Comment) {
+        const trace = {
+          filePath: this.filePath,
+          index: t.pos,
+          end: positionOffset(t.pos, t.value ? t.value.length : 0),
+        }
+        return {
+          type: "Comment",
+          value: t.value!,
+          trace,
+        }
       }
     }
     const result = parseStatement(this);
@@ -68,7 +70,7 @@ export class Parser {
       body,
       trace: {
         filePath: this.filePath,
-        index: {line:0,col:0,offset:0},
+        index: { line: 0, col: 0, offset: 0 },
         end: this.lexer.currentPos2
       }
     };
