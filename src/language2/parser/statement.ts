@@ -2,7 +2,6 @@ import { Parser } from "./parser";
 import { ASTNode } from "../ast/nodes";
 import { TokenType } from "../lexer/token";
 import { parseOperand } from "./operand";
-import { tokenType } from "yaml/dist/parse/cst";
 
 export function parseStatement(parser: Parser): ASTNode {
   const startIndex = parser.current.pos;
@@ -39,6 +38,12 @@ export function parseStatement(parser: Parser): ASTNode {
 
   if (id === "IFDEF" || id === "IFNDEF") {
     return parseConditional(parser, id, startIndex);
+  }
+
+  // simplified segment directives like .DATA, .DATA?, .CONST, .CODE <name>
+  const idUpper = id.toUpperCase();
+  if([".CODE",".DATA",".DATA?",".CONST"].some(a=>a===idUpper)){
+    return parseSimplifiedSegment(parser,id,idUpper,startIndex)
   }
 
   const operands = [];
@@ -235,6 +240,54 @@ function parseSegment(parser: Parser, name: string, startIndex: number): ASTNode
     body,
     trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
   };
+}
+
+function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,startIndex: number): ASTNode {
+  const output:ASTNode={
+      type: "Segment",
+      name: "",
+      params:[],
+      body: [],
+      trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
+    };
+  
+  if (idUpper === ".DATA" || idUpper === ".DATA?" || idUpper === ".CONST") {
+    // consume rest of line
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+      parser.eat(parser.current.type);
+    }
+    const segName = idUpper.replace(/^\./, '').replace('?', '');
+    if (idUpper === ".DATA?") output.params.push('?');
+    if (idUpper === ".CONST") output.params.push('CONST');
+    output.name=segName;
+  }
+
+  if (idUpper === ".CODE") {
+    // .CODE <segmentName>  (segment name required)
+    let segName = "CODE";
+    if (parser.current.type === TokenType.Identifier) {
+      segName = parser.eat(TokenType.Identifier).value!;
+    }
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+      parser.eat(parser.current.type);
+    }
+    output.name=segName;
+    output.params=["CODE"]
+  }
+  //-------------------
+  const body: ASTNode[] = [];
+  let state:ASTNode|undefined=undefined;
+  while (parser.current.type!==TokenType.EOF) {
+    state=parser.parseStatement();
+    if([".CODE",".DATA",".DATA?",".CONST"].some(a=>a===parser.current.value)){
+      break
+    }
+    body.push(state);
+  }
+  // parser.eat(TokenType.Identifier); // ENDS
+  output.body=body;
+  output.trace.end=parser.current.pos;
+  return output;
 }
 
 function parseStruct(parser: Parser, name: string, startIndex: number): ASTNode {

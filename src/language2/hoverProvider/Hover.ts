@@ -87,7 +87,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
 
                 const a2 = node.operands.some(a => {
                     if (a.kind === "Immediate") {
-                        return a.expr === wordGet
+                        // return a.expr === wordGet//TODO
                     }
                 })
                 const md = new MarkdownString();

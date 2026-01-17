@@ -27,4 +27,5 @@ export interface IdentifierExpr {
 export interface NumberExpr {
   type: "Number";
   value: number;
+  expr:string;
 }

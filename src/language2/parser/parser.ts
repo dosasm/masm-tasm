@@ -6,6 +6,18 @@ import { parseStatement } from "./statement";
 export class Parser {
   current: Token;
 
+  debug_current(){
+    return this.lexer.debug_current()
+  }
+
+  substring(start:number,end:number){
+    return this.lexer.input.substring(start,end)
+  }
+
+  public currentPos(){
+    return this.lexer.currentPos
+  }
+
   constructor(private lexer: Lexer, public filePath: string) {
     this.current = lexer.nextToken();
   }

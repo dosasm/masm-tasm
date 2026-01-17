@@ -80,11 +80,12 @@ export interface ConditionalNode {
 
 
 export type OperandNode =
-  | { kind: "Immediate"; value: number, type:"hex"|"oct"|"dec"|"bin",expr:string,parseError?:string }
+  | { kind: "Immediate"; value: ExprNode }
   | { kind: "Identifier"; name: string }
   | { kind: "String"; value: string }
-  | { kind: "Memory"; expr: ExprNode }
+  | { kind: "Memory"; expr: ExprNode; segment?: string }
   | { kind: "Offset"; expr: ExprNode }
-  | { kind: "Dup"; value: OperandNode }
+  | { kind: "Seg"; expr: ExprNode }
+  | { kind: "Dup"; value: OperandNode, prefix?:ExprNode }
   | { kind: "QuestionExpr"; value: "?" }
   | { kind: "SegmentRegister"; segment: string; register: string };

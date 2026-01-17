@@ -1,4 +1,4 @@
-import { ProgramNode, ASTNode, InstructionNode, LabelNode, MacroNode, ConditionalNode, OperandNode, StructNode, ProcedureNode, SegmentNode } from "../ast";
+import { ProgramNode, ASTNode, InstructionNode, LabelNode, MacroNode, ConditionalNode, OperandNode, StructNode, ProcedureNode, SegmentNode, ExprNode } from "../ast";
 import { MasmtasmFormatConfig, CasingMode } from "./config";
 
 function applyCasing(mode: CasingMode, text: string): string {
@@ -10,23 +10,41 @@ function applyCasing(mode: CasingMode, text: string): string {
   }
 }
 
+function formatExpr(expr: ExprNode): string {
+  switch (expr.type) {
+    case 'Identifier':
+      return expr.name;
+    case 'Number':
+      return expr.value.toString();
+    case 'BinaryExpr':
+      return `${formatExpr(expr.left)} ${expr.operator} ${formatExpr(expr.right)}`;
+    case 'UnaryExpr':
+      return `${expr.operator}${formatExpr(expr.operand)}`;
+    default:
+      return '';
+  }
+}
+
 function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): string {
   switch (operand.kind) {
     case 'Immediate':
-      if (operand.expr)
-        return operand.expr;
-      return operand.value.toString();
+      return formatExpr(operand.value);
     case 'Identifier':
       // Apply casing based on type, but for simplicity, use directive casing
       return applyCasing(config.casing.directive, operand.name);
     case 'String':
       return `'${operand.value}'`;
     case 'Memory':
+      if ((operand as any).segment) {
+        return `${applyCasing(config.casing.register, (operand as any).segment)}: ${"[" + formatExpression((operand as any).expr) + "]"}`;
+      }
       return `[${formatExpression(operand.expr)}]`;
     case 'Offset':
       return `OFFSET ${formatExpression(operand.expr)}`;
+    case 'Seg':
+      return `OFFSET ${formatExpression(operand.expr)}`;
     case 'Dup':
-      return `DUP(${formatOperand(operand.value, config)})`;
+      return `${operand.prefix ? formatExpr(operand.prefix) : ""} DUP(${formatOperand(operand.value, config)})`;
     case 'QuestionExpr':
       return "?"
     case 'SegmentRegister':
@@ -35,11 +53,11 @@ function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): stri
 }
 
 function formatExpression(expr: any): string {
-  // Simplified, assume it's Identifier or Number
-  if (expr.type === 'Identifier') return expr.name;
-  if (expr.type === 'Number') return expr.value.toString();
-  if (expr.type === 'BinaryExpr') return `${formatExpression(expr.left)} ${expr.operator} ${formatExpression(expr.right)}`;
-  return '';
+  try {
+    return formatExpr(expr as ExprNode);
+  } catch {
+    return '';
+  }
 }
 
 function formatInstruction(node: InstructionNode, config: MasmtasmFormatConfig, indent: string): string {
@@ -52,7 +70,7 @@ function formatInstruction(node: InstructionNode, config: MasmtasmFormatConfig, 
   }
   if (operands_.length >= 2) {
     for (let i = 1; i < operands_.length; i++) {
-      if (i == 1 && ["segment", "db", "dw", "dd","dq","dt"].some(a => operands_[i-1].toLocaleLowerCase() === a)) {
+      if (i == 1 && ["segment", "db", "dw", "dd", "dq", "dt"].some(a => operands_[i - 1].toLocaleLowerCase() === a)) {
         operands += " " + operands_[i];
       } else {
         operands += ", " + operands_[i];
@@ -130,8 +148,8 @@ function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"):
     default:
       result += '';
   }
-  if (node.trace?.trailing && node.trace.trailing.length==1) {
-    result +="\t"+ node.trace.trailing.join('\n');
+  if (node.trace?.trailing && node.trace.trailing.length == 1) {
+    result += "\t" + node.trace.trailing.join('\n');
   }
   return result;
 }

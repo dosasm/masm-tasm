@@ -3,7 +3,7 @@ import { Token, TokenType } from "./token";
 export class Lexer {
   private pos = 0;
 
-  constructor(private input: string) {}
+  constructor(public input: string) {}
 
   get currentPos(): number {
     return this.pos;
