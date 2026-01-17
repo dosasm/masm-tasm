@@ -6,11 +6,10 @@ export interface Trace {
   filePath: string;
   index: Position;
   end:Position;
-  leading?: string[];
-  trailing?: string[];
 }
 
 export type ASTNode =
+  | CommentNode
   | ProgramNode
   | InstructionNode
   | LabelNode
@@ -19,6 +18,12 @@ export type ASTNode =
   | ProcedureNode
   | SegmentNode
   | StructNode;
+
+export interface CommentNode{
+  type:"Comment";
+  value:string;
+  trace:Trace;
+}
 
 export interface ProgramNode {
   type: "Program";
@@ -87,6 +92,7 @@ export type OperandNode =
   | { kind: "Identifier"; name: string }
   | { kind: "String"; value: string }
   | { kind: "Memory"; expr: ExprNode; segment?: string; base?: string;at?:boolean }
+  | { kind: "StructAssign"; exprs: ExprNode[]; }
   | { kind: "Offset"; expr: ExprNode }
   | { kind: "Seg"; expr: ExprNode }
   | { kind: "Dup"; value: OperandNode, prefix?:ExprNode }

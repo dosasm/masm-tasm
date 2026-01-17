@@ -8,6 +8,8 @@ export enum TokenType {
   RBracket,
   LParen,
   RParen,
+  LAngleBracket,
+  RAngleBracket,
   Question,
   Plus,
   Minus,
@@ -26,8 +28,16 @@ export interface Position{
   col:number,
 }
 
+export function positionOffset(base:Position,offset:number){
+  return {
+    line:base.line,
+    col:base.col+offset,
+    offset:base.offset+offset,
+  }
+}
+
 export interface Token {
   type: TokenType;
   value?: string;
-  pos:Position
+  pos:Position;
 }

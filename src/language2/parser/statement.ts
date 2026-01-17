@@ -68,14 +68,6 @@ export function parseStatement(parser: Parser): ASTNode {
     } 
   };
 
-  if(parser.current.type===TokenType.Comment){
-    if (parser.current.value){
-      output.trace.trailing=[parser.current.value];
-    }
-    parser.eat(TokenType.Comment)
-  }
-
-
   return output;
 }
 
@@ -116,11 +108,11 @@ function parseProc(parser: Parser, name: string, startIndex: Position): ASTNode 
   const attributes: string[] = [];
   const params: string[] = [];
 
-  if (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+  if (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type!==TokenType.Comment) {
     const parts: string[] = [];
     let curPart = "";
     //@ts-ignore
-    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF  && parser.current.type!==TokenType.Comment) {
       if (parser.current.type === TokenType.Comma) {
         parts.push(curPart.trim());
         curPart = "";
@@ -213,7 +205,7 @@ function parseProc(parser: Parser, name: string, startIndex: Position): ASTNode 
 function parseSegment(parser: Parser, name: string, startIndex: Position): ASTNode {
   parser.eat(TokenType.Identifier); // SEGMENT
   let params=[];
-  while(parser.current.type!==TokenType.NewLine){
+  while(parser.current.type!==TokenType.NewLine && parser.current.type!==TokenType.Comment){
     parser.current.value && params.push(parser.current.value)
     parser.eat(TokenType.Identifier);
   }
@@ -254,7 +246,7 @@ function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,sta
   
   if (idUpper === ".DATA" || idUpper === ".DATA?" || idUpper === ".CONST") {
     // consume rest of line
-    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF  && parser.current.type!==TokenType.Comment) {
       parser.eat(parser.current.type);
     }
     const segName = idUpper.replace(/^\./, '').replace('?', '');
@@ -269,7 +261,7 @@ function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,sta
     if (parser.current.type === TokenType.Identifier) {
       segName = parser.eat(TokenType.Identifier).value!;
     }
-    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF) {
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type!==TokenType.Comment) {
       parser.eat(parser.current.type);
     }
     output.name=segName;
@@ -307,7 +299,7 @@ function parseStruct(parser: Parser, name: string, startIndex: Position): ASTNod
     }
     body.push(state);
   }
-  parser.eat(TokenType.Identifier); // ENDS
+  // parser.eat(TokenType.Identifier); // ENDS
   return {
     type: "Struct",
     name,

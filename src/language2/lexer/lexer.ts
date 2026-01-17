@@ -116,6 +116,10 @@ export class Lexer {
         return { type: TokenType.LBracket,pos };
       case "]":
         return { type: TokenType.RBracket,pos };
+      case "<":
+        return { type: TokenType.LAngleBracket,pos };
+      case ">":
+        return { type: TokenType.RAngleBracket,pos };
       case "(":
         return { type: TokenType.LParen,pos };
       case ")":

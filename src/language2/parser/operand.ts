@@ -2,6 +2,7 @@ import { TokenType } from "../lexer/token";
 import { OperandNode } from "../ast/nodes";
 import { parseExpression } from "./expression";
 import { Parser } from "./parser";
+import { ExprNode } from "../ast";
 
 
 
@@ -147,6 +148,22 @@ export function parseOperand(parser: Parser): OperandNode {
     const expr = parseExpression(parser);
     parser.eat(TokenType.RBracket);
     return { kind: "Memory", expr };
+  }
+
+  if (parser.current.type === TokenType.LAngleBracket) {
+    const exprs:ExprNode[]=[]
+    parser.eat(TokenType.LAngleBracket);
+    //@ts-ignore
+    while(parser.current.type!==TokenType.RAngleBracket){
+      const expr = parseExpression(parser);
+      exprs.push(expr);
+      //@ts-ignore
+      if(parser.current.type===TokenType.Comma){
+        parser.eat(TokenType.Comma);
+      }
+    }
+    parser.eat(TokenType.RAngleBracket);
+    return { kind: "StructAssign", exprs };
   }
 
   const e = new Error("Invalid operand");

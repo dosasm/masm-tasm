@@ -34,6 +34,8 @@ function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): stri
       return applyCasing(config.casing.directive, operand.name);
     case 'String':
       return `'${operand.value}'`;
+    case "StructAssign":
+      return "<"+operand.exprs.map(formatExpr).join(",")+">"
     case 'Memory':
         const seg = (operand as any).segment as string | undefined;
         const base = (operand as any).base as string | undefined;
@@ -135,9 +137,6 @@ function formatStruct(node: StructNode, config: MasmtasmFormatConfig, indent = "
 
 function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"): string {
   let result = '';
-  if (node.trace?.leading) {
-    result += node.trace.leading.join('\n') + '\n';
-  }
   switch (node.type) {
     case 'Instruction':
       result += formatInstruction(node, config, indent);
@@ -163,9 +162,7 @@ function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"):
     default:
       result += '';
   }
-  if (node.trace?.trailing && node.trace.trailing.length == 1) {
-    result += "\t" + node.trace.trailing.join('\n');
-  }
+
   return result;
 }
 
