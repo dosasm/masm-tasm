@@ -87,6 +87,14 @@ export function parseOperand(parser: Parser): OperandNode {
       // otherwise error
       throw new Error("Expected identifier or '[' after colon in segment:...");
     } else {
+      // support register-base form like P1[DI]
+      // @ts-ignore
+      if (parser.current.type === TokenType.LBracket) {
+        parser.eat(TokenType.LBracket);
+        const expr = parseExpression(parser);
+        parser.eat(TokenType.RBracket);
+        return { kind: "Memory", expr, base: name };
+      }
       // support size specifier + ptr, e.g. "BYTE PTR [BX]" or "WORD PTR var"
       if ((parser.current.type as number) === TokenType.Ptr) {
         parser.eat(TokenType.Ptr);

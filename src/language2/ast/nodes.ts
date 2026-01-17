@@ -83,7 +83,7 @@ export type OperandNode =
   | { kind: "Immediate"; value: ExprNode }
   | { kind: "Identifier"; name: string }
   | { kind: "String"; value: string }
-  | { kind: "Memory"; expr: ExprNode; segment?: string }
+  | { kind: "Memory"; expr: ExprNode; segment?: string; base?: string }
   | { kind: "Offset"; expr: ExprNode }
   | { kind: "Seg"; expr: ExprNode }
   | { kind: "Dup"; value: OperandNode, prefix?:ExprNode }

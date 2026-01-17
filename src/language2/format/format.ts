@@ -35,10 +35,14 @@ function formatOperand(operand: OperandNode, config: MasmtasmFormatConfig): stri
     case 'String':
       return `'${operand.value}'`;
     case 'Memory':
-      if ((operand as any).segment) {
-        return `${applyCasing(config.casing.register, (operand as any).segment)}: ${"[" + formatExpression((operand as any).expr) + "]"}`;
-      }
-      return `[${formatExpression(operand.expr)}]`;
+        const seg = (operand as any).segment as string | undefined;
+        const base = (operand as any).base as string | undefined;
+        const inner = `[${formatExpression((operand as any).expr)}]`;
+        const basePart = base ? `${applyCasing(config.casing.register, base)}${inner}` : inner;
+        if (seg) {
+          return `${applyCasing(config.casing.register, seg)}:${basePart}`;
+        }
+        return basePart;
     case 'Offset':
       return `OFFSET ${formatExpression(operand.expr)}`;
     case 'Seg':
