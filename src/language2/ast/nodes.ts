@@ -4,6 +4,8 @@ export interface Trace {
   filePath: string;
   index: number;
   end:number;
+  leading?: string[];
+  trailing?: string[];
 }
 
 export type ASTNode =

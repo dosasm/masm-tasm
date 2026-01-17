@@ -117,11 +117,13 @@ export class Lexer {
       case "?":
         return { type: TokenType.Question,pos };
       case ";":
-        // Skip comment until end of line
+        // Collect comment until end of line
+        const commentPos = this.pos - 1; // pos is already advanced
+        let commentValue = ";";
         while (this.peek() !== "\n" && this.peek() !== "") {
-          this.advance();
+          commentValue += this.advance();
         }
-        return this.nextToken(); // Recurse to get next token
+        return { type: TokenType.Comment, value: commentValue, pos: commentPos };
     }
 
     const e=new Error(`Unexpected character`);

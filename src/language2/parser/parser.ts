@@ -23,14 +23,24 @@ export class Parser {
   }
 
   parseStatement() {
-    while (this.current.type === TokenType.NewLine) {
-      this.eat(TokenType.NewLine);
+    let leadingComments: string[] = [];
+    while (this.current.type === TokenType.NewLine || this.current.type === TokenType.Comment) {
+      if (this.current.type === TokenType.Comment) {
+        leadingComments.push(this.current.value!);
+      }
+      this.eat(this.current.type);
     }
     const result = parseStatement(this);
-    // @ts-ignore
-    while (this.current.type === TokenType.NewLine) {
-      this.eat(TokenType.NewLine);
+    (result as any).comments = { leading: leadingComments, trailing: [] };
+    let trailingComments: string[] = [];
+    //@ts-ignore
+    while (this.current.type === TokenType.NewLine || this.current.type === TokenType.Comment) {
+      if (this.current.type === TokenType.Comment) {
+        trailingComments.push(this.current.value!);
+      }
+      this.eat(this.current.type);
     }
+    (result as any).comments.trailing = trailingComments;
     return result;
   }
 

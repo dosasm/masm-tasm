@@ -15,6 +15,7 @@ export enum TokenType {
   Slash,
   Ptr,
   AtIdentifier,
+  Comment,
   NewLine,
   EOF,
 }

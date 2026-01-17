@@ -1,4 +1,4 @@
-import { ProgramNode, ASTNode, InstructionNode, LabelNode, MacroNode, ConditionalNode, OperandNode } from "../ast";
+import { ProgramNode, ASTNode, InstructionNode, LabelNode, MacroNode, ConditionalNode, OperandNode, StructNode, ProcedureNode, SegmentNode } from "../ast";
 import { MasmtasmFormatConfig, CasingMode } from "./config";
 
 function applyCasing(mode: CasingMode, text: string): string {
@@ -83,19 +83,57 @@ function formatConditional(node: ConditionalNode, config: MasmtasmFormatConfig, 
   return `${indent}${node.kind} ${node.symbol}\n${thenBody}${elseBody}\n${indent}ENDIF`;
 }
 
+function formatProcedure(node: ProcedureNode, config: MasmtasmFormatConfig, indent = ""): string {
+  const params = node.params ? node.params.join(', ') : '';
+  const attributes = node.attributes ? ' ' + node.attributes.join(' ') : '';
+  const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
+  return `${indent}${node.name} PROC${attributes}${params ? ' ' + params : ''}\n${body}\n${indent}${node.name} ENDP`;
+}
+
+function formatSegment(node: SegmentNode, config: MasmtasmFormatConfig, indent = ""): string {
+  const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
+  return `${indent}${node.name} SEGMENT\n${body}\n${indent}${node.name} ENDS`;
+}
+
+function formatStruct(node: StructNode, config: MasmtasmFormatConfig, indent = ""): string {
+  const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
+  return `${indent}${node.name} STRUCT\n${body}\n${indent}${node.name} ENDS`;
+}
+
 function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"): string {
+  let result = '';
+  if (node.trace?.leading) {
+    result += node.trace.leading.join('\n') + '\n';
+  }
   switch (node.type) {
     case 'Instruction':
-      return `${formatInstruction(node, config, indent)}`;
+      result += formatInstruction(node, config, indent);
+      break;
     case 'Label':
-      return `${formatLabel(node)}`;
+      result += formatLabel(node);
+      break;
     case 'Macro':
-      return formatMacro(node, config, indent);
+      result += formatMacro(node, config, indent);
+      break;
     case 'Conditional':
-      return formatConditional(node, config, indent);
+      result += formatConditional(node, config, indent);
+      break;
+    case 'Procedure':
+      result += formatProcedure(node, config, indent);
+      break;
+    case 'Segment':
+      result += formatSegment(node, config, indent);
+      break;
+    case 'Struct':
+      result += formatStruct(node, config, indent);
+      break;
     default:
-      return '';
+      result += '';
   }
+  if (node.trace?.trailing) {
+    result += '\n' + node.trace.trailing.join('\n');
+  }
+  return result;
 }
 
 export function format(config: MasmtasmFormatConfig, ast: ProgramNode, indent: string): string {

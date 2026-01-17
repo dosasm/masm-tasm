@@ -43,7 +43,8 @@ export function parseStatement(parser: Parser): ASTNode {
   const operands = [];
   while (
     parser.current.type !== TokenType.NewLine &&
-    parser.current.type !== TokenType.EOF
+    parser.current.type !== TokenType.EOF &&
+    parser.current.type !== TokenType.Comment
   ) {
     if (parser.current.type === TokenType.Comma) {
       parser.eat(TokenType.Comma);
@@ -51,8 +52,8 @@ export function parseStatement(parser: Parser): ASTNode {
     }
     operands.push(parseOperand(parser));
   }
-
-  return { type: "Instruction", 
+  const output:ASTNode={ 
+    type: "Instruction", 
     mnemonic: id, operands, 
     trace: { 
       filePath: parser.filePath, 
@@ -60,6 +61,16 @@ export function parseStatement(parser: Parser): ASTNode {
       end:parser.current.pos
     } 
   };
+
+  if(parser.current.type===TokenType.Comment){
+    if (parser.current.value){
+      output.trace.trailing=[parser.current.value];
+    }
+    parser.eat(TokenType.Comment)
+  }
+
+
+  return output;
 }
 
 function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
