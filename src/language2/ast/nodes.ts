@@ -1,9 +1,11 @@
+import { Position } from "../lexer/token";
 import { ExprNode } from "./expr";
+
 
 export interface Trace {
   filePath: string;
-  index: number;
-  end:number;
+  index: Position;
+  end:Position;
   leading?: string[];
   trailing?: string[];
 }

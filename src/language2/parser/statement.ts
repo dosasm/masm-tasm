@@ -1,6 +1,6 @@
 import { Parser } from "./parser";
 import { ASTNode } from "../ast/nodes";
-import { TokenType } from "../lexer/token";
+import { Position, TokenType } from "../lexer/token";
 import { parseOperand } from "./operand";
 
 export function parseStatement(parser: Parser): ASTNode {
@@ -79,7 +79,7 @@ export function parseStatement(parser: Parser): ASTNode {
   return output;
 }
 
-function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
+function parseMacro(parser: Parser, name: string, startIndex: Position): ASTNode {
   parser.eat(TokenType.Identifier); // MACRO
   const params: string[] = [];
 
@@ -110,7 +110,7 @@ function parseMacro(parser: Parser, name: string, startIndex: number): ASTNode {
   };
 }
 
-function parseProc(parser: Parser, name: string, startIndex: number): ASTNode {
+function parseProc(parser: Parser, name: string, startIndex: Position): ASTNode {
   parser.eat(TokenType.Identifier); // PROC
   // parse optional attributes and parameter list on the same line
   const attributes: string[] = [];
@@ -210,7 +210,7 @@ function parseProc(parser: Parser, name: string, startIndex: number): ASTNode {
   };
 }
 
-function parseSegment(parser: Parser, name: string, startIndex: number): ASTNode {
+function parseSegment(parser: Parser, name: string, startIndex: Position): ASTNode {
   parser.eat(TokenType.Identifier); // SEGMENT
   let params=[];
   while(parser.current.type!==TokenType.NewLine){
@@ -242,7 +242,7 @@ function parseSegment(parser: Parser, name: string, startIndex: number): ASTNode
   };
 }
 
-function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,startIndex: number): ASTNode {
+function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,startIndex: Position): ASTNode {
   const output:ASTNode={
       type: "Segment",
       name: "",
@@ -290,7 +290,7 @@ function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,sta
   return output;
 }
 
-function parseStruct(parser: Parser, name: string, startIndex: number): ASTNode {
+function parseStruct(parser: Parser, name: string, startIndex: Position): ASTNode {
   parser.eat(TokenType.Identifier); // STRUCT
   const body: ASTNode[] = [];
   let state:ASTNode|undefined=undefined;
@@ -316,7 +316,7 @@ function parseStruct(parser: Parser, name: string, startIndex: number): ASTNode 
   };
 }
 
-function parseConditional(parser: Parser, kind: string, startIndex: number): ASTNode {
+function parseConditional(parser: Parser, kind: string, startIndex: Position): ASTNode {
   const symbol = parser.eat(TokenType.Identifier).value!;
   const thenBody: ASTNode[] = [];
   const elseBody: ASTNode[] = [];

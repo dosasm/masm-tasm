@@ -72,8 +72,8 @@ export class Parser {
       body,
       trace: {
         filePath: this.filePath,
-        index: 0,
-        end: this.lexer.currentPos
+        index: {line:0,col:0,offset:0},
+        end: this.lexer.currentPos2
       }
     };
   }

@@ -35,7 +35,7 @@ export class FlattenTree {
             if (allowTypes !== undefined) {
                 allowed = n.type in allowTypes;
             }
-            if (allowed && n.trace.index <= index && index < n.trace.end) {
+            if (allowed && n.trace.index.offset <= index && index < n.trace.end.offset) {
                 return n
             }
         }

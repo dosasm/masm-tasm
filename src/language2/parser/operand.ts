@@ -21,7 +21,7 @@ export function parseOperand(parser: Parser): OperandNode {
     const start=parser.current.pos;
     const output=parseExpression(parser)
     const end=parser.current.pos;
-    const expr=parser.substring(start,end).trim();
+    const expr=parser.substring(start.offset,end.offset).trim();
     //@ts-ignore
     if (parser.current.type===TokenType.Identifier) {
       if(parser.current.value&& parser.current.value.toUpperCase() === "DUP")

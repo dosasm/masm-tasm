@@ -44,7 +44,7 @@ export class AsmDefProvider implements vscode.DefinitionProvider {
             })
             if(node){
                 output.push(new vscode.Location(
-                    document.uri,document.positionAt(node?.trace.index)
+                    document.uri,document.positionAt(node?.trace.index.offset)
                 ))
             }
         }
@@ -71,7 +71,7 @@ export class AsmReferenceProvider implements vscode.ReferenceProvider {
                     for(const o of n.operands){
                         if(o.kind==="Identifier" && o.name===word){
                             output.push(new vscode.Location(
-                                document.uri,document.positionAt(n.trace.index)
+                                document.uri,document.positionAt(n.trace.index.offset)
                             ))
                         }
                     }
@@ -107,7 +107,7 @@ export class AsmRenameProvider implements vscode.RenameProvider {
         // replace definitions for same-type symbols
         for(const n of tree.nodes){
             if((n.type === 'Label' || n.type === 'Macro' || n.type === 'Procedure' || n.type === 'Segment' || n.type === 'Struct') && (n as any).name === oldName){
-                const start = document.positionAt(n.trace.index);
+                const start = document.positionAt(n.trace.index.offset);
                 const end = document.positionAt(n.trace.index + (n as any).name.length);
                 edit.replace(document.uri, new vscode.Range(start,end), newName);
             }
@@ -120,14 +120,14 @@ export class AsmRenameProvider implements vscode.RenameProvider {
                 try{
                     const instrStart = n.trace.index;
                     const instrEnd = n.trace.end;
-                    const r = new vscode.Range(document.positionAt(instrStart), document.positionAt(instrEnd));
+                    const r = new vscode.Range(document.positionAt(instrStart.offset), document.positionAt(instrEnd.offset));
                     const text = document.getText(r);
 
                     // check mnemonic (first token)
                     const m = text.match(/^\s*([^\s]+)/);
                     if(m && m[1] === oldName){
                         const idx = text.indexOf(m[1]);
-                        const abs = instrStart + idx;
+                        const abs = instrStart.offset + idx;
                         edit.replace(document.uri, new vscode.Range(document.positionAt(abs), document.positionAt(abs + oldName.length)), newName);
                     }
 
@@ -141,7 +141,7 @@ export class AsmRenameProvider implements vscode.RenameProvider {
                             // if any operand has the same name, accept replacement
                             const hasOperand = instrOperands.some(o=>o.kind === 'Identifier' && o.name === oldName);
                             if(hasOperand){
-                                const abs = instrStart + match.index;
+                                const abs = instrStart.offset + match.index;
                                 edit.replace(document.uri, new vscode.Range(document.positionAt(abs), document.positionAt(abs + oldName.length)), newName);
                             }
                         }
@@ -163,8 +163,8 @@ export class AsmRenameProvider implements vscode.RenameProvider {
         if(!node) return undefined;
         if(node.type === 'Label' || node.type === 'Macro' || node.type === 'Procedure' || node.type === 'Segment' || node.type === 'Struct'){
             const name = (node as any).name as string;
-            const start = document.positionAt(node.trace.index);
-            const end = document.positionAt(node.trace.index + name.length);
+            const start = document.positionAt(node.trace.index.offset);
+            const end = document.positionAt(node.trace.index.offset + name.length);
             return { range: new vscode.Range(start,end), placeholder: name };
         }
         return undefined;
@@ -200,9 +200,9 @@ function search_symbol(doc:vscode.TextDocument,output:vscode.DocumentSymbol[],no
     for (const node of nodes) {
         if (node.type === "Label") {
             const kind = SymbolVSCfy(node.type);
-            const selStart = doc.positionAt(node.trace.index);
-            const selEnd = doc.positionAt(node.trace.index + node.name.length);
-            const fullEnd = doc.positionAt(node.trace.end-1);
+            const selStart = doc.positionAt(node.trace.index.offset);
+            const selEnd = doc.positionAt(node.trace.index.offset + node.name.length);
+            const fullEnd = doc.positionAt(node.trace.end.offset-1);
             const a=doc.validateRange(new vscode.Range(selStart, selEnd));
             const b=doc.validateRange(new vscode.Range(selStart, fullEnd));
             const sym = new vscode.DocumentSymbol(
@@ -215,9 +215,9 @@ function search_symbol(doc:vscode.TextDocument,output:vscode.DocumentSymbol[],no
         }
         if (node.type === "Macro"||node.type === "Procedure"||node.type === "Segment"||node.type === "Struct") {
             const kind = SymbolVSCfy(node.type);
-            const selStart = doc.positionAt(node.trace.index);
-            const selEnd = doc.positionAt(node.trace.index + node.name.length);
-            const fullEnd = doc.positionAt(node.trace.end);
+            const selStart = doc.positionAt(node.trace.index.offset);
+            const selEnd = doc.positionAt(node.trace.index.offset + node.name.length);
+            const fullEnd = doc.positionAt(node.trace.end.offset);
             const a=doc.validateRange(new vscode.Range(selStart, selEnd));
             const b=doc.validateRange(new vscode.Range(selStart, fullEnd));
             const sym = new vscode.DocumentSymbol(

@@ -20,8 +20,14 @@ export enum TokenType {
   EOF,
 }
 
+export interface Position{
+  offset:number,
+  line:number,
+  col:number,
+}
+
 export interface Token {
   type: TokenType;
   value?: string;
-  pos:number
+  pos:Position
 }

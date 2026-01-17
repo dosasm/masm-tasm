@@ -2,6 +2,10 @@ import { Token, TokenType } from "./token";
 
 export class Lexer {
   private pos = 0;
+  private position={
+    col:0,
+    line:0
+  }
 
   constructor(public input: string) {}
 
@@ -9,11 +13,21 @@ export class Lexer {
     return this.pos;
   }
 
+  get currentPos2(){
+    return {...this.position,offset:this.pos}
+  }
+
   private peek(): string {
     return this.input[this.pos] ?? "";
   }
 
   private advance(): string {
+    if(this.peek()==="\n"){
+      this.position.line++;
+      this.position.col=0;
+    }else{
+      this.position.col++;
+    }
     return this.input[this.pos++] ?? "";
   }
 
@@ -24,7 +38,7 @@ export class Lexer {
   nextToken(): Token {
     while (/\s/.test(this.peek())) {
       if (this.peek() === "\n") {
-        const pos=this.pos;
+        const pos=this.currentPos2;
         this.advance();
         return { type: TokenType.NewLine,pos };
       }
@@ -32,10 +46,10 @@ export class Lexer {
     }
 
     const ch = this.peek();
-    if (!ch) return { type: TokenType.EOF ,pos:this.pos};
+    if (!ch) return { type: TokenType.EOF ,pos:this.currentPos2};
 
     if (ch === "'") {
-      const pos=this.pos;
+      const pos=this.currentPos2;
       this.advance(); // eat '
       let value = "";
       while (this.peek() !== "'" && this.peek() !== "\n" && this.peek() !== "") {
@@ -48,7 +62,7 @@ export class Lexer {
     }
 
     if (ch === '"') {
-      const pos=this.pos;
+      const pos=this.currentPos2;
       this.advance(); // eat '
       let value = "";
       while (this.peek() !== '"' && this.peek() !== "\n" && this.peek() !== "") {
@@ -61,7 +75,7 @@ export class Lexer {
     }
 
     if (ch === "@") {
-      const pos = this.pos;
+      const pos = this.currentPos2;
       this.advance(); // eat '@'
       let value = "";
       while (/[A-Za-z0-9_.]/.test(this.peek())) {
@@ -72,7 +86,7 @@ export class Lexer {
 
     if (/[A-Za-z_.]/.test(ch)) {
       let value = "";
-      const pos = this.pos;
+      const pos = this.currentPos2;
       while (/[A-Za-z0-9_.\/\\]/.test(this.peek())) {
         value += this.advance();
       }
@@ -84,14 +98,14 @@ export class Lexer {
 
     if (/[0-9]/.test(ch)) {
       let value = "";
-      const pos=this.pos;
+      const pos=this.currentPos2;
       while (/[0-9A-Fa-fHhOoQqBbx]/.test(this.peek())) {
         value += this.advance();
       }
       return { type: TokenType.Number, value,pos };
     }
 
-    const pos=this.pos;
+    const pos=this.currentPos2;
     const char=this.advance();
     switch (char) {
       case ",":
@@ -118,7 +132,11 @@ export class Lexer {
         return { type: TokenType.Question,pos };
       case ";":
         // Collect comment until end of line
-        const commentPos = this.pos - 1; // pos is already advanced
+        const commentPos = {
+          offset:this.pos-1,
+          line:this.position.line,
+          col:this.position.col-1
+        }; // pos is already advanced
         let commentValue = ";";
         while (this.peek() !== "\n" && this.peek() !== "") {
           commentValue += this.advance();
