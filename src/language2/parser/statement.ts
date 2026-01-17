@@ -2,6 +2,7 @@ import { Parser } from "./parser";
 import { ASTNode } from "../ast/nodes";
 import { TokenType } from "../lexer/token";
 import { parseOperand } from "./operand";
+import { tokenType } from "yaml/dist/parse/cst";
 
 export function parseStatement(parser: Parser): ASTNode {
   const startIndex = parser.current.pos;
@@ -206,6 +207,11 @@ function parseProc(parser: Parser, name: string, startIndex: number): ASTNode {
 
 function parseSegment(parser: Parser, name: string, startIndex: number): ASTNode {
   parser.eat(TokenType.Identifier); // SEGMENT
+  let params=[];
+  while(parser.current.type!==TokenType.NewLine){
+    parser.current.value && params.push(parser.current.value)
+    parser.eat(TokenType.Identifier);
+  }
   const body: ASTNode[] = [];
   let state:ASTNode|undefined=undefined;
   while (true) {
@@ -221,10 +227,11 @@ function parseSegment(parser: Parser, name: string, startIndex: number): ASTNode
     }
     body.push(state);
   }
-  parser.eat(TokenType.Identifier); // ENDS
+  // parser.eat(TokenType.Identifier); // ENDS
   return {
     type: "Segment",
     name,
+    params,
     body,
     trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
   };

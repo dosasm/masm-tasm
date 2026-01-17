@@ -59,6 +59,7 @@ export interface SegmentNode {
   name: string;
   body: ASTNode[];
   trace: Trace;
+  params:string[];
 }
 
 export interface StructNode {

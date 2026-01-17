@@ -87,17 +87,17 @@ function formatProcedure(node: ProcedureNode, config: MasmtasmFormatConfig, inde
   const params = node.params ? node.params.join(', ') : '';
   const attributes = node.attributes ? ' ' + node.attributes.join(' ') : '';
   const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  return `${indent}${node.name} PROC${attributes}${params ? ' ' + params : ''}\n${body}\n${indent}${node.name} ENDP`;
+  return `${node.name} PROC${attributes}${params ? ' ' + params : ''}\n${body}\n${node.name} ENDP`;
 }
 
 function formatSegment(node: SegmentNode, config: MasmtasmFormatConfig, indent = ""): string {
   const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  return `${indent}${node.name} SEGMENT\n${body}\n${indent}${node.name} ENDS`;
+  return `${node.name} SEGMENT ${node.params.join(" ")}\n${body}\n${node.name} ENDS`;
 }
 
 function formatStruct(node: StructNode, config: MasmtasmFormatConfig, indent = ""): string {
   const body = node.body.map(n => formatNode(n, config, indent + "\t")).join('\n');
-  return `${indent}${node.name} STRUCT\n${body}\n${indent}${node.name} ENDS`;
+  return `${node.name} STRUCT\n${body}\n${node.name} ENDS`;
 }
 
 function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"): string {
@@ -130,8 +130,8 @@ function formatNode(node: ASTNode, config: MasmtasmFormatConfig, indent = "\t"):
     default:
       result += '';
   }
-  if (node.trace?.trailing) {
-    result += '\n' + node.trace.trailing.join('\n');
+  if (node.trace?.trailing && node.trace.trailing.length==1) {
+    result +="\t"+ node.trace.trailing.join('\n');
   }
   return result;
 }
