@@ -90,7 +90,7 @@ export interface ConditionalNode {
 export type OperandNode =
   | { kind: "Immediate"; value: ExprNode }
   | { kind: "Identifier"; name: string }
-  | { kind: "String"; value: string }
+  | { kind: "String"; value: string, doubleQuote:boolean }
   | { kind: "Memory"; expr: ExprNode; segment?: string; base?: string;at?:boolean }
   | { kind: "StructAssign"; exprs: ExprNode[]; }
   | { kind: "Offset"; expr: ExprNode }

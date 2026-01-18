@@ -58,7 +58,7 @@ export class Lexer {
       if (this.peek() === "'") {
         this.advance(); // eat '
       }
-      return { type: TokenType.String, value,pos };
+      return { type: TokenType.SingleQuoteString, value,pos,  };
     }
 
     if (ch === '"') {
@@ -71,7 +71,7 @@ export class Lexer {
       if (this.peek() === '"') {
         this.advance(); // eat '
       }
-      return { type: TokenType.String, value,pos };
+      return { type: TokenType.DoubleQuoteString, value,pos };
     }
 
     if (ch === "@") {

@@ -1,7 +1,8 @@
 export enum TokenType {
   Identifier,
   Number,
-  String,
+  SingleQuoteString,
+  DoubleQuoteString,
   Comma,
   Colon,
   LBracket,

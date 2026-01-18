@@ -108,8 +108,9 @@ export class AsmRenameProvider implements vscode.RenameProvider {
         for(const n of tree.nodes){
             if((n.type === 'Label' || n.type === 'Macro' || n.type === 'Procedure' || n.type === 'Segment' || n.type === 'Struct') && (n as any).name === oldName){
                 const start = document.positionAt(n.trace.index.offset);
-                const end = document.positionAt(n.trace.index + (n as any).name.length);
-                edit.replace(document.uri, new vscode.Range(start,end), newName);
+                const end = document.positionAt(n.trace.index.offset + n.name.length);
+                const range=new vscode.Range(start,end);
+                edit.replace(document.uri, range, newName);
             }
         }
 
@@ -142,7 +143,9 @@ export class AsmRenameProvider implements vscode.RenameProvider {
                             const hasOperand = instrOperands.some(o=>o.kind === 'Identifier' && o.name === oldName);
                             if(hasOperand){
                                 const abs = instrStart.offset + match.index;
-                                edit.replace(document.uri, new vscode.Range(document.positionAt(abs), document.positionAt(abs + oldName.length)), newName);
+                                const range=new vscode.Range(document.positionAt(abs), document.positionAt(abs + oldName.length));
+                                const oldtext=document.getText(range);
+                                edit.replace(document.uri, range, newName);
                             }
                         }
                     }

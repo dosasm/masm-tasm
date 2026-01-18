@@ -9,14 +9,15 @@ export function parseStatement(parser: Parser): ASTNode {
 
   if (parser.current.type === TokenType.Colon) {
     parser.eat(TokenType.Colon);
-    return { 
-      type: "Label", 
-      name: id, 
-      trace: { 
-        filePath: parser.filePath, 
+    return {
+      type: "Label",
+      name: id,
+      trace: {
+        filePath: parser.filePath,
         index: startIndex,
-        end:parser.current.pos
-      } };
+        end: parser.current.pos
+      }
+    };
   }
 
   const curVal = (parser.current.value ?? "").toUpperCase();
@@ -42,8 +43,8 @@ export function parseStatement(parser: Parser): ASTNode {
 
   // simplified segment directives like .DATA, .DATA?, .CONST, .CODE <name>
   const idUpper = id.toUpperCase();
-  if([".CODE",".DATA",".DATA?",".CONST"].some(a=>a===idUpper)){
-    return parseSimplifiedSegment(parser,id,idUpper,startIndex)
+  if ([".CODE", ".DATA", ".DATA?", ".CONST"].some(a => a === idUpper)) {
+    return parseSimplifiedSegment(parser, id, idUpper, startIndex)
   }
 
   const operands = [];
@@ -58,14 +59,14 @@ export function parseStatement(parser: Parser): ASTNode {
     }
     operands.push(parseOperand(parser));
   }
-  const output:ASTNode={ 
-    type: "Instruction", 
-    mnemonic: id, operands, 
-    trace: { 
-      filePath: parser.filePath, 
+  const output: ASTNode = {
+    type: "Instruction",
+    mnemonic: id, operands,
+    trace: {
+      filePath: parser.filePath,
       index: startIndex,
-      end:parser.current.pos
-    } 
+      end: parser.current.pos
+    }
   };
 
   return output;
@@ -78,27 +79,28 @@ function parseMacro(parser: Parser, name: string, startIndex: Position): ASTNode
   while (parser.current.type === TokenType.Identifier) {
     params.push(parser.eat(TokenType.Identifier).value!);
     //@ts-ignore
-    if (parser.current.type === TokenType.Comma) { 
+    if (parser.current.type === TokenType.Comma) {
       parser.eat(TokenType.Comma);
     }
   }
 
   const body: ASTNode[] = [];
   while (true) {
-    let a=parser.parseStatement();
-    if (a.type==="Instruction" && a.mnemonic.toUpperCase()==="ENDM"){
+    let a = parser.parseStatement();
+    if (a.type === "Instruction" && a.mnemonic.toUpperCase() === "ENDM") {
       break
     }
     body.push(a);
   }
 
   // parser.eat(TokenType.Identifier);
-  return { 
-    type: "Macro", name, params, body, 
-    trace: { 
-      filePath: parser.filePath, 
+  return {
+    type: "Macro", name, params, body,
+    trace: {
+      filePath: parser.filePath,
       index: startIndex,
-      end:parser.current.pos } 
+      end: parser.current.pos
+    }
   };
 }
 
@@ -108,11 +110,11 @@ function parseProc(parser: Parser, name: string, startIndex: Position): ASTNode 
   const attributes: string[] = [];
   const params: string[] = [];
 
-  if (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type!==TokenType.Comment) {
+  if (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type !== TokenType.Comment) {
     const parts: string[] = [];
     let curPart = "";
     //@ts-ignore
-    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF  && parser.current.type!==TokenType.Comment) {
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type !== TokenType.Comment) {
       if (parser.current.type === TokenType.Comma) {
         parts.push(curPart.trim());
         curPart = "";
@@ -152,7 +154,10 @@ function parseProc(parser: Parser, name: string, startIndex: Position): ASTNode 
         case TokenType.AtIdentifier:
           txt = "@" + txt;
           break;
-        case TokenType.String:
+        case TokenType.SingleQuoteString:
+          txt = "'" + txt + "'";
+          break;
+        case TokenType.DoubleQuoteString:
           txt = '"' + txt + '"';
           break;
         case TokenType.Ptr:
@@ -168,7 +173,7 @@ function parseProc(parser: Parser, name: string, startIndex: Position): ASTNode 
     // classify parts into attributes vs params. Heuristic: if a part contains
     // any of these characters it's likely a parameter (':', '(', '@', '[' or digits)
     for (const p of parts) {
-      if (/[\(\)@:\[\]0-9]/.test(p) || p.toUpperCase().indexOf("PTR") >= 0 || p.indexOf('"')>=0) {
+      if (/[\(\)@:\[\]0-9]/.test(p) || p.toUpperCase().indexOf("PTR") >= 0 || p.indexOf('"') >= 0) {
         params.push(p);
       } else if (p) {
         attributes.push(p);
@@ -204,19 +209,19 @@ function parseProc(parser: Parser, name: string, startIndex: Position): ASTNode 
 
 function parseSegment(parser: Parser, name: string, startIndex: Position): ASTNode {
   parser.eat(TokenType.Identifier); // SEGMENT
-  let params=[];
-  while(parser.current.type!==TokenType.NewLine && parser.current.type!==TokenType.Comment){
+  let params = [];
+  while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.Comment) {
     parser.current.value && params.push(parser.current.value)
     parser.eat(TokenType.Identifier);
   }
   const body: ASTNode[] = [];
-  let state:ASTNode|undefined=undefined;
+  let state: ASTNode | undefined = undefined;
   while (true) {
-    state=parser.parseStatement();
-    if(state.type==="Instruction"){
-      if(state.mnemonic===name){
-        if(state.operands[0].kind==="Identifier"){
-          if(state.operands[0].name.toUpperCase()==="ENDS"){
+    state = parser.parseStatement();
+    if (state.type === "Instruction") {
+      if (state.mnemonic === name) {
+        if (state.operands[0].kind === "Identifier") {
+          if (state.operands[0].name.toUpperCase() === "ENDS") {
             break
           }
         }
@@ -234,25 +239,25 @@ function parseSegment(parser: Parser, name: string, startIndex: Position): ASTNo
   };
 }
 
-function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,startIndex: Position): ASTNode {
-  const output:ASTNode={
-      type: "Segment",
-      name: "",
-      params:[],
-      body: [],
-      trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
-      simplified: true,
-    };
-  
+function parseSimplifiedSegment(parser: Parser, name: string, idUpper: string, startIndex: Position): ASTNode {
+  const output: ASTNode = {
+    type: "Segment",
+    name: "",
+    params: [],
+    body: [],
+    trace: { filePath: parser.filePath, index: startIndex, end: parser.current.pos },
+    simplified: true,
+  };
+
   if (idUpper === ".DATA" || idUpper === ".DATA?" || idUpper === ".CONST") {
     // consume rest of line
-    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF  && parser.current.type!==TokenType.Comment) {
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type !== TokenType.Comment) {
       parser.eat(parser.current.type);
     }
     const segName = idUpper.replace(/^\./, '').replace('?', '');
     if (idUpper === ".DATA?") output.params.push('?');
     if (idUpper === ".CONST") output.params.push('CONST');
-    output.name=segName;
+    output.name = segName;
   }
 
   if (idUpper === ".CODE") {
@@ -261,37 +266,37 @@ function parseSimplifiedSegment(parser: Parser, name: string, idUpper:string,sta
     if (parser.current.type === TokenType.Identifier) {
       segName = parser.eat(TokenType.Identifier).value!;
     }
-    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type!==TokenType.Comment) {
+    while (parser.current.type !== TokenType.NewLine && parser.current.type !== TokenType.EOF && parser.current.type !== TokenType.Comment) {
       parser.eat(parser.current.type);
     }
-    output.name=segName;
+    output.name = segName;
   }
   //-------------------
   const body: ASTNode[] = [];
-  let state:ASTNode|undefined=undefined;
-  while (parser.current.type!==TokenType.EOF) {
-    state=parser.parseStatement();
-    if([".CODE",".DATA",".DATA?",".CONST"].some(a=>a===parser.current.value)){
+  let state: ASTNode | undefined = undefined;
+  while (parser.current.type !== TokenType.EOF) {
+    state = parser.parseStatement();
+    if ([".CODE", ".DATA", ".DATA?", ".CONST"].some(a => a === parser.current.value)) {
       break
     }
     body.push(state);
   }
   // parser.eat(TokenType.Identifier); // ENDS
-  output.body=body;
-  output.trace.end=parser.current.pos;
+  output.body = body;
+  output.trace.end = parser.current.pos;
   return output;
 }
 
 function parseStruct(parser: Parser, name: string, startIndex: Position): ASTNode {
   parser.eat(TokenType.Identifier); // STRUCT
   const body: ASTNode[] = [];
-  let state:ASTNode|undefined=undefined;
+  let state: ASTNode | undefined = undefined;
   while (true) {
-    state=parser.parseStatement();
-    if(state.type==="Instruction"){
-      if(state.mnemonic===name){
-        if(state.operands[0].kind==="Identifier"){
-          if(state.operands[0].name.toUpperCase()==="ENDS"){
+    state = parser.parseStatement();
+    if (state.type === "Instruction") {
+      if (state.mnemonic === name) {
+        if (state.operands[0].kind === "Identifier") {
+          if (state.operands[0].name.toUpperCase() === "ENDS") {
             break
           }
         }
@@ -335,9 +340,10 @@ function parseConditional(parser: Parser, kind: string, startIndex: Position): A
     symbol,
     thenBody,
     elseBody: elseBody.length ? elseBody : undefined,
-    trace: { 
-      filePath: parser.filePath, 
-      index: startIndex ,
-      end:parser.current.pos}
+    trace: {
+      filePath: parser.filePath,
+      index: startIndex,
+      end: parser.current.pos
+    }
   };
 }

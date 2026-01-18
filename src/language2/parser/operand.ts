@@ -38,10 +38,18 @@ export function parseOperand(parser: Parser): OperandNode {
     };
   }
 
-  if (parser.current.type === TokenType.String) {
+  if (parser.current.type === TokenType.SingleQuoteString) {
     return {
       kind: "String",
-      value: parser.eat(TokenType.String).value!,
+      value: parser.eat(TokenType.SingleQuoteString).value!,
+      doubleQuote: false,
+    };
+  }
+  if (parser.current.type === TokenType.DoubleQuoteString) {
+    return {
+      kind: "String",
+      value: parser.eat(TokenType.DoubleQuoteString).value!,
+      doubleQuote: true,
     };
   }
 
