@@ -35,9 +35,11 @@ export class Parser {
   }
 
   parseStatement(): ASTNode {
-    while (this.current.type === TokenType.NewLine || this.current.type === TokenType.Comment) {
+    while(this.current.type === TokenType.NewLine){
+      this.eat(TokenType.NewLine)
+    }
+    while (this.current.type === TokenType.Comment) {
       const t = this.eat(this.current.type);
-      if (t.type === TokenType.Comment) {
         const trace = {
           filePath: this.filePath,
           index: t.pos,
@@ -48,7 +50,6 @@ export class Parser {
           value: t.value!,
           trace,
         }
-      }
     }
     const result = parseStatement(this);
     return result;
@@ -57,7 +58,11 @@ export class Parser {
   parseProgram(): ProgramNode {
     const body = [];
     while (this.current.type !== TokenType.EOF) {
+      
       const stmt = this.parseStatement();
+      while(this.current.type === TokenType.NewLine){
+        this.eat(TokenType.NewLine)
+      }
 
       if (stmt.type === "Program") {
         body.push(...stmt.body);

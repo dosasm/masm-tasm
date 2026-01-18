@@ -47,7 +47,7 @@ function joinOperands(ops: OperandNode[], config: MasmtasmFormatConfig){
 
 type LineItem = { kind: 'code'|'comment'|'blank', text?:string, trailingComment?:string };
 
-function collectLines(nodes: ASTNode[]): LineItem[]{
+function collectLines(config: MasmtasmFormatConfig,nodes: ASTNode[]): LineItem[]{
   const out: LineItem[] = [];
   for (let i=0;i<nodes.length;i++){
     const n = nodes[i] as any;
@@ -68,7 +68,7 @@ function collectLines(nodes: ASTNode[]): LineItem[]{
         }catch(e){/* ignore */}
       }
       // produce code text via formatNode
-      const text = formatNode(n, DEFAULT_SAFE_CONFIG, "\t");
+      const text = formatNode(n, config, "\t");
       out.push({kind:'code', text, trailingComment: trailing as any});
       continue;
     }
@@ -77,18 +77,15 @@ function collectLines(nodes: ASTNode[]): LineItem[]{
   return out;
 }
 
-const DEFAULT_SAFE_CONFIG: MasmtasmFormatConfig = {
-  align: 'segment',
-  casing: { instruction: 'off', register: 'off', directive: 'off', operator: 'off' },
-  alignOperand: true,
-  alignTrailingComment: true,
-  alignSingleLineComment: true,
-  spaceAfterComma: 'off'
-};
 
 export function format(config: MasmtasmFormatConfig, ast: ProgramNode, indent: string): string {
+  const a=formatNode(ast,config,indent);
+  return a;
+}
+
+export function formatLines(config: MasmtasmFormatConfig, body: ASTNode[], indent: string){
   // First, collect flat lines and detect trailing comments
-  const lines = collectLines(ast.body);
+  const lines = collectLines(config,body);
 
   // compute max code length for trailing comment alignment
   let maxCodeLen = 0;
@@ -109,9 +106,11 @@ export function format(config: MasmtasmFormatConfig, ast: ProgramNode, indent: s
     }
     // code line
     if (l.text) {
-      if (l.trailingComment && config.alignTrailingComment) {
+      if (l.trailingComment && config.alignTrailingComment===true) {
         const padding = Math.max(1, maxCodeLen - l.text.length + 1);
         out.push(l.text + ' '.repeat(padding) + l.trailingComment);
+      } else if (l.trailingComment && typeof config.alignTrailingComment==="string") {
+        out.push(l.text + config.alignTrailingComment + l.trailingComment);
       } else if (l.trailingComment) {
         out.push(l.text + ' ' + l.trailingComment);
       } else {
@@ -142,7 +141,7 @@ function formatNode(node: ASTNode | any, config: MasmtasmFormatConfig, indent: s
     }
     case 'Macro': {
       const hdr = `${node.name} MACRO${node.params && node.params.length ? ' ' + node.params.join(', ') : ''}`;
-      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const body = formatLines(config,node.body,indent); 
       const end = `${node.name} ENDM`;
       return [hdr, body, end].join('\n');
     }
@@ -150,24 +149,24 @@ function formatNode(node: ASTNode | any, config: MasmtasmFormatConfig, indent: s
       const attrs = node.attributes && node.attributes.length ? ' ' + node.attributes.join(' ') : '';
       const params = node.params && node.params.length ? ' ' + node.params.join(', ') : '';
       const hdr = `${node.name} PROC${attrs}${params}`;
-      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const body = formatLines(config,node.body,indent);  // formatLines(config,node.body,indent); 
       const end = `${node.name} ENDP`;
       return [hdr, body, end].join('\n');
     }
     case 'Segment': {
       if (node.simplified) {
         const hdr = `.${node.name}`;
-        const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+        const body = formatLines(config,node.body,indent); 
         return [hdr, body, ''].join('\n');
       }
       const hdr = `${node.name} SEGMENT${node.params && node.params.length ? ' ' + node.params.join(' ') : ''}`;
-      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const body = formatLines(config,node.body,indent); 
       const end = `${node.name} ENDS`;
       return [hdr, body, end].join('\n');
     }
     case 'Struct': {
       const hdr = `${node.name} STRUCT`;
-      const body = node.body.map((b:ASTNode) => indent+formatNode(b, config, indent + indent)).join('\n');
+      const body = formatLines(config,node.body,indent); 
       const end = `${node.name} ENDS`;
       return [hdr, body, end].join('\n');
     }

@@ -1,11 +1,15 @@
 {
     "comments": {
         // symbol used for single line comment
-        "lineComment": ";"
+        "lineComment": {
+            "comment": ";"
+        }
     },
     // symbols used as brackets
     "brackets": [
         ["[", "]"],
+        ["<", ">"],
+        ["(", ")"],
         ["SEGMENT","ENDS"],
         ["STRUCT","ENDS"],
         ["MACRO","ENDM"],

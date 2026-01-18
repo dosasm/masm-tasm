@@ -72,10 +72,11 @@ export interface MasmtasmFormatConfig {
   alignOperand: boolean;
 
   /**
-   * Whether to align trailing comments
+   * Whether to align trailing comments, true to use spaces to align
+   * string to only add a string
    * @default true
    */
-  alignTrailingComment: boolean;
+  alignTrailingComment: string | boolean;
 
   /**
    * Whether to align single line comments

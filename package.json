@@ -402,7 +402,7 @@
         },
         "masmtasm.language.Format.alignTrailingComment": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "markdownDescription": "%config.format.alignTrailingComment.description%"
         },
         "masmtasm.language.Format.alignSingleLineComment": {
