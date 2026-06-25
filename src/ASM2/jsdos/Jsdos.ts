@@ -1,4 +1,4 @@
-import * as adapted from "emulators";
+import * as adapted from "@xsro/emulators";
 import * as vscode from "vscode";
 import { Conf } from "../dosbox/conf";
 import * as Jszip from "jszip";

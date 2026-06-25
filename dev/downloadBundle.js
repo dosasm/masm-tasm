@@ -26,7 +26,7 @@ async function main() {
 }
 
 async function copyEmulator(){
-    const src=path.resolve(__dirname,"../node_modules/emulators/build/wasm/")
+    const src=path.resolve(__dirname,"../node_modules/@xsro/emulators/build/wasm/")
     const dest=path.resolve(__dirname,"../resources/node_modules/emulators/build/wasm/")
     mkdirSync(dest,{recursive:true})
     const files=readdirSync(src);

@@ -1,5 +1,5 @@
-import { CommandInterface } from "emulators";
-import { FsNode } from "emulators/build/src/protocol/protocol";
+import { CommandInterface } from "@xsro/emulators";
+import { FsNode } from "@xsro/emulators/build/src/protocol/protocol";
 import * as vscode from "vscode";
 import { createTerminal } from "./jsdos/main";
 import { logger } from "../utils/logger";

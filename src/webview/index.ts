@@ -83,23 +83,20 @@ if (vapi) {
     let intervalStartedAt = Date.now();
     let prevNonSkippableSleepCount = 0;
     let prevSleepCount = 0;
-    let prevCycles = 0;
     setInterval(() => {
         vapi.asyncifyStats().then((stats) => {
             const dt = Date.now() - intervalStartedAt;
             const nonSkippableSleep = stats.nonSkippableSleepCount - prevNonSkippableSleepCount;
             const avgSleep = (stats.sleepCount - prevSleepCount) * 1000 / dt;
             const avgNonSkippableSleep = (stats.nonSkippableSleepCount - prevNonSkippableSleepCount) * 1000 / dt;
-            const avgCycles = (stats.cycles - prevCycles) / dt;
             intervalStartedAt = Date.now();
             prevNonSkippableSleepCount = stats.nonSkippableSleepCount;
             prevSleepCount = stats.sleepCount;
-            prevCycles = stats.cycles;
 
             const statEle = document.getElementById("ci-stat") as HTMLSpanElement;
             statEle.innerText = "Avg sleep p/sec: " + Math.round(avgSleep) +
                 ", avg non skippable sleep p/sec: " + Math.round(avgNonSkippableSleep) +
-                ", cycles p/ms: " + Math.round(avgCycles);
+                ", cycles p/ms: " + stats.cpuMetrics;
         });
     }, 3000);
 }

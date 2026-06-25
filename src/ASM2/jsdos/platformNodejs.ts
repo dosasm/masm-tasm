@@ -1,4 +1,4 @@
-import { Platform, XhrOptions } from "emulators"
+import { Platform, XhrOptions } from "@xsro/emulators"
 import { Worker as nWorker } from "node:worker_threads"
 
 export class VScodeNodeJsPlatform implements Platform {

@@ -1,4 +1,4 @@
-import { CommandInterface, utils } from "emulators";
+import { CommandInterface, utils } from "@xsro/emulators";
 import * as vscode from "vscode";
 
 export function createTerminal(ci: CommandInterface) {

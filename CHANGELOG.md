@@ -11,6 +11,7 @@
 - 重构了ASM相关代码模块，原代码的调试与可读性较差。
 - 合并了PR [#60](https://github.com/dosasm/masm-tasm/pull/60)，感谢[Gerrnperl](https://github.com/Gerrnperl)的贡献。
 - 2.0.2 增加jsdosX的支持
+- 2.0.3 使用MIMO AI重写了语言支持相关的代码，支持重名符号，并使用AI在[dos-assembly-codes](https://github.com/dosasm/dos-assembly-codes)中测试。**注意**：格式化功能和之前相比发生了变更
 
 
 
@@ -21,6 +22,7 @@
 - Refactored the ASM-related code modules, as the original code was difficult to debug and read.
 - Merged PR [#60](https://github.com/dosasm/masm-tasm/pull/60), thanks to [Gerrnperl](https://github.com/Gerrnperl) for their contribution.
 - 2.0.2 add the support of jsdosX
+- 2.0.3 use MIMO AI to rewrite the code about assembly language support. Now it support symbol rename by F2. The code is tested on [dos-assembly-codes](https://github.com/dosasm/dos-assembly-codes). **NOTE**: code formator is modified
 
 
 ---

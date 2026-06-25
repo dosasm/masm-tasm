@@ -114,25 +114,25 @@ function formatBlock(
             // Block node (SEGMENT/PROC/MACRO/STRUCT): recurse
             const blockIndent = inSection ? indent + 1 : indent;
             const blockChildren = getBlockChildren(node);
-            output.push(formatLine(sourceLines[line], node, blockIndent, maxMnemonic, options));
+            output.push(...formatLine(sourceLines[line], node, blockIndent, maxMnemonic, options));
             formatBlock(sourceLines, blockChildren, nodeMap, blockIndent + 1, options, output);
             const lastChildEnd = blockChildren.length > 0
                 ? blockChildren[blockChildren.length - 1].range.end.line
                 : node.range.start.line;
             for (let closingLine = lastChildEnd + 1; closingLine <= node.range.end.line; closingLine++) {
                 if (closingLine >= blockStart && closingLine <= blockEnd) {
-                    output.push(formatLine(sourceLines[closingLine], undefined, blockIndent, 0, options, true));
+                    output.push(...formatLine(sourceLines[closingLine], undefined, blockIndent, 0, options, true));
                 }
             }
             line = node.range.end.line;
         } else if (node && node.kind === 'label' && isSectionDirective((node as LabelNode).name)) {
             // Section directive (.data, .code, .stack, etc.) — acts as a block opener
             inSection = true;
-            output.push(formatLine(sourceLines[line], node, indent, maxMnemonic, options));
+            output.push(...formatLine(sourceLines[line], node, indent, maxMnemonic, options));
         } else {
             // Regular line — if we're in a section, use indent+1
             const lineIndent = inSection ? indent + 1 : indent;
-            output.push(formatLine(sourceLines[line], node, lineIndent, maxMnemonic, options));
+            output.push(...formatLine(sourceLines[line], node, lineIndent, maxMnemonic, options));
         }
     }
 }
@@ -146,6 +146,7 @@ function isSectionDirective(name: string): boolean {
 
 /**
  * Format a single line based on its AST node type.
+ * Returns an array of lines (label+instruction may produce 2 lines).
  */
 function formatLine(
     original: string,
@@ -154,20 +155,20 @@ function formatLine(
     maxMnemonic: number,
     options: FormatOptions,
     isClosing = false,
-): string {
+): string[] {
     // Labels are always at column 0 (no indent)
     if (node && node.kind === 'label') {
-        return original.trimStart();
+        return formatLabelLine(original, indent, maxMnemonic, options);
     }
 
     // Block openers (SEGMENT, PROC, MACRO, STRUCT) use the current indent level
     if (node && isBlockType(node)) {
-        return makeIndent(indent, options) + original.trimStart();
+        return [makeIndent(indent, options) + original.trimStart()];
     }
 
     // Closing lines (ENDS, ENDP, ENDM) use the current indent level
     if (isClosing) {
-        return makeIndent(indent, options) + original.trimStart();
+        return [makeIndent(indent, options) + original.trimStart()];
     }
 
     // All other lines get at least 1 level of indentation
@@ -176,7 +177,7 @@ function formatLine(
 
     if (!node) {
         // No AST node — preserve content with indentation
-        return indentStr + original.trimStart();
+        return [indentStr + original.trimStart()];
     }
 
     switch (node.kind) {
@@ -191,14 +192,46 @@ function formatLine(
             if (comment) {
                 line += ' ' + comment;
             }
-            return line;
+            return [line];
         }
 
         default: {
             // Variable, constant, directive, include, extern, comment, etc.
-            return indentStr + original.trimStart();
+            return [indentStr + original.trimStart()];
         }
     }
+}
+
+/**
+ * Format a label line. If the line has an instruction after the label,
+ * split into two lines: label alone, then indented instruction.
+ */
+function formatLabelLine(
+    original: string,
+    indent: number,
+    maxMnemonic: number,
+    options: FormatOptions,
+): string[] {
+    const trimmed = original.trimStart();
+
+    // Find the label part: everything up to and including the colon
+    const colonIdx = trimmed.indexOf(':');
+    if (colonIdx < 0) {
+        return [trimmed]; // no colon, just return as-is
+    }
+
+    const afterColon = trimmed.substring(colonIdx + 1).trimStart();
+    const label = trimmed.substring(0, colonIdx + 1);
+
+    if (afterColon.length === 0) {
+        // Label only line (no instruction after colon)
+        return [label];
+    }
+
+    // Label + instruction: split into two lines
+    const effectiveIndent = Math.max(1, indent);
+    const indentStr = makeIndent(effectiveIndent, options);
+    return [label, indentStr + afterColon];
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────

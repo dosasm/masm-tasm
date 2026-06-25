@@ -4,7 +4,7 @@ import * as conf from '../utils/configuration';
 import { getFiles, uriUtils } from "../utils/util";
 import * as path from "path";
 import { Jsdos } from "./jsdos/main";
-import { CommandInterface } from "emulators";
+import { CommandInterface } from "@xsro/emulators";
 
 export async function runJsdos(jsdos:Jsdos,bundleData:Uint8Array,
     useX:boolean,

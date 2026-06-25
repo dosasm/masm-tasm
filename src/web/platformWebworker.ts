@@ -1,5 +1,5 @@
-import * as adapted from "emulators";
-import { Platform } from "emulators";
+import * as adapted from "@xsro/emulators";
+import { Platform } from "@xsro/emulators";
 import * as vscode from "vscode";
 import { logger } from "../utils/logger";
 

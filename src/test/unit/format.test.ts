@@ -39,6 +39,14 @@ suite('Formatter', () => {
             assert.strictEqual(result[1], '\tMOV AX, BX');
         });
 
+        test('label on same line as instruction splits into two lines', () => {
+            const src = 'BEG: MOV AX, BX';
+            const result = format(src);
+            assert.strictEqual(result[0], 'BEG:');
+            assert.ok(result[1].startsWith('\t'), 'instruction should be indented');
+            assert.ok(result[1].includes('MOV'), 'instruction should contain MOV');
+        });
+
         test('multiple labels and instructions', () => {
             const src = 'BEG:\nMOV AX, 1\nLAST:\nMOV BX, 2';
             const result = format(src);
@@ -187,10 +195,10 @@ suite('Formatter', () => {
             assert.ok(mesgLine, 'Should have MESG line');
             assert.ok(mesgLine!.startsWith('\t'), `MESG should be indented, got: ${JSON.stringify(mesgLine)}`);
 
-            // BEG: label at col 0 (may have instruction on same line)
-            const begLine = result.find(l => l.startsWith('BEG:'));
-            assert.ok(begLine, 'Should have BEG label');
-            assert.ok(!begLine!.startsWith('\t'), 'BEG should not be indented');
+            // BEG: label at col 0 (instruction split to next line)
+            const begIdx = result.findIndex(l => l === 'BEG:');
+            assert.ok(begIdx >= 0, 'Should have BEG label on its own line');
+            assert.ok(result[begIdx + 1].startsWith('\t'), 'Line after BEG should be indented');
 
             // MOV instruction: indented
             const movLine = result.find(l => l.trim().startsWith('MOV'));
@@ -218,10 +226,10 @@ suite('Formatter', () => {
             assert.ok(pushLine, 'Should have push instruction');
             assert.ok(pushLine!.startsWith('\t\t'), `push inside PROC should be double indented, got: ${JSON.stringify(pushLine)}`);
 
-            // L1 label inside PROC: no indent (labels at col 0 within block)
-            const l1Line = result.find(l => l.startsWith('L1:'));
-            assert.ok(l1Line, 'Should have L1 label');
-            assert.ok(!l1Line!.startsWith('\t'), 'L1 should not be indented');
+            // L1 label inside PROC: no indent, instruction on next line
+            const l1Idx = result.findIndex(l => l === 'L1:');
+            assert.ok(l1Idx >= 0, 'Should have L1 label on its own line');
+            assert.ok(result[l1Idx + 1].startsWith('\t'), 'Line after L1 should be indented');
 
             // BinToAsc ENDP: indented (inside .code)
             const endpLine = result.find(l => l.includes('ENDP'));

@@ -5,7 +5,7 @@ import * as lan from './language2/main';
 import * as asm from './ASM2/main-node';
 import { logger } from './utils/logger';
 
-import { platform, Browser } from "emulators";
+import { platform, Browser } from "@xsro/emulators";
 import { VScodeNodeJsPlatform } from "./ASM2/jsdos/platformNodejs";
 platform.current=new VScodeNodeJsPlatform()
 

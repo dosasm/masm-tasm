@@ -1,2 +1,7 @@
+allowBuilds:
+  '@playwright/browser-chromium': true
+  esbuild: true
 ignoredBuiltDependencies:
   - '@playwright/browser-chromium'
+minimumReleaseAgeExclude:
+  - '@xsro/emulators@8.4.0-dosasm0.1'

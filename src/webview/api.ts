@@ -1,5 +1,5 @@
-import { CommandInterface, CommandInterfaceEvents, DosConfig, NetworkType, PersistedSockdrives } from "emulators";
-import { AsyncifyStats, FsNode } from "emulators/build/src/protocol/protocol";
+import { CommandInterface, CommandInterfaceEvents, DosConfig, NetworkType} from "@xsro/emulators";
+import { AsyncifyStats, FsNode } from "@xsro/emulators/build/src/protocol/protocol";
 
 export type Api = { postMessage: (val: unknown) => undefined }
 
@@ -18,6 +18,7 @@ type PromisifyAllMethods<T> = {
 };
 
 export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
+  
   command_count = 0
   resolvers: Record<number, {resolve:(result: any) => void,reject:(error: any) => void,}> = {};
   constructor(public api: Api) {
@@ -33,6 +34,13 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
         }
       }
     })
+  }
+  async net(){
+    return null
+  }
+
+  getRunningProgram(): Promise<string> {
+    throw new Error("Method not implemented.");
   }
   
   config(): Promise<DosConfig> {
@@ -106,7 +114,7 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
     await this._exec_ci_command("sendBackendEvent", [event]);
   }
   
-  async persist(onlyChanges?: boolean): Promise<Uint8Array | PersistedSockdrives | null> {
+  async persist(onlyChanges?: boolean): Promise<Uint8Array |null> {
     const result=await this._exec_ci_command("persist",[onlyChanges])
     return result
   }
