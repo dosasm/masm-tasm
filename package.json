@@ -533,6 +533,7 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/test-web": "^0.0.77",
     "@xterm/addon-image": "^0.9.0",
+    "@xsro/emulators": "8.4.0-dosasm0.2",
     "assert": "^2.1.0",
     "browser-or-node": "^3.0.0",
     "del": "^8.0.1",
@@ -563,7 +564,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@xsro/emulators": "8.4.0-dosasm0.1",
     "yaml": "^2.8.2"
   }
 }
