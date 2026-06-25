@@ -364,3 +364,42 @@ suite('Parser: sample files', () => {
         });
     });
 });
+
+// ─── dos-assembly-codes corpus ───────────────────────────────────────────
+
+const DOS_ASM_DIR = path.resolve(__dirname, '..', '..', '..', '..', 'dos-assembly-codes');
+
+function collectAsmFiles(dir: string): string[] {
+    const results: string[] = [];
+    if (!fs.existsSync(dir)) { return results; }
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            results.push(...collectAsmFiles(full));
+        } else if (/\.(asm|ASM|inc|INC)$/.test(entry.name)) {
+            results.push(full);
+        }
+    }
+    return results;
+}
+
+suite('Parser: dos-assembly-codes corpus', () => {
+    const asmFiles = collectAsmFiles(DOS_ASM_DIR);
+
+    test(`found ${asmFiles.length} ASM/INC files`, () => {
+        assert.ok(asmFiles.length > 0, 'Expected at least 1 ASM file in dos-assembly-codes');
+    });
+
+    for (const filePath of asmFiles) {
+        const relPath = path.relative(DOS_ASM_DIR, filePath);
+        test(`parses: ${relPath}`, () => {
+            const src = fs.readFileSync(filePath, 'utf-8');
+            assert.doesNotThrow(() => {
+                const tokens = tokenize(src);
+                const ast = new Parser(tokens).parse();
+                assert.strictEqual(ast.kind, 'program', 'Root must be ProgramNode');
+            });
+        });
+    }
+});
