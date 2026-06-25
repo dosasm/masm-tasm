@@ -1,7 +1,7 @@
 import * as adapted from "@xsro/emulators";
 import * as vscode from "vscode";
 import { Conf } from "../dosbox/conf";
-import * as Jszip from "jszip";
+import JSZip from "jszip";
 import { isNode} from "browser-or-node";
 import { createTerminal } from "./utils/terminal";
 
@@ -14,7 +14,7 @@ export class Jsdos {
     this.emulators = adapted.getEmulators(pathPrefix);
   }
   public conf: Conf = new Conf("");
-  public jszip: Jszip = new Jszip();
+  public jszip: JSZip = new JSZip();
 
   constructor(private context: vscode.ExtensionContext) {
     const dist = vscode.Uri.joinPath(context.extensionUri, "resources/node_modules/emulators/build/wasm/");
@@ -81,7 +81,7 @@ export class Jsdos {
       const ci = await func(bundleData);
       return ci;
     } else if (bundle === null) {
-      const bundleData = await new Jszip()
+      const bundleData = await new JSZip()
         .file(".jsdos/dosbox.conf", "")
         .generateAsync({ type: "uint8array" });
       return await func(bundleData);

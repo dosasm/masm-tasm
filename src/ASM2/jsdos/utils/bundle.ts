@@ -1,5 +1,5 @@
 //methods for manipute jsdos-bundles
-import * as JSZip from "jszip";
+import JSZip from "jszip";
 import * as vscode from "vscode";
 
 const fs = vscode.workspace.fs;

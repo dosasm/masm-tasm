@@ -1,4 +1,4 @@
-import * as Jszip from "jszip";
+import JSZip from "jszip";
 import * as vscode from "vscode";
 
 const fs = vscode.workspace.fs;
@@ -14,7 +14,7 @@ export async function fromBundle(
   bundle: Uint8Array,
   tempFolder: vscode.Uri
 ): Promise<string | undefined> {
-  const zip = new Jszip();
+  const zip = new JSZip();
   await zip.loadAsync(bundle);
   Object.keys(zip.files).forEach(async function (filename) {
     const e = zip.files[filename];
