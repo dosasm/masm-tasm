@@ -163,6 +163,10 @@ export class CIManager {
         if (!this.panel.visible) {
             this.panel.reveal()
         }
+        this.panel?.webview?.postMessage({
+            name: "switch-ci",
+            ciIdx: this.webviewingId
+        });
     }
 }
 
@@ -196,46 +200,43 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
 
 
 
-    panel.webview.html = `
-        <!DOCTYPE html>
-        <html lang="en">
-            <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                html,
-                body,
-                #jsdos {
-                    width: 100%;
-                    height: 100%;
-                    margin: 0;
-                    padding: 0;
-                }
-            </style>
-            <link rel="stylesheet" type="text/css" href="${asWeb("resources/webview.css")}">
-        </head>
-            
-        <body>
-        <input type="checkbox" id="ci-pause">pause</input>
-        <input type="checkbox" id="ui-mute">mute</input>
-        <select id="ci-list">
-        ${cis.ciInfomation(true)}
-        </select>
-        <span id="show">loading</span>
+    panel.webview.html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="${asWeb("resources/webview.css")}">
+</head>
+<body>
+    <div class="toolbar">
+        <label class="toolbar-item" title="Pause/Resume emulation">
+            <input type="checkbox" id="ci-pause">
+            <span>Pause</span>
+        </label>
+        <label class="toolbar-item" title="Mute/Unmute sound">
+            <input type="checkbox" id="ui-mute">
+            <span>Mute</span>
+        </label>
+        <div class="toolbar-separator"></div>
+        <select id="ci-list" title="Select CI instance">${cis.ciInfomation(true)}</select>
+        <span id="show" class="toolbar-status">loading</span>
+    </div>
+    <div class="canvas-container">
         <canvas id="display"></canvas>
-        <script src='${asWeb("dist/index.js")}'></script>
-        <!-- Virtual keyboard with function keys (single row) - each button has unique ID -->
-        <div class="soft-keyboard">
-            <button class="key-btn esc" data-key="Escape" id="key-esc">ESC</button>
-            <button class="key-btn modifier" data-key="Shift" id="key-shift">Shift</button>
-            <button class="key-btn modifier" data-key="Control" id="key-ctrl">Ctrl</button>
-            <button class="key-btn modifier" data-key="Alt" id="key-alt">Alt</button>
-            <button class="key-btn modifier" data-key="CapsLock" id="key-capslock">CapsLock</button>
-            <button class="key-btn modifier" data-key="Tab" id="key-tab">Tab</button>
-        </div>
-        <p id="ci-stat">loading stats</p>
-        </body>
-        </html>`;
+        <div class="canvas-overlay" id="canvas-overlay">waiting for frame</div>
+    </div>
+    <div class="soft-keyboard">
+        <button class="key-btn esc" data-key="Escape" id="key-esc">ESC</button>
+        <button class="key-btn modifier" data-key="Shift" id="key-shift">Shift</button>
+        <button class="key-btn modifier" data-key="Control" id="key-ctrl">Ctrl</button>
+        <button class="key-btn modifier" data-key="Alt" id="key-alt">Alt</button>
+        <button class="key-btn modifier" data-key="CapsLock" id="key-capslock">CapsLock</button>
+        <button class="key-btn modifier" data-key="Tab" id="key-tab">Tab</button>
+    </div>
+    <div id="ci-stat" class="status-bar">loading stats</div>
+    <script src="${asWeb("dist/index.js")}"></script>
+</body>
+</html>`;
 
     // Handle messages from the webview
     panel.webview.onDidReceiveMessage(
@@ -244,6 +245,11 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
             switch (command) {
                 case "change-viewing-id":
                     cis.webviewingId = args[0];
+                    panel.webview.postMessage({
+                        command,
+                        uid: message.uid,
+                        value: cis.webviewingId
+                    })
                     break
                 case "mute-sound":
                     cis.webviewingMute = args[0];

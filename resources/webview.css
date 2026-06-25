@@ -1,66 +1,196 @@
-/* Container for virtual keyboard - single row layout */
+/* ==================== Layout ==================== */
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ==================== Toolbar ==================== */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    background: var(--vscode-editorWidget-background, #252526);
+    border-bottom: 1px solid var(--vscode-editorWidget-border, #3c3c3c);
+    flex-shrink: 0;
+}
+
+.toolbar-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--vscode-editor-foreground, #ccc);
+}
+
+.toolbar-item input[type="checkbox"] {
+    accent-color: var(--vscode-focusBorder, #007acc);
+    margin: 0;
+    cursor: pointer;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 16px;
+    background: var(--vscode-editorWidget-border, #3c3c3c);
+    flex-shrink: 0;
+}
+
+.toolbar select {
+    background: var(--vscode-dropdown-background, #3c3c3c);
+    color: var(--vscode-dropdown-foreground, #ccc);
+    border: 1px solid var(--vscode-dropdown-border, #555);
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+}
+
+.toolbar select:focus {
+    border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.toolbar-status {
+    font-size: 11px;
+    color: var(--vscode-descriptionForeground, #888);
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+/* ==================== Canvas ==================== */
+.canvas-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #000;
+    min-height: 0;
+    position: relative;
+}
+
+.canvas-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vscode-descriptionForeground, #888);
+    font-size: 14px;
+    font-family: var(--vscode-font-family, sans-serif);
+    background: #000;
+    z-index: 1;
+}
+
+#display {
+    max-width: 100%;
+    max-height: 100%;
+    image-rendering: pixelated;
+}
+
+/* ==================== Virtual Keyboard ==================== */
 .soft-keyboard {
     display: flex;
-    gap: 8px;
-    padding: 16px;
-    background: #f5f5f5;
-    border-radius: 8px;
-    margin: 20px auto;
-    max-width: 95%;
-    user-select: none;
-    overflow-x: auto; /* Horizontal scroll for small screens */
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--vscode-editorWidget-background, #252526);
+    border-top: 1px solid var(--vscode-editorWidget-border, #3c3c3c);
+    flex-shrink: 0;
+    overflow-x: auto;
 }
 
-/* Base style for function key buttons */
 .key-btn {
-    padding: 12px 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: white;
-    font-size: 14px;
-    font-family: monospace;
+    padding: 6px 12px;
+    border: 1px solid var(--vscode-editorWidget-border, #555);
+    border-radius: 3px;
+    background: var(--vscode-button-background, #0e639c);
+    color: var(--vscode-button-foreground, #fff);
+    font-size: 11px;
+    font-family: var(--vscode-editor-font-family, monospace);
     cursor: pointer;
-    transition: all 0.2s;
-    min-width: 70px;
+    transition: background 0.15s;
+    min-width: 50px;
     text-align: center;
-    flex-shrink: 0; /* Prevent buttons from shrinking */
+    flex-shrink: 0;
 }
 
-/* Toggle grayed-out state (first click) */
+.key-btn:hover:not(.grayed) {
+    background: var(--vscode-button-hoverBackground, #1177bb);
+}
+
 .key-btn.grayed {
-    background: #e0e0e0;
-    color: #999;
-    border-color: #ddd;
+    background: var(--vscode-editorWidget-background, #3c3c3c);
+    color: var(--vscode-descriptionForeground, #888);
+    border-color: var(--vscode-editorWidget-border, #555);
     cursor: not-allowed;
 }
 
-/* Active state for toggle keys (CapsLock/Shift) */
 .key-btn.active {
-    background: #007acc;
-    color: white;
-    border-color: #007acc;
+    background: var(--vscode-focusBorder, #007acc);
+    color: #fff;
+    border-color: var(--vscode-focusBorder, #007acc);
 }
 
-/* Click feedback for non-grayed buttons */
 .key-btn:active:not(.grayed):not(.active) {
-    background: #f0f0f0;
+    opacity: 0.8;
 }
 
-/* Color coding for different key types */
-.key-btn.esc { color: #e63946; }
-.key-btn.modifier { color: #2a9d8f; }
-.key-btn.enter { color: #264653; background: #e9c46a; border-color: #e9c46a; }
-.key-btn.enter:active:not(.grayed) { background: #f4a261; }
+.key-btn.esc {
+    color: var(--vscode-errorForeground, #f44747);
+    background: transparent;
+    border-color: var(--vscode-errorForeground, #f44747);
+}
 
-/* Test area for verifying key presses */
+.key-btn.esc:hover {
+    background: rgba(244, 71, 71, 0.15);
+}
+
+.key-btn.modifier {
+    color: var(--vscode-terminal-ansi-green, #4ec9b0);
+    background: transparent;
+    border-color: var(--vscode-terminal-ansi-green, #4ec9b0);
+}
+
+.key-btn.modifier:hover {
+    background: rgba(78, 201, 176, 0.15);
+}
+
+.key-btn.enter {
+    background: var(--vscode-terminal-ansi-yellow, #cca700);
+    color: #000;
+    border-color: var(--vscode-terminal-ansi-yellow, #cca700);
+}
+
+.key-btn.enter:active:not(.grayed) {
+    background: var(--vscode-terminal-ansi-yellow, #cca700);
+    opacity: 0.8;
+}
+
+/* ==================== Status Bar ==================== */
+.status-bar {
+    font-size: 11px;
+    color: var(--vscode-descriptionForeground, #888);
+    padding: 4px 12px;
+    background: var(--vscode-editorWidget-background, #252526);
+    border-top: 1px solid var(--vscode-editorWidget-border, #3c3c3c);
+    flex-shrink: 0;
+    font-family: var(--vscode-editor-font-family, monospace);
+}
+
+/* ==================== Test Area (legacy) ==================== */
 .test-area {
     width: 95%;
     height: 100px;
     margin: 20px auto;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--vscode-editorWidget-border, #ccc);
     border-radius: 4px;
-    font-family: monospace;
+    font-family: var(--vscode-editor-font-family, monospace);
     font-size: 16px;
     outline: none;
     resize: none;
@@ -69,7 +199,7 @@
 
 .hint {
     text-align: center;
-    color: #666;
+    color: var(--vscode-descriptionForeground, #666);
     margin-top: 10px;
     font-size: 14px;
 }
