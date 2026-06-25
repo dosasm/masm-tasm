@@ -4,4 +4,4 @@ allowBuilds:
 ignoredBuiltDependencies:
   - '@playwright/browser-chromium'
 minimumReleaseAgeExclude:
-  - '@xsro/emulators@8.4.0-dosasm0.1 || 8.4.0-dosasm0.2'
+  - '@xsro/emulators@8.4.0-dosasm0.1 || 8.4.0-dosasm0.2 || 8.4.0-dosasm0.3'

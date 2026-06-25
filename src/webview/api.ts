@@ -1,5 +1,5 @@
 import { CommandInterface, CommandInterfaceEvents, DosConfig, NetworkType} from "@xsro/emulators";
-import { AsyncifyStats, FsNode } from "@xsro/emulators/build/src/protocol/protocol";
+import { AsyncifyStats, FsNode } from "@xsro/emulators";
 
 export type Api = { postMessage: (val: unknown) => undefined }
 
