@@ -548,6 +548,7 @@
     "rimraf": "^6.1.0",
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.22.4",
     "typescript": "^5.9.3",
     "vscode-uri": "^3.1.0",
     "webpack": "^5.102.1",
