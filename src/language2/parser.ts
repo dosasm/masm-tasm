@@ -18,6 +18,7 @@ import {
 export class Parser {
     private tokens: Token[];
     private pos = 0;
+    private currentLine = 0;
 
     constructor(tokens: Token[]) {
         this.tokens = tokens.filter(t => t.type !== TokenType.Newline);
@@ -94,15 +95,11 @@ export class Parser {
         }
     }
 
-    /** Consume tokens until the next newline or EOF (rest of the current line). */
+    /** Consume tokens until the next line or EOF (rest of the current line). */
     private consumeRestOfLine(): Token[] {
         const rest: Token[] = [];
-        while (!this.isAtEnd() && this.peek().type !== TokenType.Newline) {
+        while (!this.isAtEnd() && this.peek().line <= this.currentLine && this.peek().type !== TokenType.Newline) {
             rest.push(this.advance());
-        }
-        // Consume the newline itself
-        if (!this.isAtEnd() && this.peek().type === TokenType.Newline) {
-            this.advance();
         }
         return rest;
     }
@@ -110,11 +107,8 @@ export class Parser {
     /** Collect remaining tokens on the line as a raw string. */
     private restOfLineText(): string {
         const parts: string[] = [];
-        while (!this.isAtEnd() && this.peek().type !== TokenType.Newline) {
+        while (!this.isAtEnd() && this.peek().line <= this.currentLine && this.peek().type !== TokenType.Newline) {
             parts.push(this.peek().text);
-            this.advance();
-        }
-        if (!this.isAtEnd() && this.peek().type === TokenType.Newline) {
             this.advance();
         }
         return parts.join(' ');
@@ -140,6 +134,7 @@ export class Parser {
      */
     private parseStatement(): AstNode | null {
         const tok = this.peek();
+        this.currentLine = tok.line;
 
         // Comment-only line
         if (tok.type === TokenType.Comment) {
@@ -147,20 +142,15 @@ export class Parser {
             return { kind: 'comment', text: tok.text, range: tokenToRange(tok) };
         }
 
+        // Dot-directive: `.386`, `.8086`, etc. (lexer produces Dot + Number)
+        if (tok.type === TokenType.Dot) {
+            return this.parseDotDirective();
+        }
+
         // Identifier: could be label, variable, constant, macro, segment, proc, struct, or instruction-invoked-as-identifier
         if (tok.type === TokenType.Identifier || tok.type === TokenType.Instruction ||
             tok.type === TokenType.Register || tok.type === TokenType.Directive) {
             return this.parseIdentifierLine(tok);
-        }
-
-        // Instruction at start of line (no preceding identifier)
-        if (tok.type === TokenType.Instruction) {
-            return this.parseInstruction();
-        }
-
-        // Directive at start of line (e.g. `.MODEL`, `ASSUME`)
-        if (tok.type === TokenType.Directive || this.isDotDirective(tok)) {
-            return this.parseDirective();
         }
 
         // Data directive at start of line (anonymous variable: DB 10 DUP(?))
@@ -171,6 +161,29 @@ export class Parser {
         // Any other token — consume the line as a directive
         this.advance();
         return null;
+    }
+
+    /** Parse a dot-directive like `.386`, `.8086`, etc. */
+    private parseDotDirective(): DirectiveNode {
+        const dotTok = this.advance(); // consume '.'
+        const nameParts: string[] = [dotTok.text];
+        // Collect subsequent word/number tokens as part of the directive name
+        while (!this.isAtEnd() && this.peek().line <= this.currentLine &&
+            (this.peek().type === TokenType.Identifier || this.peek().type === TokenType.Number ||
+             this.peek().type === TokenType.Instruction || this.peek().type === TokenType.Register)) {
+            nameParts.push(this.peek().text);
+            this.advance();
+        }
+        const name = nameParts.join('');
+        const restText = this.restOfLineText().trim();
+        const range = tokenToRange(dotTok);
+        return {
+            kind: 'directive',
+            name,
+            nameRange: range,
+            arguments: restText,
+            range,
+        };
     }
 
     /**
@@ -205,13 +218,13 @@ export class Parser {
                 return this.parseStruct(name, nameRange);
             }
 
-            // Block closers
+            // Block closers — consume the name so parseBlock sees the closer token
             if (directiveText === 'ENDS') {
-                // This will be consumed by the parent parseSegment or parseStruct
-                // Return null and let the parent handle it
+                this.advance(); // consume name so peek() lands on ENDS
                 return null;
             }
             if (directiveText === 'ENDP') {
+                this.advance(); // consume name so peek() lands on ENDP
                 return null;
             }
             if (directiveText === 'END') {
@@ -283,7 +296,8 @@ export class Parser {
         // If followed by operands (commas, registers, numbers), treat as instruction
         const next = this.peekAt(1);
 
-        if (next.type === TokenType.Newline || next.type === TokenType.Comment || next.type === TokenType.Eof) {
+        if (next.type === TokenType.Newline || next.type === TokenType.Comment || next.type === TokenType.Eof ||
+            next.line > this.currentLine) {
             // Standalone identifier — could be a label or macro invocation
             this.advance(); // consume name
             const comment = this.extractTrailingComment();
@@ -324,7 +338,7 @@ export class Parser {
 
     private parseMacroParameters(): string[] {
         const params: string[] = [];
-        while (!this.isAtEnd() && this.peek().type !== TokenType.Newline) {
+        while (!this.isAtEnd() && this.peek().line <= this.currentLine && this.peek().type !== TokenType.Newline) {
             if (this.peek().type === TokenType.Identifier) {
                 params.push(this.peek().text);
             }
@@ -517,12 +531,8 @@ export class Parser {
         };
     }
 
-    private parseInstruction(): InstructionNode {
-        const mnemonicTok = this.advance();
-        return this.parseInstructionFrom(mnemonicTok);
-    }
-
     private parseInstructionFrom(mnemonicTok: Token): InstructionNode {
+        this.advance(); // consume the mnemonic token
         const mnemonicRange = tokenToRange(mnemonicTok);
         const operands = this.parseOperands();
         const comment = this.extractTrailingComment();
@@ -540,52 +550,6 @@ export class Parser {
         };
     }
 
-    private parseDirective(): DirectiveNode | IncludeNode {
-        const nameTok = this.advance();
-        const nameRange = tokenToRange(nameTok);
-        const upper = nameTok.text.toUpperCase();
-
-        // Handle INCLUDE specially
-        if (upper === 'INCLUDE' || upper === 'INCLUDELIB') {
-            return this.parseIncludeFrom(nameTok, nameRange);
-        }
-
-        const argumentsText = this.restOfLineText().trim();
-        const comment = this.extractTrailingComment();
-
-        return {
-            kind: 'directive',
-            name: nameTok.text,
-            nameRange,
-            arguments: argumentsText,
-            comment,
-            range: mergeRanges(nameRange, comment?.range),
-        };
-    }
-
-    private parseIncludeFrom(directiveTok: Token, directiveRange: AstRange): IncludeNode {
-        const pathTok = this.peek();
-        let path = '';
-
-        if (pathTok.type === TokenType.String) {
-            path = pathTok.text.replace(/^['"]|['"]$/g, '');
-            this.advance();
-        } else if (pathTok.type === TokenType.Identifier) {
-            path = pathTok.text;
-            this.advance();
-        }
-
-        this.skipToLineEnd();
-
-        return {
-            kind: 'include',
-            path,
-            pathRange: tokenToRange(pathTok),
-            directive: directiveTok.text.toUpperCase() as 'INCLUDE' | 'INCLUDELIB',
-            range: mergeRanges(directiveRange, tokenToRange(pathTok)),
-        };
-    }
-
     /**
      * Parse comma-separated operands for an instruction.
      * Stops at newline, comment, or EOF.
@@ -595,7 +559,7 @@ export class Parser {
 
         while (!this.isAtEnd()) {
             const tok = this.peek();
-            if (tok.type === TokenType.Newline || tok.type === TokenType.Comment || tok.type === TokenType.Eof) {
+            if (tok.line > this.currentLine || tok.type === TokenType.Comment || tok.type === TokenType.Eof) {
                 break;
             }
 
@@ -604,7 +568,7 @@ export class Parser {
             let depth = 0; // bracket/paren nesting depth
             while (!this.isAtEnd()) {
                 const t = this.peek();
-                if (t.type === TokenType.Newline || t.type === TokenType.Comment || t.type === TokenType.Eof) {
+                if (t.line > this.currentLine || t.type === TokenType.Comment || t.type === TokenType.Eof) {
                     break;
                 }
                 if (t.type === TokenType.Comma && depth === 0) {
@@ -631,10 +595,6 @@ export class Parser {
     }
 
     // ─── Helpers ────────────────────────────────────────────────────────
-
-    private isDotDirective(tok: Token): boolean {
-        return tok.text.startsWith('.') && tok.type !== TokenType.Dot;
-    }
 
     private skipToLineEnd(): void {
         // In the filtered token stream (no newlines), we don't need to skip to line end.

@@ -1,0 +1,5 @@
+require:
+  - ts-node/register
+spec: 'src/test/unit/**/*.test.ts'
+ui: tdd
+timeout: 10000
