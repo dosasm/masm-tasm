@@ -14,13 +14,13 @@ interface MountFolder {
     syncFromEmuPeriodId?: NodeJS.Timeout
 }
 
-function flattenFSNodes(parent: string, nodes: FsNode[]) {
+function flattenFSNodes(parent: string, nodes: FsNode[]): Record<string, number> {
     const result: Record<string, number> = {};
     for (const n of nodes) {
         if (n.nodes) {
-            flattenFSNodes(parent + "/" + n.name, n.nodes)
+            Object.assign(result, flattenFSNodes(parent + "/" + n.name, n.nodes));
         } else if (n.name && n.size) {
-            result[parent + "/" + n.name] = n.size
+            result[parent + "/" + n.name] = n.size;
         }
     }
     return result;

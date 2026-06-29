@@ -2,11 +2,11 @@ import * as vscode from 'vscode';
 import { localize, loadI18n } from './utils/i18n';
 
 import * as lan from './language2/main';
-import * as asm from './ASM2/main-node';
+import * as asm from './ASM3/main-node';
 import { logger } from './utils/logger';
 
 import { platform, Browser } from "@xsro/emulators";
-import { VScodeNodeJsPlatform } from "./ASM2/jsdos/platformNodejs";
+import { VScodeNodeJsPlatform } from "./ASM3/jsdos/platformNodejs";
 platform.current=new VScodeNodeJsPlatform()
 
 export function activate(context: vscode.ExtensionContext): void {

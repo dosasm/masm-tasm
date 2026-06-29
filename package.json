@@ -4,7 +4,7 @@
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
   "preview": true,
-  "version": "2.0.3",
+  "version": "2.1.0",
   "keywords": [
     "dosbox",
     "16位",
@@ -173,15 +173,7 @@
         "masmtasm.ASM.mode": {
           "type": "string",
           "default": "single file",
-          "enum": [
-            "single file",
-            "workspace"
-          ],
-          "markdownEnumDescriptions": [
-            "%config.mode.singleFile%",
-            "%config.mode.workspace%"
-          ],
-          "markdownDescription": "choose working Mode"
+          "deprecationMessage": "This setting has been removed. The extension now only supports single file mode. Files are always copied to an isolated directory before assembling."
         },
         "masmtasm.ASM.assembler": {
           "type": "string",
@@ -531,8 +523,8 @@
     "@typescript-eslint/parser": "^8.46.3",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/test-web": "^0.0.77",
-    "@xterm/addon-image": "^0.9.0",
     "@xsro/emulators": "8.4.0-dosasm0.3",
+    "@xterm/addon-image": "^0.9.0",
     "assert": "^2.1.0",
     "browser-or-node": "^3.0.0",
     "buffer": "^6.0.3",
@@ -543,9 +535,9 @@
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "rimraf": "^6.1.0",
+    "toml": "^4.1.1",
     "ts-loader": "^9.5.4",
     "tsx": "^4.22.4",
-    
     "typescript": "^5.9.3",
     "vscode-uri": "^3.1.0",
     "webpack": "^5.102.1",
@@ -561,6 +553,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "yaml": "^2.8.2"
   }
 }

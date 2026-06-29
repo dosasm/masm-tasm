@@ -59,8 +59,6 @@ export class Jsdos {
     this.conf.updateAutoexec(context);
   }
 
-  run = this.runInHost;
-
   async getBundleData(): Promise<Uint8Array> {
     const s = this.jszip.file(".jsdos/dosbox.conf", this.conf.toString());
     const bundleData = await this.jszip.generateAsync({ type: "uint8array" });

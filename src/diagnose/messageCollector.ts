@@ -1,7 +1,6 @@
 import * as vscode from "vscode"
 import {AssemblerMessageDiagnose} from "./main"
 import { logger } from "../utils/logger";
-import * as conf from '../utils/configuration';
 
 export function messageCollector(): [(msg: string) => void, Promise<string>] {
     let allmsg = "";
@@ -32,7 +31,8 @@ export function messageCollector(): [(msg: string) => void, Promise<string>] {
 }
 
 export async function messageDiagnose(message:string,doc:vscode.TextDocument,diag:AssemblerMessageDiagnose){
-    const diagnose = diag.process(message, doc, conf.extConf.asmType);
+    const asmType = vscode.workspace.getConfiguration('masmtasm').get<string>('ASM.assembler', 'TASM');
+    const diagnose = diag.process(message, doc, asmType);
     if (diagnose) {
         if (diagnose?.error > 0) {
             vscode.window.showErrorMessage(logger.localize("ASM.error"));

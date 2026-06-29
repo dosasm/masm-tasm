@@ -5,7 +5,6 @@
  */
 import { Diagnostic, DiagnosticCollection, DiagnosticRelatedInformation, DiagnosticSeverity, languages, Location, TextDocument, Uri } from 'vscode';
 import * as vscode from 'vscode';
-import { extConf } from '../utils/configuration';
 import { masmDiagnose } from './diagnoseMASM';
 import { getInternetlink } from './diagnoseMasm-error-list';
 import { tasmDiagnose } from './diagnoseTASM';
@@ -19,7 +18,8 @@ export enum Assembler {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    if (extConf.asmType.includes("MASM")) {
+    const asmType = vscode.workspace.getConfiguration('masmtasm').get<string>('ASM.assembler', 'TASM');
+    if (asmType.includes("MASM")) {
         const disposable: vscode.Disposable = vscode.languages.registerCodeActionsProvider('assembly', new SeeinCPPDOCS(), {
             providedCodeActionKinds: SeeinCPPDOCS.providedCodeActionKinds
         });

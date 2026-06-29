@@ -41,11 +41,6 @@ export enum ActionType {
     debug
 }
 
-/**how to mount the assembly file to DOS emulator */
-export enum MountMode {
-    single = "single file",
-    workspace = "workspace"
-}
 
 import * as vscode from 'vscode';
 
