@@ -2,9 +2,7 @@
 
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
-### 2.0.x
-
-#### 2.0.4
+#### 2.1.0 AI重构代码，实现符号重命名 (emulators 8.4.0)
 
 - 修复格式化器：顶层指令（`.386`、`.model`、`.STACK`、`include` 等）不再被错误缩进
 - 修复格式化器：空白行保留为空行，不再填充制表符
@@ -14,9 +12,9 @@
 - 修复解析器：截断文件（缺少闭合符）的块范围正确扩展到最后一个子节点
 - 状态栏：拆分为独立的模拟器选择器和汇编器选择器两个按钮
 - 模拟器选择 Quick Pick：显示 dosbox / dosbox-x 的实际可执行文件路径
-- 切换模拟器时自动检查汇编器兼容性，不兼容时自动切换
 
-#### 使用Jsdos 作为首选模拟器
+
+#### 2.0.x 使用Jsdos 作为首选模拟器
 
 - 移除了对MS-DOS的支持。若仍有使用MS-DOS的需求，可回退至1.x版本。JSDOS的Worker模式应能满足当前绝大部分使用场景的需求。
 - 移除了外部的DOSBox软件，不再依赖另一个插件[vscode-dosbox](https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox)，便于维护。

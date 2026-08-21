@@ -7,11 +7,11 @@ Additionally, as more features have been requested in the [GitHub issues](https:
 
 
 ## Main changes:
-- [ ] Remove the dependency on DOSBOX binary files.
-- [ ] Remove support for MS-DOS.
-- [ ] Add support for more assembly languages, especially the **Symbol Rename** feature.
-- [ ] Use js-dos as the primary emulator.
-- [ ] To keep this project simple and easy to mantain, **only one emulator instance** is allowed in the simulation. (When use binary dosbox, the extension doesn't check this, but it is also highly recommmend)
+- [x] Remove the dependency on DOSBOX binary files.
+- [x] Remove support for MS-DOS.
+- [x] Add support for more assembly languages, especially the **Symbol Rename** feature.
+- [x] Use js-dos as the primary emulator.
+
 
 ## How to build these files
 
@@ -20,7 +20,7 @@ Therefore, ensure this project is in the same directory as the `assembly-tool` p
 
 ```
 git clone https://github.com/dosasm/assembly-tool
-git clone -b dev/2026 https://github.com/dosasm/masm-tasm
+git clone https://github.com/dosasm/masm-tasm
 cd masm-tasm
 pnpm install
 pnpm compile-dev
@@ -33,6 +33,10 @@ pnpx vsce package
 ```
 
 Press <kbd>F5</kbd> or Click `run` -> `Start Debugging`
+
+## Publish
+
+Upload the package file at [marketplace](https://marketplace.visualstudio.com/manage/publishers/xsro)
 
 ## Main references
 
