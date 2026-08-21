@@ -326,13 +326,16 @@ export class Parser {
         const endRange = this.checkText('ENDM') ? tokenToRange(endTok) : undefined;
         if (endRange) { this.advance(); } // consume ENDM
 
+        // If no closer found (truncated file), extend range to include children
+        const effectiveEndRange = endRange ?? (children.length > 0 ? children[children.length - 1].range : nameRange);
+
         return {
             kind: 'macro',
             name: nameToken.text,
             nameRange,
             parameters,
             children,
-            range: mergeRanges(nameRange, endRange),
+            range: mergeRanges(nameRange, effectiveEndRange),
         };
     }
 
@@ -357,13 +360,16 @@ export class Parser {
         const endRange = this.checkText('ENDS') ? tokenToRange(endTok) : undefined;
         if (endRange) { this.advance(); } // consume ENDS
 
+        // If no closer found (truncated file), extend range to include children
+        const effectiveEndRange = endRange ?? (children.length > 0 ? children[children.length - 1].range : nameRange);
+
         return {
             kind: 'segment',
             name: nameToken.text,
             nameRange,
             directive: 'SEGMENT',
             children,
-            range: mergeRanges(nameRange, endRange),
+            range: mergeRanges(nameRange, effectiveEndRange),
         };
     }
 
@@ -377,13 +383,16 @@ export class Parser {
         const endRange = this.checkText('ENDP') ? tokenToRange(endTok) : undefined;
         if (endRange) { this.advance(); } // consume ENDP
 
+        // If no closer found (truncated file), extend range to include children
+        const effectiveEndRange = endRange ?? (children.length > 0 ? children[children.length - 1].range : nameRange);
+
         return {
             kind: 'proc',
             name: nameToken.text,
             nameRange,
             attributes,
             children,
-            range: mergeRanges(nameRange, endRange),
+            range: mergeRanges(nameRange, effectiveEndRange),
         };
     }
 

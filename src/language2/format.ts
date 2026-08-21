@@ -115,15 +115,12 @@ function formatBlock(
             const blockIndent = inSection ? indent + 1 : indent;
             const blockChildren = getBlockChildren(node);
             output.push(...formatLine(sourceLines[line], node, blockIndent, maxMnemonic, options));
-            formatBlock(sourceLines, blockChildren, nodeMap, blockIndent + 1, options, output);
-            const lastChildEnd = blockChildren.length > 0
-                ? blockChildren[blockChildren.length - 1].range.end.line
-                : node.range.start.line;
-            for (let closingLine = lastChildEnd + 1; closingLine <= node.range.end.line; closingLine++) {
-                if (closingLine >= blockStart && closingLine <= blockEnd) {
-                    output.push(...formatLine(sourceLines[closingLine], undefined, blockIndent, 0, options, true));
-                }
-            }
+            
+            // Recursively format the block's children, but also process
+            // lines between children (blank lines, comments) by passing
+            // the full block range to a helper that processes all lines
+            formatBlockWithGaps(sourceLines, node, blockChildren, nodeMap, blockIndent + 1, options, output);
+            
             line = node.range.end.line;
         } else if (node && node.kind === 'label' && isSectionDirective((node as LabelNode).name)) {
             // Section directive (.data, .code, .stack, etc.) — acts as a block opener
@@ -134,6 +131,58 @@ function formatBlock(
             const lineIndent = inSection ? indent + 1 : indent;
             output.push(...formatLine(sourceLines[line], node, lineIndent, maxMnemonic, options));
         }
+    }
+}
+
+/**
+ * Format all lines within a block's range, including gaps between children
+ * (blank lines, comments) that the parser skips.
+ */
+function formatBlockWithGaps(
+    sourceLines: string[],
+    blockNode: AstNode,
+    children: AstNode[],
+    nodeMap: Map<number, AstNode>,
+    indent: number,
+    options: FormatOptions,
+    output: string[],
+): void {
+    const blockStart = blockNode.range.start.line + 1; // after opener
+    const lastChildEnd = children.length > 0 ? children[children.length - 1].range.end.line : blockNode.range.start.line;
+    
+    // Determine if there's a closer line (different from last child end)
+    const closerLine = blockNode.range.end.line;
+    const hasCloser = closerLine > lastChildEnd;
+    const blockEnd = hasCloser ? closerLine - 1 : lastChildEnd;
+    
+    if (blockStart > blockEnd) { return; }
+
+    const maxMnemonic = calcMaxMnemonic(children);
+    let inSection = false;
+
+    for (let line = blockStart; line <= blockEnd; line++) {
+        const node = nodeMap.get(line);
+
+        if (node && isBlockType(node)) {
+            // Nested block
+            const blockIndent = inSection ? indent + 1 : indent;
+            const nestedChildren = getBlockChildren(node);
+            output.push(...formatLine(sourceLines[line], node, blockIndent, maxMnemonic, options));
+            formatBlockWithGaps(sourceLines, node, nestedChildren, nodeMap, blockIndent + 1, options, output);
+            line = node.range.end.line;
+        } else if (node && node.kind === 'label' && isSectionDirective((node as LabelNode).name)) {
+            inSection = true;
+            const lineIndent = inSection ? indent + 1 : indent;
+            output.push(...formatLine(sourceLines[line], node, lineIndent, maxMnemonic, options));
+        } else {
+            const lineIndent = inSection ? indent + 1 : indent;
+            output.push(...formatLine(sourceLines[line], node, lineIndent, maxMnemonic, options));
+        }
+    }
+    
+    // Process the block closer line (at the same indent as the opener)
+    if (hasCloser) {
+        output.push(...formatLine(sourceLines[closerLine], undefined, indent - 1, 0, options, true));
     }
 }
 
@@ -156,6 +205,11 @@ function formatLine(
     options: FormatOptions,
     isClosing = false,
 ): string[] {
+    // Preserve blank lines as truly empty
+    if (original.trim() === '') {
+        return [''];
+    }
+
     // Labels are always at column 0 (no indent)
     if (node && node.kind === 'label') {
         return formatLabelLine(original, indent, maxMnemonic, options);
@@ -171,8 +225,13 @@ function formatLine(
         return [makeIndent(indent, options) + original.trimStart()];
     }
 
-    // All other lines get at least 1 level of indentation
-    const effectiveIndent = Math.max(1, indent);
+    // Determine if this node type should be indented at the current level.
+    // Instructions and variables always get at least 1 level of indentation.
+    // Directive-like instructions (e.g., .model, .STACK) at the top level
+    // should not be indented — they are configuration directives, not executable code.
+    const isDirectiveLike = node && node.kind === 'instruction' && isDirectiveMnemonic((node as InstructionNode).mnemonic);
+    const shouldForceIndent = node && (node.kind === 'instruction' || node.kind === 'variable') && !isDirectiveLike;
+    const effectiveIndent = shouldForceIndent ? Math.max(1, indent) : indent;
     const indentStr = makeIndent(effectiveIndent, options);
 
     if (!node) {
@@ -182,17 +241,7 @@ function formatLine(
 
     switch (node.kind) {
         case 'instruction': {
-            const instr = node as InstructionNode;
-            const opText = instr.operands.map(o => o.text).join(', ');
-            const comment = extractComment(original);
-
-            // Pad mnemonic to align operands
-            const pad = ' '.repeat(Math.max(1, maxMnemonic - instr.mnemonic.length + 1));
-            let line = indentStr + instr.mnemonic + pad + opText;
-            if (comment) {
-                line += ' ' + comment;
-            }
-            return [line];
+            return formatInstructionLine(original, node as InstructionNode, indentStr, maxMnemonic, options);
         }
 
         default: {
@@ -200,6 +249,49 @@ function formatLine(
             return [indentStr + original.trimStart()];
         }
     }
+}
+
+/**
+ * Format an instruction line, preserving original operand spacing and comments
+ * while applying proper indentation and optional mnemonic alignment.
+ */
+function formatInstructionLine(
+    original: string,
+    node: InstructionNode,
+    indentStr: string,
+    maxMnemonic: number,
+    options: FormatOptions,
+): string[] {
+    const trimmed = original.trimStart();
+
+    // Find the mnemonic in the original line
+    const mnemonic = node.mnemonic;
+    const mnemonicIdx = trimmed.indexOf(mnemonic);
+    if (mnemonicIdx < 0) {
+        // Fallback: couldn't find mnemonic, just indent
+        return [indentStr + trimmed];
+    }
+
+    // Find where the mnemonic ends
+    const afterMnemonic = mnemonicIdx + mnemonic.length;
+    const rest = trimmed.substring(afterMnemonic);
+
+    // Don't align directive-like instructions (e.g., END, INCLUDE, .MODEL)
+    // — they are configuration directives, not executable code
+    if (isDirectiveMnemonic(mnemonic) || mnemonic.toUpperCase() === 'END') {
+        return [indentStr + trimmed];
+    }
+
+    // If no alignment needed, just preserve the original spacing
+    if (!options.alignOperand || maxMnemonic <= mnemonic.length) {
+        return [indentStr + trimmed];
+    }
+
+    // Calculate padding: align operands to the longest mnemonic in this block
+    // The original spacing between mnemonic and operands is replaced with aligned padding
+    const padLen = Math.max(1, maxMnemonic - mnemonic.length + 1);
+    const padded = indentStr + mnemonic + ' '.repeat(padLen) + rest.trimStart();
+    return [padded];
 }
 
 /**
@@ -350,4 +442,21 @@ function adjustCommaSpacing(line: string, addSpace: boolean): string {
     } else {
         return line.replace(regex, ',');
     }
+}
+
+/** Check if a mnemonic is a directive (not an executable instruction). */
+function isDirectiveMnemonic(mnemonic: string): boolean {
+    // Dot directives: .386, .model, .STACK, .data, .code, etc.
+    if (mnemonic.startsWith('.')) { return true; }
+    // Known non-executable directives that the parser classifies as instructions
+    const directives = new Set([
+        'ASSUME', 'OPTION', 'INCLUDE', 'INCLUDELIB',
+        'EXTERN', 'EXTERNDEF', 'PUBLIC', 'COMM',
+        'TITLE', 'SUBTITLE', 'PAGE', 'ECHO', 'COMMENT',
+        '.ALPHA', '.SEQ', '.CODE', '.CONST', '.DATA', '.DATA?',
+        '.DOSSEG', '.EXIT', '.FARDATA', '.FARDATA?', '.MODEL',
+        '.STACK', '.STARTUP', '.386', '.386P', '.486', '.486P',
+        '.586', '.586P', '.686', '.686P',
+    ]);
+    return directives.has(mnemonic.toUpperCase());
 }

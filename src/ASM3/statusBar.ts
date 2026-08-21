@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import { DosEmulatorType } from "./types";
 import * as config from "./config";
 
-const bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+const emuBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+const asmBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
 const emu = [
     DosEmulatorType.jsdos,
@@ -11,47 +12,122 @@ const emu = [
     DosEmulatorType.dosboxX,
 ];
 
-function buildItems(): string[] {
-    const items: string[] = [];
-    const actions = config.getActions();
-    for (const a of Object.keys(actions)) {
-        for (const e of emu) {
-            // In browser, only jsdos is available
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            if ((process as any).browser && e !== DosEmulatorType.jsdos) {
-                continue;
-            }
-            if (actions[a].support && !actions[a].support?.includes(e)) {
-                continue;
-            }
-            items.push(e + "\t" + a);
-        }
+function isBrowser(): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return !!(process as any).browser;
+}
+
+function getAvailableEmulators(): DosEmulatorType[] {
+    if (isBrowser()) {
+        return [DosEmulatorType.jsdos];
     }
-    return items;
+    return emu;
+}
+
+function getCompatibleAssemblers(emu: DosEmulatorType): string[] {
+    const actions = config.getActions();
+    const result: string[] = [];
+    for (const a of Object.keys(actions)) {
+        if (actions[a].support && !actions[a].support?.includes(emu)) {
+            continue;
+        }
+        result.push(a);
+    }
+    return result;
 }
 
 function showStatus() {
-    bar.command = "masmtasm.updateEmuASM";
-    bar.text = `${config.getEmulator()} ${config.getAssembler()}`;
-    bar.show();
+    const currentEmu = config.getEmulator();
+    const currentAsm = config.getAssembler();
+
+    emuBar.command = "masmtasm.selectEmulator";
+    emuBar.text = `$(server) ${currentEmu}`;
+    emuBar.tooltip = "Click to select DOS emulator";
+    emuBar.show();
+
+    asmBar.command = "masmtasm.selectAssembler";
+    asmBar.text = `$(symbol-class) ${currentAsm}`;
+    asmBar.tooltip = "Click to select assembler";
+    asmBar.show();
 }
 
-async function statusBarCommand() {
+function getEmulatorPath(emu: DosEmulatorType): string {
+    const settings = vscode.workspace.getConfiguration("masm-tasm");
+    if (emu === DosEmulatorType.dosbox) {
+        return settings.get<string>("command.dosbox", "dosbox");
+    }
+    if (emu === DosEmulatorType.dosboxX) {
+        return settings.get<string>("command.dosboxX", "dosbox-x -nopromptfolder");
+    }
+    return ""; // jsdos runs in-browser
+}
+
+async function selectEmulator() {
     const _conf = vscode.workspace.getConfiguration("masmtasm.ASM");
-    const items = buildItems();
-    const placeHolder = "choose DOS environment emulator and assembler";
-    const selected = await vscode.window.showQuickPick(items, { placeHolder });
-    if (selected) {
-        const [emu1, asm1] = selected.split("\t");
+    const currentEmu = config.getEmulator();
+    const currentAsm = config.getAssembler();
+    const available = getAvailableEmulators();
+
+    const items = available.map(e => {
+        const path = getEmulatorPath(e);
+        const desc = e === currentEmu ? "(current)" : "";
+        return {
+            label: e,
+            description: desc,
+            detail: path || undefined,
+            picked: e === currentEmu,
+        };
+    });
+
+    const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: "Select DOS emulator",
+    });
+
+    if (selected && selected.label !== currentEmu) {
+        const newEmu = selected.label as DosEmulatorType;
         const target = vscode.ConfigurationTarget.Global;
-        await _conf.update("emulator", emu1, target);
-        await _conf.update("assembler", asm1, target);
+
+        // Check if current assembler is compatible with new emulator
+        const compatibleAsms = getCompatibleAssemblers(newEmu);
+        let newAsm = currentAsm;
+
+        if (!compatibleAsms.includes(currentAsm)) {
+            // Switch to first compatible assembler
+            newAsm = compatibleAsms[0];
+            await _conf.update("assembler", newAsm, target);
+        }
+
+        await _conf.update("emulator", newEmu, target);
+        showStatus();
+    }
+}
+
+async function selectAssembler() {
+    const _conf = vscode.workspace.getConfiguration("masmtasm.ASM");
+    const currentEmu = config.getEmulator();
+    const currentAsm = config.getAssembler();
+    const compatible = getCompatibleAssemblers(currentEmu);
+
+    const items = compatible.map(a => ({
+        label: a,
+        description: a === currentAsm ? "(current)" : "",
+        picked: a === currentAsm,
+    }));
+
+    const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: "Select assembler",
+    });
+
+    if (selected && selected.label !== currentAsm) {
+        const target = vscode.ConfigurationTarget.Global;
+        await _conf.update("assembler", selected.label, target);
         showStatus();
     }
 }
 
 export function activate(context: vscode.ExtensionContext): void {
-    const disposable = vscode.commands.registerCommand("masmtasm.updateEmuASM", statusBarCommand);
-    context.subscriptions.push(disposable);
+    const emuDisp = vscode.commands.registerCommand("masmtasm.selectEmulator", selectEmulator);
+    const asmDisp = vscode.commands.registerCommand("masmtasm.selectAssembler", selectAssembler);
+    context.subscriptions.push(emuDisp, asmDisp);
     showStatus();
 }
