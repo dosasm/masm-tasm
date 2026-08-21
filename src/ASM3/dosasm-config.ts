@@ -21,6 +21,11 @@ export interface DosasmAction {
     open: string[];
     run: string[];
     debug: string[];
+    /**
+     * 如果设置为字符串，运行或调试前会将当前活动文件复制到指定路径。
+     * 如果设置为 null，运行或调试前不会复制文件。
+     */
+    copyFileAs: string | null;
 }
 
 /** 完整的 dosasm.jsonc 配置 */
@@ -59,11 +64,14 @@ export interface ExpandVars {
  * - ${<built-in>/xxx.jsdos} — bundle 路径（由 bundlePath 参数决定）
  */
 export function expandCommand(cmd: string, vars: ExpandVars): string {
-    return cmd
-        .replace(/\$\{file\}/g, vars.file)
-        .replace(/\$\{filename\}/g, vars.filename)
-        .replace(/\$\{actionFolder\}/g, vars.actionFolder)
-        .replace(/\$\{<built-in>\/[^}]+\}/g, vars.bundlePath);
+    let output = cmd;
+    if (vars.bundlePath){
+        output = output.replace(/\$\{<built-in>\/[^}]+\}/g, vars.bundlePath);
+    }
+    output = output.replace(/\$\{file\}/g, vars.file);
+    output = output.replace(/\$\{filename\}/g, vars.filename);
+    output = output.replace(/\$\{actionFolder\}/g, vars.actionFolder);
+    return output;
 }
 
 /**
@@ -201,6 +209,7 @@ export async function parseDosasmConfig(configUri: vscode.Uri): Promise<DosasmCo
         open: toStringArray(s.open),
         run: toStringArray(s.run),
         debug: toStringArray(s.debug),
+        copyFileAs: typeof s.copyFileAs === "string" ? s.copyFileAs : null,
     };
     logger.channel(`Loaded dosasm.jsonc from ${configUri.fsPath}`);
     return { actionFolder, action };

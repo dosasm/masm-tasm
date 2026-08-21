@@ -1,6 +1,14 @@
 {
     // The action to use in this folder
+    // if set as string, the current active file in the editor panel will be copied to
+    // the path specified by this string before run or debug the code
+    // if set as null, the current active file in the editor panel will not be copied
+    // before run or debug the code
+    "copyFileAs": null,
     "action": {
+        // if set as string, the current active file in the editor panel will be copied to the path specified by this string before run or debug the code
+        // if set as null, the current active file in the editor panel will not be copied before run or debug the code
+        "copyFileAs":null,
         // The commands to exec in open emulator and before `run` or `debug` the code
         // extract the jsdos and mount the jsdos zipfile folder as C:\
         // mount the folder of this action as D:\
@@ -14,16 +22,17 @@
         "open": [],
         // The commands to run the code, add a `>` before the command if you need to prevent redirect the command's output
         "run": [
-            "TASM ${file}",
-            "TLINK ${filename}",
-            ">${filename}"
+            "TASM 2.asm",
+            "TLINK 2.obj",
+            ">2.exe",
+            "pause"
         ],
         // The commands to debug the code
         "debug": [
-            "TASM /zi ${file}",
-            "TLINK /v/3 ${filename}.obj",
+            "TASM /zi 2.asm",
+            "TLINK /v/3 2.obj",
             "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
-            "TD -cTDCONFIG.TD ${filename}.exe"
+            "TD -cTDCONFIG.TD 2.exe"
         ]
     }
 }

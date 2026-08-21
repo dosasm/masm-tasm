@@ -31,7 +31,7 @@ interface DosboxContext {
     actionType: ActionType;
     fileUri: vscode.Uri;
     doc: vscode.TextDocument;
-    fileCopyUri: vscode.Uri;
+    fileCopyUri: vscode.Uri | null;
     logFileName: string;
     assemblyToolsFolder: vscode.Uri;
     seperateSpaceFolder: vscode.Uri;
@@ -52,13 +52,20 @@ async function makeDosboxContext(
     const timeStamp = Date.now().toString();
     const seperateSpaceFolder = uriUtils.joinPath(context.globalStorageUri, "workspace");
 
+    const copyFileAs = tomlConfig?.action.copyFileAs;
+    const fileCopyUri = copyFileAs === null
+        ? null
+        : copyFileAs
+            ? uriUtils.joinPath(seperateSpaceFolder, copyFileAs)
+            : uriUtils.joinPath(seperateSpaceFolder, ("test" + uriUtils.extname(resolved.uri)).toUpperCase());
+
     return {
         actionType,
         fileUri: resolved.uri,
         doc: resolved.doc,
         assemblyToolsFolder: uriUtils.joinPath(context.globalStorageUri, config.getAssembler()),
         logFileName: timeStamp.substring(timeStamp.length - 5) + ".log".toUpperCase(),
-        fileCopyUri: uriUtils.joinPath(seperateSpaceFolder, ("test" + uriUtils.extname(resolved.uri)).toUpperCase()),
+        fileCopyUri,
         seperateSpaceFolder,
         tomlConfig,
         bundleFolderMap: new Map(),
@@ -74,7 +81,14 @@ async function extractTomlBundles(
     box: DOSBox
 ): Promise<Map<string, string>> {
     const bundleMap = new Map<string, string>();
-    for (const bundleName of findBundleRefs(tomlConfig.action.before)) {
+    // 扫描所有命令段（before/run/debug/open）中的 bundle 引用
+    const allCommands = [
+        ...tomlConfig.action.before,
+        ...tomlConfig.action.run,
+        ...tomlConfig.action.debug,
+        ...(tomlConfig.action.open ?? []),
+    ];
+    for (const bundleName of findBundleRefs(allCommands)) {
         const extractFolder = vscode.Uri.joinPath(context.globalStorageUri, "bundles", bundleName.replace(".jsdos", ""));
         if (!nodefs.existsSync(extractFolder.fsPath)) {
             const data = await vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, bundleName));
@@ -113,9 +127,10 @@ function buildDosboxAutoexec(
 
     if (tomlConfig) {
         // toml 模式：由 toml 控制所有挂载
+        const fileUri = ctx.fileCopyUri ?? ctx.fileUri;
         const vars: ExpandVars = {
-            file: ctx.fileCopyUri.fsPath,
-            filename: ctx.fileCopyUri.fsPath.replace(path.parse(ctx.fileCopyUri.fsPath).ext, ""),
+            file: fileUri.fsPath,
+            filename: fileUri.fsPath.replace(path.parse(fileUri.fsPath).ext, ""),
             actionFolder: tomlConfig.actionFolder.fsPath,
             bundlePath: "", // 由 bundleFolderMap 替换
         };
@@ -148,7 +163,8 @@ function buildDosboxAutoexec(
         const before = config.getAction().before;
         if (before) autoexec.push(...before);
 
-        const rel = path.relative(ctx.seperateSpaceFolder.fsPath, ctx.fileCopyUri.fsPath);
+        const fileUri = ctx.fileCopyUri ?? ctx.fileUri;
+        const rel = path.relative(ctx.seperateSpaceFolder.fsPath, fileUri.fsPath);
         const fileInDosbox = path.win32.resolve("D:\\", rel);
         const vars: ExpandVars = {
             file: fileInDosbox,
@@ -215,7 +231,9 @@ async function runDosbox(
 
     // 准备隔离目录
     await emptyFolder(ctx.seperateSpaceFolder);
-    await vscode.workspace.fs.copy(ctx.fileUri, ctx.fileCopyUri);
+    if (ctx.fileCopyUri) {
+        await vscode.workspace.fs.copy(ctx.fileUri, ctx.fileCopyUri);
+    }
 
     // 解压 bundle（toml 模式）
     if (ctx.tomlConfig && ctx.bundleFolderMap.size === 0) {

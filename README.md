@@ -89,6 +89,11 @@ Example `dosasm.jsonc`:
 - The `action.debug` commands assemble, link, and launch the debugger
 - The `action.open` commands are used when opening the emulator without running
 - When `dosasm.jsonc` is found, the default single-file mount behavior is skipped — the `before` section fully controls the environment setup
+
+**Copy file before run/debug:**
+- `action.copyFileAs` (string | null): Controls whether the active file is copied before run/debug
+  - String: file is copied to this path (relative to the action folder)
+  - null: file is not copied, the original file path is used directly
 - **Bundle extraction**: `${<built-in>/TASM.jsdos}` references a built-in `.jsdos` zip bundle. The extension extracts this bundle to a folder and replaces the variable with the folder path, so you can mount it as a DOS drive
 
 ## Platform Support

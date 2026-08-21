@@ -13,6 +13,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as Jszip from "jszip";
+import * as nodefs from "fs";
 
 import { logger } from "../utils/logger";
 import { uriUtils } from "../utils/util";
@@ -66,7 +67,14 @@ export async function resolveBundleData(
     tomlConfig: DosasmConfig | null
 ): Promise<Uint8Array> {
     if (tomlConfig) {
-        const refs = findBundleRefs(tomlConfig.action.before);
+        // 扫描所有命令段中的 bundle 引用
+        const allCommands = [
+            ...tomlConfig.action.before,
+            ...tomlConfig.action.run,
+            ...tomlConfig.action.debug,
+            ...(tomlConfig.action.open ?? []),
+        ];
+        const refs = findBundleRefs(allCommands);
         if (refs.length > 0) {
             logger.channel(`Using toml bundle: ${refs[0]}`);
             return vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, refs[0]));
@@ -90,6 +98,26 @@ export function logAction(act: ActionType, file: string): void {
     const log = logger.localize(key, file, asmType, emulator);
     logger.channel(log);
     console.log(log);
+}
+
+/**
+ * 将目录及其子目录下的所有文件添加到 jszip 中。
+ * @param jszip - JSZip 实例
+ * @param dirUri - 宿主机目录 URI
+ * @param zipPrefix - zip 中的前缀路径（如 "action/"）
+ */
+async function addFolderToJszip(jszip: typeof Jszip.default, dirUri: vscode.Uri, zipPrefix: string): Promise<void> {
+    const entries = await vscode.workspace.fs.readDirectory(dirUri);
+    for (const [name, type] of entries) {
+        const entryUri = vscode.Uri.joinPath(dirUri, name);
+        const zipPath = zipPrefix + name;
+        if (type === vscode.FileType.Directory) {
+            await addFolderToJszip(jszip, entryUri, zipPath + "/");
+        } else if (type === vscode.FileType.File) {
+            const data = await vscode.workspace.fs.readFile(entryUri);
+            jszip.file(zipPath, data);
+        }
+    }
 }
 
 /**
@@ -132,10 +160,12 @@ function buildJsdosAutoexec(
     fileInJsdos: string
 ): string[] {
     const autoexec: string[] = [];
+    // jsdos 中 actionFolder 映射到虚拟文件系统中的 ./action 目录
+    const actionFolder = tomlConfig ? "./action" : "./code";
     const vars: ExpandVars = {
         file: fileInJsdos,
         filename: fileInJsdos ? fileInJsdos.replace(path.parse(fileInJsdos).ext, "") : "",
-        actionFolder: "./code",
+        actionFolder,
         bundlePath: ".",
     };
 
@@ -188,11 +218,21 @@ export async function runJsdos(
     const jszip = await Jszip.loadAsync(bundleData);
 
     // 将当前文件注入 jsdos bundle
+    const copyFileAs = tomlConfig?.action.copyFileAs;
     let fileInJsdos = "";
     const doc = vscode.window.activeTextEditor?.document;
-    if (doc) {
-        jszip.file("code/test" + uriUtils.extname(doc.uri), doc.getText());
-        fileInJsdos = "D:\\test" + uriUtils.extname(doc.uri);
+    if (doc && copyFileAs !== null) {
+        const targetPath = copyFileAs || ("test" + uriUtils.extname(doc.uri));
+        jszip.file("code/" + targetPath, doc.getText());
+        fileInJsdos = "D:\\" + targetPath;
+    } else if (doc) {
+        // copyFileAs 为 null 时不注入文件，使用原始文件路径
+        fileInJsdos = "D:\\" + path.basename(doc.uri.fsPath);
+    }
+
+    // 将 action 目录（dosasm.jsonc 所在目录）添加到 jsdos bundle
+    if (tomlConfig) {
+        await addFolderToJszip(jszip, tomlConfig.actionFolder, "action/");
     }
 
     // 构建并设置 autoexec
