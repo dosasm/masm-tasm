@@ -288,15 +288,15 @@ export async function activate(context: vscode.ExtensionContext) {
             const box = emulator === DosEmulatorType.dosboxX ? dosbox_api.dosboxX : dosbox_api.dosbox;
             const tomlConfig = await loadDosasmConfig(uri);
             const ctx = await makeDosboxContext(actionType, uri, context, tomlConfig);
-            const result = await runDosbox(context, ctx, box);
-            Diag.messageDiagnose(result.message, ctx.doc, diag);
-            return;
+            const runResult = await runDosbox(context, ctx, box);
+            const diagResult = await Diag.messageDiagnose(runResult.message, ctx.doc, diag);
+            return { message: runResult.message, error: diagResult.error, warn: diagResult.warn, result: runResult.result };
         }
 
         // jsdos 路径
         if (emulator === DosEmulatorType.jsdos || emulator === DosEmulatorType.jsdosX) {
             const useX = emulator === DosEmulatorType.jsdosX;
-            await runJsdos(context, actionType, uri, cis, useX, jsdos_api, diag);
+            return runJsdos(context, actionType, uri, cis, useX, jsdos_api, diag);
         }
     }
 

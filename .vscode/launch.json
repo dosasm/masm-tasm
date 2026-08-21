@@ -29,7 +29,10 @@
 				"--extensionTestsPath=${workspaceFolder}/dist/test/suite/index",
 				"${workspaceFolder}/samples"
 			],
-			"outFiles": ["${workspaceFolder}/dist/test/**/*.js"],
+			"outFiles": [
+				"${workspaceFolder}/dist/**/*.js",
+				"${workspaceFolder}/dist/test/**/*.js"
+			],
 			"preLaunchTask": "npm: watch"
 		},
 		{

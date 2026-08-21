@@ -8,6 +8,7 @@
 import * as vscode from "vscode";
 
 import { ActionType, DosEmulatorType } from "./types";
+import { AsmResult } from "./run";
 import * as config from "./config";
 import * as statusBar from "./statusBar";
 import * as Diag from "../diagnose/main";
@@ -23,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const cis = new CIManager(context);
     const diag = Diag.activate(context);
 
-    function handleAction(actionType: ActionType, uri: vscode.Uri) {
+    function handleAction(actionType: ActionType, uri: vscode.Uri): Promise<AsmResult | undefined> {
         const useX = config.getEmulator() === DosEmulatorType.jsdosX;
         return runJsdos(context, actionType, uri, cis, useX, jsdos_api, diag);
     }

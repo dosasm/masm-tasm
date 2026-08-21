@@ -212,6 +212,7 @@ const extensionTestFiles = {
             }
         }
     ],
+    devtool: 'nosources-source-map',
     node:{
         __dirname: false,
     }

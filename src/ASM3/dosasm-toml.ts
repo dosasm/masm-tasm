@@ -121,7 +121,7 @@ export async function findDosasmToml(startUri: vscode.Uri): Promise<vscode.Uri |
 export async function parseDosasmToml(tomlUri: vscode.Uri): Promise<DosasmConfig> {
     const raw = await vscode.workspace.fs.readFile(tomlUri);
     const text = Buffer.from(raw).toString("utf-8");
-    const parsed = TOML.parse(text);
+    const parsed = TOML(text);
     const actionFolder = uriDirname(tomlUri);
     const s = (parsed as any).action;
     if (!s || typeof s !== "object") {

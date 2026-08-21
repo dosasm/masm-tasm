@@ -179,6 +179,7 @@ export async function runJsdos(
 ): Promise<AsmResult | undefined> {
     const resolved = await resolveFile(uri);
     if (!resolved) return undefined;
+    await vscode.window.showTextDocument(resolved.doc, { preview: false });
     logAction(actionType, resolved.uri.fsPath);
 
     // 加载配置和 bundle
@@ -210,7 +211,7 @@ export async function runJsdos(
         const [hook, promise] = Diag.messageCollector();
         cis.last.onStdout["ASM3/run"] = (data: string) => hook(data);
         const message = await promise;
-        Diag.messageDiagnose(message, resolved.doc, diag);
-        return { message, result: cis.last.stdout };
+        const diagResult = await Diag.messageDiagnose(message, resolved.doc, diag);
+        return { message, error: diagResult.error, warn: diagResult.warn, result: cis.last.stdout };
     }
 }
