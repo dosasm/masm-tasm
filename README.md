@@ -7,6 +7,7 @@ It may be suitable for studying MASM/TASM in DOSBox
 or courses like *Principles and Peripheral Technology of Microprocessor*.
 
 - **Language Support**: Offers *grammar* validation, basic *outline* view, *hover* tips, and *code formatting* support for DOS assembly language
+- **Status Bar**: Quick access to switch DOS emulator and assembler independently, with executable paths shown
 - **Run and Debug**: Right-click on the VS Code editor panel to run and debug your code
 - **Diagnose**: Processes the output of ASM tools and displays diagnostics in VS Code
 - Supports all platforms including **Web** — see [Platform Support](#platform-support)
@@ -20,6 +21,16 @@ or courses like *Principles and Peripheral Technology of Microprocessor*.
 | ![](pics/demo_PLFeature.gif) | ![](pics/demo_diagnose_tasm.gif) |
 
 The extension provides language features such as hover hints, code formatting, and jump to definition for the `assembly` language ID.
+
+#### Code Formatting
+
+The built-in formatter follows the style of sample `.asm` files:
+- Labels at column 0, instructions indented with tabs
+- Top-level directives (`.386`, `.model`, `.STACK`, `include`, etc.) stay at column 0
+- Blank lines preserved as truly empty
+- Original operand spacing and comments preserved
+- Formatting is idempotent — running it twice produces the same result
+- Use the **Format Document** command (`Shift+Alt+F`) to apply
 You can also use other assembly language support extensions (e.g., the `asm-collection` language ID) by installing [ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens).
 
 ### Demo 2: Run and Debug
