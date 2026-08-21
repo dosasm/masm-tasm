@@ -2,6 +2,14 @@
 
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
+#### 2.1.1 配置格式从 TOML 迁移到 JSONC
+
+- 将 `dosasm.toml` 重命名为 `dosasm.jsonc`，使用 JSONC（JSON with Comments）格式
+- JSONC 格式更通用、支持注释，与 VS Code 设置格式一致
+- 命令从多行字符串改为字符串数组，每行一个命令，更易读写
+- 移除 `@iarna/toml` 依赖，使用内置的 JSONC 解析器（支持注释）
+- 修复 `@iarna/toml` 在 Web 环境下因 `stream` 模块导致的构建错误
+
 #### 2.1.0 AI重构代码，实现符号重命名 (emulators 8.4.0)
 
 - 修复格式化器：顶层指令（`.386`、`.model`、`.STACK`、`include` 等）不再被错误缩进

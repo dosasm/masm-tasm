@@ -23,7 +23,7 @@ import { activateDosbox, DOSBox } from "./dosbox/main";
 import { activateJSdos } from "./jsdos/main";
 import { CIManager } from "./jsdos";
 import { runJsdos, resolveFile, resolveBundleData, logAction, loadDosasmConfig, type DosasmConfig } from "./run";
-import { expandCommand, ExpandVars, findBundleRefs, getBundleUri } from "./dosasm-toml";
+import { expandCommand, ExpandVars, findBundleRefs, getBundleUri } from "./dosasm-config";
 
 // ─── DOSBox 执行上下文 ────────────────────────────────────
 

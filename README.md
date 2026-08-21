@@ -47,45 +47,48 @@ When editing `assembly` files, right-click in the editor panel to access the fol
 - The extension copies your file to an isolated directory before assembling, to keep your workspace clean.
 - Note that this extension is not optimized for complex projects.
 
-#### Project Configuration with `dosasm.toml`
-For multi-file projects or custom build workflows, you can place a `dosasm.toml` file in your project directory. When you right-click an `.asm` file to run/debug, the extension searches upward from the file's directory for `dosasm.toml`. If found, it uses the configuration defined there instead of the default settings.
+#### Project Configuration with `dosasm.jsonc`
+For multi-file projects or custom build workflows, you can place a `dosasm.jsonc` file in your project directory. When you right-click an `.asm` file to run/debug, the extension searches upward from the file's directory for `dosasm.jsonc`. If found, it uses the configuration defined there instead of the default settings.
 
-Example `dosasm.toml`:
-```toml
-[action]
-before = """
-mount c ${<built-in>/TASM.jsdos}
-mount d ${actionFolder}
-PATH %PATH%;C:\\TASM
-d:
-cd d:\\
-"""
-open = ""
-run = """
-TASM ${file}
-TLINK ${filename}
->${filename}
-"""
-debug = """
-TASM /zi ${file}
-TLINK /v/3 ${filename}.obj
-copy C:\\TASM\\TDC2.TD TDCONFIG.TD
-TD -cTDCONFIG.TD ${filename}.exe
-"""
+Example `dosasm.jsonc`:
+```jsonc
+{
+    "action": {
+        "before": [
+            "mount c ${<built-in>/TASM.jsdos}",
+            "mount d ${actionFolder}",
+            "PATH %PATH%;C:\\TASM",
+            "d:",
+            "cd d:\\"
+        ],
+        "open": [],
+        "run": [
+            "TASM ${file}",
+            "TLINK ${filename}",
+            ">${filename}"
+        ],
+        "debug": [
+            "TASM /zi ${file}",
+            "TLINK /v/3 ${filename}.obj",
+            "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
+            "TD -cTDCONFIG.TD ${filename}.exe"
+        ]
+    }
+}
 ```
 
 **Template variables:**
 - `${file}` — the full path of the assembly file in DOS
 - `${filename}` — the file path without extension
-- `${actionFolder}` — the directory containing the `dosasm.toml` file
+- `${actionFolder}` — the directory containing the `dosasm.jsonc` file
 - `${<built-in>/TASM.jsdos}` — the extracted bundle folder path (the extension automatically extracts the `.jsdos` zip bundle and mounts the resulting folder)
 
 **How it works:**
-- The `[action].before` commands set up the DOS environment (mount drives, set PATH, etc.)
-- The `[action].run` commands assemble, link, and execute the program
-- The `[action].debug` commands assemble, link, and launch the debugger
-- The `[action].open` commands are used when opening the emulator without running
-- When `dosasm.toml` is found, the default single-file mount behavior is skipped — the `before` section fully controls the environment setup
+- The `action.before` commands set up the DOS environment (mount drives, set PATH, etc.)
+- The `action.run` commands assemble, link, and execute the program
+- The `action.debug` commands assemble, link, and launch the debugger
+- The `action.open` commands are used when opening the emulator without running
+- When `dosasm.jsonc` is found, the default single-file mount behavior is skipped — the `before` section fully controls the environment setup
 - **Bundle extraction**: `${<built-in>/TASM.jsdos}` references a built-in `.jsdos` zip bundle. The extension extracts this bundle to a folder and replaces the variable with the folder path, so you can mount it as a DOS drive
 
 ## Platform Support

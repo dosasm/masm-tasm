@@ -2,7 +2,7 @@
  * run.ts — jsdos 执行模块（Web 和 Desktop 共享）
  *
  * 职责：
- * - 准备执行上下文（打开文件、查找 dosasm.toml、加载 bundle）
+ * - 准备执行上下文（打开文件、查找 dosasm.jsonc、加载 bundle）
  * - 构建 autoexec 命令（统一的模板展开）
  * - 在 jsdos 中执行汇编程序
  * - 收集输出并生成诊断信息
@@ -25,7 +25,7 @@ import {
     DosasmConfig, ExpandVars,
     expandCommands,
     findBundleRefs, getBundleUri, loadDosasmConfig,
-} from "./dosasm-toml";
+} from "./dosasm-config";
 
 // ─── 类型 ────────────────────────────────────────────────
 
@@ -93,7 +93,7 @@ export function logAction(act: ActionType, file: string): void {
 }
 
 /**
- * 加载 dosasm.toml 配置（重新导出，方便外部使用）。
+ * 加载 dosasm.jsonc 配置（重新导出，方便外部使用）。
  */
 export { loadDosasmConfig };
 export type { DosasmConfig };
@@ -123,7 +123,7 @@ function getCommands(
  * 构建 jsdos 的 autoexec 命令数组。
  *
  * @param actionType - 执行类型（open/run/debug）
- * @param tomlConfig - dosasm.toml 配置（null 表示使用默认配置）
+ * @param tomlConfig - dosasm.jsonc 配置（null 表示使用默认配置）
  * @param fileInJsdos - 文件在 jsdos 虚拟文件系统中的路径（如 "D:\\test.ASM"）
  */
 function buildJsdosAutoexec(

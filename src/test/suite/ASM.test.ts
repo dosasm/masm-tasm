@@ -87,7 +87,7 @@ export const singleFileTestSuite = suite("single file mode test", function () {
 	}
 });
 
-export const tomlModeTestSuite = suite("dosasm.toml mode test", function () {
+export const tomlModeTestSuite = suite("dosasm.jsonc mode test", function () {
 	this.timeout('60s');
 	this.slow('20s');
 	for (const emu of emulator) {
@@ -95,7 +95,7 @@ export const tomlModeTestSuite = suite("dosasm.toml mode test", function () {
 			this.beforeEach(async function () {
 				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 			});
-			// multi/2.asm has a dosasm.toml in the same directory
+			// multi/2.asm has a dosasm.jsonc in the same directory
 			for (const asm of profileId) {
 				const _test = testAsmCommand(['multi/2.asm', 0], emu, asm);
 				test(_test[0], _test[1]);
