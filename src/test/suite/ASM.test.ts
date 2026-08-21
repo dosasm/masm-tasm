@@ -87,7 +87,7 @@ export const singleFileTestSuite = suite("single file mode test", function () {
 	}
 });
 
-export const tomlModeTestSuite = suite("dosasm.jsonc mode test", function () {
+export const jsoncModeTestSuite = suite("dosasm.jsonc mode test", function () {
 	this.timeout('60s');
 	this.slow('20s');
 	for (const emu of emulator) {

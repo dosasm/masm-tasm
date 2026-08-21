@@ -38,46 +38,49 @@
 
 - 插件会首先复制文件到插件的独立地址中，再进行操作，以保持工作区整洁。
 
-#### 使用 `dosasm.toml` 进行项目配置
+#### 使用 `dosasm.jsonc` 进行项目配置
 
-对于多文件项目或自定义构建流程，你可以在项目目录中放置 `dosasm.toml` 文件。当你右键点击 `.asm` 文件运行/调试时，扩展会从文件所在目录向上递归查找 `dosasm.toml`。如果找到，则使用其中定义的配置执行，而非默认设置。
+对于多文件项目或自定义构建流程，你可以在项目目录中放置 `dosasm.jsonc` 文件。当你右键点击 `.asm` 文件运行/调试时，扩展会从文件所在目录向上递归查找 `dosasm.jsonc`。如果找到，则使用其中定义的配置执行，而非默认设置。
 
-示例 `dosasm.toml`：
-```toml
-[action]
-before = """
-mount c ${<built-in>/TASM.jsdos}
-mount d ${actionFolder}
-PATH %PATH%;C:\\TASM
-d:
-cd d:\\
-"""
-open = ""
-run = """
-TASM ${file}
-TLINK ${filename}
->${filename}
-"""
-debug = """
-TASM /zi ${file}
-TLINK /v/3 ${filename}.obj
-copy C:\\TASM\\TDC2.TD TDCONFIG.TD
-TD -cTDCONFIG.TD ${filename}.exe
-"""
+示例 `dosasm.jsonc`：
+```jsonc
+{
+    "action": {
+        "before": [
+            "mount c ${<built-in>/TASM.jsdos}",
+            "mount d ${actionFolder}",
+            "PATH %PATH%;C:\\TASM",
+            "d:",
+            "cd d:\\"
+        ],
+        "open": [],
+        "run": [
+            "TASM ${file}",
+            "TLINK ${filename}",
+            ">${filename}"
+        ],
+        "debug": [
+            "TASM /zi ${file}",
+            "TLINK /v/3 ${filename}.obj",
+            "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
+            "TD -cTDCONFIG.TD ${filename}.exe"
+        ]
+    }
+}
 ```
 
 **模板变量：**
 - `${file}` — 汇编文件在 DOS 中的完整路径
 - `${filename}` — 不含扩展名的文件路径
-- `${actionFolder}` — 包含 `dosasm.toml` 文件的目录
+- `${actionFolder}` — 包含 `dosasm.jsonc` 文件的目录
 - `${<built-in>/TASM.jsdos}` — 解压后的 bundle 文件夹路径（扩展会自动解压 `.jsdos` 压缩包，并将解压后的文件夹作为该变量的值，以便挂载为 DOS 驱动器）
 
 **工作原理：**
-- `[action].before` 命令用于设置 DOS 环境（挂载驱动器、设置 PATH 等）
-- `[action].run` 命令用于汇编、链接和执行程序
-- `[action].debug` 命令用于汇编、链接和启动调试器
-- `[action].open` 命令用于打开模拟器而不运行程序
-- 当找到 `dosasm.toml` 时，默认的单文件挂载行为会被跳过——`before` 段完全控制环境设置
+- `action.before` 命令用于设置 DOS 环境（挂载驱动器、设置 PATH 等）
+- `action.run` 命令用于汇编、链接和执行程序
+- `action.debug` 命令用于汇编、链接和启动调试器
+- `action.open` 命令用于打开模拟器而不运行程序
+- 当找到 `dosasm.jsonc` 时，默认的单文件挂载行为会被跳过——`before` 段完全控制环境设置
 - **Bundle 解压**：`${<built-in>/TASM.jsdos}` 引用内置的 `.jsdos` 压缩包。扩展会自动解压该压缩包到一个文件夹，并将变量替换为该文件夹路径，以便挂载为 DOS 驱动器
 
 ## 平台支持

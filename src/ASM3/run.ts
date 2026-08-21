@@ -61,22 +61,22 @@ export async function resolveFile(
     return { uri: _uri, doc };
 }
 
-/** 根据 toml 配置或默认配置加载 bundle 数据 */
+/** 根据 jsonc 配置或默认配置加载 bundle 数据 */
 export async function resolveBundleData(
     context: vscode.ExtensionContext,
-    tomlConfig: DosasmConfig | null
+    cfg: DosasmConfig | null
 ): Promise<Uint8Array> {
-    if (tomlConfig) {
+    if (cfg) {
         // 扫描所有命令段中的 bundle 引用
         const allCommands = [
-            ...tomlConfig.action.before,
-            ...tomlConfig.action.run,
-            ...tomlConfig.action.debug,
-            ...(tomlConfig.action.open ?? []),
+            ...cfg.action.before,
+            ...cfg.action.run,
+            ...cfg.action.debug,
+            ...(cfg.action.open ?? []),
         ];
         const refs = findBundleRefs(allCommands);
         if (refs.length > 0) {
-            logger.channel(`Using toml bundle: ${refs[0]}`);
+            logger.channel(`Using jsonc bundle: ${refs[0]}`);
             return vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, refs[0]));
         }
     }
@@ -133,10 +133,10 @@ export type { DosasmConfig };
  */
 function getCommands(
     actionType: ActionType,
-    tomlConfig: DosasmConfig | null
+    cfg: DosasmConfig | null
 ): string[] {
-    if (tomlConfig) {
-        const a = tomlConfig.action;
+    if (cfg) {
+        const a = cfg.action;
         return actionType === ActionType.run ? a.run
             : actionType === ActionType.debug ? a.debug
                 : a.open ?? [];
@@ -151,17 +151,17 @@ function getCommands(
  * 构建 jsdos 的 autoexec 命令数组。
  *
  * @param actionType - 执行类型（open/run/debug）
- * @param tomlConfig - dosasm.jsonc 配置（null 表示使用默认配置）
+ * @param cfg - dosasm.jsonc 配置（null 表示使用默认配置）
  * @param fileInJsdos - 文件在 jsdos 虚拟文件系统中的路径（如 "D:\\test.ASM"）
  */
 function buildJsdosAutoexec(
     actionType: ActionType,
-    tomlConfig: DosasmConfig | null,
+    cfg: DosasmConfig | null,
     fileInJsdos: string
 ): string[] {
     const autoexec: string[] = [];
     // jsdos 中 actionFolder 映射到虚拟文件系统中的 ./action 目录
-    const actionFolder = tomlConfig ? "./action" : "./code";
+    const actionFolder = cfg ? "./action" : "./code";
     const vars: ExpandVars = {
         file: fileInJsdos,
         filename: fileInJsdos ? fileInJsdos.replace(path.parse(fileInJsdos).ext, "") : "",
@@ -169,9 +169,9 @@ function buildJsdosAutoexec(
         bundlePath: ".",
     };
 
-    if (tomlConfig) {
-        // toml 模式：由 toml 控制所有挂载
-        autoexec.push(...expandCommands(tomlConfig.action.before, vars));
+    if (cfg) {
+        // jsonc 模式：由 dosasm.jsonc 控制所有挂载
+        autoexec.push(...expandCommands(cfg.action.before, vars));
     } else {
         // 默认模式：自动挂载
         autoexec.push("mount c .", "mount d ./code", "d:");
@@ -180,7 +180,7 @@ function buildJsdosAutoexec(
     }
 
     // 添加 run/debug/open 命令
-    const commands = getCommands(actionType, tomlConfig);
+    const commands = getCommands(actionType, cfg);
     if (commands.length > 0) {
         autoexec.push(...expandCommands(commands, vars));
     }
@@ -213,12 +213,12 @@ export async function runJsdos(
     logAction(actionType, resolved.uri.fsPath);
 
     // 加载配置和 bundle
-    const tomlConfig = await loadDosasmConfig(resolved.uri);
-    const bundleData = await resolveBundleData(context, tomlConfig);
+    const cfg = await loadDosasmConfig(resolved.uri);
+    const bundleData = await resolveBundleData(context, cfg);
     const jszip = await Jszip.loadAsync(bundleData);
 
     // 将当前文件注入 jsdos bundle
-    const copyFileAs = tomlConfig?.action.copyFileAs;
+    const copyFileAs = cfg?.action.copyFileAs;
     let fileInJsdos = "";
     const doc = vscode.window.activeTextEditor?.document;
     if (doc && copyFileAs !== null) {
@@ -231,12 +231,12 @@ export async function runJsdos(
     }
 
     // 将 action 目录（dosasm.jsonc 所在目录）添加到 jsdos bundle
-    if (tomlConfig) {
-        await addFolderToJszip(jszip, tomlConfig.actionFolder, "action/");
+    if (cfg) {
+        await addFolderToJszip(jszip, cfg.actionFolder, "action/");
     }
 
     // 构建并设置 autoexec
-    const autoexec = buildJsdosAutoexec(actionType, tomlConfig, fileInJsdos);
+    const autoexec = buildJsdosAutoexec(actionType, cfg, fileInJsdos);
     jsdos_api.updateAutoexec(autoexec);
     jsdos_api.jszip = jszip;
 

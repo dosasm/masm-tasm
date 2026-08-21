@@ -35,7 +35,7 @@ interface DosboxContext {
     logFileName: string;
     assemblyToolsFolder: vscode.Uri;
     seperateSpaceFolder: vscode.Uri;
-    tomlConfig: DosasmConfig | null;
+    config: DosasmConfig | null;
     bundleFolderMap: Map<string, string>;
 }
 
@@ -44,7 +44,7 @@ async function makeDosboxContext(
     actionType: ActionType,
     uri: vscode.Uri,
     context: vscode.ExtensionContext,
-    tomlConfig: DosasmConfig | null
+    cfg: DosasmConfig | null
 ): Promise<DosboxContext> {
     const resolved = await resolveFile(uri);
     if (!resolved) throw new Error("no file found");
@@ -52,7 +52,7 @@ async function makeDosboxContext(
     const timeStamp = Date.now().toString();
     const seperateSpaceFolder = uriUtils.joinPath(context.globalStorageUri, "workspace");
 
-    const copyFileAs = tomlConfig?.action.copyFileAs;
+    const copyFileAs = cfg?.action.copyFileAs;
     const fileCopyUri = copyFileAs === null
         ? null
         : copyFileAs
@@ -67,26 +67,26 @@ async function makeDosboxContext(
         logFileName: timeStamp.substring(timeStamp.length - 5) + ".log".toUpperCase(),
         fileCopyUri,
         seperateSpaceFolder,
-        tomlConfig,
+        config: cfg,
         bundleFolderMap: new Map(),
     };
 }
 
 // ─── DOSBox bundle 解压 ──────────────────────────────────
 
-/** 将 toml 引用的 bundle 解压到磁盘，返回 bundle 名 → 解压路径的映射 */
-async function extractTomlBundles(
-    tomlConfig: DosasmConfig,
+/** 将 jsonc 引用的 bundle 解压到磁盘，返回 bundle 名 → 解压路径的映射 */
+async function extractConfigBundles(
+    cfg: DosasmConfig,
     context: vscode.ExtensionContext,
     box: DOSBox
 ): Promise<Map<string, string>> {
     const bundleMap = new Map<string, string>();
     // 扫描所有命令段（before/run/debug/open）中的 bundle 引用
     const allCommands = [
-        ...tomlConfig.action.before,
-        ...tomlConfig.action.run,
-        ...tomlConfig.action.debug,
-        ...(tomlConfig.action.open ?? []),
+        ...cfg.action.before,
+        ...cfg.action.run,
+        ...cfg.action.debug,
+        ...(cfg.action.open ?? []),
     ];
     for (const bundleName of findBundleRefs(allCommands)) {
         const extractFolder = vscode.Uri.joinPath(context.globalStorageUri, "bundles", bundleName.replace(".jsdos", ""));
@@ -103,9 +103,9 @@ async function extractTomlBundles(
 // ─── DOSBox autoexec 构建 ────────────────────────────────
 
 /** 获取要执行的命令列表 */
-function getCommands(actionType: ActionType, tomlConfig: DosasmConfig | null): string[] {
-    if (tomlConfig) {
-        const a = tomlConfig.action;
+function getCommands(actionType: ActionType, cfg: DosasmConfig | null): string[] {
+    if (cfg) {
+        const a = cfg.action;
         return actionType === ActionType.run ? a.run
             : actionType === ActionType.debug ? a.debug
                 : a.open ?? [];
@@ -119,19 +119,19 @@ function getCommands(actionType: ActionType, tomlConfig: DosasmConfig | null): s
 /** 构建 DOSBox 的 autoexec 命令数组 */
 function buildDosboxAutoexec(
     actionType: ActionType,
-    tomlConfig: DosasmConfig | null,
+    cfg: DosasmConfig | null,
     ctx: DosboxContext,
     context: vscode.ExtensionContext
 ): string[] {
     const autoexec: string[] = [];
 
-    if (tomlConfig) {
-        // toml 模式：由 toml 控制所有挂载
+    if (cfg) {
+        // jsonc 模式：由 dosasm.jsonc 控制所有挂载
         const fileUri = ctx.fileCopyUri ?? ctx.fileUri;
         const vars: ExpandVars = {
             file: fileUri.fsPath,
             filename: fileUri.fsPath.replace(path.parse(fileUri.fsPath).ext, ""),
-            actionFolder: tomlConfig.actionFolder.fsPath,
+            actionFolder: cfg.actionFolder.fsPath,
             bundlePath: "", // 由 bundleFolderMap 替换
         };
 
@@ -144,9 +144,9 @@ function buildDosboxAutoexec(
             return r;
         }
 
-        autoexec.push(...tomlConfig.action.before.map(expandDosboxCmd));
+        autoexec.push(...cfg.action.before.map(expandDosboxCmd));
 
-        const commands = getCommands(actionType, tomlConfig);
+        const commands = getCommands(actionType, cfg);
         for (const cmd of commands) {
             let r = expandDosboxCmd(cmd);
             if (!cmd.startsWith(">")) r += " >>C:\\" + ctx.logFileName;
@@ -235,19 +235,19 @@ async function runDosbox(
         await vscode.workspace.fs.copy(ctx.fileUri, ctx.fileCopyUri);
     }
 
-    // 解压 bundle（toml 模式）
-    if (ctx.tomlConfig && ctx.bundleFolderMap.size === 0) {
-        ctx.bundleFolderMap = await extractTomlBundles(ctx.tomlConfig, context, box);
+    // 解压 bundle（jsonc 模式）
+    if (ctx.config && ctx.bundleFolderMap.size === 0) {
+        ctx.bundleFolderMap = await extractConfigBundles(ctx.config, context, box);
     }
 
     // 解压默认 bundle（单文件模式）
-    if (!ctx.tomlConfig && !nodefs.existsSync(ctx.assemblyToolsFolder.fsPath)) {
+    if (!ctx.config && !nodefs.existsSync(ctx.assemblyToolsFolder.fsPath)) {
         const bundleData = await resolveBundleData(context, null);
         await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
     }
 
     // 构建并设置 autoexec
-    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.tomlConfig, ctx, context);
+    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context);
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
@@ -304,8 +304,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // DOSBox 路径
         if (emulator === DosEmulatorType.dosbox || emulator === DosEmulatorType.dosboxX) {
             const box = emulator === DosEmulatorType.dosboxX ? dosbox_api.dosboxX : dosbox_api.dosbox;
-            const tomlConfig = await loadDosasmConfig(uri);
-            const ctx = await makeDosboxContext(actionType, uri, context, tomlConfig);
+            const config = await loadDosasmConfig(uri);
+            const ctx = await makeDosboxContext(actionType, uri, context, config);
             const runResult = await runDosbox(context, ctx, box);
             const diagResult = await Diag.messageDiagnose(runResult.message, ctx.doc, diag);
             return { message: runResult.message, error: diagResult.error, warn: diagResult.warn, result: runResult.result };
