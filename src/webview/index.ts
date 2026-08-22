@@ -29,7 +29,13 @@ window.addEventListener("message", (msg) => {
     }
     if (data.name === "switch-ci") {
         eles.ciSelect.selectedIndex = data.ciIdx;
-        eles.canvasOverlay.style.display = "";
+        if (data.stopped) {
+            // 切换到已停止的 emulator：显示遮罩，但保留最后一帧在背景
+            eles.canvasOverlay.style.display = "flex";
+            eles.canvasOverlay.innerText = "emulator stopped";
+        } else {
+            eles.canvasOverlay.style.display = "";
+        }
     }
     if (data.name === "soundPush"){
         soundPush?.onSoundPush(data.samples)
@@ -37,21 +43,20 @@ window.addEventListener("message", (msg) => {
     // 事件驱动：CI 列表变更时自动更新下拉框（替代轮询）
     if (data.name === "ci-list-updated") {
         const cis = data.value
-        for (let i = 0; i < cis.length; i++) {
-            if (i < eles.ciSelect.options.length) {
-                const optionEle = eles.ciSelect.options[i];
-                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000
-                optionEle.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
-            } else {
-                const o = document.createElement("option")
-                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000
-                o.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
-                eles.ciSelect.appendChild(o)
-            }
+        // 全量替换 options，避免数量不匹配
+        const prevSelected = eles.ciSelect.selectedIndex
+        eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
+            `<option ${idx === prevSelected ? "selected" : ""}>${ci.id} ${ci.stopped ? "stopped" : "running"}</option>`
+        ).join("")
+        // 恢复选中状态（innerHTML 重建后会丢失）
+        if (cis.length > 0) {
+            eles.ciSelect.selectedIndex = prevSelected < cis.length ? prevSelected : 0
         }
-        // 同步选中状态
-        if (eles.ciSelect.options.length > 0 && eles.ciSelect.selectedIndex < 0) {
-            eles.ciSelect.selectedIndex = 0
+        // 检查当前选中的 CI 是否已停止，更新遮罩
+        const currentCI = cis[eles.ciSelect.selectedIndex]
+        if (currentCI && currentCI.stopped) {
+            eles.canvasOverlay.style.display = "flex";
+            eles.canvasOverlay.innerText = "emulator stopped";
         }
     }
 })
@@ -75,12 +80,9 @@ if (vapi) {
     // CI 列表不再轮询，改为扩展宿主在 CI 添加/移除时主动推送 (ci-list-updated)
     // 首次加载时请求一次完整列表
     vapi.exec("get-ci-list", []).then((cis: any) => {
-        for (let i = 0; i < cis.length; i++) {
-            const o = document.createElement("option")
-            let alive = Date.now() - cis[i].lastFrameTimeMs < 2000
-            o.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
-            eles.ciSelect.appendChild(o)
-        }
+        eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
+            `<option>${ci.id} ${ci.stopped ? "stopped" : "running"}</option>`
+        ).join("")
     })
     eles.ciSelect.addEventListener("input", () => {
         eles.canvasOverlay.style.display = "";

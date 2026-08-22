@@ -31,9 +31,18 @@ function flattenFSNodes(parent: string, nodes: FsNode[]): Record<string, number>
 export class JSdosCi {
     // The mount is a key-value map, key is the disk name in the enumlator and value is the information of the folder and files
     mount: Record<string, MountFolder> = {}
-    public stdout=""
-    public onStdout:Record<string,(data:string,stdout:string)=>void>={}
+    public stdout = ""
+    public onStdout: Record<string, (data: string, stdout: string) => void> = {}
     public lastFrameTimeMs: number = 0
+    /** 是否已停止（由 onExit 事件设置） */
+    public stopped: boolean = false
+    /** 最近一帧数据，用于切换到已停止的 CI 时恢复显示 */
+    public lastFrame: {
+        rgb: Uint8Array | null
+        rgba: Uint8Array | null
+        width: number
+        height: number
+    } | null = null
     public get ci() {
         return this._ci
     }
@@ -45,10 +54,10 @@ export class JSdosCi {
         this.time = new Date();
         this.id = JSdosCi.global_id;
         JSdosCi.global_id++;
-        this.ci.events().onStdout((data)=>{
-            this.stdout+=data;
-            for(const l in this.onStdout){
-                this.onStdout[l](data,this.stdout)
+        this.ci.events().onStdout((data) => {
+            this.stdout += data;
+            for (const l in this.onStdout) {
+                this.onStdout[l](data, this.stdout)
             }
         })
     }
@@ -83,7 +92,7 @@ export class CIManager {
     private _cis: JSdosCi[] = []
     private panel: vscode.WebviewPanel | undefined
     webviewingId = 0;
-    webviewingMute=false;
+    webviewingMute = false;
 
     // 帧率节流：限制 postMessage 频率，避免 IPC 拥塞
     private lastFramePostTime = 0;
@@ -105,14 +114,13 @@ export class CIManager {
     public ciInfomation(html = false) {
         if (html) {
             const ciSelectInnerHTML = this._cis.map((o, idx) => {
-                let alive = Date.now() - o.lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
-                return `<option ${idx === this.webviewingId ? "selected" : ""}>${o.id} ${alive ? "running" : "stopped"}</option>`
+                return `<option ${idx === this.webviewingId ? "selected" : ""}>${o.id} ${o.stopped ? "stopped" : "running"}</option>`
             }).join("\n")
             return ciSelectInnerHTML
         }
         else {
             return this._cis.map(ci => {
-                return { id: ci.id, time: ci.time, lastFrameTimeMs: ci.lastFrameTimeMs }
+                return { id: ci.id, time: ci.time, lastFrameTimeMs: ci.lastFrameTimeMs, stopped: ci.stopped }
             })
         }
 
@@ -134,6 +142,13 @@ export class CIManager {
         }
         // 通知 webview CI 列表已变更
         this._pushCIList()
+        // 同步选中状态：webviewingId 可能已变化，确保 webview 高亮正确
+        const curCI = this._cis[this.webviewingId]
+        this.panel?.webview?.postMessage({
+            name: "switch-ci",
+            ciIdx: this.webviewingId,
+            stopped: curCI?.stopped ?? true
+        })
     }
 
     /** 向 webview 推送最新的 CI 列表（事件驱动，替代轮询） */
@@ -150,17 +165,34 @@ export class CIManager {
         const w = new JSdosCi(ci)
         this._cis.push(w);
 
-        // 监听模拟器退出事件，自动清理
-        const events = ci.events() as any
-        if (typeof events.onExit === 'function') {
-            events.onExit(() => {
-                const idx = this._cis.indexOf(w)
-                if (idx >= 0) this.removeCI(idx)
+
+        const events = ci.events()
+        let frameTimeout: ReturnType<typeof setTimeout> | null = null
+        const FRAME_TIMEOUT_MS = 5000 // 5s 无帧则判定为停止
+
+        const markStopped = (reason: string) => {
+            if (w.stopped) return // 防止重复触发
+            if (frameTimeout) clearTimeout(frameTimeout)
+            console.log(`[jsdos] CI #${w.id} 停止 (${reason}) 时间=${new Date().toISOString()}`)
+            w.stopped = true
+            this._pushCIList()
+            // 同步选中状态
+            this.panel?.webview?.postMessage({
+                name: "switch-ci",
+                ciIdx: this.webviewingId,
+                stopped: true
             })
         }
 
-        w.ci.events().onFrame((rgb, rgba) => {
+
+        events.onExit(() => markStopped('onExit 事件触发'))
+        events.onUnload(async () => markStopped('onUnload 事件触发'))
+
+        events.onFrame((rgb, rgba) => {
             w.lastFrameTimeMs = Date.now()
+            // 始终保存最新帧，便于切换到已停止的 CI 时恢复显示
+            w.lastFrame = { rgb, rgba, width: ci.width(), height: ci.height() }
+
             if (w.id === this.webviewingId) {
                 // 帧率节流：仅在间隔足够时发送，减少 IPC 消息
                 const now = Date.now()
@@ -177,7 +209,7 @@ export class CIManager {
                 }
             }
         })
-        w.ci.events().onSoundPush(samples => {
+        events.onSoundPush(samples => {
             if (w.id === this.webviewingId && !this.webviewingMute) {
                 this.panel?.webview?.postMessage({
                     name: "soundPush",
@@ -201,13 +233,6 @@ export class CIManager {
     }
 
     showWebview(id?: number) {
-        // 切换 CI 时暂停非活动实例，降低 CPU 占用
-        const prevId = this.webviewingId
-        if (prevId !== id && this._cis[prevId]) {
-            const prevCI = this._cis[prevId]
-            try { (prevCI.ci as any).pause?.() } catch { /* ignore */ }
-        }
-
         if (id === undefined) {
             this.webviewingId = this._cis.length - 1;
         }
@@ -217,9 +242,6 @@ export class CIManager {
 
         // 恢复当前 CI
         const curCI = this._cis[this.webviewingId]
-        if (curCI) {
-            try { (curCI.ci as any).resume?.() } catch { /* ignore */ }
-        }
 
         if (!this.panel) {
             this.panel = show_webview(this, this.context)
@@ -228,10 +250,24 @@ export class CIManager {
         if (!this.panel.visible) {
             this.panel.reveal()
         }
+
         this.panel?.webview?.postMessage({
             name: "switch-ci",
-            ciIdx: this.webviewingId
-        });
+            ciIdx: this.webviewingId,
+            stopped: this._cis[this.webviewingId].stopped
+        })
+
+        // 如果有缓存的最后一帧，立即发送以便显示
+        if (curCI?.lastFrame) {
+            this.panel?.webview?.postMessage({
+                name: "frame",
+                rgb: curCI.lastFrame.rgb,
+                date: curCI.lastFrameTimeMs,
+                width: curCI.lastFrame.width,
+                height: curCI.lastFrame.height,
+                ciIdx: this.webviewingId
+            });
+        }
     }
 }
 
@@ -309,6 +345,7 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
             switch (command) {
                 case "change-viewing-id":
                     cis.webviewingId = args[0];
+                    cis.showWebview(cis.webviewingId)
                     panel.webview.postMessage({
                         command,
                         uid: message.uid,
@@ -328,8 +365,8 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
                 case "send-ci-command":
                     const { ciId, ciCommand, ciArgs } = message;
                     let ci = cis.ci(ciId);
-                    if(ciCommand!=="asyncifyStats"){
-                        logger.channel("ci-command "+ciCommand+" "+JSON.stringify(ciArgs));
+                    if (ciCommand !== "asyncifyStats") {
+                        logger.channel("ci-command " + ciCommand + " " + JSON.stringify(ciArgs));
                     }
                     if (ci) {
                         try {

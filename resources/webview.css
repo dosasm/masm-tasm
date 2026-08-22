@@ -83,8 +83,10 @@ body {
     color: var(--vscode-descriptionForeground, #888);
     font-size: 14px;
     font-family: var(--vscode-font-family, sans-serif);
-    background: #000;
+    background: rgba(0, 0, 0, 0.6);
     z-index: 1;
+    backdrop-filter: blur(2px);
+    transition: opacity 0.2s;
 }
 
 #display {
