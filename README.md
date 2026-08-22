@@ -50,7 +50,7 @@ When editing `assembly` files, right-click in the editor panel to access the fol
 #### Project Configuration with `dosasm.jsonc`
 For multi-file projects or custom build workflows, you can place a `dosasm.jsonc` file in your project directory. When you right-click an `.asm` file to run/debug, the extension searches upward from the file's directory for `dosasm.jsonc`. If found, it uses the configuration defined there instead of the default settings.
 
-Example `dosasm.jsonc`:
+Example `dosasm.jsonc` (see [multi file project sample](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)):
 ```jsonc
 {
     "action": {

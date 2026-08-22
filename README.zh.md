@@ -42,7 +42,7 @@
 
 对于多文件项目或自定义构建流程，你可以在项目目录中放置 `dosasm.jsonc` 文件。当你右键点击 `.asm` 文件运行/调试时，扩展会从文件所在目录向上递归查找 `dosasm.jsonc`。如果找到，则使用其中定义的配置执行，而非默认设置。
 
-示例 `dosasm.jsonc`：
+示例 `dosasm.jsonc`：(参见 [multi file project sample](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)):
 ```jsonc
 {
     "action": {
