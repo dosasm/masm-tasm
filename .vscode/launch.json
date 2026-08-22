@@ -61,6 +61,7 @@
 				"${workspaceFolder}/samples"
 			],
 			"outFiles": [
+				"${workspaceFolder}/dist/**/*.js",
 				"${workspaceFolder}/dist/web/**/*.js"
 			],
 			"preLaunchTask": "npm: watch"

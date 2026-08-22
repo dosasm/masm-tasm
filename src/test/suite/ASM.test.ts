@@ -55,7 +55,7 @@ const profileId: string[] = [
 ];
 const emulator: DosEmulatorType[] = [
 	// DosEmulatorType.dosbox,
-	// DosEmulatorType.dosboxX,
+	DosEmulatorType.dosboxX,
 	DosEmulatorType.jsdos,
 ];
 

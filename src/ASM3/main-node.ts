@@ -322,7 +322,7 @@ async function runDosboxX(
     }
 
     // 构建并设置 autoexec
-    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context);
+    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context,false,true);
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 

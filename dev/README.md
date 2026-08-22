@@ -19,8 +19,9 @@ This project depends on the assembly tools packaged in [assembly-tool](https://g
 Therefore, ensure this project is in the same directory as the `assembly-tool` project.
 
 ```
-git clone https://github.com/dosasm/assembly-tool
-git clone https://github.com/dosasm/masm-tasm
+git clone --depth=1 https://github.com/dosasm/dos-assembly-codes
+git clone --depth=1 https://github.com/dosasm/assembly-tool
+git clone --depth=1 https://github.com/dosasm/masm-tasm
 cd masm-tasm
 pnpm install
 pnpm compile-dev
