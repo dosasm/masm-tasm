@@ -1,11 +1,11 @@
 /**
- * main-node.ts — Desktop 入口（支持 DOSBox + jsdos）
+ * main-node.ts — Desktop entry point (supports DOSBox + jsdos)
  *
- * 此文件是 Node.js 环境的扩展入口，支持所有四种模拟器：
- * - dosbox / dosbox-x：通过子进程调用本地 DOSBox
- * - jsdos / jsdos-x：通过 WebAssembly 在浏览器中运行
+ * This file is the Node.js environment extension entry point, supporting all four emulators:
+ * - dosbox / dosbox-x: invokes local DOSBox via child process
+ * - jsdos / jsdos-x: runs in browser via WebAssembly
  *
- * jsdos 路径复用 run.ts 的逻辑，DOSBox 路径在此文件中实现。
+ * The jsdos path reuses logic from run.ts; the DOSBox path is implemented in this file.
  */
 
 import * as vscode from "vscode";
@@ -26,7 +26,7 @@ import { CIManager } from "./jsdos";
 import { runJsdos, resolveFile, resolveBundleData, logAction, loadDosasmConfig, type DosasmConfig } from "./run";
 import { expandCommand, ExpandVars, findBundleRefs, getBundleUri } from "./dosasm-config";
 
-// ─── DOSBox 执行上下文 ────────────────────────────────────
+// ─── DOSBox Execution Context ────────────────────────────────────
 
 interface DosboxContext {
     actionType: ActionType;
@@ -40,7 +40,7 @@ interface DosboxContext {
     bundleFolderMap: Map<string, string>;
 }
 
-/** 构建 DOSBox 执行上下文 */
+/** Build a DOSBox Execution Context */
 async function makeDosboxContext(
     actionType: ActionType,
     uri: vscode.Uri,
@@ -73,16 +73,16 @@ async function makeDosboxContext(
     };
 }
 
-// ─── DOSBox bundle 解压 ──────────────────────────────────
+// ─── DOSBox Bundle Extraction ──────────────────────────────────
 
-/** 将 jsonc 引用的 bundle 解压到磁盘，返回 bundle 名 → 解压路径的映射 */
+/** Extract bundles referenced in jsonc to disk, returning a map of bundle name → extraction path */
 async function extractConfigBundles(
     cfg: DosasmConfig,
     context: vscode.ExtensionContext,
     box: DOSBox
 ): Promise<Map<string, string>> {
     const bundleMap = new Map<string, string>();
-    // 扫描所有命令段（before/run/debug/open）中的 bundle 引用
+    // Scan all command sections (before/run/debug/open) for bundle references
     const allCommands = [
         ...cfg.action.before,
         ...cfg.action.run,
@@ -101,9 +101,9 @@ async function extractConfigBundles(
     return bundleMap;
 }
 
-// ─── DOSBox autoexec 构建 ────────────────────────────────
+// ─── DOSBox Autoexec Construction ────────────────────────────────
 
-/** 获取要执行的命令列表 */
+/** Get the list of commands to execute */
 function getCommands(actionType: ActionType, cfg: DosasmConfig | null): string[] {
     if (cfg) {
         const a = cfg.action;
@@ -117,7 +117,7 @@ function getCommands(actionType: ActionType, cfg: DosasmConfig | null): string[]
             : [];
 }
 
-/** 构建 DOSBox 的 autoexec 命令数组 */
+/** Build the DOSBox autoexec command array */
 function buildDosboxAutoexec(
     actionType: ActionType,
     cfg: DosasmConfig | null,
@@ -129,13 +129,13 @@ function buildDosboxAutoexec(
     const autoexec: string[] = [];
 
     if (cfg) {
-        // jsonc 模式：由 dosasm.jsonc 控制所有挂载
+        // jsonc mode: dosasm.jsonc controls all mount points
         const fileUri = ctx.fileCopyUri ?? ctx.fileUri;
         const vars: ExpandVars = {
             file: fileUri.fsPath,
             filename: fileUri.fsPath.replace(path.parse(fileUri.fsPath).ext, ""),
             actionFolder: cfg.actionFolder.fsPath,
-            bundlePath: "", // 由 bundleFolderMap 替换
+            bundlePath: "", // Replaced by bundleFolderMap
         };
 
         function expandDosboxCmd(cmd: string): string {
@@ -156,7 +156,7 @@ function buildDosboxAutoexec(
             autoexec.push(r);
         }
     } else {
-        // 默认单文件模式
+        // Default single-file mode
         autoexec.push(
             `mount c "${ctx.assemblyToolsFolder.fsPath}"`,
             `mount d "${ctx.seperateSpaceFolder.fsPath}"`,
@@ -184,7 +184,7 @@ function buildDosboxAutoexec(
         }
     }
 
-    // DOSBox 退出行为
+    // DOSBox exit behavior
     if (actionType !== ActionType.open && insertPause) {
         switch (config.getDosboxRun()) {
             case "exit":
@@ -202,7 +202,7 @@ function buildDosboxAutoexec(
     return autoexec;
 }
 
-// ─── DOSBox 配置更新 ─────────────────────────────────────
+// ─── DOSBox Configuration Update ─────────────────────────────────────
 
 function updateDosboxConf(box: DOSBox, emulator: DosEmulatorType): void {
     const dosboxConf = config.getDosboxConfig(emulator);
@@ -214,16 +214,16 @@ function updateDosboxConf(box: DOSBox, emulator: DosEmulatorType): void {
     }
 }
 
-// ─── DOSBox 执行 ─────────────────────────────────────────
+// ─── DOSBox Execution ─────────────────────────────────────────
 
 /**
- * 在 DOSBox 中执行汇编程序。
+ * Execute an assembly program in DOSBox.
  *
- * 流程：
- * 1. 复制文件到隔离目录
- * 2. 解压 bundle（如有 toml 引用）
- * 3. 构建 autoexec 命令
- * 4. 启动 DOSBox 子进程，监视日志文件
+ * Flow:
+ * 1. Copy files to an isolated directory
+ * 2. Extract bundles (if referenced in jsonc)
+ * 3. Build autoexec commands
+ * 4. Start the DOSBox child process and monitor the log file
  */
 async function runDosbox(
     context: vscode.ExtensionContext,
@@ -232,35 +232,35 @@ async function runDosbox(
 ): Promise<{ message: string; result: string }> {
     logAction(ctx.actionType, ctx.fileUri.fsPath);
 
-    // 准备隔离目录
+    // Prepare the isolated directory
     await emptyFolder(ctx.seperateSpaceFolder);
     if (ctx.fileCopyUri) {
         await vscode.workspace.fs.copy(ctx.fileUri, ctx.fileCopyUri);
     }
 
-    // 解压 bundle（jsonc 模式）
+    // Extract bundles (jsonc mode)
     if (ctx.config && ctx.bundleFolderMap.size === 0) {
         ctx.bundleFolderMap = await extractConfigBundles(ctx.config, context, box);
     }
 
-    // 解压默认 bundle（单文件模式）
+    // Extract default bundle (single-file mode)
     if (!ctx.config && !nodefs.existsSync(ctx.assemblyToolsFolder.fsPath)) {
         const bundleData = await resolveBundleData(context, null);
         await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
     }
 
-    // 构建并设置 autoexec
+    // Build and set autoexec
     const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context,true,true);
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
-    // 启动 DOSBox 并监视日志
+    // Start DOSBox and monitor the log file
     const logUri = Utils.joinPath(ctx.assemblyToolsFolder, ctx.logFileName);
     const [hook, promise] = Diag.messageCollector();
     let useNodefsWatch = true;
 
     if (ctx.actionType !== ActionType.open) {
-        // 检查 autoexec 中是否有 exit 命令
+        // Check if the autoexec contains an exit command
         if (autoexec.includes("exit")) useNodefsWatch = false;
     }
 
@@ -289,13 +289,13 @@ async function runDosbox(
 
 
 /**
- * 在 DOSBox 中执行汇编程序。
+ * Execute an assembly program in DOSBox.
  *
- * 流程：
- * 1. 复制文件到隔离目录
- * 2. 解压 bundle（如有 toml 引用）
- * 3. 构建 autoexec 命令
- * 4. 启动 DOSBox 子进程，监视日志文件
+ * Flow:
+ * 1. Copy files to an isolated directory
+ * 2. Extract bundles (if referenced in jsonc)
+ * 3. Build autoexec commands
+ * 4. Start the DOSBox child process and monitor the log file
  */
 async function runDosboxX(
     context: vscode.ExtensionContext,
@@ -304,35 +304,35 @@ async function runDosboxX(
 ): Promise<{ message: string; result: string }> {
     logAction(ctx.actionType, ctx.fileUri.fsPath);
 
-    // 准备隔离目录
+    // Prepare the isolated directory
     await emptyFolder(ctx.seperateSpaceFolder);
     if (ctx.fileCopyUri) {
         await vscode.workspace.fs.copy(ctx.fileUri, ctx.fileCopyUri);
     }
 
-    // 解压 bundle（jsonc 模式）
+    // Extract bundles (jsonc mode)
     if (ctx.config && ctx.bundleFolderMap.size === 0) {
         ctx.bundleFolderMap = await extractConfigBundles(ctx.config, context, box);
     }
 
-    // 解压默认 bundle（单文件模式）
+    // Extract default bundle (single-file mode)
     if (!ctx.config && !nodefs.existsSync(ctx.assemblyToolsFolder.fsPath)) {
         const bundleData = await resolveBundleData(context, null);
         await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
     }
 
-    // 构建并设置 autoexec
+    // Build and set autoexec
     const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context,false,true);
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
-    // 启动 DOSBox 并监视日志
+    // Start DOSBox and monitor the log file
     const logUri = Utils.joinPath(ctx.assemblyToolsFolder, ctx.logFileName);
     const [lineHook, diagPromise] = Diag.messageCollector();
     let useNodefsWatch = true;
 
     if (ctx.actionType !== ActionType.open) {
-        // 检查 autoexec 中是否有 exit 命令
+        // Check if the autoexec contains an exit command
         if (autoexec.includes("exit")) useNodefsWatch = false;
     }
 
@@ -367,12 +367,12 @@ async function runDosboxX(
 
 
 
-// ─── 入口 ─────────────────────────────────────────────────
+// ─── Entry Point ─────────────────────────────────────────────────
 
 /**
- * 扩展激活函数（Desktop 版本）。
+ * Extension activation function (Desktop version).
  *
- * 注册三个命令，根据配置的 emulator 类型分发到 DOSBox 或 jsdos。
+ * Registers three commands, dispatching to DOSBox or jsdos based on the configured emulator type.
  */
 export async function activate(context: vscode.ExtensionContext) {
     statusBar.activate(context);
@@ -384,7 +384,7 @@ export async function activate(context: vscode.ExtensionContext) {
     async function handleAction(actionType: ActionType, uri: vscode.Uri) {
         const emulator = config.getEmulator();
 
-        // DOSBox 路径
+        // DOSBox path
         if (emulator === DosEmulatorType.dosbox) {
             const box = dosbox_api.dosbox;
             const config = await loadDosasmConfig(uri);
@@ -394,7 +394,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return { message: runResult.message, error: diagResult.error, warn: diagResult.warn, result: runResult.result };
         }
 
-        // DOSBox 路径
+        // DOSBox path
         if (emulator === DosEmulatorType.dosboxX) {
             const box = dosbox_api.dosboxX;
             const config = await loadDosasmConfig(uri);
@@ -404,7 +404,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return { message: runResult.message, error: diagResult.error, warn: diagResult.warn, result: runResult.result };
         }
 
-        // jsdos 路径
+        // jsdos path
         if (emulator === DosEmulatorType.jsdos || emulator === DosEmulatorType.jsdosX) {
             const useX = emulator === DosEmulatorType.jsdosX;
             return runJsdos(context, actionType, uri, cis, useX, jsdos_api, diag);

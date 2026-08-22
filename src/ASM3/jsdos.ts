@@ -34,9 +34,9 @@ export class JSdosCi {
     public stdout = ""
     public onStdout: Record<string, (data: string, stdout: string) => void> = {}
     public lastFrameTimeMs: number = 0
-    /** 是否已停止（由 onExit 事件设置） */
+    /** Whether the CI has stopped (set by the onExit event) */
     public stopped: boolean = false
-    /** 最近一帧数据，用于切换到已停止的 CI 时恢复显示 */
+    /** Most recent frame data, used to restore display when switching to a stopped CI */
     public lastFrame: {
         rgb: Uint8Array | null
         rgba: Uint8Array | null
@@ -94,7 +94,7 @@ export class CIManager {
     webviewingId = 0;
     webviewingMute = false;
 
-    // 帧率节流：限制 postMessage 频率，避免 IPC 拥塞
+    // Frame rate throttling: limits postMessage frequency to avoid IPC congestion
     private lastFramePostTime = 0;
     private readonly MAX_FRAME_INTERVAL = 33; // ~30fps
 
@@ -126,23 +126,23 @@ export class CIManager {
 
     }
 
-    /** 清理指定 CI 及其相关资源 */
+    /** Clean up a specified CI and its associated resources */
     private removeCI(idx: number) {
         const w = this._cis[idx]
         if (!w) return
-        // 清理 onStdout 回调，防止内存泄漏
+        // Clean up onStdout callbacks to prevent memory leaks
         delete w.onStdout["ASM3/run"]
-        // 从数组中移除
+        // Remove from array
         this._cis.splice(idx, 1)
-        // 调整 webviewingId：确保不越界
+        // Adjust webviewingId: ensure it stays in bounds
         if (this._cis.length === 0) {
             this.webviewingId = 0
         } else if (this.webviewingId >= this._cis.length) {
             this.webviewingId = this._cis.length - 1
         }
-        // 通知 webview CI 列表已变更
+        // Notify webview that the CI list has changed
         this._pushCIList()
-        // 同步选中状态：webviewingId 可能已变化，确保 webview 高亮正确
+        // Sync selection state: webviewingId may have changed, ensuring the webview highlight is correct
         const curCI = this._cis[this.webviewingId]
         this.panel?.webview?.postMessage({
             name: "switch-ci",
@@ -151,7 +151,7 @@ export class CIManager {
         })
     }
 
-    /** 向 webview 推送最新的 CI 列表（事件驱动，替代轮询） */
+    /** Push the latest CI list to the webview (event-driven, replaces polling) */
     private _pushCIList() {
         if (this.panel) {
             this.panel.webview.postMessage({
@@ -168,15 +168,15 @@ export class CIManager {
 
         const events = ci.events()
         let frameTimeout: ReturnType<typeof setTimeout> | null = null
-        const FRAME_TIMEOUT_MS = 5000 // 5s 无帧则判定为停止
+        const FRAME_TIMEOUT_MS = 5000 // 5s without a frame => consider it stopped
 
         const markStopped = (reason: string) => {
-            if (w.stopped) return // 防止重复触发
+            if (w.stopped) return // Prevent duplicate triggers
             if (frameTimeout) clearTimeout(frameTimeout)
-            console.log(`[jsdos] CI #${w.id} 停止 (${reason}) 时间=${new Date().toISOString()}`)
+            console.log(`[jsdos] CI #${w.id} stopped (${reason}) time=${new Date().toISOString()}`)
             w.stopped = true
             this._pushCIList()
-            // 同步选中状态
+            // Sync selection state
             this.panel?.webview?.postMessage({
                 name: "switch-ci",
                 ciIdx: this.webviewingId,
@@ -185,16 +185,16 @@ export class CIManager {
         }
 
 
-        events.onExit(() => markStopped('onExit 事件触发'))
-        events.onUnload(async () => markStopped('onUnload 事件触发'))
+        events.onExit(() => markStopped('onExit event fired'))
+        events.onUnload(async () => markStopped('onUnload event fired'))
 
         events.onFrame((rgb, rgba) => {
             w.lastFrameTimeMs = Date.now()
-            // 始终保存最新帧，便于切换到已停止的 CI 时恢复显示
+            // Always save the latest frame, for restoring display when switching to a stopped CI
             w.lastFrame = { rgb, rgba, width: ci.width(), height: ci.height() }
 
             if (w.id === this.webviewingId) {
-                // 帧率节流：仅在间隔足够时发送，减少 IPC 消息
+                // Frame rate throttling: only send when the interval is sufficient, reducing IPC messages
                 const now = Date.now()
                 if (now - this.lastFramePostTime >= this.MAX_FRAME_INTERVAL) {
                     this.lastFramePostTime = now
@@ -221,7 +221,7 @@ export class CIManager {
             }
         })
 
-        // 通知 webview CI 列表已变更
+        // Notify webview that the CI list has changed
         this._pushCIList()
     }
 
@@ -240,7 +240,7 @@ export class CIManager {
             this.webviewingId = id;
         }
 
-        // 恢复当前 CI
+        // Restore the current CI
         const curCI = this._cis[this.webviewingId]
 
         if (!this.panel) {
@@ -257,7 +257,7 @@ export class CIManager {
             stopped: this._cis[this.webviewingId].stopped
         })
 
-        // 如果有缓存的最后一帧，立即发送以便显示
+        // If there is a cached last frame, send it immediately for display
         if (curCI?.lastFrame) {
             this.panel?.webview?.postMessage({
                 name: "frame",

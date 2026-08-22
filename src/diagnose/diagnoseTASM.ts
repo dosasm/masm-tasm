@@ -31,12 +31,12 @@ export function tasmDiagnose(TASMmsg: string, doc: TextDocument, collection: Dia
             let VSCdiag: Diagnostic | undefined;
             if (RegExec) {
                 diag.severity = severity(RegExec[1]);
-                diag.line = parseInt(RegExec[3]);//2错误所在行
+                diag.line = parseInt(RegExec[3]);//2: error line number
                 diag.macro.local = true;
-                diag.macro.name = RegExec[4];//3宏名
-                diag.macro.line = parseInt(RegExec[5]);//4错误所在宏的位置
+                diag.macro.name = RegExec[4];//3: macro name
+                diag.macro.line = parseInt(RegExec[5]);//4: error position within the macro
                 diag.macro.uri = doc.uri;
-                diag.message = RegExec[6];//5错误名称
+                diag.message = RegExec[6];//5: error message
                 VSCdiag = diag.toVscDiagnostic(doc);
             }
             if (VSCdiag === undefined) {

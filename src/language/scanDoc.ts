@@ -39,14 +39,14 @@ export class DocInfo {
 
 /** convert the symboltype from assembly language to VSCode
  * 
- * | assembly symbol | vscode symbol | 汇编关键字 | vscode关键字 |
+ * | assembly symbol | vscode symbol | assembly keyword | vscode keyword |
  * | --------------- | ------------- | ---------- | ------------ |
- * | macro           | Module        | 宏         | 模块         |
- * | segment         | Class         | 段         | 类           |
- * | procedure       | Function      | 子程序     | 函数         |
- * | struct          | Struct        | 结构体     | 结构体       |
- * | label           | Key           | 标号       | 键           |
- * | variable        | Variable      | 变量       | 变量         |
+ * | macro           | Module        | macro       | module       |
+ * | segment         | Class         | segment     | class        |
+ * | procedure       | Function      | procedure   | function     |
+ * | struct          | Struct        | struct      | struct       |
+ * | label           | Key           | label       | key          |
+ * | variable        | Variable      | variable    | variable     |
  */
 function SymbolVSCfy(asmType: KeywordType): vscode.SymbolKind {
     switch (asmType) {

@@ -4,7 +4,7 @@ import { DosEmulatorType } from '../../ASM3/types';
 import assert = require("assert");
 import { AsmResult } from "../../ASM3/main";
 
-/** 简单延时函数，用于在测试之间引入间隔 */
+/** Simple delay function used to introduce gaps between tests */
 function sleep(ms: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -81,7 +81,7 @@ export const singleFileTestSuite = suite("single file mode test", function () {
 		suite(`test in ${emu}`, async function () {
 			this.beforeEach(async function () {
 				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
-				// 每个测试之间间隔 0.5s，避免连续执行时资源竞争或日志交错
+				// 0.5s gap between each test to avoid resource contention or log interleaving during consecutive execution
 				await sleep(500);
 			});
 			for (const [file, shouldErr] of filelist) {
@@ -101,7 +101,7 @@ export const jsoncModeTestSuite = suite("dosasm.jsonc mode test", function () {
 		suite(`test in ${emu}`, async function () {
 			this.beforeEach(async function () {
 				await vscode.commands.executeCommand('workbench.action.closeAllEditors');
-				// 每个测试之间间隔 0.5s，避免连续执行时资源竞争或日志交错
+				// 0.5s gap between each test to avoid resource contention or log interleaving during consecutive execution
 				await sleep(500);
 			});
 			// multi/2.asm has a dosasm.jsonc in the same directory

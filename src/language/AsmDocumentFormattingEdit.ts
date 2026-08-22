@@ -325,7 +325,7 @@ function formatLine(
 
             if (line.comment) {
                 if (config.alignTrailingComment) {
-                    //后补充空格
+                    //Add trailing spaces
                     str += space(size.name + 1 + size.operator + 1 + size.operand - str.length) + indentStr(config, config.tabSize * 2);
                 }
                 else {
@@ -363,7 +363,7 @@ function formatLabelLine(
     }
 
     if ((alignOpt || isVariable) && (line.operator || line.operand)) {
-        //标签变量名前补充空格
+        //Add space before label/variable names
         let indent = size.name - nameLength;
         if (!line.name) {
             indent++;
@@ -371,7 +371,7 @@ function formatLabelLine(
         str += line.name ? space(indent) : indentStr(config, indent);
     }
     str += convertCase(line.operator ?? '', config.instructionCase);
-    if (line.operand || line.comment) { //操作码后补充空格
+    if (line.operand || line.comment) { // Add space after opcode
         if (config.alignOperand) {
             str += space(size.operator - operatorLength);
         }
@@ -388,7 +388,7 @@ function formatLabelLine(
         }
         str += operand;
     }
-    if (line.comment) { //操作数后补充空格
+    if (line.comment) { // Add space after operands
         if (config.alignTrailingComment) {
             str += `${space(size.operand - operandLength)}${indentStr(config)}`;
         }

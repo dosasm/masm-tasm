@@ -49,7 +49,7 @@ export class AssemblerMessageDiagnose {
     /**
      * process the output of the assembler of MASM or TASM
      * Note: currently only support assembly in a single file
-     * @returns 0 represet hasError，1 represents hasWarn，2 represents no Warn or Error message collected
+     * @returns 0 represents hasError，1 represents hasWarn，2 represents no Warn or Error message collected
      * @param AsmMsg the output of the assembler
      * @param doc the document of source code
      * @param ASM MASM or TASM

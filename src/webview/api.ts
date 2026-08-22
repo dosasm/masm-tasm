@@ -7,14 +7,14 @@ declare const acquireVsCodeApi:
   | undefined
   | (() => Api);
 
-// 核心类型：把任意类型 T 包装成 Promise<T>
+// Core type: wraps any type T in a Promise<T>
 type Promisify<T> = T extends Promise<any> ? T : Promise<T>;
 
-// 核心映射类型：遍历接口的所有属性，将方法的返回值转为 Promise
+// Core mapped type: iterates over all properties of an interface, converting method return types to Promise
 type PromisifyAllMethods<T> = {
   [K in keyof T]: T[K] extends (...args: infer A) => infer R
-    ? (...args: A) => Promisify<R> // 方法：返回值转 Promise
-    : T[K]; // 非方法属性：保持原类型
+    ? (...args: A) => Promisify<R> // Method: convert return type to Promise
+    : T[K]; // Non-method properties: keep original type
 };
 
 export class VscodeApi implements PromisifyAllMethods<CommandInterface>{

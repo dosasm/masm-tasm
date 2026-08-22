@@ -30,7 +30,7 @@ window.addEventListener("message", (msg) => {
     if (data.name === "switch-ci") {
         eles.ciSelect.selectedIndex = data.ciIdx;
         if (data.stopped) {
-            // 切换到已停止的 emulator：显示遮罩，但保留最后一帧在背景
+            // Switching to a stopped emulator: show overlay while keeping the last frame in the background
             eles.canvasOverlay.style.display = "flex";
             eles.canvasOverlay.innerText = "emulator stopped";
         } else {
@@ -40,19 +40,19 @@ window.addEventListener("message", (msg) => {
     if (data.name === "soundPush"){
         soundPush?.onSoundPush(data.samples)
     }
-    // 事件驱动：CI 列表变更时自动更新下拉框（替代轮询）
+    // Event-driven: automatically update the CI dropdown when the CI list changes (replaces polling)
     if (data.name === "ci-list-updated") {
         const cis = data.value
-        // 全量替换 options，避免数量不匹配
+        // Full option replacement to avoid count mismatches
         const prevSelected = eles.ciSelect.selectedIndex
         eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
             `<option ${idx === prevSelected ? "selected" : ""}>${ci.id} ${ci.stopped ? "stopped" : "running"}</option>`
         ).join("")
-        // 恢复选中状态（innerHTML 重建后会丢失）
+        // Restore selection state (lost after innerHTML rebuild)
         if (cis.length > 0) {
             eles.ciSelect.selectedIndex = prevSelected < cis.length ? prevSelected : 0
         }
-        // 检查当前选中的 CI 是否已停止，更新遮罩
+        // Check if the currently selected CI has stopped and update the overlay
         const currentCI = cis[eles.ciSelect.selectedIndex]
         if (currentCI && currentCI.stopped) {
             eles.canvasOverlay.style.display = "flex";
@@ -77,8 +77,8 @@ if (vapi) {
     bindMouse(eles.canvas,vapi);
     
     // init the ci select
-    // CI 列表不再轮询，改为扩展宿主在 CI 添加/移除时主动推送 (ci-list-updated)
-    // 首次加载时请求一次完整列表
+    // CI list is no longer polled; the extension host now actively pushes updates when CIs are added/removed (ci-list-updated)
+    // Request the full list once on initial load
     vapi.exec("get-ci-list", []).then((cis: any) => {
         eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
             `<option>${ci.id} ${ci.stopped ? "stopped" : "running"}</option>`

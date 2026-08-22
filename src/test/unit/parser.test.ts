@@ -98,9 +98,9 @@ suite('Parser: sample files', () => {
         });
     });
 
-    // ─── samples/3中文路径hasError.asm ────────────────────────────────
+    // ─── samples/3中文路径hasError.asm (Chinese path test) ────────────────────────────────
 
-    suite('samples/3中文路径hasError.asm — same structure, LOP instead of LOOP', () => {
+    suite('samples with Chinese path — same structure, LOP instead of LOOP', () => {
         let ast: ProgramNode;
 
         setup(() => {

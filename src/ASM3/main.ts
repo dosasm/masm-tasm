@@ -1,8 +1,8 @@
 /**
- * main.ts — Web 入口（仅支持 jsdos/jsdos-x）
+ * main.ts — Web Entry Point (supports jsdos/jsdos-x only)
  *
- * 此文件是浏览器环境的扩展入口，只支持 jsdos 模拟器。
- * 桌面环境请使用 main-node.ts。
+ * This file is the browser environment extension entry point, supporting only the jsdos emulator.
+ * Use main-node.ts for desktop environments.
  */
 
 import * as vscode from "vscode";

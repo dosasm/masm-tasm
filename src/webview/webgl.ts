@@ -52,7 +52,7 @@ export function webGl(canvas: HTMLCanvasElement,
     gl.activeTexture(gl.TEXTURE0);
     gl.uniform1i(uSampler, 0);
 
-    // 像素存储优化：避免 CPU 端翻转 + 无对齐约束
+    // Pixel storage optimization: avoid CPU-side flipping + no alignment constraints
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
 

@@ -26,7 +26,7 @@ function getrefer(docinfo: DocInfo, word: string, doc: vscode.TextDocument): vsc
                     case linetype.endm: skip = false; break;
                     case linetype.label:
                         if (skip === false) {
-                            //TODO：match the symbol more exactly
+                            //TODO: match the symbol more exactly
                             if (def?.type === KeywordType.Variable && item.operand?.match(new RegExp("\\b" + word + "\\b"))) {
                                 const start = item.str.indexOf(word);
                                 r = new vscode.Range(index, start, index, start + word.length);

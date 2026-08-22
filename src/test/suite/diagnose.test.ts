@@ -64,8 +64,8 @@ suite('Diagnose test', function () {
     });
 
     test('TASM Macro error message', async function () {
-        // 文档中需要包含宏定义，否则 lineMacro2DOC 无法找到宏的位置，
-        // 导致 relatedInformation 为空（测试期望宏错误时应携带 relatedInformation）
+        // The document must contain macro definitions, otherwise lineMacro2DOC cannot find the macro location,
+        // resulting in empty relatedInformation (the test expects macro errors to carry relatedInformation)
         const doc = await vscode.workspace.openTextDocument({
             content: 'myMacro macro\n' + '\n'.repeat(19),
             language: 'assembly'
@@ -200,16 +200,16 @@ suite('Diagnose test', function () {
 
         diag.process(message, doc, Assembler.TASM);
 
-        // 清理后不应该抛出错误
+        // Should not throw errors after cleanup
         assert.doesNotThrow(() => diag.clean());
 
-        // 清理指定类型的诊断
+        // Clean up diagnostics of a specified type
         assert.doesNotThrow(() => diag.clean(Assembler.TASM));
         assert.doesNotThrow(() => diag.clean(Assembler.MASM));
     });
 
     test('getInternetlink', function () {
-        // 测试已知的错误代码
+        // Test known error codes
         assert.strictEqual(
             getInternetlink('A2008'),
             'https://docs.microsoft.com/en-us/cpp/assembler/masm/ml-nonfatal-error-a2008'
@@ -223,7 +223,7 @@ suite('Diagnose test', function () {
             'https://docs.microsoft.com/en-us/cpp/assembler/masm/ml-warning-a4004'
         );
 
-        // 测试未知的错误代码
+        // Test unknown error codes
         assert.strictEqual(getInternetlink('A9999'), undefined);
         assert.strictEqual(getInternetlink(''), undefined);
     });

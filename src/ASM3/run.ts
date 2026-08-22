@@ -1,13 +1,13 @@
 /**
- * run.ts — jsdos 执行模块（Web 和 Desktop 共享）
+ * run.ts — jsdos execution module (shared by Web and Desktop)
  *
- * 职责：
- * - 准备执行上下文（打开文件、查找 dosasm.jsonc、加载 bundle）
- * - 构建 autoexec 命令（统一的模板展开）
- * - 在 jsdos 中执行汇编程序
- * - 收集输出并生成诊断信息
+ * Responsibilities:
+ * - Prepare execution context (open files, find dosasm.jsonc, load bundles)
+ * - Build autoexec commands (unified template expansion)
+ * - Execute assembly programs in jsdos
+ * - Collect output and generate diagnostic information
  *
- * 注意：此模块不依赖 DOSBox（child_process），可在 Web 环境中使用。
+ * Note: This module does not depend on DOSBox (child_process) and can be used in Web environments.
  */
 
 import * as vscode from "vscode";
@@ -28,7 +28,7 @@ import {
     findBundleRefs, getBundleUri, loadDosasmConfig,
 } from "./dosasm-config";
 
-// ─── 类型 ────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────
 
 export interface AsmResult {
     message: string;
@@ -37,11 +37,11 @@ export interface AsmResult {
     [id: string]: unknown;
 }
 
-// ─── 共享工具函数 ─────────────────────────────────────────
+// ─── Shared Utility Functions ─────────────────────────────────────────
 
 /**
- * 解析 URI（回退到活动编辑器），打开文档，按需保存。
- * 返回 undefined 表示找不到文件。
+ * Resolve URI (fall back to active editor), open document, save if needed.
+ * Returns undefined when no file is found.
  */
 export async function resolveFile(
     uri: vscode.Uri
@@ -61,13 +61,13 @@ export async function resolveFile(
     return { uri: _uri, doc };
 }
 
-/** 根据 jsonc 配置或默认配置加载 bundle 数据 */
+/** Load bundle data based on jsonc config or default config */
 export async function resolveBundleData(
     context: vscode.ExtensionContext,
     cfg: DosasmConfig | null
 ): Promise<Uint8Array> {
     if (cfg) {
-        // 扫描所有命令段中的 bundle 引用
+        // Scan all command sections for bundle references
         const allCommands = [
             ...cfg.action.before,
             ...cfg.action.run,
@@ -80,7 +80,7 @@ export async function resolveBundleData(
             return vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, refs[0]));
         }
     }
-    // 默认 bundle
+    // Default bundle
     const bundlePath = vscode.Uri.joinPath(
         context.extensionUri,
         config.getBaseBundle().replace("<built-in>/", "resources/")
@@ -88,7 +88,7 @@ export async function resolveBundleData(
     return vscode.workspace.fs.readFile(bundlePath);
 }
 
-/** 记录正在执行的动作 */
+/** Log the action being executed */
 export function logAction(act: ActionType, file: string): void {
     const asmType = config.getAssembler();
     const emulator = config.getEmulator();
@@ -101,10 +101,10 @@ export function logAction(act: ActionType, file: string): void {
 }
 
 /**
- * 将目录及其子目录下的所有文件添加到 jszip 中。
- * @param jszip - JSZip 实例
- * @param dirUri - 宿主机目录 URI
- * @param zipPrefix - zip 中的前缀路径（如 "action/"）
+ * Add all files in a directory and its subdirectories to jszip.
+ * @param jszip - JSZip instance
+ * @param dirUri - Host directory URI
+ * @param zipPrefix - Prefix path in the zip (e.g. "action/")
  */
 async function addFolderToJszip(jszip: typeof Jszip.default, dirUri: vscode.Uri, zipPrefix: string): Promise<void> {
     const entries = await vscode.workspace.fs.readDirectory(dirUri);
@@ -121,15 +121,15 @@ async function addFolderToJszip(jszip: typeof Jszip.default, dirUri: vscode.Uri,
 }
 
 /**
- * 加载 dosasm.jsonc 配置（重新导出，方便外部使用）。
+ * Load dosasm.jsonc configuration (re-exported for external use).
  */
 export { loadDosasmConfig };
 export type { DosasmConfig };
 
-// ─── jsdos 执行 ──────────────────────────────────────────
+// ─── jsdos Execution ──────────────────────────────────────────
 
 /**
- * 获取要执行的命令列表（根据 actionType 选择 run/debug/open）。
+ * Get the list of commands to execute (selects run/debug/open based on actionType).
  */
 function getCommands(
     actionType: ActionType,
@@ -148,11 +148,11 @@ function getCommands(
 }
 
 /**
- * 构建 jsdos 的 autoexec 命令数组。
+ * Build the jsdos autoexec command array.
  *
- * @param actionType - 执行类型（open/run/debug）
- * @param cfg - dosasm.jsonc 配置（null 表示使用默认配置）
- * @param fileInJsdos - 文件在 jsdos 虚拟文件系统中的路径（如 "D:\\test.ASM"）
+ * @param actionType - Execution type (open/run/debug)
+ * @param cfg - dosasm.jsonc configuration (null means use default config)
+ * @param fileInJsdos - Path of the file in the jsdos virtual filesystem (e.g. "D:\\test.ASM")
  */
 function buildJsdosAutoexec(
     actionType: ActionType,
@@ -160,7 +160,7 @@ function buildJsdosAutoexec(
     fileInJsdos: string
 ): string[] {
     const autoexec: string[] = [];
-    // jsdos 中 actionFolder 映射到虚拟文件系统中的 ./action 目录
+    // In jsdos, actionFolder maps to the ./action directory in the virtual filesystem
     const actionFolder = cfg ? "./action" : "./code";
     const vars: ExpandVars = {
         file: fileInJsdos,
@@ -170,16 +170,16 @@ function buildJsdosAutoexec(
     };
 
     if (cfg) {
-        // jsonc 模式：由 dosasm.jsonc 控制所有挂载
+        // jsonc mode: dosasm.jsonc controls all mount points
         autoexec.push(...expandCommands(cfg.action.before, vars));
     } else {
-        // 默认模式：自动挂载
+        // Default mode: automatic mounting
         autoexec.push("mount c .", "mount d ./code", "d:");
         const before = config.getAction().before;
         if (before) autoexec.push(...before);
     }
 
-    // 添加 run/debug/open 命令
+    // Add run/debug/open commands
     const commands = getCommands(actionType, cfg);
     if (commands.length > 0) {
         autoexec.push(...expandCommands(commands, vars));
@@ -189,14 +189,14 @@ function buildJsdosAutoexec(
 }
 
 /**
- * 在 jsdos 中执行汇编程序。
+ * Execute assembly programs in jsdos。
  *
- * 流程：
- * 1. 加载 bundle → JSZip
- * 2. 将当前编辑器文件注入到 code/test.<ext>
- * 3. 构建 autoexec 命令
- * 4. 启动模拟器
- * 5. 收集输出用于诊断
+ * Flow:
+ * 1. Load bundle → JSZip
+ * 2. Inject the current editor file into code/test.<ext>
+ * 3. Build autoexec commands
+ * 4. Start the emulator
+ * 5. Collect output for diagnostics
  */
 export async function runJsdos(
     context: vscode.ExtensionContext,
@@ -212,12 +212,12 @@ export async function runJsdos(
     await vscode.window.showTextDocument(resolved.doc, { preview: false });
     logAction(actionType, resolved.uri.fsPath);
 
-    // 加载配置和 bundle
+    // Load configuration and bundle
     const cfg = await loadDosasmConfig(resolved.uri);
     const bundleData = await resolveBundleData(context, cfg);
     const jszip = await Jszip.loadAsync(bundleData);
 
-    // 将当前文件注入 jsdos bundle
+    // Inject the current file into the jsdos bundle
     const copyFileAs = cfg?.action.copyFileAs;
     let fileInJsdos = "";
     const doc = vscode.window.activeTextEditor?.document;
@@ -226,27 +226,27 @@ export async function runJsdos(
         jszip.file("code/" + targetPath, doc.getText());
         fileInJsdos = "D:\\" + targetPath;
     } else if (doc) {
-        // copyFileAs 为 null 时不注入文件，使用原始文件路径
+        // When copyFileAs is null, do not inject the file; use the original file path
         fileInJsdos = "D:\\" + path.basename(doc.uri.fsPath);
     }
 
-    // 将 action 目录（dosasm.jsonc 所在目录）添加到 jsdos bundle
+    // Add the action directory (containing dosasm.jsonc) to the jsdos bundle
     if (cfg) {
         await addFolderToJszip(jszip, cfg.actionFolder, "action/");
     }
 
-    // 构建并设置 autoexec
+    // Build and set autoexec
     const autoexec = buildJsdosAutoexec(actionType, cfg, fileInJsdos);
     jsdos_api.updateAutoexec(autoexec);
     jsdos_api.jszip = jszip;
 
-    // 启动模拟器
+    // Start the emulator
     const ci = await jsdos_api.runInHost(useX);
     cis.addCI(ci);
     cis.last.terminal();
     cis.showWebview();
 
-    // 收集输出用于诊断
+    // Collect output for diagnostics
     if (actionType === ActionType.run || actionType === ActionType.debug) {
         const [hook, promise] = Diag.messageCollector();
         cis.last.onStdout["ASM3/run"] = (data: string) => hook(data);
