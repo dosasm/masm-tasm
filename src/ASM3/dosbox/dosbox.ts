@@ -43,14 +43,15 @@ export class DOSBox {
     await fs.writeFile(this.dstConfPath, text);
     const cmd = this.command;
     const parameter = Array.isArray(params)
-      ? params.join(" ")
+      ? params.join(" ")+" "+`-conf "${this.dstConfPath.fsPath}"`
       : `-conf "${this.dstConfPath.fsPath}"`;
     const command = cmd.includes("<params>")
       ? cmd.replace("<params>", parameter)
       : cmd + " " + parameter;
     console.log(command);
     return new Promise<DosboxResult>((resolve, reject) => {
-      const newPath=this.paths.join(";")+";"+process.env["PATH"]
+      const envSeparator = process.platform === "win32" ? ";" : ":";
+      const newPath=this.paths.join(envSeparator)+envSeparator+process.env["PATH"]
       const env={...process.env,"PATH":newPath}
       
       const p = cp.exec(command, { cwd: this.cwd,env }, (error, stdout, stderr) => {
@@ -81,3 +82,4 @@ export class DOSBox {
     }
   }
 }
+

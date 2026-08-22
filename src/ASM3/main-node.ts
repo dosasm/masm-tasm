@@ -11,6 +11,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as nodefs from "fs";
+import * as cp from "child_process";
 import { Utils } from "vscode-uri";
 
 import { ActionType, DosEmulatorType } from "./types";
@@ -121,7 +122,9 @@ function buildDosboxAutoexec(
     actionType: ActionType,
     cfg: DosasmConfig | null,
     ctx: DosboxContext,
-    context: vscode.ExtensionContext
+    context: vscode.ExtensionContext,
+    insertLOGFLE?: boolean,
+    insertPause?: boolean
 ): string[] {
     const autoexec: string[] = [];
 
@@ -149,7 +152,7 @@ function buildDosboxAutoexec(
         const commands = getCommands(actionType, cfg);
         for (const cmd of commands) {
             let r = expandDosboxCmd(cmd);
-            if (!cmd.startsWith(">")) r += " >>C:\\" + ctx.logFileName;
+            if (!cmd.startsWith(">") && insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
             autoexec.push(r);
         }
     } else {
@@ -176,13 +179,13 @@ function buildDosboxAutoexec(
         const commands = getCommands(actionType, null);
         for (const cmd of commands) {
             let r = expandCommand(cmd, vars);
-            if (!cmd.startsWith(">")) r += " >>C:\\" + ctx.logFileName;
+            if (!cmd.startsWith(">")&& insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
             autoexec.push(r);
         }
     }
 
     // DOSBox 退出行为
-    if (actionType !== ActionType.open) {
+    if (actionType !== ActionType.open && insertPause) {
         switch (config.getDosboxRun()) {
             case "exit":
                 autoexec.push("exit");
@@ -247,7 +250,7 @@ async function runDosbox(
     }
 
     // 构建并设置 autoexec
-    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context);
+    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context,true,true);
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
@@ -284,6 +287,86 @@ async function runDosbox(
     return { message, result };
 }
 
+
+/**
+ * 在 DOSBox 中执行汇编程序。
+ *
+ * 流程：
+ * 1. 复制文件到隔离目录
+ * 2. 解压 bundle（如有 toml 引用）
+ * 3. 构建 autoexec 命令
+ * 4. 启动 DOSBox 子进程，监视日志文件
+ */
+async function runDosboxX(
+    context: vscode.ExtensionContext,
+    ctx: DosboxContext,
+    box: DOSBox
+): Promise<{ message: string; result: string }> {
+    logAction(ctx.actionType, ctx.fileUri.fsPath);
+
+    // 准备隔离目录
+    await emptyFolder(ctx.seperateSpaceFolder);
+    if (ctx.fileCopyUri) {
+        await vscode.workspace.fs.copy(ctx.fileUri, ctx.fileCopyUri);
+    }
+
+    // 解压 bundle（jsonc 模式）
+    if (ctx.config && ctx.bundleFolderMap.size === 0) {
+        ctx.bundleFolderMap = await extractConfigBundles(ctx.config, context, box);
+    }
+
+    // 解压默认 bundle（单文件模式）
+    if (!ctx.config && !nodefs.existsSync(ctx.assemblyToolsFolder.fsPath)) {
+        const bundleData = await resolveBundleData(context, null);
+        await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
+    }
+
+    // 构建并设置 autoexec
+    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context);
+    updateDosboxConf(box, config.getEmulator());
+    box.updateAutoexec(autoexec);
+
+    // 启动 DOSBox 并监视日志
+    const logUri = Utils.joinPath(ctx.assemblyToolsFolder, ctx.logFileName);
+    const [hook, promise] = Diag.messageCollector();
+    let useNodefsWatch = true;
+
+    if (ctx.actionType !== ActionType.open) {
+        // 检查 autoexec 中是否有 exit 命令
+        if (autoexec.includes("exit")) useNodefsWatch = false;
+    }
+
+    let result: string ="";
+    const cpHandler=(p: cp.ChildProcess)=>{
+        // Listen stderr streams
+
+        p.stderr?.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+            const loglines=data.toString().split("\n");
+            for (const line of loglines) {
+                if (line.trim().startsWith("LOG: DOS CON: ")) {
+                    result+=line.replace("LOG: DOS CON: ","")+"\n";
+                }
+            }
+            hook(result);
+        });
+
+        p.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+    }
+
+    // This promise is for the dosbox process itself, not the log collection.
+    // It is not awaited here, but it is important to handle errors from the dosbox process.
+    const _dosboxRunPromise=box.run(["-log-con"],cpHandler).catch(e => { throw new Error(e); }); 
+
+    const message = await promise;
+    if (!result) throw new Error("can't get dosbox's result" + logUri.fsPath);
+    return { message, result };
+}
+
+
+
 // ─── 入口 ─────────────────────────────────────────────────
 
 /**
@@ -302,11 +385,21 @@ export async function activate(context: vscode.ExtensionContext) {
         const emulator = config.getEmulator();
 
         // DOSBox 路径
-        if (emulator === DosEmulatorType.dosbox || emulator === DosEmulatorType.dosboxX) {
-            const box = emulator === DosEmulatorType.dosboxX ? dosbox_api.dosboxX : dosbox_api.dosbox;
+        if (emulator === DosEmulatorType.dosbox) {
+            const box = dosbox_api.dosbox;
             const config = await loadDosasmConfig(uri);
             const ctx = await makeDosboxContext(actionType, uri, context, config);
             const runResult = await runDosbox(context, ctx, box);
+            const diagResult = await Diag.messageDiagnose(runResult.message, ctx.doc, diag);
+            return { message: runResult.message, error: diagResult.error, warn: diagResult.warn, result: runResult.result };
+        }
+
+        // DOSBox 路径
+        if (emulator === DosEmulatorType.dosboxX) {
+            const box = dosbox_api.dosboxX;
+            const config = await loadDosasmConfig(uri);
+            const ctx = await makeDosboxContext(actionType, uri, context, config);
+            const runResult = await runDosboxX(context, ctx, box);
             const diagResult = await Diag.messageDiagnose(runResult.message, ctx.doc, diag);
             return { message: runResult.message, error: diagResult.error, warn: diagResult.warn, result: runResult.result };
         }
