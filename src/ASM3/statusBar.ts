@@ -85,7 +85,7 @@ async function selectEmulator() {
 
     if (selected && selected.label !== currentEmu) {
         const newEmu = selected.label as DosEmulatorType;
-        const target = vscode.ConfigurationTarget.Global;
+        const target = vscode.ConfigurationTarget.Workspace; // TODO: check if user wants to set it globally or workspace-specific
 
         // Check if current assembler is compatible with new emulator
         const compatibleAsms = getCompatibleAssemblers(newEmu);
@@ -119,7 +119,7 @@ async function selectAssembler() {
     });
 
     if (selected && selected.label !== currentAsm) {
-        const target = vscode.ConfigurationTarget.Global;
+        const target = vscode.ConfigurationTarget.Workspace; // TODO: check if user wants to set it globally or workspace-specific
         await _conf.update("assembler", selected.label, target);
         showStatus();
     }
