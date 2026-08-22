@@ -113,7 +113,7 @@ function lineMacro2DOC(text: string, macroName: string, macroLine: number, local
             }
         }
     );
-    if (docMacroLine) {
+    if (docMacroLine !== undefined) {
         return docMacroLine + macroLine;
     }
     else {
