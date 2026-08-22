@@ -328,7 +328,7 @@ async function runDosboxX(
 
     // 启动 DOSBox 并监视日志
     const logUri = Utils.joinPath(ctx.assemblyToolsFolder, ctx.logFileName);
-    const [hook, promise] = Diag.messageCollector();
+    const [lineHook, diagPromise] = Diag.messageCollector();
     let useNodefsWatch = true;
 
     if (ctx.actionType !== ActionType.open) {
@@ -341,14 +341,14 @@ async function runDosboxX(
         // Listen stderr streams
 
         p.stderr?.on('data', (data) => {
-            console.error(`stderr: ${data}`);
             const loglines=data.toString().split("\n");
             for (const line of loglines) {
                 if (line.trim().startsWith("LOG: DOS CON: ")) {
-                    result+=line.replace("LOG: DOS CON: ","")+"\n";
+                    const trimed=line.replace("LOG: DOS CON: ","")+"\n";
+                    lineHook(trimed)
+                    result+=trimed;
                 }
             }
-            hook(result);
         });
 
         p.on('close', (code) => {
@@ -360,7 +360,7 @@ async function runDosboxX(
     // It is not awaited here, but it is important to handle errors from the dosbox process.
     const _dosboxRunPromise=box.run(["-log-con"],cpHandler).catch(e => { throw new Error(e); }); 
 
-    const message = await promise;
+    const message = await diagPromise;
     if (!result) throw new Error("can't get dosbox's result" + logUri.fsPath);
     return { message, result };
 }

@@ -64,7 +64,12 @@ suite('Diagnose test', function () {
     });
 
     test('TASM Macro error message', async function () {
-        const doc = await createTestDoc(20);
+        // 文档中需要包含宏定义，否则 lineMacro2DOC 无法找到宏的位置，
+        // 导致 relatedInformation 为空（测试期望宏错误时应携带 relatedInformation）
+        const doc = await vscode.workspace.openTextDocument({
+            content: 'myMacro macro\n' + '\n'.repeat(19),
+            language: 'assembly'
+        });
         const collection = vscode.languages.createDiagnosticCollection('tasm-test-macro');
 
         const message = 'Turbo Assembler  Version 4.1\r\n' +

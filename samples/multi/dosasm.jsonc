@@ -25,7 +25,7 @@
             "TASM 2.asm",
             "TLINK 2.obj",
             ">2.exe",
-            "pause"
+            "exit"
         ],
         // The commands to debug the code
         "debug": [
