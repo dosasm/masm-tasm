@@ -34,6 +34,26 @@ window.addEventListener("message", (msg) => {
     if (data.name === "soundPush"){
         soundPush?.onSoundPush(data.samples)
     }
+    // 事件驱动：CI 列表变更时自动更新下拉框（替代轮询）
+    if (data.name === "ci-list-updated") {
+        const cis = data.value
+        for (let i = 0; i < cis.length; i++) {
+            if (i < eles.ciSelect.options.length) {
+                const optionEle = eles.ciSelect.options[i];
+                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000
+                optionEle.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
+            } else {
+                const o = document.createElement("option")
+                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000
+                o.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
+                eles.ciSelect.appendChild(o)
+            }
+        }
+        // 同步选中状态
+        if (eles.ciSelect.options.length > 0 && eles.ciSelect.selectedIndex < 0) {
+            eles.ciSelect.selectedIndex = 0
+        }
+    }
 })
 
 
@@ -52,21 +72,16 @@ if (vapi) {
     bindMouse(eles.canvas,vapi);
     
     // init the ci select
-    setInterval(async () => {
-        const cis: { id: number, time: string, lastFrameTimeMs: number }[] = await vapi.exec("get-ci-list", [])
+    // CI 列表不再轮询，改为扩展宿主在 CI 添加/移除时主动推送 (ci-list-updated)
+    // 首次加载时请求一次完整列表
+    vapi.exec("get-ci-list", []).then((cis: any) => {
         for (let i = 0; i < cis.length; i++) {
-            if (i < eles.ciSelect.options.length) {
-                const optionEle = eles.ciSelect.options[i];
-                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
-                optionEle.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
-            } else {
-                const o = document.createElement("option")
-                let alive = Date.now() - cis[i].lastFrameTimeMs < 2000 // assume the emulator is working if last frame data is transfered within 2s
-                o.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
-                eles.ciSelect.appendChild(o)
-            }
+            const o = document.createElement("option")
+            let alive = Date.now() - cis[i].lastFrameTimeMs < 2000
+            o.innerText = `${cis[i].id} ${alive ? "running" : "stopped"}`
+            eles.ciSelect.appendChild(o)
         }
-    }, 1000);
+    })
     eles.ciSelect.addEventListener("input", () => {
         eles.canvasOverlay.style.display = "";
         vapi.exec("change-viewing-id", [eles.ciSelect.selectedIndex])

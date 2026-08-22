@@ -85,6 +85,10 @@ export class CIManager {
     webviewingId = 0;
     webviewingMute=false;
 
+    // 帧率节流：限制 postMessage 频率，避免 IPC 拥塞
+    private lastFramePostTime = 0;
+    private readonly MAX_FRAME_INTERVAL = 33; // ~30fps
+
     public get last() {
         return this._cis[this._cis.length - 1]
     }
@@ -114,20 +118,63 @@ export class CIManager {
 
     }
 
+    /** 清理指定 CI 及其相关资源 */
+    private removeCI(idx: number) {
+        const w = this._cis[idx]
+        if (!w) return
+        // 清理 onStdout 回调，防止内存泄漏
+        delete w.onStdout["ASM3/run"]
+        // 从数组中移除
+        this._cis.splice(idx, 1)
+        // 调整 webviewingId：确保不越界
+        if (this._cis.length === 0) {
+            this.webviewingId = 0
+        } else if (this.webviewingId >= this._cis.length) {
+            this.webviewingId = this._cis.length - 1
+        }
+        // 通知 webview CI 列表已变更
+        this._pushCIList()
+    }
+
+    /** 向 webview 推送最新的 CI 列表（事件驱动，替代轮询） */
+    private _pushCIList() {
+        if (this.panel) {
+            this.panel.webview.postMessage({
+                name: "ci-list-updated",
+                value: this.ciInfomation()
+            })
+        }
+    }
+
     addCI(ci: CommandInterface) {
         const w = new JSdosCi(ci)
         this._cis.push(w);
+
+        // 监听模拟器退出事件，自动清理
+        const events = ci.events() as any
+        if (typeof events.onExit === 'function') {
+            events.onExit(() => {
+                const idx = this._cis.indexOf(w)
+                if (idx >= 0) this.removeCI(idx)
+            })
+        }
+
         w.ci.events().onFrame((rgb, rgba) => {
             w.lastFrameTimeMs = Date.now()
             if (w.id === this.webviewingId) {
-                this.panel?.webview?.postMessage({
-                    name: "frame",
-                    rgb,
-                    date: w.lastFrameTimeMs,
-                    width: ci.width(),
-                    height: ci.height(),
-                    ciIdx: this.webviewingId
-                });
+                // 帧率节流：仅在间隔足够时发送，减少 IPC 消息
+                const now = Date.now()
+                if (now - this.lastFramePostTime >= this.MAX_FRAME_INTERVAL) {
+                    this.lastFramePostTime = now
+                    this.panel?.webview?.postMessage({
+                        name: "frame",
+                        rgb,
+                        date: w.lastFrameTimeMs,
+                        width: ci.width(),
+                        height: ci.height(),
+                        ciIdx: this.webviewingId
+                    });
+                }
             }
         })
         w.ci.events().onSoundPush(samples => {
@@ -141,7 +188,11 @@ export class CIManager {
                 });
             }
         })
+
+        // 通知 webview CI 列表已变更
+        this._pushCIList()
     }
+
     constructor(public context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand('masm-tasm.show-jsdos', () => {
             this.panel = show_webview(this, context)
@@ -150,12 +201,26 @@ export class CIManager {
     }
 
     showWebview(id?: number) {
+        // 切换 CI 时暂停非活动实例，降低 CPU 占用
+        const prevId = this.webviewingId
+        if (prevId !== id && this._cis[prevId]) {
+            const prevCI = this._cis[prevId]
+            try { (prevCI.ci as any).pause?.() } catch { /* ignore */ }
+        }
+
         if (id === undefined) {
             this.webviewingId = this._cis.length - 1;
         }
         else {
             this.webviewingId = id;
         }
+
+        // 恢复当前 CI
+        const curCI = this._cis[this.webviewingId]
+        if (curCI) {
+            try { (curCI.ci as any).resume?.() } catch { /* ignore */ }
+        }
+
         if (!this.panel) {
             this.panel = show_webview(this, this.context)
             this.panel.onDidDispose(() => this.panel = undefined)
@@ -180,8 +245,7 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
         viewColumn ?? vscode.ViewColumn.Beside,
         {
             enableScripts: true,
-            // retainContextWhenHidden: true,
-            //hint: the below settings should be folder's uri
+            retainContextWhenHidden: true,
             enableFindWidget: false,
             localResourceRoots: [
                 vscode.Uri.joinPath(context.extensionUri, "dist"),
