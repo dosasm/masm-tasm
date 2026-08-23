@@ -34,9 +34,11 @@ export class JSdosCi {
     public stdout = ""
     public onStdout: Record<string, (data: string, stdout: string) => void> = {}
     public lastFrameTimeMs: number = 0
-    /** Whether the CI has stopped (set by the onExit event) */
-    public stopped: boolean = false
-    /** Most recent frame data, used to restore display when switching to a stopped CI */
+    /** Whether the CI has exited */
+    public get exited(){
+        return this._ci.exited;
+    }
+    /** Most recent frame data, used to restore display when switching to a exited CI */
     public lastFrame: {
         rgb: Uint8Array | null
         rgba: Uint8Array | null
@@ -114,16 +116,15 @@ export class CIManager {
     public ciInfomation(html = false) {
         if (html) {
             const ciSelectInnerHTML = this._cis.map((o, idx) => {
-                return `<option ${idx === this.webviewingId ? "selected" : ""}>${o.id} ${o.stopped ? "stopped" : "running"}</option>`
+                return `<option ${idx === this.webviewingId ? "selected" : ""}>${o.id} ${o.ci.exited ? "exited" : "running"}</option>`
             }).join("\n")
             return ciSelectInnerHTML
         }
         else {
             return this._cis.map(ci => {
-                return { id: ci.id, time: ci.time, lastFrameTimeMs: ci.lastFrameTimeMs, stopped: ci.stopped }
+                return { id: ci.id, time: ci.time, lastFrameTimeMs: ci.lastFrameTimeMs, exited: ci.ci.exited }
             })
         }
-
     }
 
     /** Clean up a specified CI and its associated resources */
@@ -147,8 +148,8 @@ export class CIManager {
         this.panel?.webview?.postMessage({
             name: "switch-ci",
             ciIdx: this.webviewingId,
-            stopped: curCI?.stopped ?? true
         })
+        this._pushCIList()
     }
 
     /** Push the latest CI list to the webview (event-driven, replaces polling) */
@@ -165,32 +166,15 @@ export class CIManager {
         const w = new JSdosCi(ci)
         this._cis.push(w);
 
-
         const events = ci.events()
-        let frameTimeout: ReturnType<typeof setTimeout> | null = null
-        const FRAME_TIMEOUT_MS = 5000 // 5s without a frame => consider it stopped
 
-        const markStopped = (reason: string) => {
-            if (w.stopped) return // Prevent duplicate triggers
-            if (frameTimeout) clearTimeout(frameTimeout)
-            console.log(`[jsdos] CI #${w.id} stopped (${reason}) time=${new Date().toISOString()}`)
-            w.stopped = true
+        events.onExit(() => {
             this._pushCIList()
-            // Sync selection state
-            this.panel?.webview?.postMessage({
-                name: "switch-ci",
-                ciIdx: this.webviewingId,
-                stopped: true
-            })
-        }
-
-
-        events.onExit(() => markStopped('onExit event fired'))
-        events.onUnload(async () => markStopped('onUnload event fired'))
+        })
 
         events.onFrame((rgb, rgba) => {
             w.lastFrameTimeMs = Date.now()
-            // Always save the latest frame, for restoring display when switching to a stopped CI
+            // Always save the latest frame, for restoring display when switching to a exited CI
             w.lastFrame = { rgb, rgba, width: ci.width(), height: ci.height() }
 
             if (w.id === this.webviewingId) {
@@ -254,7 +238,6 @@ export class CIManager {
         this.panel?.webview?.postMessage({
             name: "switch-ci",
             ciIdx: this.webviewingId,
-            stopped: this._cis[this.webviewingId].stopped
         })
 
         // If there is a cached last frame, send it immediately for display
@@ -268,6 +251,8 @@ export class CIManager {
                 ciIdx: this.webviewingId
             });
         }
+
+        this._pushCIList()
     }
 }
 
@@ -365,9 +350,9 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
                 case "send-ci-command":
                     const { ciId, ciCommand, ciArgs } = message;
                     let ci = cis.ci(ciId);
-                    if (ciCommand !== "asyncifyStats") {
-                        logger.channel("ci-command " + ciCommand + " " + JSON.stringify(ciArgs));
-                    }
+                    // if (ciCommand !== "asyncifyStats") {
+                    //     logger.channel("ci-command " + ciCommand + " " + JSON.stringify(ciArgs));
+                    // }
                     if (ci) {
                         try {
                             const target = ci.ci as any;

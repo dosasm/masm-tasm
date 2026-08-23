@@ -29,13 +29,6 @@ window.addEventListener("message", (msg) => {
     }
     if (data.name === "switch-ci") {
         eles.ciSelect.selectedIndex = data.ciIdx;
-        if (data.stopped) {
-            // Switching to a stopped emulator: show overlay while keeping the last frame in the background
-            eles.canvasOverlay.style.display = "flex";
-            eles.canvasOverlay.innerText = "emulator stopped";
-        } else {
-            eles.canvasOverlay.style.display = "";
-        }
     }
     if (data.name === "soundPush"){
         soundPush?.onSoundPush(data.samples)
@@ -46,17 +39,17 @@ window.addEventListener("message", (msg) => {
         // Full option replacement to avoid count mismatches
         const prevSelected = eles.ciSelect.selectedIndex
         eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
-            `<option ${idx === prevSelected ? "selected" : ""}>${ci.id} ${ci.stopped ? "stopped" : "running"}</option>`
+            `<option ${idx === prevSelected ? "selected" : ""}>${ci.id} ${ci.exited ? "exited" : "running"}</option>`
         ).join("")
         // Restore selection state (lost after innerHTML rebuild)
         if (cis.length > 0) {
             eles.ciSelect.selectedIndex = prevSelected < cis.length ? prevSelected : 0
         }
-        // Check if the currently selected CI has stopped and update the overlay
+        // Check if the currently selected CI has exited and update the overlay
         const currentCI = cis[eles.ciSelect.selectedIndex]
-        if (currentCI && currentCI.stopped) {
+        if (currentCI && currentCI.exited) {
             eles.canvasOverlay.style.display = "flex";
-            eles.canvasOverlay.innerText = "emulator stopped";
+            eles.canvasOverlay.innerText = "emulator exited";
         }
     }
 })
@@ -81,7 +74,7 @@ if (vapi) {
     // Request the full list once on initial load
     vapi.exec("get-ci-list", []).then((cis: any) => {
         eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
-            `<option>${ci.id} ${ci.stopped ? "stopped" : "running"}</option>`
+            `<option>${ci.id} ${ci.exited ? "exited" : "running"}</option>`
         ).join("")
     })
     eles.ciSelect.addEventListener("input", () => {

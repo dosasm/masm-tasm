@@ -3,7 +3,7 @@
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
 
-#### 2.1.x 使用AI重构代码，实现使用dosasm.jsonc 管理项目 (emulators 8.4.0,8.4.1)
+#### 2.1.x 使用AI重构代码，实现使用dosasm.jsonc 管理项目
 
 - 修复格式化器：顶层指令（`.386`、`.model`、`.STACK`、`include` 等）不再被错误缩进
 - 修复格式化器：空白行保留为空行，不再填充制表符
@@ -14,8 +14,23 @@
 - 状态栏：拆分为独立的模拟器选择器和汇编器选择器两个按钮
 - 模拟器选择 Quick Pick：显示 dosbox / dosbox-x 的实际可执行文件路径
 - 2.1.1 配置格式从 TOML 迁移到 JSONC：支持多文件
-- 2.1.2 升级 jsdos emulator 到 8.4.1-dosasm0.1 并 将jsdos-x作为默认仿真工具
+- 2.1.2 升级 jsdos emulator 到 8.4.1 并 将jsdos-x作为默认仿真工具
 
+
+ #### 2.1.x Code refactored using AI, project now managed via dosasm.jsonc                                              
+                                                                                                                        
+ - Fixed formatter: Top-level directives (.386, .model, .STACK, include, etc.) are no longer incorrectly indented       
+ - Fixed formatter: Blank lines are preserved as empty lines, no longer filled with tab characters                      
+ - Fixed formatter: Original operand spacing and comments are preserved; instruction lines are no longer rebuilt from   
+   the AST                                                                                                              
+ - Fixed formatter: Comments are no longer accidentally deleted                                                         
+ - Fixed formatter: Formatting is idempotent (re-formatting already-formatted code produces the same result)            
+ - Fixed parser: Block ranges for truncated files (missing closing delimiters) now correctly extend to the last child   
+   node                                                                                                                 
+ - Status bar: Split into two independent buttons — emulator selector and assembler selector                            
+ - Emulator quick pick: Displays the actual executable path for dosbox / dosbox-x                                       
+ - 2.1.1: Configuration format migrated from TOML to JSONC — multi-file support                                         
+ - 2.1.2: Upgraded jsdos emulator to 8.4.1 and set jsdos-x as the default emulator 
 
 
 #### 2.0.x 使用Jsdos 作为首选模拟器
