@@ -1,4 +1,3 @@
-.386
 .model small
 .STACK 1024
 .data

@@ -22,17 +22,17 @@
         "open": [],
         // The commands to run the code, add a `>` before the command if you need to prevent redirect the command's output
         "run": [
-            "TASM flashColor.asm",
-            "TLINK flashColor.obj",
-            "flashColor.exe",
+            "TASM flash.asm",
+            "TLINK flash.obj",
+            "flash.exe",
             "pause"
         ],
         // The commands to debug the code
         "debug": [
-            "TASM /zi flashColor.asm",
-            "TLINK /v/3 flashColor.obj",
+            "TASM /zi flash.asm",
+            "TLINK /v/3 flash.obj",
             "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
-            "TD -cTDCONFIG.TD flashColor.exe"
+            "TD -cTDCONFIG.TD flash.exe"
         ]
     }
 }
