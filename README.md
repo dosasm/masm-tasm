@@ -30,7 +30,7 @@ The built-in formatter follows the style of sample `.asm` files:
 - Blank lines preserved as truly empty
 - Original operand spacing and comments preserved
 - Formatting is idempotent — running it twice produces the same result
-- Use the **Format Document** command (`Shift+Alt+F`) to apply
+- Use the **Format Document** command (`Shift+Alt+F`) to apply formatting.
 You can also use other assembly language support extensions (e.g., the `asm-collection` language ID) by installing [ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens).
 
 ### Demo 2: Run and Debug
@@ -132,7 +132,7 @@ For example, to compile your code to a `.com` file, add the following configurat
 ## Docs & Acknowledgments & Licenses
 - Special thanks to my teacher, *Mr. Han*. Wishing 2020 and the coming 2021 to be happy and fulfilling years.
 - Inspired by [Woodykaixa](https://github.com/Woodykaixa)'s [masm-code](https://github.com/Woodykaixa/masm-code) project
-- Thanks to the excellent DOS emulators: [DOSBox](https://www.dosbox.com), [caiiiycuk](https://github.com/caiiiycuk)'s [js-dos](https://js-dos.com/), and [msdos-player](http://takeda-toshiya.my.coocan.jp/msdos)
+- Thanks to the excellent DOS emulators: [DOSBox-x](https://dosbox-x.com/), [DOSBox](https://www.dosbox.com), [caiiiycuk](https://github.com/caiiiycuk)'s [js-dos](https://js-dos.com/), and [msdos-player](http://takeda-toshiya.my.coocan.jp/msdos)
 - Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086) and [blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) for reference on assembly language support
 - We welcome [issues](https://github.com/dosasm/masm-tasm/issues) and pull requests to help improve this extension
 - [Acknowledgments](doc/Thanks.md)

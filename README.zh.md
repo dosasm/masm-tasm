@@ -5,10 +5,10 @@
 :raising_hand:实现对 DOSBox 等汇编工具的快速调用。主要针对 DOS 下的单文件汇编语言学习，可能适合学习《汇编语言》、《微机原理》等课程，主要功能特性如下：
 
 - :bookmark_tabs:（**语法支持**）代码高亮，大纲信息，悬浮提示，代码格式化，错误信息标注功能
-- :electric_plug:（**运行调试**）提供编辑器右键菜单选项：在汇编语言的编辑器添加了“打开 dosbox，运行，调试”的三个选项
-- :bar_chart: 提供 diagnose**错误信息标注**功能：假如汇编未通过，会根据汇编器输出来标明错误信息与位置，可以在命令面板输入`清除MASM/TASM的所有问题信息`清除本插件输出的 diagnose 问题信息
+- :electric_plug:（**运行调试**）提供编辑器右键菜单选项：在汇编语言编辑器中添加了“打开 DOSBox、运行、调试”三个选项
+- :bar_chart: 提供 diagnose**错误信息标注**功能：如果汇编未通过，会根据汇编器输出标明错误信息与位置。可以在命令面板中输入`清除MASM/TASM的所有问题信息`来清除本插件输出的诊断问题信息
 - :computer: 支持包括 Web 在内的所有 VSCode 版本和平台，参见[平台支持](#平台支持)
-- 注：该插件为学习 DOS 下的汇编语言开发，可能并不适合复杂的多文件汇编
+- 注：该插件为学习 DOS 下的汇编语言开发，可能并不适合复杂的多文件汇编项目
 
 ## :rocket:DEMO 示例
 
@@ -20,7 +20,7 @@
 | ---------------------------- | ----------------------------------- |
 | ![](pics/demo_PLFeature.gif) | ![](pics/demo_diagnose_tasm_zh.gif) |
 
-提供一些“编程语言特性”（悬浮提示，代码格式化，跳到定义，查看引用）来方便代码编写与阅读，如果不喜欢可以在设置`masmtasm.language.Hover`，`masmtasm.language.programmaticFeatures`中关闭，重启之后会生效。同时也可以使用其他插件提供的语言功能如[ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens) 提供的 language ID `asm-collection`
+提供一些“编程语言特性”（悬浮提示，代码格式化，跳到定义，查看引用）来方便代码编写与阅读。如果不喜欢，可以在设置中的`masmtasm.language.Hover`、`masmtasm.language.programmaticFeatures`中关闭，重启之后会生效。同时也可以使用其他插件提供的语言功能如[ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens) 提供的 language ID `asm-collection`
 
 ### Demo 2 :running:: 运行调试代码
 
@@ -36,7 +36,7 @@
 
 #### 运行调试说明
 
-- 插件会首先复制文件到插件的独立地址中，再进行操作，以保持工作区整洁。
+- 插件会首先将文件复制到独立目录中，再进行操作，以保持工作区整洁。
 
 #### 使用 `dosasm.jsonc` 进行项目配置
 
@@ -94,7 +94,7 @@
 
 ## 自定义 Actions
 
-可以通过设置`masmtasm.ASM.actions`来修改运行和调试的 DOS 命令。比如，需要编译成 COM 文件，可以添加如下设置。同时将`masmtasm.ASM.assembler`设置为 Action 的键`TASM-com`
+可以通过修改`masmtasm.ASM.actions`设置来配置运行和调试的 DOS 命令。例如，需要编译成 COM 文件，可以添加如下设置，并将`masmtasm.ASM.assembler`的值设置为`TASM-com`
 
 ```json
 "masmtasm.ASM.actions": {
