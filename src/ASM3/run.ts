@@ -220,14 +220,16 @@ export async function runJsdos(
     // Inject the current file into the jsdos bundle
     const copyFileAs = cfg?.action.copyFileAs;
     let fileInJsdos = "";
-    const doc = vscode.window.activeTextEditor?.document;
-    if (doc && copyFileAs !== null) {
-        const targetPath = copyFileAs || ("test" + uriUtils.extname(doc.uri));
+    // Use the explicitly opened document instead of the active editor: the active
+    // editor can be the output channel (or a webview) which would give a wrong URI.
+    const doc = resolved.doc;
+    if (copyFileAs !== null) {
+        const targetPath = copyFileAs || ("test" + uriUtils.extname(resolved.doc.uri));
         jszip.file("code/" + targetPath, doc.getText());
         fileInJsdos = "D:\\" + targetPath;
-    } else if (doc) {
+    } else {
         // When copyFileAs is null, do not inject the file; use the original file path
-        fileInJsdos = "D:\\" + path.basename(doc.uri.fsPath);
+        fileInJsdos = "D:\\" + path.basename(resolved.doc.uri.fsPath);
     }
 
     // Add the action directory (containing dosasm.jsonc) to the jsdos bundle

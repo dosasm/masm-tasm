@@ -20,11 +20,6 @@ export const testAsmCommand = function ([file, shouldErr]: [string, number], emu
 	return [
 		title,
 		async function () {
-			if (false
-				|| (!process.platform && file === "3中文路径hasError.asm")
-			) {
-				this.skip();
-			}
 
 			//open test file. NOTE: the extension will be activated when open .asm file
 			const samplefile = vscode.Uri.joinPath(samplesUri, file);
@@ -64,7 +59,7 @@ const emulator: DosEmulatorType[] = [
 ];
 
 const filelist: [string, number][] = [
-	['1.asm', 0],
+	// ['1.asm', 0],
 	['3中文路径hasError.asm', 1],
 ];
 

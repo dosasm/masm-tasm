@@ -8,8 +8,8 @@
  */
 
 import * as vscode from "vscode";
-import * as path from "path";
 import { logger } from "../utils/logger";
+import { uriUtils } from "../utils/util";
 
 const DOSASM_JSONC = "dosasm.jsonc";
 
@@ -154,7 +154,9 @@ function parseJSONC(text: string): any {
 // ─── dosasm.jsonc Lookup and Parsing ─────────────────────────
 
 function uriDirname(uri: vscode.Uri): vscode.Uri {
-    return vscode.Uri.file(path.dirname(uri.fsPath));
+    // Preserve the URI scheme (e.g. vscode-test-web, file, http) instead of
+    // converting to a file:// URI, which is not available in the web environment.
+    return uriUtils.dirname(uri);
 }
 
 /**
@@ -164,9 +166,9 @@ function uriDirname(uri: vscode.Uri): vscode.Uri {
 export async function findDosasmConfig(startUri: vscode.Uri): Promise<vscode.Uri | null> {
     let dir = uriDirname(startUri);
     const workspaceFolder = vscode.workspace.workspaceFolders?.find(
-        wf => startUri.fsPath.startsWith(wf.uri.fsPath)
+        wf => startUri.toString().startsWith(wf.uri.toString())
     );
-    const stopAt = workspaceFolder?.uri.fsPath ?? path.parse(dir.fsPath).root;
+    const stopUri = workspaceFolder?.uri;
 
     while (true) {
         const candidate = vscode.Uri.joinPath(dir, DOSASM_JSONC);
@@ -176,9 +178,12 @@ export async function findDosasmConfig(startUri: vscode.Uri): Promise<vscode.Uri
         } catch {
             // not found, walk up
         }
+        if (stopUri && dir.toString() === stopUri.toString()) {
+            break; // reached the workspace root without finding the config
+        }
         const parent = uriDirname(dir);
-        if (parent.fsPath === dir.fsPath || dir.fsPath.length < stopAt.length) {
-            break;
+        if (parent.toString() === dir.toString()) {
+            break; // reached the filesystem root
         }
         dir = parent;
     }
