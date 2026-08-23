@@ -19,7 +19,7 @@ export class Jsdos {
   constructor(private context: vscode.ExtensionContext) {
     const dist = vscode.Uri.joinPath(context.extensionUri, "resources/node_modules/emulators/build/wasm/");
     this.pathPrefix = isNode ? dist.fsPath : dist.toString();
-    this.emulators = adapted.getEmulators(this.pathPrefix)
+    this.emulators = adapted.getEmulators(this.pathPrefix);
   }
 
 

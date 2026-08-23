@@ -18,7 +18,7 @@ export function createTerminal(ci: CommandInterface) {
             "Jsdos Terminal \x1b[31m exited\x1b[0m \r\n"
           );
         }
-      )
+      );
     },
     close: () => { },
     handleInput: (datas) => {
@@ -26,11 +26,11 @@ export function createTerminal(ci: CommandInterface) {
       for (const data of datas.split("")) {
         if (data.charCodeAt(0) === 127) {
           // writeEmitter.fire("<backspace>");
-          ci.simulateKeyPress(utils.Keys.KBD_backspace)
+          ci.simulateKeyPress(utils.Keys.KBD_backspace);
         } else if (data.charCodeAt(0) === 13) {
           const key = utils.Keys.KBD_enter;
           // console.log(key)
-          ci.simulateKeyPress(257)
+          ci.simulateKeyPress(257);
         }
         else {
           const keys = utils.string2jsdosKey(data, true, false);

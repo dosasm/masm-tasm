@@ -1,5 +1,5 @@
-import * as vscode from "vscode"
-import {AssemblerMessageDiagnose} from "./main"
+import * as vscode from "vscode";
+import {AssemblerMessageDiagnose} from "./main";
 import { logger } from "../utils/logger";
 
 export function messageCollector(): [(msg: string) => void, Promise<string>] {

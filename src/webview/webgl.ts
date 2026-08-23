@@ -98,7 +98,7 @@ export function webGl(canvas: HTMLCanvasElement,
                 requestAnimationFrameId = requestAnimationFrame(updateTexture);
             }
         }
-    }
+    };
 
     onResizeFrame(width, height);
 

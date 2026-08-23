@@ -4,7 +4,7 @@ import * as cp from "child_process";
 import { Conf } from "./conf";
 import * as nodefs from "fs";
 import { logger } from "../../utils/logger";
-export { DOSBox } from "./dosbox"
+export { DOSBox } from "./dosbox";
 
 const fs = vscode.workspace.fs;
 
@@ -57,7 +57,7 @@ async function createDosboxXlocalConf(context: vscode.ExtensionContext, basedCon
         confPath = boxXzh;
     }
   }
-  return confPath
+  return confPath;
 }
 
 export async function activateDosbox(context: vscode.ExtensionContext) {
@@ -77,7 +77,7 @@ export async function activateDosbox(context: vscode.ExtensionContext) {
   const _cmd: string | undefined = vscode.workspace
     .getConfiguration("masmtasm")
     .get("command.dosbox");
-  const _paths:string[]|undefined=vscode.workspace.getConfiguration("masmtasm").get("paths.dosbox")
+  const _paths:string[]|undefined=vscode.workspace.getConfiguration("masmtasm").get("paths.dosbox");
   const cmd = _cmd ? _cmd : "dosbox";
   const confpath = vscode.Uri.joinPath(context.globalStorageUri, "dosbox.conf");
   const dosbox = new db.DOSBox(cmd, confpath);
@@ -90,7 +90,7 @@ export async function activateDosbox(context: vscode.ExtensionContext) {
   const _xcmd: string | undefined = vscode.workspace
     .getConfiguration("masmtasm")
     .get("command.dosboxX");
-  const _xpaths:string[]|undefined=vscode.workspace.getConfiguration("masmtasm").get("paths.dosboxX")
+  const _xpaths:string[]|undefined=vscode.workspace.getConfiguration("masmtasm").get("paths.dosboxX");
   const xcmd = _xcmd ? _xcmd : "dosbox-x";
   const xconfpath = vscode.Uri.joinPath(
     context.globalStorageUri,

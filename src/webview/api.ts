@@ -19,7 +19,7 @@ type PromisifyAllMethods<T> = {
 
 export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   
-  command_count = 0
+  command_count = 0;
   resolvers: Record<number, {resolve:(result: any) => void,reject:(error: any) => void,}> = {};
   constructor(public api: Api) {
     window.addEventListener("message", (msg) => {
@@ -27,16 +27,16 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
       const uid = msg.data.uid;
       if (this.resolvers[uid]) {
         if(data.error){
-          this.resolvers[uid].resolve(data.error)
+          this.resolvers[uid].resolve(data.error);
         }
         else if(data.value){
-          this.resolvers[uid].resolve(data.value)
+          this.resolvers[uid].resolve(data.value);
         }
       }
-    })
+    });
   }
   async net(){
-    return null
+    return null;
   }
 
   get exited(): Promise<boolean> {
@@ -119,8 +119,8 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   }
   
   async persist(onlyChanges?: boolean): Promise<Uint8Array |null> {
-    const result=await this._exec_ci_command("persist",[onlyChanges])
-    return result
+    const result=await this._exec_ci_command("persist",[onlyChanges]);
+    return result;
   }
   
   events(): Promise<CommandInterfaceEvents> {
@@ -158,26 +158,26 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   static create(): VscodeApi | undefined {
     let api: Api | undefined = undefined;
     if (typeof acquireVsCodeApi === "function") {
-      api = acquireVsCodeApi()
-      return new VscodeApi(api)
+      api = acquireVsCodeApi();
+      return new VscodeApi(api);
     } else {
-      return undefined
+      return undefined;
     }
   }
 
   exec(command: string, args: any[]): Promise<any> {
     let uid = ++this.command_count;
-    this.api.postMessage({ command, args, uid })
+    this.api.postMessage({ command, args, uid });
     return new Promise((resolve,reject) => {
-      this.resolvers[uid] = {resolve,reject}
-    })
+      this.resolvers[uid] = {resolve,reject};
+    });
   }
 
   _exec_ci_command(ciCommand: string, ciArgs: any[]): Promise<any> {
     let uid = ++this.command_count;
-    this.api.postMessage({ command:"send-ci-command", ciArgs, uid,ciCommand })
+    this.api.postMessage({ command:"send-ci-command", ciArgs, uid,ciCommand });
     return new Promise((resolve,reject) => {
-      this.resolvers[uid] = {resolve,reject}
-    })
+      this.resolvers[uid] = {resolve,reject};
+    });
   }
 }

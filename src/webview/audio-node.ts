@@ -59,7 +59,7 @@ export function audioNode(sampleRate:number,
             latencyHint: "interactive",
         });
     } else if (typeof (window as any).webkitAudioContext !== "undefined") {
-        // eslint-disable-next-line new-cap
+         
         audioContext = new (window as any).webkitAudioContext({
             sampleRate,
             latencyHint: "interactive",
@@ -143,7 +143,7 @@ export function audioNode(sampleRate:number,
 
         document.removeEventListener("pointerdown", resumeWebAudio);
         document.removeEventListener("keydown", resumeWebAudio);
-    }
+    };
 
     return {onSoundPush,removeAudio};
 }

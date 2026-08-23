@@ -50,7 +50,7 @@ export function bindKeyboard(ci: VscodeApi,el:HTMLCanvasElement) {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     el.addEventListener("blur", onBlur);
-    el.addEventListener("click", ()=>{window.focus()});
+    el.addEventListener("click", ()=>{window.focus();});
 
     return () => {
         releaseKeys();
@@ -93,7 +93,7 @@ const virtualKeyButtonIds = [
         code: keys.KBD_leftalt,
         pressed: false
     }, 
-]
+];
 
 
 export function bindSmallSoftKeyboard(ci:VscodeApi){
@@ -101,9 +101,9 @@ export function bindSmallSoftKeyboard(ci:VscodeApi){
         const btn=document.getElementById(k.name) as HTMLButtonElement;
         btn.addEventListener("click",()=>{
             k.pressed=!k.pressed;
-            ci.sendKeyEvent(k.code,k.pressed)
+            ci.sendKeyEvent(k.code,k.pressed);
             btn.classList.toggle('grayed', k.pressed);
-        })
+        });
     }
 }
 

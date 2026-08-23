@@ -7,7 +7,7 @@ import { logger } from './utils/logger';
 
 import { platform, Browser } from "@xsro/emulators";
 import { VScodeNodeJsPlatform } from "./ASM3/jsdos/platformNodejs";
-platform.current=new VScodeNodeJsPlatform()
+platform.current=new VScodeNodeJsPlatform();
 
 export function activate(context: vscode.ExtensionContext): void {
 

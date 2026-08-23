@@ -30,10 +30,10 @@ function flattenFSNodes(parent: string, nodes: FsNode[]): Record<string, number>
 
 export class JSdosCi {
     // The mount is a key-value map, key is the disk name in the enumlator and value is the information of the folder and files
-    mount: Record<string, MountFolder> = {}
-    public stdout = ""
-    public onStdout: Record<string, (data: string, stdout: string) => void> = {}
-    public lastFrameTimeMs: number = 0
+    mount: Record<string, MountFolder> = {};
+    public stdout = "";
+    public onStdout: Record<string, (data: string, stdout: string) => void> = {};
+    public lastFrameTimeMs: number = 0;
     /** Whether the CI has exited */
     public get exited(){
         return this._ci.exited;
@@ -44,12 +44,12 @@ export class JSdosCi {
         rgba: Uint8Array | null
         width: number
         height: number
-    } | null = null
+    } | null = null;
     public get ci() {
-        return this._ci
+        return this._ci;
     }
 
-    static global_id = 0
+    static global_id = 0;
     id = 0;
     time: Date;
     constructor(private _ci: CommandInterface) {
@@ -59,40 +59,40 @@ export class JSdosCi {
         this.ci.events().onStdout((data) => {
             this.stdout += data;
             for (const l in this.onStdout) {
-                this.onStdout[l](data, this.stdout)
+                this.onStdout[l](data, this.stdout);
             }
-        })
+        });
     }
 
     addMount(disk: string, m: MountFolder) {
         if (this.mount[disk]) {
             if (this.mount[disk].syncFromEmuPeriodId) {
-                clearInterval(this.mount[disk].syncFromEmuPeriodId)
+                clearInterval(this.mount[disk].syncFromEmuPeriodId);
             }
         }
         m.syncFromEmuPeriodId = setInterval(async () => {
             const nodes = await this._ci.fsTree();
-            const files = flattenFSNodes("/", [nodes])
+            const files = flattenFSNodes("/", [nodes]);
         }, m.syncFromEmuPeriod);
     }
 
     terminal() {
-        return createTerminal(this._ci)
+        return createTerminal(this._ci);
     }
 
 }
 
 
 export class CIManager {
-    public static current: CIManager | null = null
+    public static current: CIManager | null = null;
     public static createOrGet(context: vscode.ExtensionContext) {
         if (CIManager.current === null) {
-            CIManager.current = new CIManager(context)
+            CIManager.current = new CIManager(context);
         }
-        return CIManager.current
+        return CIManager.current;
     }
-    private _cis: JSdosCi[] = []
-    private panel: vscode.WebviewPanel | undefined
+    private _cis: JSdosCi[] = [];
+    private panel: vscode.WebviewPanel | undefined;
     webviewingId = 0;
     webviewingMute = false;
 
@@ -101,55 +101,55 @@ export class CIManager {
     private readonly MAX_FRAME_INTERVAL = 33; // ~30fps
 
     public get last() {
-        return this._cis[this._cis.length - 1]
+        return this._cis[this._cis.length - 1];
     }
 
     public ci(idx?: number) {
         if (idx === undefined) {
-            return this._cis[this.webviewingId]
+            return this._cis[this.webviewingId];
         }
         if (typeof idx === "number") {
-            return this._cis[idx]
+            return this._cis[idx];
         }
     }
 
     public ciInfomation(html = false) {
         if (html) {
             const ciSelectInnerHTML = this._cis.map((o, idx) => {
-                return `<option ${idx === this.webviewingId ? "selected" : ""}>${o.id} ${o.ci.exited ? "exited" : "running"}</option>`
-            }).join("\n")
-            return ciSelectInnerHTML
+                return `<option ${idx === this.webviewingId ? "selected" : ""}>${o.id} ${o.ci.exited ? "exited" : "running"}</option>`;
+            }).join("\n");
+            return ciSelectInnerHTML;
         }
         else {
             return this._cis.map(ci => {
-                return { id: ci.id, time: ci.time, lastFrameTimeMs: ci.lastFrameTimeMs, exited: ci.ci.exited }
-            })
+                return { id: ci.id, time: ci.time, lastFrameTimeMs: ci.lastFrameTimeMs, exited: ci.ci.exited };
+            });
         }
     }
 
     /** Clean up a specified CI and its associated resources */
     private removeCI(idx: number) {
-        const w = this._cis[idx]
-        if (!w) return
+        const w = this._cis[idx];
+        if (!w) return;
         // Clean up onStdout callbacks to prevent memory leaks
-        delete w.onStdout["ASM3/run"]
+        delete w.onStdout["ASM3/run"];
         // Remove from array
-        this._cis.splice(idx, 1)
+        this._cis.splice(idx, 1);
         // Adjust webviewingId: ensure it stays in bounds
         if (this._cis.length === 0) {
-            this.webviewingId = 0
+            this.webviewingId = 0;
         } else if (this.webviewingId >= this._cis.length) {
-            this.webviewingId = this._cis.length - 1
+            this.webviewingId = this._cis.length - 1;
         }
         // Notify webview that the CI list has changed
-        this._pushCIList()
+        this._pushCIList();
         // Sync selection state: webviewingId may have changed, ensuring the webview highlight is correct
-        const curCI = this._cis[this.webviewingId]
+        const curCI = this._cis[this.webviewingId];
         this.panel?.webview?.postMessage({
             name: "switch-ci",
             ciIdx: this.webviewingId,
-        })
-        this._pushCIList()
+        });
+        this._pushCIList();
     }
 
     /** Push the latest CI list to the webview (event-driven, replaces polling) */
@@ -158,30 +158,30 @@ export class CIManager {
             this.panel.webview.postMessage({
                 name: "ci-list-updated",
                 value: this.ciInfomation()
-            })
+            });
         }
     }
 
     addCI(ci: CommandInterface) {
-        const w = new JSdosCi(ci)
+        const w = new JSdosCi(ci);
         this._cis.push(w);
 
-        const events = ci.events()
+        const events = ci.events();
 
         events.onExit(() => {
-            this._pushCIList()
-        })
+            this._pushCIList();
+        });
 
         events.onFrame((rgb, rgba) => {
-            w.lastFrameTimeMs = Date.now()
+            w.lastFrameTimeMs = Date.now();
             // Always save the latest frame, for restoring display when switching to a exited CI
-            w.lastFrame = { rgb, rgba, width: ci.width(), height: ci.height() }
+            w.lastFrame = { rgb, rgba, width: ci.width(), height: ci.height() };
 
             if (w.id === this.webviewingId) {
                 // Frame rate throttling: only send when the interval is sufficient, reducing IPC messages
-                const now = Date.now()
+                const now = Date.now();
                 if (now - this.lastFramePostTime >= this.MAX_FRAME_INTERVAL) {
-                    this.lastFramePostTime = now
+                    this.lastFramePostTime = now;
                     this.panel?.webview?.postMessage({
                         name: "frame",
                         rgb,
@@ -192,7 +192,7 @@ export class CIManager {
                     });
                 }
             }
-        })
+        });
         events.onSoundPush(samples => {
             if (w.id === this.webviewingId && !this.webviewingMute) {
                 this.panel?.webview?.postMessage({
@@ -203,17 +203,17 @@ export class CIManager {
                     ciIdx: this.webviewingId
                 });
             }
-        })
+        });
 
         // Notify webview that the CI list has changed
-        this._pushCIList()
+        this._pushCIList();
     }
 
     constructor(public context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand('masm-tasm.show-jsdos', () => {
-            this.panel = show_webview(this, context)
-            this.panel.onDidDispose(() => this.panel = undefined)
-        }))
+            this.panel = show_webview(this, context);
+            this.panel.onDidDispose(() => this.panel = undefined);
+        }));
     }
 
     showWebview(id?: number) {
@@ -225,20 +225,20 @@ export class CIManager {
         }
 
         // Restore the current CI
-        const curCI = this._cis[this.webviewingId]
+        const curCI = this._cis[this.webviewingId];
 
         if (!this.panel) {
-            this.panel = show_webview(this, this.context)
-            this.panel.onDidDispose(() => this.panel = undefined)
+            this.panel = show_webview(this, this.context);
+            this.panel.onDidDispose(() => this.panel = undefined);
         }
         if (!this.panel.visible) {
-            this.panel.reveal()
+            this.panel.reveal();
         }
 
         this.panel?.webview?.postMessage({
             name: "switch-ci",
             ciIdx: this.webviewingId,
-        })
+        });
 
         // If there is a cached last frame, send it immediately for display
         if (curCI?.lastFrame) {
@@ -252,7 +252,7 @@ export class CIManager {
             });
         }
 
-        this._pushCIList()
+        this._pushCIList();
     }
 }
 
@@ -330,23 +330,23 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
             switch (command) {
                 case "change-viewing-id":
                     cis.webviewingId = args[0];
-                    cis.showWebview(cis.webviewingId)
+                    cis.showWebview(cis.webviewingId);
                     panel.webview.postMessage({
                         command,
                         uid: message.uid,
                         value: cis.webviewingId
-                    })
-                    break
+                    });
+                    break;
                 case "mute-sound":
                     cis.webviewingMute = args[0];
-                    break
+                    break;
                 case "get-ci-list":
                     panel.webview.postMessage({
                         command,
                         uid: message.uid,
                         value: cis.ciInfomation()
-                    })
-                    break
+                    });
+                    break;
                 case "send-ci-command":
                     const { ciId, ciCommand, ciArgs } = message;
                     let ci = cis.ci(ciId);
@@ -363,17 +363,17 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
                                 command,
                                 uid: message.uid,
                                 value: result
-                            })
+                            });
                         } catch (error) {
                             panel.webview.postMessage({
                                 command,
                                 uid: message.uid,
                                 error
-                            })
+                            });
                         }
                     }
 
-                    break
+                    break;
             }
         },
         undefined,

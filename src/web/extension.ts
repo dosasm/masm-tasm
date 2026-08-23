@@ -9,7 +9,7 @@ import { VscodeWebPlatform } from './platformWebworker';
 
 export function activate(context: vscode.ExtensionContext): void {
     const dist = vscode.Uri.joinPath(context.extensionUri, "resources/node_modules/emulators/build/wasm/");
-    platform.current=new VscodeWebPlatform(dist)
+    platform.current=new VscodeWebPlatform(dist);
 
     loadI18n(context);
 

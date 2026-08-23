@@ -15,7 +15,7 @@ const fs = vscode.workspace.fs;
 
 export class DOSBox {
   private _conf: Conf = new Conf("");
-  paths:string[]=[]
+  paths:string[]=[];
   constructor(
     public readonly command: string,
     public dstConfPath: vscode.Uri,
@@ -51,8 +51,8 @@ export class DOSBox {
     console.log(command);
     return new Promise<DosboxResult>((resolve, reject) => {
       const envSeparator = process.platform === "win32" ? ";" : ":";
-      const newPath=this.paths.join(envSeparator)+envSeparator+process.env["PATH"]
-      const env={...process.env,"PATH":newPath}
+      const newPath=this.paths.join(envSeparator)+envSeparator+process.env["PATH"];
+      const env={...process.env,"PATH":newPath};
       
       const p = cp.exec(command, { cwd: this.cwd,env }, (error, stdout, stderr) => {
         if (error) {

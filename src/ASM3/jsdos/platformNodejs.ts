@@ -1,8 +1,8 @@
-import { Platform, XhrOptions } from "@xsro/emulators"
-import { Worker as nWorker } from "node:worker_threads"
+import { Platform, XhrOptions } from "@xsro/emulators";
+import { Worker as nWorker } from "node:worker_threads";
 
 export class VScodeNodeJsPlatform implements Platform {
-    name = "nodejs"
+    name = "nodejs";
     httpRequest(url: string, options: XhrOptions): Promise<string> {
         return new Promise((resolve, reject) => {
             const http = require('node:http');
@@ -27,19 +27,19 @@ export class VScodeNodeJsPlatform implements Platform {
                 reject(e);
             }
             );
-        })
+        });
     }
     node_require(path: string) {
-        return __non_webpack_require__(path)
+        return __non_webpack_require__(path);
     }
     createWorker(workerUrl: string, onerror: (e: ErrorEvent) => void, onmessage: (e: MessageEvent) => void): Promise<Worker> {
-        const w = new nWorker(workerUrl)
+        const w = new nWorker(workerUrl);
         w.on('message', (message: any) => {
-            onmessage({ data: message } as any)
+            onmessage({ data: message } as any);
         });
         w.on('error', (error: any) => {
-            onerror({ type: "node worker thread", filename: error.stack, message: error.message } as any)
-        })
-        return Promise.resolve(w as unknown as Worker)
+            onerror({ type: "node worker thread", filename: error.stack, message: error.message } as any);
+        });
+        return Promise.resolve(w as unknown as Worker);
     }
 }

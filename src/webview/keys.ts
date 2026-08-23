@@ -1,5 +1,5 @@
 // https://github.com/caiiiycuk/js-dos/blob/b3e751cd8c77502b936a867426b6306f12fc7ace/src/window/dos/controls/keys.ts
-/* eslint-disable camelcase */
+ 
 
 export const KBD_NONE = 0;
 export const KBD_0 = 48;

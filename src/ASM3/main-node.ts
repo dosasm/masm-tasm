@@ -345,7 +345,7 @@ async function runDosboxX(
             for (const line of loglines) {
                 if (line.trim().startsWith("LOG: DOS CON: ")) {
                     const trimed=line.replace("LOG: DOS CON: ","")+"\n";
-                    lineHook(trimed)
+                    lineHook(trimed);
                     result+=trimed;
                 }
             }
@@ -354,7 +354,7 @@ async function runDosboxX(
         p.on('close', (code) => {
             console.log(`child process exited with code ${code}`);
         });
-    }
+    };
 
     // This promise is for the dosbox process itself, not the log collection.
     // It is not awaited here, but it is important to handle errors from the dosbox process.
