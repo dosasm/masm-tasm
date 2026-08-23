@@ -521,14 +521,14 @@
     "@types/webpack-env": "^1.18.8",
     "@typescript-eslint/eslint-plugin": "^8.67.0",
     "@typescript-eslint/parser": "^8.67.0",
-    "@vscode/test-electron": "^2.5.2",
-    "@vscode/test-web": "^0.0.77",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/test-web": "^0.0.81",
     "@xsro/emulators": "8.4.1-dosasm1.1",
     "assert": "^2.1.0",
     "browser-or-node": "^3.0.0",
     "buffer": "^6.0.3",
     "eslint": "^10.9.0",
-    "glob": "^11.1.0",
+    "glob": "^13.0.6",
     "jszip": "^3.10.1",
     "mocha": "^11.8.0",
     "path-browserify": "^1.0.1",
@@ -539,7 +539,7 @@
     "typescript": "^5.9.3",
     "vscode-uri": "^3.1.0",
     "webpack": "^5.109.2",
-    "webpack-cli": "^6.0.1",
+    "webpack-cli": "^7.2.2",
     "yaml": "^2.9.0"
   },
   "repository": {
@@ -550,6 +550,5 @@
     "url": "https://github.com/dosasm/masm-tasm/issues",
     "email": "xsro@foxmail.com"
   },
-  "license": "MIT",
-  "dependencies": {}
+  "license": "MIT"
 }
