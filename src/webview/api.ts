@@ -14,7 +14,7 @@ type Promisify<T> = T extends Promise<any> ? T : Promise<T>;
 type PromisifyAllMethods<T> = {
   [K in keyof T]: T[K] extends (...args: infer A) => infer R
     ? (...args: A) => Promisify<R> // Method: convert return type to Promise
-    : T[K]; // Non-method properties: keep original type
+    : Promise<T[K]>; // Non-method properties: wrap in Promise (async access via message passing)
 };
 
 export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
@@ -37,6 +37,10 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   }
   async net(){
     return null
+  }
+
+  get exited(): Promise<boolean> {
+    return this._exec_ci_command("exited", []);
   }
 
   getRunningProgram(): Promise<string> {

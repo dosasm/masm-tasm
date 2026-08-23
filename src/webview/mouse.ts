@@ -2,9 +2,10 @@ import { VscodeApi } from "./api";
 
 export function bindMouse(canvas: HTMLCanvasElement, ci: VscodeApi) {
     canvas.addEventListener("mousemove", (e: MouseEvent) => {
+        const rect = canvas.getBoundingClientRect();
         ci.sendMouseMotion(
-            (e.clientX - canvas.offsetLeft) / canvas.clientWidth,
-            (e.clientY - canvas.offsetTop) / canvas.clientHeight
+            (e.clientX - rect.left) / rect.width,
+            (e.clientY - rect.top) / rect.height
         );
         e.stopPropagation();
         e.preventDefault();

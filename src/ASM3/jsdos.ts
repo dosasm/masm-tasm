@@ -370,7 +370,10 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
                     }
                     if (ci) {
                         try {
-                            const result = await (ci.ci as any)[ciCommand](...ciArgs);
+                            const target = ci.ci as any;
+                            const result = typeof target[ciCommand] === 'function'
+                                ? await target[ciCommand](...ciArgs)
+                                : target[ciCommand];
                             panel.webview.postMessage({
                                 command,
                                 uid: message.uid,
