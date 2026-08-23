@@ -284,7 +284,7 @@
         },
         "masmtasm.ASM.emulator": {
           "type": "string",
-          "default": "jsdos",
+          "default": "jsdos-x",
           "description": "%config.emulator.description%",
           "enum": [
             "jsdos",

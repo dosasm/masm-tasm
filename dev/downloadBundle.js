@@ -31,11 +31,15 @@ async function copyEmulator(){
     mkdirSync(dest,{recursive:true})
     const files=readdirSync(src);
     for(const file of files){
+        if (file.includes("jspi")|| file.includes("nodefs")){
+            continue
+        }
         copyFileSync(
             path.resolve(src,file),
             path.resolve(dest,file),
         )
     }
+    console.log("copied emulators wasm to ",dest)
 }
 
 main()

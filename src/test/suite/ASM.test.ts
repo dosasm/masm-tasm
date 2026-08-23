@@ -62,6 +62,7 @@ const emulator: DosEmulatorType[] = [
 	// DosEmulatorType.dosbox,
 	DosEmulatorType.dosboxX,
 	DosEmulatorType.jsdos,
+	DosEmulatorType.jsdosX
 ];
 
 if (!process.platform) {

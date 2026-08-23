@@ -14,7 +14,7 @@
 - 状态栏：拆分为独立的模拟器选择器和汇编器选择器两个按钮
 - 模拟器选择 Quick Pick：显示 dosbox / dosbox-x 的实际可执行文件路径
 - 2.1.1 配置格式从 TOML 迁移到 JSONC：支持多文件
-- 2.1.2 升级 jsdos emulator 到 8.4.1-dosasm0.1
+- 2.1.2 升级 jsdos emulator 到 8.4.1-dosasm0.1 并 将jsdos-x作为默认仿真工具
 
 
 
