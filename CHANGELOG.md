@@ -2,15 +2,8 @@
 
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
-#### 2.1.1 配置格式从 TOML 迁移到 JSONC
 
-- 将 `dosasm.toml` 重命名为 `dosasm.jsonc`，使用 JSONC（JSON with Comments）格式
-- JSONC 格式更通用、支持注释，与 VS Code 设置格式一致
-- 命令从多行字符串改为字符串数组，每行一个命令，更易读写
-- 移除 `@iarna/toml` 依赖，使用内置的 JSONC 解析器（支持注释）
-- 修复 `@iarna/toml` 在 Web 环境下因 `stream` 模块导致的构建错误
-
-#### 2.1.0 AI重构代码，实现符号重命名 (emulators 8.4.0)
+#### 2.1.x 使用AI重构代码，实现使用dosasm.jsonc 管理项目 (emulators 8.4.0,8.4.1)
 
 - 修复格式化器：顶层指令（`.386`、`.model`、`.STACK`、`include` 等）不再被错误缩进
 - 修复格式化器：空白行保留为空行，不再填充制表符
@@ -20,6 +13,9 @@
 - 修复解析器：截断文件（缺少闭合符）的块范围正确扩展到最后一个子节点
 - 状态栏：拆分为独立的模拟器选择器和汇编器选择器两个按钮
 - 模拟器选择 Quick Pick：显示 dosbox / dosbox-x 的实际可执行文件路径
+- 2.1.1 配置格式从 TOML 迁移到 JSONC：支持多文件
+- 2.1.2 升级 jsdos emulator 到 8.4.1-dosasm0.1
+
 
 
 #### 2.0.x 使用Jsdos 作为首选模拟器
@@ -33,7 +29,7 @@
 
 
 
-#### Use Jsdos as primary emulator
+#### 2.0.x Use Jsdos as primary emulator
 
 - MS-DOS support has been removed. If you still need to use MS-DOS, you can revert to version 1.x. The Worker mode of JSDOS should meet the requirements of most current usage scenarios.
 - Removed the bundled DOSBox binary and removed the dependency on the [vscode-dosbox](https://marketplace.visualstudio.com/items?itemName=xsro.vscode-dosbox) extension for easier maintenance.
