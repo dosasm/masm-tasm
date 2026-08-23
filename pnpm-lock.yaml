@@ -34,8 +34,8 @@ importers:
         specifier: ^0.0.77
         version: 0.0.77(supports-color@8.1.1)
       '@xsro/emulators':
-        specifier: 8.4.1-dosasm0.1
-        version: 8.4.1-dosasm0.1
+        specifier: 8.4.1-dosasm1.1
+        version: 8.4.1-dosasm1.1
       assert:
         specifier: ^2.1.0
         version: 2.1.0
@@ -511,8 +511,8 @@ packages:
       webpack-dev-server:
         optional: true
 
-  '@xsro/emulators@8.4.1-dosasm0.1':
-    resolution: {integrity: sha512-zS7CpyLvYw+PXoaR6GnVCw4c7P0eHrGBKatlIuGgtW8DN3QJhDx5y92M8i5SAWAJ451UqJhVQJX/0DLuUqzvZA==}
+  '@xsro/emulators@8.4.1-dosasm1.1':
+    resolution: {integrity: sha512-w3iSmgPFog3qP8gh/XmRTd4c0FFvA6rzPhEzji5OtQXJ6O5E9DLmeutIou1h8LYnKMyAlUjx/gEn0mOwxVcQ/w==}
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -2501,7 +2501,7 @@ snapshots:
       webpack: 5.109.2(esbuild@0.28.1)(webpack-cli@6.0.1)
       webpack-cli: 6.0.1(webpack@5.109.2)
 
-  '@xsro/emulators@8.4.1-dosasm0.1': {}
+  '@xsro/emulators@8.4.1-dosasm1.1': {}
 
   '@xtuc/ieee754@1.2.0': {}
 

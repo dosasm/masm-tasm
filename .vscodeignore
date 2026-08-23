@@ -16,6 +16,7 @@ samples/
 !README.md
 !CHANGELOG.md
 !resources/hoverinfo.md
+!resources/hoverinfo.parsed.md
 
 **/.gitignore
 **/azure-pipelines.yml

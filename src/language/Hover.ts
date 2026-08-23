@@ -26,7 +26,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
     cppdoc?: Cppdoc;
     /**Hover information from  [felixcloutier.com](https://www.felixcloutier.com/x86/)*/
     felix?: FELIX;
-    /**Hover information from `resources/hoverinfo.md`*/
+    /**Hover information from `resources/hoverinfo.parsed.md`*/
     fromMD?: HoverFromMarkdown;
 
     constructor(private ctx: vscode.ExtensionContext) {
@@ -37,7 +37,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
         this.cppdoc = await Cppdoc.create(this.ctx);
         const jsonfile = Uri.joinPath(this.ctx.extensionUri, 'resources/instructions-reference.json');
         this.felix = await FELIX.create(jsonfile);
-        const mdfile = Uri.joinPath(this.ctx.extensionUri, 'resources/hoverinfo.md');
+        const mdfile = Uri.joinPath(this.ctx.extensionUri, 'resources/hoverinfo.parsed.md');
         this.fromMD = await HoverFromMarkdown.create(mdfile);
 
     }

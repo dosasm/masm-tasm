@@ -499,7 +499,7 @@
   },
   "scripts": {
     "clean": "rimraf dist/ web/dist",
-    "postinstall": "node dev/downloadBundle.js",
+    "postinstall": "node dev/downloadBundle.js && node dev/parseHoverInfo.js",
     "watch": "webpack --mode development --watch",
     "compile": "webpack --mode production",
     "compile-dev": "webpack --mode development",
@@ -523,11 +523,11 @@
     "@typescript-eslint/parser": "^8.67.0",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/test-web": "^0.0.77",
-    "@xsro/emulators": "8.4.1-dosasm0.1",
+    "@xsro/emulators": "8.4.1-dosasm1.1",
     "assert": "^2.1.0",
     "browser-or-node": "^3.0.0",
     "buffer": "^6.0.3",
-    "eslint": "^9.39.5",
+    "eslint": "^10.9.0",
     "glob": "^11.1.0",
     "jszip": "^3.10.1",
     "mocha": "^11.8.0",
@@ -539,7 +539,8 @@
     "typescript": "^5.9.3",
     "vscode-uri": "^3.1.0",
     "webpack": "^5.109.2",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "yaml": "^2.9.0"
   },
   "repository": {
     "type": "git",
@@ -550,7 +551,5 @@
     "email": "xsro@foxmail.com"
   },
   "license": "MIT",
-  "dependencies": {
-    "yaml": "^2.9.0"
-  }
+  "dependencies": {}
 }

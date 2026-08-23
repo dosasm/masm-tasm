@@ -44,7 +44,7 @@ export class AsmHoverProvider implements vscode.HoverProvider {
             this.cppdoc = await Cppdoc.create(this.ctx);
             const jsonfile = vscode.Uri.joinPath(this.ctx.extensionUri, 'resources/instructions-reference.json');
             this.felix = await FELIX.create(jsonfile);
-            const mdfile = vscode.Uri.joinPath(this.ctx.extensionUri, 'resources/hoverinfo.md');
+            const mdfile = vscode.Uri.joinPath(this.ctx.extensionUri, 'resources/hoverinfo.parsed.md');
             this.fromMD = await HoverFromMarkdown.create(mdfile);
             this.initialized = true;
         } catch (e) {
