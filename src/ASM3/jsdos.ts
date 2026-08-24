@@ -355,9 +355,9 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
                     // }
                     if (ci) {
                         try {
-                            const target = ci.ci as any;
+                            const target = ci.ci as unknown as Record<string, unknown>;
                             const result = typeof target[ciCommand] === 'function'
-                                ? await target[ciCommand](...ciArgs)
+                                ? await (target[ciCommand] as (...args: unknown[]) => unknown)(...ciArgs)
                                 : target[ciCommand];
                             panel.webview.postMessage({
                                 command,

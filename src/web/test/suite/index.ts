@@ -1,4 +1,5 @@
 // imports mocha for the browser, defining the `mocha` global.
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- mocha/mocha is a browser bundle without type declarations
 require('mocha/mocha');
 
 export function run(): Promise<void> {

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { DosEmulatorType } from '../../../ASM3/types';
 
-import assert = require("assert");
+import * as assert from "assert";
 import { AsmResult } from "../../../ASM3/main";
 
 /** Simple delay function used to introduce gaps between tests */

@@ -32,7 +32,7 @@ export class HoverFromMarkdown {
             const [, metaStr, content] = match;
 
             // Parse metadata: "type:1 keyword:mov i18n:zh-cn"
-            const head: any = {};
+            const head: Partial<HoverInfoItem["head"]> = {};
             const parts = metaStr.trim().split(/\s+/);
             for (const part of parts) {
                 const colonIdx = part.indexOf(':');
@@ -50,7 +50,7 @@ export class HoverFromMarkdown {
 
             if (content.includes('---')) {
                 const info = content.split('\n---\n').map(s => s.trim());
-                target.push({ head, info } as HoverInfoItem);
+                target.push({ head: head as HoverInfoItem["head"], info });
             }
         }
 

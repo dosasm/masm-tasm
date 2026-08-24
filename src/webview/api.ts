@@ -8,7 +8,7 @@ declare const acquireVsCodeApi:
   | (() => Api);
 
 // Core type: wraps any type T in a Promise<T>
-type Promisify<T> = T extends Promise<any> ? T : Promise<T>;
+type Promisify<T> = T extends Promise<unknown> ? T : Promise<T>;
 
 // Core mapped type: iterates over all properties of an interface, converting method return types to Promise
 type PromisifyAllMethods<T> = {
@@ -20,7 +20,7 @@ type PromisifyAllMethods<T> = {
 export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   
   command_count = 0;
-  resolvers: Record<number, {resolve:(result: any) => void,reject:(error: any) => void,}> = {};
+  resolvers: Record<number, {resolve:(result: unknown) => void,reject:(error: unknown) => void,}> = {};
   constructor(public api: Api) {
     window.addEventListener("message", (msg) => {
       const data = msg.data;
@@ -40,7 +40,7 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   }
 
   get exited(): Promise<boolean> {
-    return this._exec_ci_command("exited", []);
+    return this._exec_ci_command<boolean>("exited", []);
   }
 
   getRunningProgram(): Promise<string> {
@@ -48,7 +48,7 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   }
   
   config(): Promise<DosConfig> {
-    return this._exec_ci_command("config", []);
+    return this._exec_ci_command<DosConfig>("config", []);
   }
 
   async height(): Promise<number> {
@@ -67,7 +67,7 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   }
 
   screenshot(): Promise<ImageData> {
-    return this._exec_ci_command("screenshot", []);
+    return this._exec_ci_command<ImageData>("screenshot", []);
   }
 
   async pause(): Promise<void> {
@@ -87,7 +87,7 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   }
 
   async exit(): Promise<void> {
-    return await this._exec_ci_command("exit", []);
+    return await this._exec_ci_command<void>("exit", []);
   }
 
   async simulateKeyPress(...keyCodes: number[]): Promise<void> {
@@ -114,12 +114,12 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
     await this._exec_ci_command("sendMouseSync", []);
   }
 
-  async sendBackendEvent(event: any): Promise<void> {
+  async sendBackendEvent(event: unknown): Promise<void> {
     await this._exec_ci_command("sendBackendEvent", [event]);
   }
   
   async persist(onlyChanges?: boolean): Promise<Uint8Array |null> {
-    const result=await this._exec_ci_command("persist",[onlyChanges]);
+    const result=await this._exec_ci_command<Uint8Array | null>("persist",[onlyChanges]);
     return result;
   }
   
@@ -128,31 +128,31 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
   }
   
   async networkConnect(networkType: NetworkType, address: string): Promise<void> {
-    return await this._exec_ci_command("networkConnect", [networkType, address]);
+    return await this._exec_ci_command<void>("networkConnect", [networkType, address]);
   }
 
   async networkDisconnect(networkType: NetworkType): Promise<void> {
-    return await this._exec_ci_command("networkDisconnect", [networkType]);
+    return await this._exec_ci_command<void>("networkDisconnect", [networkType]);
   }
 
   async asyncifyStats(): Promise<AsyncifyStats> {
-    return await this._exec_ci_command("asyncifyStats", []);
+    return await this._exec_ci_command<AsyncifyStats>("asyncifyStats", []);
   }
 
   async fsTree(): Promise<FsNode> {
-    return await this._exec_ci_command("fsTree", []);
+    return await this._exec_ci_command<FsNode>("fsTree", []);
   }
 
   async fsReadFile(file: string): Promise<Uint8Array> {
-    return await this._exec_ci_command("fsReadFile", [file]);
+    return await this._exec_ci_command<Uint8Array>("fsReadFile", [file]);
   }
 
   async fsWriteFile(file: string, contents: ReadableStream<Uint8Array> | Uint8Array): Promise<void> {
-    return await this._exec_ci_command("fsWriteFile", [file, contents]);
+    return await this._exec_ci_command<void>("fsWriteFile", [file, contents]);
   }
 
   async fsDeleteFile(file: string): Promise<boolean> {
-    return await this._exec_ci_command("fsDeleteFile", [file]);
+    return await this._exec_ci_command<boolean>("fsDeleteFile", [file]);
   }
 
   static create(): VscodeApi | undefined {
@@ -165,19 +165,25 @@ export class VscodeApi implements PromisifyAllMethods<CommandInterface>{
     }
   }
 
-  exec(command: string, args: any[]): Promise<any> {
+  exec<T = unknown>(command: string, args: unknown[]): Promise<T> {
     let uid = ++this.command_count;
     this.api.postMessage({ command, args, uid });
-    return new Promise((resolve,reject) => {
-      this.resolvers[uid] = {resolve,reject};
+    return new Promise<T>((resolve,reject) => {
+      this.resolvers[uid] = {
+        resolve: (result: unknown) => resolve(result as T),
+        reject: (error: unknown) => reject(error),
+      };
     });
   }
 
-  _exec_ci_command(ciCommand: string, ciArgs: any[]): Promise<any> {
+  _exec_ci_command<T = unknown>(ciCommand: string, ciArgs: unknown[]): Promise<T> {
     let uid = ++this.command_count;
     this.api.postMessage({ command:"send-ci-command", ciArgs, uid,ciCommand });
-    return new Promise((resolve,reject) => {
-      this.resolvers[uid] = {resolve,reject};
+    return new Promise<T>((resolve,reject) => {
+      this.resolvers[uid] = {
+        resolve: (result: unknown) => resolve(result as T),
+        reject: (error: unknown) => reject(error),
+      };
     });
   }
 }

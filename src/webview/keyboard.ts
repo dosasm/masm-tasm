@@ -22,7 +22,7 @@ export function bindKeyboard(ci: VscodeApi,el:HTMLCanvasElement) {
     function onKeyDown(e: KeyboardEvent) {
         e.stopPropagation();
         e.preventDefault();
-        if ((e.target as any).type === "text") {
+        if ((e.target as HTMLInputElement).type === "text") {
             return;
         }
 
@@ -35,7 +35,7 @@ export function bindKeyboard(ci: VscodeApi,el:HTMLCanvasElement) {
     function onKeyUp(e: KeyboardEvent) {
         e.stopPropagation();
         e.preventDefault();
-        if ((e.target as any).type === "text") {
+        if ((e.target as HTMLInputElement).type === "text") {
             return;
         }
         const keyCode = keys.domToKeyCode(e.keyCode, e.location);

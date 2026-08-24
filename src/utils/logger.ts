@@ -19,7 +19,7 @@ class Logger {
     logExtensionInfo(context: vscode.ExtensionContext) {
         const { platform, arch } = process;
         const target =
-          platform === undefined && (process as any).browser
+          platform === undefined && (process as { browser?: boolean }).browser
             ? "web"
             : platform + "-" + arch;
     

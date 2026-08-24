@@ -53,14 +53,20 @@ export function audioNode(sampleRate:number,
 
     let audioContext: AudioContext | null = null;
 
-    if (typeof AudioContext !== "undefined") {
-        audioContext = new AudioContext({
+    const audioContextWindow = window as Window & {
+        AudioContext?: typeof AudioContext;
+        webkitAudioContext?: typeof AudioContext;
+    };
+    const AudioContextCtor = audioContextWindow.AudioContext;
+    const webkitAudioContextCtor = audioContextWindow.webkitAudioContext;
+
+    if (AudioContextCtor) {
+        audioContext = new AudioContextCtor({
             sampleRate,
             latencyHint: "interactive",
         });
-    } else if (typeof (window as any).webkitAudioContext !== "undefined") {
-         
-        audioContext = new (window as any).webkitAudioContext({
+    } else if (webkitAudioContextCtor) {
+        audioContext = new webkitAudioContextCtor({
             sampleRate,
             latencyHint: "interactive",
         });

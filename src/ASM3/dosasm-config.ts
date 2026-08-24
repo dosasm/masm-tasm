@@ -87,7 +87,7 @@ export function expandCommands(commands: string[], vars: ExpandVars): string[] {
  * Simple JSONC parser: strips comments then parses with JSON.parse.
  * Supports single-line and multi-line comments; does not strip content inside strings.
  */
-function parseJSONC(text: string): any {
+function parseJSONC(text: string): unknown {
     let inString = false;
     let stringChar = "";
     let inLineComment = false;
@@ -196,11 +196,11 @@ export async function parseDosasmConfig(configUri: vscode.Uri): Promise<DosasmCo
     const text = Buffer.from(raw).toString("utf-8");
     const parsed = parseJSONC(text);
     const actionFolder = uriDirname(configUri);
-    const s = (parsed as any).action;
+    const s = (parsed as { action?: unknown }).action as Record<string, unknown> | undefined;
     if (!s || typeof s !== "object") {
         throw new Error(`dosasm.jsonc at ${configUri.fsPath} is missing an "action" section`);
     }
-    const toStringArray = (val: any): string[] => {
+    const toStringArray = (val: unknown): string[] => {
         if (Array.isArray(val)) {
             return val.map(String).filter(line => line.length > 0);
         }

@@ -4,6 +4,11 @@ import { audioNode } from "./audio-node";
 import { bindKeyboard, bindSmallSoftKeyboard } from "./keyboard";
 import { bindMouse } from "./mouse";
 
+interface CiInfo {
+    id: number;
+    exited: boolean;
+}
+
 const eles={
     ciPause:document.getElementById("ci-pause") as HTMLInputElement,
     uiMute:document.getElementById("ui-mute") as HTMLInputElement,
@@ -38,7 +43,7 @@ window.addEventListener("message", (msg) => {
         const cis = data.value;
         // Full option replacement to avoid count mismatches
         const prevSelected = eles.ciSelect.selectedIndex;
-        eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
+        eles.ciSelect.innerHTML = cis.map((ci: CiInfo, idx: number) =>
             `<option ${idx === prevSelected ? "selected" : ""}>${ci.id} ${ci.exited ? "exited" : "running"}</option>`
         ).join("");
         // Restore selection state (lost after innerHTML rebuild)
@@ -72,8 +77,9 @@ if (vapi) {
     // init the ci select
     // CI list is no longer polled; the extension host now actively pushes updates when CIs are added/removed (ci-list-updated)
     // Request the full list once on initial load
-    vapi.exec("get-ci-list", []).then((cis: any) => {
-        eles.ciSelect.innerHTML = cis.map((ci: any, idx: number) =>
+    vapi.exec("get-ci-list", []).then((cis) => {
+        const list = cis as CiInfo[];
+        eles.ciSelect.innerHTML = list.map((ci, idx) =>
             `<option>${ci.id} ${ci.exited ? "exited" : "running"}</option>`
         ).join("");
     });

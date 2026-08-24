@@ -30,6 +30,7 @@ export class VscodeWebPlatform implements Platform {
     return "";
   };
   node_require(path: string) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- dynamic require; only meaningful in a Node environment
     return require(path);
   }
   async createWorker(workerUrl: string, onerror: (e: ErrorEvent) => void, onmessage: (e: MessageEvent) => void): Promise<Worker> {
