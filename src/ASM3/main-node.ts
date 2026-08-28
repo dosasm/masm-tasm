@@ -285,6 +285,10 @@ async function runDosbox(
         if (autoexec.includes("exit")) useNodefsWatch = false;
     }
 
+    await box.run().catch(e => { 
+        console.error(e);
+        throw new Error(e); });
+    
     if (ctx.actionType !== ActionType.open && useNodefsWatch) {
         nodefs.watchFile(logUri.fsPath, () => {
             try {
@@ -295,14 +299,26 @@ async function runDosbox(
         });
     }
 
-    await box.run().catch(e => { throw new Error(e); });
-
-    let result: string | undefined;
-    if (nodefs.existsSync(logUri.fsPath)) {
-        result = nodefs.readFileSync(logUri.fsPath, { encoding: "utf-8" });
+    const waitResultPromise=new Promise<string>((resolve,reject)=>{
+        let checkCount=0;
+        const id=setInterval(() => {
+            if (nodefs.existsSync(logUri.fsPath)) {
+                clearInterval(id);
+                const result = nodefs.readFileSync(logUri.fsPath, { encoding: "utf-8" });
+                resolve(result);
+            }
+            if (checkCount>10){
+                reject();
+            }
+            checkCount++;
+        }, 1000);
+    });
+    
+    let result: string | undefined=await waitResultPromise.catch(e=>{return undefined;});
+    if (result){
         hook(result);
     }
-
+   
     const message = await promise;
     if (!result) throw new Error("can't get dosbox's result" + logUri.fsPath);
     return { message, result };

@@ -15,6 +15,7 @@
 - 模拟器选择 Quick Pick：显示 dosbox / dosbox-x 的实际可执行文件路径
 - 2.1.1 配置格式从 TOML 迁移到 JSONC：支持多文件
 - 2.1.2 升级 jsdos emulator 到 8.4.1 并 将jsdos-x作为默认仿真工具
+- 2.1.3 修复[#76](https://github.com/dosasm/masm-tasm/issues/76) DOS autoexec命令逻辑：1. 删除原来的 ">" 符号 2. 识别autoexec的mount命令，自动匹配变量到DOS内部路径。感谢 [lijh128](https://github.com/lijh128)
 
 
  #### 2.1.x Code refactored using AI, project now managed via dosasm.jsonc                                              

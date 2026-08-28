@@ -54,7 +54,7 @@ const profileId: string[] = [
 	"TASM",
 ];
 const emulator: DosEmulatorType[] = [
-	// DosEmulatorType.dosbox,
+	DosEmulatorType.dosbox,
 	DosEmulatorType.dosboxX,
 	DosEmulatorType.jsdos,
 	DosEmulatorType.jsdosX

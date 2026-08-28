@@ -4,7 +4,7 @@
   "publisher": "xsro",
   "description": "run MASM/TASM assembly in DOSBox 汇编语言开发插件",
   "preview": true,
-  "version": "2.1.2",
+  "version": "2.1.3",
   "keywords": [
     "dosbox",
     "16位",
