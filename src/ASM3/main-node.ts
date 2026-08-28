@@ -139,11 +139,32 @@ function buildDosboxAutoexec(
         };
 
         function expandDosboxCmd(cmd: string): string {
+            // First expand variables and built-in bundles
             let r = expandCommand(cmd, vars);
             r = r.replace(/\$\{<built-in>\/([^}]+)\}/g, (_m, name: string) => {
                 const p = ctx.bundleFolderMap.get(name);
                 return p ? `"${p}"` : `"${getBundleUri(context.extensionUri, name).fsPath}"`;
             });
+
+            // Then check if it's a mount command and update vars if needed
+            const mountMatch = r.match(/^\s*mount\s+([a-zA-Z])\s+(.+)/i);
+            if (mountMatch) {
+                const disk = mountMatch[1].toLowerCase();
+                let mountPath = mountMatch[2].trim();
+                // Remove surrounding quotes if present
+                if ((mountPath.startsWith('"') && mountPath.endsWith('"')) ||
+                    (mountPath.startsWith("'") && mountPath.endsWith("'"))) {
+                    mountPath = mountPath.slice(1, -1);
+                }
+
+                // Check if the file is within this mount path
+                if (fileUri.fsPath.startsWith(mountPath)) {
+                    const relativePath = path.relative(mountPath, fileUri.fsPath);
+                    vars.file = disk + ":\\" + relativePath;
+                    vars.filename = vars.file.replace(path.parse(vars.file).ext, "");
+                }
+            }
+
             return r;
         }
 
@@ -153,7 +174,6 @@ function buildDosboxAutoexec(
         for (const cmd of commands) {
             let r = expandDosboxCmd(cmd);
             if (!cmd.startsWith(">") && insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
-            if (cmd.startsWith(">")) r=r.substring(1);
             autoexec.push(r);
         }
     } else {
@@ -181,7 +201,6 @@ function buildDosboxAutoexec(
         for (const cmd of commands) {
             let r = expandCommand(cmd, vars);
             if (!cmd.startsWith(">")&& insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
-            if (cmd.startsWith(">")) r=r.substring(1);
             autoexec.push(r);
         }
     }

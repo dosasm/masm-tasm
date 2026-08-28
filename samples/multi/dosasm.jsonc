@@ -19,7 +19,10 @@
             "d:",
             "cd d:\\"
         ],
-        "open": [],
+        "open": [
+            "echo ${file}",
+            "echo ${filename}"
+        ],
         // The commands to run the code, add a `>` before the command if you need to prevent redirect the command's output
         "run": [
             "TASM 2.asm",
