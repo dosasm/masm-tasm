@@ -34,9 +34,9 @@ The built-in formatter follows the style of sample `.asm` files:
 You can also use other assembly language support extensions (e.g., the `asm-collection` language ID) by installing [ASM Code Lens](https://marketplace.visualstudio.com/items?itemName=maziac.asm-code-lens).
 
 ### Demo 2: Run and Debug
-| Using TASM via DOSBox          | Using MASM via msdos-player   |
+| Using TASM via DOSBox          | Using MASM via jsdos   |
 | ------------------------------ | ----------------------------- |
-| ![](pics/demo_dosbox_tasm.gif) | ![](pics/demo_msdos_masm.gif) |
+| ![](pics/demo_dosbox_tasm.gif) | ![](pics/demo_jsdos_masm_debug.gif) |
 
 When editing `assembly` files, right-click in the editor panel to access the following options:
 1. **Open Emulator**: Launch DOSBox and prepare the runtime environment

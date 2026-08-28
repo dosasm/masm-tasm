@@ -24,9 +24,9 @@
 
 ### Demo 2 :running:: 运行调试代码
 
-| 调用 DOSBox 运行 TASM             | 调用 msdos-player 运行 MASM      |
+| 调用 DOSBox 运行 TASM             | 调用 jsdos 运行 MASM      |
 | --------------------------------- | -------------------------------- |
-| ![](pics/demo_dosbox_tasm_zh.gif) | ![](pics/demo_msdos_masm_zh.gif) |
+| ![](pics/demo_dosbox_tasm_zh.gif) | ![](pics/demo_jsdos_masm_debug.gif) |
 
 当打开一个`ASM`后缀的汇编文件时，可以在编辑器右击，会出现以下三个选项：
 
