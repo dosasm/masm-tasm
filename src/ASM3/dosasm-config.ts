@@ -65,6 +65,7 @@ export interface ExpandVars {
  */
 export function expandCommand(cmd: string, vars: ExpandVars): string {
     let output = cmd;
+    if (output.startsWith(">")) output=output.substring(1);
     if (vars.bundlePath){
         output = output.replace(/\$\{<built-in>\/[^}]+\}/g, vars.bundlePath);
     }

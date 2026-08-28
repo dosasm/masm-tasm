@@ -153,6 +153,7 @@ function buildDosboxAutoexec(
         for (const cmd of commands) {
             let r = expandDosboxCmd(cmd);
             if (!cmd.startsWith(">") && insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
+            if (cmd.startsWith(">")) r=r.substring(1);
             autoexec.push(r);
         }
     } else {
@@ -180,6 +181,7 @@ function buildDosboxAutoexec(
         for (const cmd of commands) {
             let r = expandCommand(cmd, vars);
             if (!cmd.startsWith(">")&& insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
+            if (cmd.startsWith(">")) r=r.substring(1);
             autoexec.push(r);
         }
     }
