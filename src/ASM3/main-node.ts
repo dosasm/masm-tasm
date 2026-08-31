@@ -26,6 +26,35 @@ import { CIManager } from "./jsdos";
 import { runJsdos, resolveFile, resolveBundleData, logAction, loadDosasmConfig, type DosasmConfig } from "./run";
 import { expandCommand, expandCommands, ExpandVars, findBundleRefs, getBundleUri } from "./dosasm-config";
 
+// ─── Logfile Archiving ─────────────────────────────────────────────
+
+/**
+ * Move all existing .log files from the assembly tools folder to a `logs` subfolder.
+ * This prevents log files from accumulating in the main folder.
+ */
+function archiveLogFiles(folder: string): void {
+    const logsDir = path.join(folder, "logs");
+    if (!nodefs.existsSync(logsDir)) {
+        nodefs.mkdirSync(logsDir, { recursive: true });
+    }
+
+    try {
+        const entries = nodefs.readdirSync(folder);
+        for (const entry of entries) {
+            if (entry.endsWith(".log") || entry.endsWith(".LOG")) {
+                const srcPath = path.join(folder, entry);
+                const destPath = path.join(logsDir, entry);
+                // Only move if the file exists and is a regular file
+                if (nodefs.existsSync(srcPath) && nodefs.lstatSync(srcPath).isFile()) {
+                    nodefs.renameSync(srcPath, destPath);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("archiveLogFiles error:", e);
+    }
+}
+
 // ─── DOSBox Execution Context ────────────────────────────────────
 
 interface DosboxContext {
@@ -263,6 +292,9 @@ async function runDosbox(
 ): Promise<{ message: string; result: string }> {
     logAction(ctx.actionType, ctx.fileUri.fsPath);
 
+    // Archive previous log files to logs/ subfolder
+    archiveLogFiles(ctx.assemblyToolsFolder.fsPath);
+
     // Prepare the isolated directory
     await emptyFolder(ctx.seperateSpaceFolder);
     if (ctx.fileCopyUri) {
@@ -360,6 +392,9 @@ async function runDosboxX(
     box: DOSBox
 ): Promise<{ message: string; result: string }> {
     logAction(ctx.actionType, ctx.fileUri.fsPath);
+
+    // Archive previous log files to logs/ subfolder
+    archiveLogFiles(ctx.assemblyToolsFolder.fsPath);
 
     // Prepare the isolated directory
     await emptyFolder(ctx.seperateSpaceFolder);

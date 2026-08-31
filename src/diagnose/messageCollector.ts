@@ -8,17 +8,17 @@ export function messageCollector(): [(msg: string) => void, Promise<string>] {
     return [
         (msg: string) => {
             allmsg += msg;
-            let re = allmsg.match(/Microsoft \(R\) MASM Compatibility Driver([\s\S]*)Microsoft \(R\) Segmented Executable Linker/);
+            let re = allmsg.match(/Microsoft \(R\) MASM Compatibility Driver\s*(\r?\n){2}([\s\S]*)(\r?\n){2}/);
             if (re && re[0] && resolve) {
                 resolve(re[0]);
                 resolve = undefined;
             }
-            re = allmsg.match(/Turbo Assembler  Version 4.1  Copyright \(c\) 1988, 1996 Borland International([\s\S]*)Turbo Link  Version 7\./);
+            re = allmsg.match(/Turbo Assembler  Version 4.1  Copyright \(c\) 1988, 1996 Borland International\s*(\r?\n){2}([\s\S]*)(\r?\n){2}/);
             if (re && re[0] && resolve) {
                 resolve(re[0]);
                 resolve = undefined;
             }
-            re = allmsg.match(/Microsoft \(R\) Macro Assembler Version 5.00([\s\S]*)Microsoft \(R\) Overlay Linker  Version 3.60/);
+            re = allmsg.match(/Microsoft \(R\) Macro Assembler Version 5.00\s*(\r?\n){2}([\s\S]*)(\r?\n){2}/);
             if (re && re[0] && resolve) {
                 resolve(re[0]);
                 resolve = undefined;
