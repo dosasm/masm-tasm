@@ -87,6 +87,17 @@ export interface ExpandVars {
 // ─── Template Expansion ────────────────────────────────────
 
 /**
+ * Wrap a path in double quotes if it contains spaces.
+ * This prevents DOS/Windows from interpreting spaces as argument delimiters.
+ */
+function quotePathIfNeeded(p: string): string {
+    if (p && p.includes(" ") && !p.startsWith('"') && !p.startsWith("'")) {
+        return `"${p}"`;
+    }
+    return p;
+}
+
+/**
  * Expand all template variables in a command.
  *
  * Supported variables:
@@ -102,6 +113,9 @@ export interface ExpandVars {
  * - ${seperateSpaceFolder} — D: drive mount target
  * - ${logfile} — Log file path (DOSBox only)
  *
+ * Path variables are automatically quoted when they contain spaces,
+ * preventing DOS from misinterpreting paths like "Application Support" as separate arguments.
+ *
  * The '>' prefix has no special meaning in v1; if present it is silently stripped.
  */
 export function expandCommand(cmd: string, vars: ExpandVars): string {
@@ -109,33 +123,33 @@ export function expandCommand(cmd: string, vars: ExpandVars): string {
     // v1: '>' prefix is silently stripped, no special semantics
     if (output.startsWith(">")) output = output.substring(1);
     if (vars.bundlePath) {
-        output = output.replace(/\$\{<built-in>\/[^}]+\}/g, vars.bundlePath);
+        output = output.replace(/\$\{<built-in>\/[^}]+\}/g, quotePathIfNeeded(vars.bundlePath));
     }
     // Pass through ${https://...} and ${http://...} unchanged
     // (they are already valid URLs, used directly in mount commands)
-    output = output.replace(/\$\{file\}/g, vars.file);
-    output = output.replace(/\$\{filename\}/g, vars.filename);
-    output = output.replace(/\$\{actionFolder\}/g, vars.actionFolder);
+    output = output.replace(/\$\{file\}/g, quotePathIfNeeded(vars.file));
+    output = output.replace(/\$\{filename\}/g, quotePathIfNeeded(vars.filename));
+    output = output.replace(/\$\{actionFolder\}/g, quotePathIfNeeded(vars.actionFolder));
     if (vars.logfile) {
-        output = output.replace(/\$\{logfile\}/g, vars.logfile);
+        output = output.replace(/\$\{logfile\}/g, quotePathIfNeeded(vars.logfile));
     }
     if (vars.seperateSpaceFolder) {
-        output = output.replace(/\$\{seperateSpaceFolder\}/g, vars.seperateSpaceFolder);
+        output = output.replace(/\$\{seperateSpaceFolder\}/g, quotePathIfNeeded(vars.seperateSpaceFolder));
     }
     if (vars.filefolder) {
-        output = output.replace(/\$\{filefolder\}/g, vars.filefolder);
+        output = output.replace(/\$\{filefolder\}/g, quotePathIfNeeded(vars.filefolder));
     }
     if (vars.fileDisk) {
         output = output.replace(/\$\{fileDisk\}/g, vars.fileDisk);
     }
     if (vars.fileOS) {
-        output = output.replace(/\$\{fileOS\}/g, vars.fileOS);
+        output = output.replace(/\$\{fileOS\}/g, quotePathIfNeeded(vars.fileOS));
     }
     if (vars.fileOSname) {
-        output = output.replace(/\$\{fileOSname\}/g, vars.fileOSname);
+        output = output.replace(/\$\{fileOSname\}/g, quotePathIfNeeded(vars.fileOSname));
     }
     if (vars.fileOSfolder) {
-        output = output.replace(/\$\{fileOSfolder\}/g, vars.fileOSfolder);
+        output = output.replace(/\$\{fileOSfolder\}/g, quotePathIfNeeded(vars.fileOSfolder));
     }
     return output;
 }
