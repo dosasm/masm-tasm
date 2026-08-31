@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { ActionProfile, Assembler, DosEmulatorType } from "./types";
+import { ActionProfile, Assembler, DosEmulatorType, OverWrite } from "./types";
 
 function masmConfig() {
     return vscode.workspace.getConfiguration("masmtasm");
@@ -40,11 +40,6 @@ export function getAction(): ActionProfile {
     return getActions()[getAssembler()];
 }
 
-/** Get the base bundle path for the current assembler */
-export function getBaseBundle(): string {
-    return getAction().baseBundle;
-}
-
 /** Whether to save the file before running */
 export function getSaveFirst(): boolean {
     return masmConfig().get<boolean>("ASM.savefirst", true);
@@ -59,4 +54,28 @@ export function getDosboxRun(): string {
 export function getDosboxConfig(emulator: DosEmulatorType): Record<string, string> | undefined {
     const key = emulator === DosEmulatorType.dosboxX ? "dosboxX.config" : "dosbox.config";
     return masmConfig().get<Record<string, string>>(key);
+}
+
+/**
+ * Resolve overwrite entries for the current emulator.
+ * Returns a merged ActionProfile with overwrite fields applied.
+ */
+export function resolveOverwrite(action: ActionProfile): ActionProfile {
+    if (!action.overwrite || action.overwrite.length === 0) {
+        return action;
+    }
+    const emulator = getEmulator();
+    for (const ow of action.overwrite) {
+        if (ow.when.emulator === emulator) {
+            return {
+                ...action,
+                before: ow.before !== undefined ? ow.before : action.before,
+                open: ow.open !== undefined ? ow.open : action.open,
+                run: ow.run !== undefined ? ow.run : action.run,
+                debug: ow.debug !== undefined ? ow.debug : action.debug,
+                copyFileAs: ow.copyFileAs !== undefined ? ow.copyFileAs : action.copyFileAs,
+            };
+        }
+    }
+    return action;
 }

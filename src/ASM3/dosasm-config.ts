@@ -4,12 +4,13 @@
  * Features:
  * - Recursively search upward from a file directory for dosasm.jsonc
  * - Parse the action section's before/open/run/debug commands
- * - Provide unified template variable expansion (${file}, ${filename}, ${actionFolder}, ${<built-in>/...})
+ * - Provide unified template variable expansion (${file}, ${filename}, ${actionFolder}, ${<built-in>/...}, ${logfile})
  */
 
 import * as vscode from "vscode";
 import { logger } from "../utils/logger";
 import { uriUtils } from "../utils/util";
+import { DosEmulatorType } from "./types";
 
 const DOSASM_JSONC = "dosasm.jsonc";
 
@@ -26,6 +27,19 @@ export interface DosasmAction {
      * If set to null, no file copy is performed before running or debugging.
      */
     copyFileAs: string | null;
+    /** Glob patterns for directories to skip when injecting the action folder (jsdos mode only) */
+    ignore?: string[];
+    /** Conditional command overrides keyed by emulator */
+    overwrite?: {
+        when: {
+            emulator: string;
+        };
+        before?: string[];
+        open?: string[];
+        run?: string[];
+        debug?: string[];
+        copyFileAs?: string | null;
+    }[];
 }
 
 /** Complete dosasm.jsonc configuration */
@@ -42,6 +56,16 @@ export interface ExpandVars {
     file: string;
     /** File path without extension */
     filename: string;
+    /** Parent directory of the file inside DOS */
+    filefolder: string;
+    /** Drive letter of the file inside DOS */
+    fileDisk: string;
+    /** Full path of the assembly file in the real OS (for mount commands) */
+    fileOS: string;
+    /** File path without extension in the real OS (for mount commands) */
+    fileOSname: string;
+    /** Parent directory of the file in the real OS (for mount commands) */
+    fileOSfolder: string;
     /** Path of the directory containing dosasm.jsonc */
     actionFolder: string;
     /**
@@ -50,6 +74,14 @@ export interface ExpandVars {
      * - In dosbox mode: the actual path of the extracted folder
      */
     bundlePath: string;
+    /**
+     * Seperate space folder (D: drive mount target):
+     * - In jsdos mode: "./code" (virtual code directory)
+     * - In dosbox mode: the actual path of the isolated workspace folder under globalStorageUri
+     */
+    seperateSpaceFolder: string;
+    /** Log file path (DOSBox only), dynamically generated */
+    logfile?: string;
 }
 
 // ─── Template Expansion ────────────────────────────────────
@@ -58,20 +90,53 @@ export interface ExpandVars {
  * Expand all template variables in a command.
  *
  * Supported variables:
- * - ${file} — Full path of the assembly file
- * - ${filename} — File path without extension
+ * - ${file} — Full path of the assembly file in DOS
+ * - ${filename} — File path without extension in DOS
+ * - ${filefolder} — Parent directory of the file in DOS
+ * - ${fileDisk} — Drive letter of the file in DOS
+ * - ${fileOS} — Full path of the assembly file in the real OS (for mount commands)
+ * - ${fileOSname} — File path without extension in the real OS (for mount commands)
+ * - ${fileOSfolder} — Parent directory of the file in the real OS (for mount commands)
  * - ${actionFolder} — Directory containing dosasm.jsonc
  * - ${<built-in>/xxx.jsdos} — Bundle path (determined by the bundlePath parameter)
+ * - ${seperateSpaceFolder} — D: drive mount target
+ * - ${logfile} — Log file path (DOSBox only)
+ *
+ * The '>' prefix has no special meaning in v1; if present it is silently stripped.
  */
 export function expandCommand(cmd: string, vars: ExpandVars): string {
     let output = cmd;
-    if (output.startsWith(">")) output=output.substring(1);
-    if (vars.bundlePath){
+    // v1: '>' prefix is silently stripped, no special semantics
+    if (output.startsWith(">")) output = output.substring(1);
+    if (vars.bundlePath) {
         output = output.replace(/\$\{<built-in>\/[^}]+\}/g, vars.bundlePath);
     }
+    // Pass through ${https://...} and ${http://...} unchanged
+    // (they are already valid URLs, used directly in mount commands)
     output = output.replace(/\$\{file\}/g, vars.file);
     output = output.replace(/\$\{filename\}/g, vars.filename);
     output = output.replace(/\$\{actionFolder\}/g, vars.actionFolder);
+    if (vars.logfile) {
+        output = output.replace(/\$\{logfile\}/g, vars.logfile);
+    }
+    if (vars.seperateSpaceFolder) {
+        output = output.replace(/\$\{seperateSpaceFolder\}/g, vars.seperateSpaceFolder);
+    }
+    if (vars.filefolder) {
+        output = output.replace(/\$\{filefolder\}/g, vars.filefolder);
+    }
+    if (vars.fileDisk) {
+        output = output.replace(/\$\{fileDisk\}/g, vars.fileDisk);
+    }
+    if (vars.fileOS) {
+        output = output.replace(/\$\{fileOS\}/g, vars.fileOS);
+    }
+    if (vars.fileOSname) {
+        output = output.replace(/\$\{fileOSname\}/g, vars.fileOSname);
+    }
+    if (vars.fileOSfolder) {
+        output = output.replace(/\$\{fileOSfolder\}/g, vars.fileOSfolder);
+    }
     return output;
 }
 
@@ -217,6 +282,27 @@ export async function parseDosasmConfig(configUri: vscode.Uri): Promise<DosasmCo
         debug: toStringArray(s.debug),
         copyFileAs: typeof s.copyFileAs === "string" ? s.copyFileAs : null,
     };
+    // Parse ignore patterns
+    if (Array.isArray(s.ignore)) {
+        action.ignore = s.ignore.map(String);
+    }
+    // Parse overwrite entries
+    if (Array.isArray(s.overwrite)) {
+        action.overwrite = (s.overwrite as unknown[]).map(ow => {
+            const o = ow as Record<string, unknown>;
+            const when = (o.when as Record<string, unknown>) || {};
+            return {
+                when: {
+                    emulator: String(when.emulator || ""),
+                },
+                before: toStringArray(o.before),
+                open: toStringArray(o.open),
+                run: toStringArray(o.run),
+                debug: toStringArray(o.debug),
+                copyFileAs: typeof o.copyFileAs === "string" ? o.copyFileAs : null,
+            };
+        });
+    }
     logger.channel(`Loaded dosasm.jsonc from ${configUri.fsPath}`);
     return { actionFolder, action };
 }
@@ -244,11 +330,12 @@ export async function loadDosasmConfig(fileUri: vscode.Uri): Promise<DosasmConfi
  */
 export function findBundleRefs(commands: string[]): string[] {
     const refs = new Set<string>();
-    const re = /\$\{<built-in>\/([^}]+)\}/g;
+    // Match ${<built-in>/NAME.jsdos} and ${https://...} / ${http://...}
+    const re = /\$\{(?:<built-in>\/([^}]+)|(https?:\/\/[^}]+))\}/g;
     for (const cmd of commands) {
         let m: RegExpExecArray | null;
         while ((m = re.exec(cmd)) !== null) {
-            refs.add(m[1]);
+            refs.add(m[1] || m[2]);
         }
     }
     return [...refs];
@@ -257,4 +344,44 @@ export function findBundleRefs(commands: string[]): string[] {
 /** Get the extension resource URI for a built-in bundle */
 export function getBundleUri(extensionUri: vscode.Uri, bundleName: string): vscode.Uri {
     return vscode.Uri.joinPath(extensionUri, "resources", bundleName);
+}
+
+/**
+ * Check if a bundle reference is an HTTPS/HTTP URL.
+ */
+export function isNetworkBundle(ref: string): boolean {
+    return ref.startsWith("https://") || ref.startsWith("http://");
+}
+
+/**
+ * Resolve a bundle reference to its data.
+ * Supports both local built-in bundles and HTTPS/HTTP network zip packages.
+ *
+ * @param extensionUri - Extension URI for resolving local bundles
+ * @param bundleRef - Bundle reference (e.g. "TASM.jsdos" or "https://example.com/bundle.jsdos")
+ * @returns The bundle data as a Uint8Array
+ */
+export async function resolveBundleSource(
+    extensionUri: vscode.Uri,
+    bundleRef: string
+): Promise<Uint8Array> {
+    if (isNetworkBundle(bundleRef)) {
+        const response = await fetch(bundleRef, { redirect: "follow" });
+        if (!response.ok) {
+            throw new Error(`Failed to fetch bundle from ${bundleRef}: ${response.status} ${response.statusText}`);
+        }
+        return new Uint8Array(await response.arrayBuffer());
+    }
+    const uri = getBundleUri(extensionUri, bundleRef);
+    return vscode.workspace.fs.readFile(uri);
+}
+
+/**
+ * Extract the bundle reference from a template variable if it's a direct HTTPS/HTTP URL.
+ * Returns the URL string if the pattern is ${https://...} or ${http://...}, otherwise null.
+ */
+export function extractNetworkUrl(cmd: string): string | null {
+    const re = /^\$\{(https?:\/\/[^}]+)\}$/;
+    const m = cmd.trim().match(re);
+    return m ? m[1] : null;
 }

@@ -13,13 +13,28 @@ export enum DosEmulatorType {
     jsdosX = 'jsdos-x',
 }
 
+/** Conditional command override keyed by emulator */
+export interface OverWrite {
+    when: {
+        emulator: DosEmulatorType;
+    };
+    before?: string[];
+    open?: string[];
+    run?: string[];
+    debug?: string[];
+    copyFileAs?: string | null;
+}
+
 /** The profile of a build action */
 export interface ActionProfile {
-    baseBundle: string;
     before?: string[];
+    open?: string[];
     run: string[];
     debug: string[];
+    copyFileAs?: string | null;
     support?: string[];
+    ignore?: string[];
+    overwrite?: OverWrite[];
 }
 
 export type Assembler = string;

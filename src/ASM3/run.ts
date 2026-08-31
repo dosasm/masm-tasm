@@ -23,9 +23,9 @@ import * as Diag from "../diagnose/main";
 import { CIManager } from "./jsdos";
 import { Jsdos } from "./jsdos/main";
 import {
-    DosasmConfig, ExpandVars,
-    expandCommands,
-    findBundleRefs, getBundleUri, loadDosasmConfig,
+    DosasmConfig, DosasmAction, ExpandVars,
+    expandCommand,
+    extractNetworkUrl, findBundleRefs, loadDosasmConfig, resolveBundleSource,
 } from "./dosasm-config";
 
 // ─── Types ────────────────────────────────────────────────
@@ -66,26 +66,33 @@ export async function resolveBundleData(
     context: vscode.ExtensionContext,
     cfg: DosasmConfig | null
 ): Promise<Uint8Array> {
+    // Collect bundle refs from all command sections
+    const allCommands: string[] = [];
     if (cfg) {
-        // Scan all command sections for bundle references
-        const allCommands = [
+        allCommands.push(
             ...cfg.action.before,
             ...cfg.action.run,
             ...cfg.action.debug,
             ...(cfg.action.open ?? []),
-        ];
-        const refs = findBundleRefs(allCommands);
-        if (refs.length > 0) {
-            logger.channel(`Using jsonc bundle: ${refs[0]}`);
-            return vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, refs[0]));
-        }
+        );
+    } else {
+        // Default config: scan the action profile's commands too
+        const action = config.resolveOverwrite(config.getAction());
+        allCommands.push(
+            ...(action.before ?? []),
+            ...action.run,
+            ...action.debug,
+            ...(action.open ?? []),
+        );
     }
-    // Default bundle
-    const bundlePath = vscode.Uri.joinPath(
-        context.extensionUri,
-        config.getBaseBundle().replace("<built-in>/", "resources/")
-    );
-    return vscode.workspace.fs.readFile(bundlePath);
+
+    const refs = findBundleRefs(allCommands);
+    if (refs.length > 0) {
+        logger.channel(`Using bundle: ${refs[0]}`);
+        return resolveBundleSource(context.extensionUri, refs[0]);
+    }
+    // Fallback: no bundle refs found in commands — throw an error
+    throw new Error("No bundle references found in commands. Ensure commands contain ${<built-in>/...} references.");
 }
 
 /** Log the action being executed */
@@ -102,17 +109,28 @@ export function logAction(act: ActionType, file: string): void {
 
 /**
  * Add all files in a directory and its subdirectories to jszip.
+ * Skips directories matching the `ignore` glob patterns.
  * @param jszip - JSZip instance
  * @param dirUri - Host directory URI
  * @param zipPrefix - Prefix path in the zip (e.g. "action/")
+ * @param ignorePatterns - Glob patterns for directories to skip
  */
-async function addFolderToJszip(jszip: typeof Jszip.default, dirUri: vscode.Uri, zipPrefix: string): Promise<void> {
+async function addFolderToJszip(
+    jszip: typeof Jszip.default,
+    dirUri: vscode.Uri,
+    zipPrefix: string,
+    ignorePatterns: string[] = ["node_modules", ".git", ".vscode"]
+): Promise<void> {
     const entries = await vscode.workspace.fs.readDirectory(dirUri);
     for (const [name, type] of entries) {
+        // Check if this directory should be ignored
+        if (type === vscode.FileType.Directory && ignorePatterns.some(p => name === p || name.startsWith(p.replace(/\*/g, "")))) {
+            continue;
+        }
         const entryUri = vscode.Uri.joinPath(dirUri, name);
         const zipPath = zipPrefix + name;
         if (type === vscode.FileType.Directory) {
-            await addFolderToJszip(jszip, entryUri, zipPath + "/");
+            await addFolderToJszip(jszip, entryUri, zipPath + "/", ignorePatterns);
         } else if (type === vscode.FileType.File) {
             const data = await vscode.workspace.fs.readFile(entryUri);
             jszip.file(zipPath, data);
@@ -130,6 +148,7 @@ export type { DosasmConfig };
 
 /**
  * Get the list of commands to execute (selects run/debug/open based on actionType).
+ * For default config, applies overwrite resolution first.
  */
 function getCommands(
     actionType: ActionType,
@@ -141,62 +160,82 @@ function getCommands(
             : actionType === ActionType.debug ? a.debug
                 : a.open ?? [];
     }
-    const action = config.getAction();
+    const action = config.resolveOverwrite(config.getAction());
     return actionType === ActionType.run ? action.run
         : actionType === ActionType.debug ? action.debug
-            : [];
+            : action.open ?? [];
 }
 
 /**
- * Build the jsdos autoexec command array.
+ * Process a jsdos mount command at the JSZip level.
  *
- * @param actionType - Execution type (open/run/debug)
- * @param cfg - dosasm.jsonc configuration (null means use default config)
- * @param fileInJsdos - Path of the file in the jsdos virtual filesystem (e.g. "D:\\test.ASM")
+ * Mount command formats:
+ * - `mount c ${<built-in>/xxx.jsdos}` → extract bundle into `c/`
+ * - `mount d ${seperateSpaceFolder}` → create empty `d/` directory
+ * - `mount e ${fileOSfolder}` → copy real OS folder into `e/`, excluding ignored
+ *
+ * @returns `true` if the command was handled as a mount, `false` otherwise.
  */
-function buildJsdosAutoexec(
-    actionType: ActionType,
-    cfg: DosasmConfig | null,
-    fileInJsdos: string
-): string[] {
-    const autoexec: string[] = [];
-    // In jsdos, actionFolder maps to the ./action directory in the virtual filesystem
-    const actionFolder = cfg ? "./action" : "./code";
-    const vars: ExpandVars = {
-        file: fileInJsdos,
-        filename: fileInJsdos ? fileInJsdos.replace(path.parse(fileInJsdos).ext, "") : "",
-        actionFolder,
-        bundlePath: ".",
-    };
+async function processJsdosMount(
+    jszip: typeof Jszip.default,
+    cmd: string,
+    context: vscode.ExtensionContext,
+    ignorePatterns: string[] | undefined,
+    fileOSPath: string
+): Promise<{ handled: boolean; drive?: string; workspaceDrive?: string }> {
+    const trimmed = cmd.trim();
+    if (!trimmed.startsWith("mount ")) return { handled: false };
 
-    if (cfg) {
-        // jsonc mode: dosasm.jsonc controls all mount points
-        autoexec.push(...expandCommands(cfg.action.before, vars));
-    } else {
-        // Default mode: automatic mounting
-        autoexec.push("mount c .", "mount d ./code", "d:");
-        const before = config.getAction().before;
-        if (before) autoexec.push(...before);
+    const match = trimmed.match(/^mount\s+([a-zA-Z]):?\s+(.+)$/);
+    if (!match) return { handled: false };
+
+    const drive = match[1].toLowerCase();
+    let target = match[2].trim().replace(/^["']|["']$/g, "");
+
+    // mount c ${<built-in>/xxx.jsdos} or mount c ${https://...} → extract bundle into c/
+    const builtInMatch = target.match(/^\$\{<built-in>\/([^}]+)\}$/);
+    const networkUrl = extractNetworkUrl(target);
+    const bundleRef = builtInMatch ? builtInMatch[1] : (networkUrl || "");
+    if (bundleRef) {
+        const bundleData = await resolveBundleSource(context.extensionUri, bundleRef);
+        const bundleZip = await Jszip.loadAsync(bundleData);
+        for (const [path, file] of Object.entries(bundleZip.files)) {
+            if (!file.dir) {
+                const data = await file.async("uint8array");
+                jszip.file(`${drive}/${path}`, data);
+            }
+        }
+        return { handled: true, drive };
     }
 
-    // Add run/debug/open commands
-    const commands = getCommands(actionType, cfg);
-    if (commands.length > 0) {
-        autoexec.push(...expandCommands(commands, vars));
+    // mount d ${seperateSpaceFolder} → create empty directory
+    if (target === "${seperateSpaceFolder}") {
+        jszip.folder(drive);
+        return { handled: true, drive, workspaceDrive: drive };
     }
 
-    return autoexec;
+    // mount e ${fileOSfolder} → copy real OS folder, excluding ignored
+    if (target === "${fileOSfolder}") {
+        const ignore = ignorePatterns ?? ["node_modules", ".git", ".vscode"];
+        // fileOSfolder is the parent directory of the file
+        const parentDir = uriUtils.dirname(vscode.Uri.file(fileOSPath));
+        await addFolderToJszip(jszip, parentDir, `${drive}/`, ignore);
+        return { handled: true, drive };
+    }
+
+    return { handled: false };
 }
 
 /**
- * Execute assembly programs in jsdos。
+ * Execute assembly programs in jsdos.
  *
  * Flow:
- * 1. Load bundle → JSZip
- * 2. Inject the current editor file into code/test.<ext>
- * 3. Build autoexec commands
- * 4. Start the emulator
- * 5. Collect output for diagnostics
+ * 1. Load configuration
+ * 2. Process mount commands at JSZip level (extract bundles, create dirs, copy files)
+ * 3. Inject the current editor file into the workspace directory
+ * 4. Build autoexec commands (non-mount commands + run/debug/open)
+ * 5. Start the emulator
+ * 6. Collect output for diagnostics
  */
 export async function runJsdos(
     context: vscode.ExtensionContext,
@@ -212,33 +251,86 @@ export async function runJsdos(
     await vscode.window.showTextDocument(resolved.doc, { preview: false });
     logAction(actionType, resolved.uri.fsPath);
 
-    // Load configuration and bundle
+    // Load configuration
     const cfg = await loadDosasmConfig(resolved.uri);
-    const bundleData = await resolveBundleData(context, cfg);
-    const jszip = await Jszip.loadAsync(bundleData);
+    const action = cfg ? cfg.action : config.resolveOverwrite(config.getAction());
+    const beforeCommands = action.before ?? [];
+    const actionIgnore = cfg ? cfg.action.ignore : undefined;
 
-    // Inject the current file into the jsdos bundle
-    const copyFileAs = cfg?.action.copyFileAs;
-    let fileInJsdos = "";
-    // Use the explicitly opened document instead of the active editor: the active
-    // editor can be the output channel (or a webview) which would give a wrong URI.
+    // Create empty jszip — mount commands will populate it
+    const jszip = new Jszip.default();
+
+    // ── Process mount commands at JSZip level ──
+    const autoexecBefore: string[] = [];
+    const mountedDrives: string[] = []; // tracks drives that need mount in autoexec
+    let workspaceDrive = "d"; // default workspace drive
+
+    for (const cmd of beforeCommands) {
+        const result = await processJsdosMount(jszip, cmd, context, actionIgnore, resolved.uri.fsPath);
+        if (result.handled) {
+            // Add mount command for this drive so jsdos maps it correctly
+            mountedDrives.push(result.drive || result.workspaceDrive || "");
+            if (result.workspaceDrive) {
+                workspaceDrive = result.workspaceDrive;
+            }
+            continue; // mount handled at JSZip level, not in autoexec
+        }
+        // Non-mount command: will be expanded and added to autoexec
+        autoexecBefore.push(cmd);
+    }
+
+    // ── Inject the current file into the workspace directory ──
     const doc = resolved.doc;
+    const copyFileAs = action.copyFileAs;
+    let fileInJsdos = "";
     if (copyFileAs !== null) {
         const targetPath = copyFileAs || ("test" + uriUtils.extname(resolved.doc.uri));
-        jszip.file("code/" + targetPath, doc.getText());
-        fileInJsdos = "D:\\" + targetPath;
+        jszip.file(`${workspaceDrive}/${targetPath}`, doc.getText());
+        fileInJsdos = `${workspaceDrive.toUpperCase()}:\\${targetPath}`;
     } else {
-        // When copyFileAs is null, do not inject the file; use the original file path
-        fileInJsdos = "D:\\" + path.basename(resolved.doc.uri.fsPath);
+        fileInJsdos = `${workspaceDrive.toUpperCase()}:\\${path.basename(resolved.doc.uri.fsPath)}`;
     }
 
-    // Add the action directory (containing dosasm.jsonc) to the jsdos bundle
+    // ── Build template vars ──
+    const fileInJsdosParsed = path.parse(fileInJsdos);
+    const fileOSParsed = path.parse(resolved.uri.fsPath);
+    const actionFolder = cfg ? "./action" : "./code";
+    const vars: ExpandVars = {
+        file: fileInJsdos,
+        filename: fileInJsdos.replace(fileInJsdosParsed.ext, ""),
+        filefolder: fileInJsdosParsed.dir ? fileInJsdosParsed.dir + "\\" : fileInJsdos.substring(0, 2),
+        fileDisk: fileInJsdos.substring(0, 1),
+        fileOS: resolved.uri.fsPath,
+        fileOSname: resolved.uri.fsPath.replace(fileOSParsed.ext, ""),
+        fileOSfolder: fileOSParsed.dir ? fileOSParsed.dir + "\\" : "",
+        actionFolder,
+        bundlePath: ".",
+        seperateSpaceFolder: "./tempdir",
+    };
+
+    // ── Add action directory (dosasm.jsonc mode) ──
     if (cfg) {
-        await addFolderToJszip(jszip, cfg.actionFolder, "action/");
+        await addFolderToJszip(jszip, cfg.actionFolder, "action/", cfg.action.ignore);
     }
 
-    // Build and set autoexec
-    const autoexec = buildJsdosAutoexec(actionType, cfg, fileInJsdos);
+    // ── Build autoexec ──
+    const autoexec: string[] = [];
+    // Add mount commands for drives that were mounted at JSZip level
+    for (const drive of mountedDrives) {
+        if (drive) {
+            autoexec.push(`mount ${drive} ./${drive}/`);
+        }
+    }
+    // Non-mount before commands (expanded)
+    for (const cmd of autoexecBefore) {
+        autoexec.push(expandCommand(cmd, vars));
+    }
+    // Run/debug/open commands (expanded)
+    const commands = getCommands(actionType, cfg);
+    for (const cmd of commands) {
+        autoexec.push(expandCommand(cmd, vars));
+    }
+
     jsdos_api.updateAutoexec(autoexec);
     jsdos_api.jszip = jszip;
 

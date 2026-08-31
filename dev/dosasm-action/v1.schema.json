@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/dosasm/masm-tasm/dev/dosasm-action/v1.schema.json",
+  "title": "MASM/TASM Unified Action Configuration v1",
+  "description": "JSON Schema for dosasm.jsonc and masmtasm.ASM.actions in package.json. Defines the unified action object used for assembly run/debug configuration.",
+
+  "definitions": {
+    "bundlePath": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path to a built-in jsdos bundle. Format: '<built-in>/NAME.jsdos' where NAME is the bundle identifier (e.g. 'TASM', 'MASM-v6.11'). The extension resolves this to resources/NAME.jsdos.",
+      "pattern": "^<built-in>/[^/]+\\.jsdos$",
+      "examples": ["<built-in>/TASM.jsdos", "<built-in>/MASM-v6.11.jsdos"]
+    },
+
+    "commandString": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A single DOS command. Supports template variables: ${file}, ${filename}, ${filefolder}, ${fileDisk}, ${fileOS}, ${fileOSname}, ${fileOSfolder}, ${actionFolder}, ${<built-in>/...} (local bundle), ${https://...} / ${http://...} (network bundle), ${seperateSpaceFolder}, ${logfile}. The '>' prefix is not a special syntax; if present it is silently stripped.",
+      "examples": ["TASM ${file}", "mount c ${<built-in>/TASM.jsdos}", "TLINK ${filename}", "${filename}"]
+    },
+
+    "commandArray": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/commandString" },
+      "uniqueItems": false,
+      "description": "Ordered list of DOS commands executed in sequence."
+    },
+
+    "emulatorType": {
+      "type": "string",
+      "enum": ["jsdos", "jsdos-x", "dosbox", "dosbox-x"],
+      "description": "Supported DOS emulator identifier."
+    },
+
+    "ignorePattern": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Glob pattern for directories to skip when injecting the action folder into the bundle. Applied to directory names only (not file names).",
+      "examples": ["node_modules", ".git", "dist", "build"]
+    },
+
+    "unifiedAction": {
+      "type": "object",
+      "description": "Unified action configuration object. Used both as the 'action' property in dosasm.jsonc and as each value in masmtasm.ASM.actions in package.json.",
+      "properties": {
+        "before": {
+          "description": "Environment setup commands executed before run/debug. Fully controls mount points in both dosasm.jsonc and package.json modes. No default auto-mounting is performed; all mount operations must be explicitly defined here.",
+          "oneOf": [
+            { "$ref": "#/definitions/commandArray" },
+            { "type": "null" }
+          ],
+          "default": []
+        },
+
+        "open": {
+          "description": "Commands executed only when opening the emulator without running or debugging. Also used as fallback when run/debug commands are empty.",
+          "oneOf": [
+            { "$ref": "#/definitions/commandArray" },
+            { "type": "null" }
+          ],
+          "default": []
+        },
+
+        "run": {
+          "description": "Commands to assemble, link, and execute the program. Required.",
+          "$ref": "#/definitions/commandArray"
+        },
+
+        "debug": {
+          "description": "Commands to assemble with debug info, link, and launch the debugger. Required.",
+          "$ref": "#/definitions/commandArray"
+        },
+
+        "copyFileAs": {
+          "description": "Controls whether the active editor file is copied before run/debug. undefined (absent): copy with default name (test.<ext> for jsdos, TEST.<EXT> for DOSBox). null: do not copy, rely on mount commands to make the original file accessible. string: copy to this path relative to code/ (jsdos) or ${seperateSpaceFolder}/ (DOSBox).",
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ],
+          "default": null
+        },
+
+        "support": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/emulatorType" },
+          "uniqueItems": true,
+          "description": "List of emulators that this action profile is compatible with. Used by the assembler selector to filter options. If absent, all emulators are assumed compatible."
+        },
+
+        "ignore": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ignorePattern" },
+          "uniqueItems": true,
+          "default": ["node_modules", ".git", ".vscode"],
+          "description": "Glob patterns for directories to skip when adding the action folder (dosasm.jsonc context only, jsdos mode only). Applied during recursive directory traversal."
+        },
+
+        "overwrite": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/overWrite" },
+          "uniqueItems": false,
+          "default": [],
+          "description": "Conditional command overrides keyed by emulator. When a 'when' condition matches the active emulator, its fields are merged onto the base action (only explicitly declared fields are overridden)."
+        }
+      },
+
+      "required": ["run", "debug"],
+
+      "additionalProperties": false
+    },
+
+    "overWrite": {
+      "type": "object",
+      "description": "A conditional override entry. When 'when.emulator' matches the active emulator, the contained fields replace the corresponding fields on the base UnifiedAction.",
+      "properties": {
+        "when": {
+          "type": "object",
+          "properties": {
+            "emulator": {
+              "$ref": "#/definitions/emulatorType",
+              "description": "The emulator to match. Supports exact match against jsdos, jsdos-x, dosbox, dosbox-x."
+            }
+          },
+          "required": ["emulator"],
+          "additionalProperties": false
+        },
+        "before": {
+          "oneOf": [
+            { "$ref": "#/definitions/commandArray" },
+            { "type": "null" }
+          ]
+        },
+        "open": {
+          "oneOf": [
+            { "$ref": "#/definitions/commandArray" },
+            { "type": "null" }
+          ]
+        },
+        "run": {
+          "$ref": "#/definitions/commandArray"
+        },
+        "debug": {
+          "$ref": "#/definitions/commandArray"
+        },
+        "copyFileAs": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        }
+      },
+      "required": ["when"],
+      "additionalProperties": false
+    }
+  },
+
+  "dosasmJsonc": {
+    "type": "object",
+    "title": "dosasm.jsonc (project-level configuration)",
+    "description": "Project-level action configuration placed in any directory of the workspace. The extension searches upward from the target .asm file to find the nearest dosasm.jsonc.",
+
+    "properties": {
+      "action": {
+        "description": "The unified action configuration. If absent, the extension falls back to package.json defaults.",
+        "oneOf": [
+          { "$ref": "#/definitions/unifiedAction" },
+          { "type": "null" }
+        ]
+      },
+
+      "copyFileAs": {
+        "description": "DEPRECATED: Legacy top-level copyFileAs. Use action.copyFileAs instead. Retained for backward compatibility; if action.copyFileAs is absent, this value is used.",
+        "deprecated": true,
+        "oneOf": [
+          { "type": "string", "minLength": 1 },
+          { "type": "null" }
+        ]
+      }
+    },
+
+    "additionalProperties": false
+  },
+
+  "packageJsonActions": {
+    "type": "object",
+    "title": "masmtasm.ASM.actions (global action profiles)",
+    "description": "Map of assembler profile IDs to UnifiedAction objects. Defined in package.json under contributes.configuration.properties['masmtasm.ASM.actions']. The active profile is selected via masmtasm.ASM.assembler.",
+
+    "patternProperties": {
+      "^[A-Za-z][A-Za-z0-9_-]*$": {
+        "$ref": "#/definitions/unifiedAction",
+        "description": "Action profile keyed by assembler ID (e.g. 'TASM', 'MASM-v6.11', 'TASM-com')."
+      }
+    },
+    "minProperties": 1,
+    "additionalProperties": false
+  }
+}

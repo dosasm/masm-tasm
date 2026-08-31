@@ -1,5 +1,5 @@
 /** the id of the profile,for example:
- * 
+ *
  * - MASM: including masm.exe,link.exe,debug.exe
  * - TASM: including tasm.exe,tlink.exe,TD.exe
  */
@@ -10,11 +10,23 @@ export type Assembler = profileId;
  * the profile of the action
  */
 type ActionProfile = {
-    baseBundle: string,
     before?: string[],
+    open?: string[],
     run: string[],
     debug: string[],
+    copyFileAs?: string | null,
     support?: string[],
+    ignore?: string[],
+    overwrite?: {
+        when: {
+            emulator: string;
+        };
+        before?: string[];
+        open?: string[];
+        run?: string[];
+        debug?: string[];
+        copyFileAs?: string | null;
+    }[];
 };
 
 export type ACTIONS = {

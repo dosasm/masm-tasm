@@ -191,10 +191,6 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
-              "baseBundle": {
-                "type": "string",
-                "description": "The jsdos bundle of assembler tools"
-              },
               "support": {
                 "type": "array",
                 "description": "The supported emulators. By default is `dosbox(-x)` and `jsdos`",
@@ -204,14 +200,21 @@
               },
               "before": {
                 "type": "array",
-                "description": "The commands to exec in open emulator and before `run` or `debug` the code",
+                "description": "Environment setup commands (mount, PATH, etc.). Fully controls mount points — no default auto-mounting is performed. All mount operations must be explicitly defined here.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "open": {
+                "type": "array",
+                "description": "Commands executed only when opening the emulator without running or debugging",
                 "items": {
                   "type": "string"
                 }
               },
               "run": {
                 "type": "array",
-                "description": "The commands to run the code, add a `>` before the command if you need to prevent redirect the command's output",
+                "description": "The commands to run the code",
                 "items": {
                   "type": "string"
                 }
@@ -222,62 +225,171 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "copyFileAs": {
+                "type": ["string", "null"],
+                "description": "Controls whether the active editor file is copied before run/debug. null: do not copy, rely on mount commands. string: copy to this path relative to the action folder (jsdos) or isolated workspace (DOSBox)",
+                "default": null
+              },
+              "ignore": {
+                "type": "array",
+                "description": "Glob patterns for directories to skip when adding the action folder (dosasm.jsonc context only, jsdos mode only)",
+                "items": {
+                  "type": "string"
+                },
+                "default": ["node_modules", ".git", ".vscode"]
+              },
+              "overwrite": {
+                "type": "array",
+                "description": "Conditional command overrides keyed by emulator. When 'when.emulator' matches the active emulator, its fields are merged onto the base action",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "when": {
+                      "type": "object",
+                      "properties": {
+                        "emulator": {
+                          "type": "string",
+                          "enum": ["jsdos", "jsdos-x", "dosbox", "dosbox-x"]
+                        }
+                      },
+                      "required": ["emulator"]
+                    },
+                    "before": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "open": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "run": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "debug": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "copyFileAs": {
+                      "type": ["string", "null"]
+                    }
+                  },
+                  "required": ["when"]
+                }
               }
             },
-            "required": [
-              "baseBundle",
-              "run",
-              "debug"
-            ]
+            "required": ["run", "debug"]
           },
           "default": {
             "TASM": {
-              "baseBundle": "<built-in>/TASM.jsdos",
               "before": [
-                "PATH %PATH%;C:\\TASM"
+                "mount c ${<built-in>/TASM.jsdos}",
+                "mount d ${seperateSpaceFolder}",
+                "PATH %PATH%;C:\\TASM",
+                "d:",
+                "cd d:\\"
               ],
               "run": [
                 "TASM ${file}",
-                "TLINK ${filename}",
-                ">${filename}"
+                "IF NOT ERRORLEVEL 1 TLINK ${filename}",
+                "IF NOT ERRORLEVEL 1 ${filename}"
               ],
               "debug": [
                 "TASM /zi ${file}",
-                "TLINK /v/3 ${filename}.obj",
+                "IF NOT ERRORLEVEL 1 TLINK /v/3 ${filename}.obj",
                 "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
-                "TD -cTDCONFIG.TD ${filename}.exe"
+                "IF NOT ERRORLEVEL 1 TD -cTDCONFIG.TD ${filename}.exe"
+              ],
+              "overwrite": [
+                {
+                  "when": { "emulator": "dosbox" },
+                  "run": [
+                    "TASM ${file} > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 TLINK ${filename} >> ${logfile}",
+                    "IF NOT ERRORLEVEL 1 ${filename}"
+                  ],
+                  "debug": [
+                    "TASM /zi ${file} > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 TLINK /v/3 ${filename}.obj >> ${logfile}",
+                    "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
+                    "IF NOT ERRORLEVEL 1 TD -cTDCONFIG.TD ${filename}.exe"
+                  ]
+                }
               ]
             },
             "MASM-v6.11": {
-              "baseBundle": "<built-in>/MASM-v6.11.jsdos",
               "before": [
-                "PATH %PATH%;C:\\MASM"
+                "mount c ${<built-in>/MASM-v6.11.jsdos}",
+                "mount d ${seperateSpaceFolder}",
+                "PATH %PATH%;C:\\MASM",
+                "d:",
+                "cd d:\\"
               ],
               "run": [
                 "masm ${file};",
-                "link ${filename};",
-                ">${filename}"
+                "IF NOT ERRORLEVEL 1 link ${filename};",
+                "IF NOT ERRORLEVEL 1 ${filename}"
               ],
               "debug": [
                 "masm ${file};",
-                "link ${filename}.OBJ;",
-                ">debug ${filename}.exe"
+                "IF NOT ERRORLEVEL 1 link ${filename}.OBJ;",
+                "IF NOT ERRORLEVEL 1 debug ${filename}.exe"
+              ],
+              "overwrite": [
+                {
+                  "when": { "emulator": "dosbox" },
+                  "run": [
+                    "masm ${file}; > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 link ${filename}; >> ${logfile}",
+                    "IF NOT ERRORLEVEL 1 ${filename}"
+                  ],
+                  "debug": [
+                    "masm ${file}; > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 link ${filename}.OBJ; >> ${logfile}",
+                    "IF NOT ERRORLEVEL 1 debug ${filename}.exe"
+                  ]
+                }
               ]
             },
             "MASM-v5.00": {
-              "baseBundle": "<built-in>/MASM-v5.00.jsdos",
               "before": [
-                "PATH %PATH%;C:\\MASM"
+                "mount c ${<built-in>/MASM-v5.00.jsdos}",
+                "mount d ${seperateSpaceFolder}",
+                "PATH %PATH%;C:\\MASM",
+                "d:",
+                "cd d:\\"
               ],
               "run": [
                 "masm ${file};",
-                "link ${filename};",
-                ">${filename}"
+                "IF NOT ERRORLEVEL 1 link ${filename};",
+                "IF NOT ERRORLEVEL 1 ${filename}"
               ],
               "debug": [
                 "masm ${file};",
-                "link ${filename}.OBJ;",
-                ">debug ${filename}.exe"
+                "IF NOT ERRORLEVEL 1 link ${filename}.OBJ;",
+                "IF NOT ERRORLEVEL 1 debug ${filename}.exe"
+              ],
+              "overwrite": [
+                {
+                  "when": { "emulator": "dosbox" },
+                  "run": [
+                    "masm ${file}; > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 link ${filename}; >> ${logfile}",
+                    "IF NOT ERRORLEVEL 1 ${filename}"
+                  ],
+                  "debug": [
+                    "masm ${file}; > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 link ${filename}.OBJ; >> ${logfile}",
+                    "IF NOT ERRORLEVEL 1 debug ${filename}.exe"
+                  ]
+                }
               ]
             }
           }

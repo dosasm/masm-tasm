@@ -14,7 +14,7 @@ import * as nodefs from "fs";
 import * as cp from "child_process";
 import { Utils } from "vscode-uri";
 
-import { ActionType, DosEmulatorType } from "./types";
+import { ActionType, DosEmulatorType, ActionProfile } from "./types";
 import * as config from "./config";
 import { emptyFolder, uriUtils } from "../utils/util";
 import { logger } from "../utils/logger";
@@ -24,7 +24,7 @@ import { activateDosbox, DOSBox } from "./dosbox/main";
 import { activateJSdos } from "./jsdos/main";
 import { CIManager } from "./jsdos";
 import { runJsdos, resolveFile, resolveBundleData, logAction, loadDosasmConfig, type DosasmConfig } from "./run";
-import { expandCommand, ExpandVars, findBundleRefs, getBundleUri } from "./dosasm-config";
+import { expandCommand, expandCommands, ExpandVars, findBundleRefs, getBundleUri } from "./dosasm-config";
 
 // ─── DOSBox Execution Context ────────────────────────────────────
 
@@ -111,10 +111,10 @@ function getCommands(actionType: ActionType, cfg: DosasmConfig | null): string[]
             : actionType === ActionType.debug ? a.debug
                 : a.open ?? [];
     }
-    const action = config.getAction();
+    const action = config.resolveOverwrite(config.getAction());
     return actionType === ActionType.run ? action.run
         : actionType === ActionType.debug ? action.debug
-            : [];
+            : action.open ?? [];
 }
 
 /** Build the DOSBox autoexec command array */
@@ -123,19 +123,27 @@ function buildDosboxAutoexec(
     cfg: DosasmConfig | null,
     ctx: DosboxContext,
     context: vscode.ExtensionContext,
-    insertLOGFLE?: boolean,
     insertPause?: boolean
 ): string[] {
     const autoexec: string[] = [];
 
     if (cfg) {
-        // jsonc mode: dosasm.jsonc controls all mount points
+        // jsonc mode: dosasm.jsonc controls all mount points (no default auto-mount)
         const fileUri = ctx.fileCopyUri ?? ctx.fileUri;
+        const fileParsed = path.parse(fileUri.fsPath);
+        const fileOSParsed = path.parse(ctx.fileUri.fsPath);
         const vars: ExpandVars = {
             file: fileUri.fsPath,
-            filename: fileUri.fsPath.replace(path.parse(fileUri.fsPath).ext, ""),
+            filename: fileUri.fsPath.replace(fileParsed.ext, ""),
+            filefolder: fileParsed.dir ? fileParsed.dir + "\\" : fileUri.fsPath.substring(0, 2),
+            fileDisk: fileUri.fsPath.substring(0, 1),
+            fileOS: ctx.fileUri.fsPath,
+            fileOSname: ctx.fileUri.fsPath.replace(fileOSParsed.ext, ""),
+            fileOSfolder: fileOSParsed.dir ? fileOSParsed.dir + "\\" : "",
             actionFolder: cfg.actionFolder.fsPath,
             bundlePath: "", // Replaced by bundleFolderMap
+            seperateSpaceFolder: ctx.seperateSpaceFolder.fsPath,
+            logfile: "C:\\" + ctx.logFileName,
         };
 
         function expandDosboxCmd(cmd: string): string {
@@ -173,34 +181,36 @@ function buildDosboxAutoexec(
         const commands = getCommands(actionType, cfg);
         for (const cmd of commands) {
             let r = expandDosboxCmd(cmd);
-            if (!cmd.startsWith(">") && insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
             autoexec.push(r);
         }
     } else {
-        // Default single-file mode
-        autoexec.push(
-            `mount c "${ctx.assemblyToolsFolder.fsPath}"`,
-            `mount d "${ctx.seperateSpaceFolder.fsPath}"`,
-            "d:"
-        );
-
-        const before = config.getAction().before;
-        if (before) autoexec.push(...before);
-
+        // Default single-file mode: mount commands must be explicitly defined in `before`
+        const action = config.resolveOverwrite(config.getAction());
         const fileUri = ctx.fileCopyUri ?? ctx.fileUri;
         const rel = path.relative(ctx.seperateSpaceFolder.fsPath, fileUri.fsPath);
         const fileInDosbox = path.win32.resolve("D:\\", rel);
+        const fileOSParsed = path.parse(ctx.fileUri.fsPath);
         const vars: ExpandVars = {
             file: fileInDosbox,
             filename: fileInDosbox.replace(path.parse(fileInDosbox).ext, ""),
+            filefolder: path.parse(fileInDosbox).dir ? path.parse(fileInDosbox).dir + "\\" : "D:\\",
+            fileDisk: "D",
+            fileOS: ctx.fileUri.fsPath,
+            fileOSname: ctx.fileUri.fsPath.replace(fileOSParsed.ext, ""),
+            fileOSfolder: fileOSParsed.dir ? fileOSParsed.dir + "\\" : "",
             actionFolder: "",
-            bundlePath: "",
+            bundlePath: ctx.assemblyToolsFolder.fsPath,
+            seperateSpaceFolder: ctx.seperateSpaceFolder.fsPath,
+            logfile: "C:\\" + ctx.logFileName,
         };
+
+        if (action.before) {
+            autoexec.push(...expandCommands(action.before, vars));
+        }
 
         const commands = getCommands(actionType, null);
         for (const cmd of commands) {
             let r = expandCommand(cmd, vars);
-            if (!cmd.startsWith(">")&& insertLOGFLE) r += " >>C:\\" + ctx.logFileName;
             autoexec.push(r);
         }
     }
@@ -271,7 +281,7 @@ async function runDosbox(
     }
 
     // Build and set autoexec
-    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context,true,true);
+    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context, true);
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
@@ -285,10 +295,11 @@ async function runDosbox(
         if (autoexec.includes("exit")) useNodefsWatch = false;
     }
 
-    await box.run().catch(e => { 
+    await box.run().catch(e => {
         console.error(e);
-        throw new Error(e); });
-    
+        throw new Error(e);
+    });
+
     if (ctx.actionType !== ActionType.open && useNodefsWatch) {
         nodefs.watchFile(logUri.fsPath, () => {
             try {
@@ -299,26 +310,26 @@ async function runDosbox(
         });
     }
 
-    const waitResultPromise=new Promise<string>((resolve,reject)=>{
-        let checkCount=0;
-        const id=setInterval(() => {
+    const waitResultPromise = new Promise<string>((resolve, reject) => {
+        let checkCount = 0;
+        const id = setInterval(() => {
             if (nodefs.existsSync(logUri.fsPath)) {
                 clearInterval(id);
                 const result = nodefs.readFileSync(logUri.fsPath, { encoding: "utf-8" });
                 resolve(result);
             }
-            if (checkCount>10){
+            if (checkCount > 10) {
                 reject();
             }
             checkCount++;
         }, 1000);
     });
-    
-    let result: string | undefined=await waitResultPromise.catch(e=>{return undefined;});
-    if (result){
+
+    let result: string | undefined = await waitResultPromise.catch(e => { return undefined; });
+    if (result) {
         hook(result);
     }
-   
+
     const message = await promise;
     if (!result) throw new Error("can't get dosbox's result" + logUri.fsPath);
     return { message, result };
@@ -359,7 +370,7 @@ async function runDosboxX(
     }
 
     // Build and set autoexec
-    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context,false,true);
+    const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context, true);
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
@@ -373,17 +384,17 @@ async function runDosboxX(
         if (autoexec.includes("exit")) useNodefsWatch = false;
     }
 
-    let result: string ="";
-    const cpHandler=(p: cp.ChildProcess)=>{
+    let result: string = "";
+    const cpHandler = (p: cp.ChildProcess) => {
         // Listen stderr streams
 
         p.stderr?.on('data', (data) => {
-            const loglines=data.toString().split("\n");
+            const loglines = data.toString().split("\n");
             for (const line of loglines) {
                 if (line.trim().startsWith("LOG: DOS CON: ")) {
-                    const trimed=line.replace("LOG: DOS CON: ","")+"\n";
+                    const trimed = line.replace("LOG: DOS CON: ", "") + "\n";
                     lineHook(trimed);
-                    result+=trimed;
+                    result += trimed;
                 }
             }
         });
@@ -395,7 +406,7 @@ async function runDosboxX(
 
     // This promise is for the dosbox process itself, not the log collection.
     // It is not awaited here, but it is important to handle errors from the dosbox process.
-    const _dosboxRunPromise=box.run(["-log-con"],cpHandler).catch(e => { throw new Error(e); }); 
+    const _dosboxRunPromise = box.run(["-log-con"], cpHandler).catch(e => { throw new Error(e); });
 
     const message = await diagPromise;
     if (!result) throw new Error("can't get dosbox's result" + logUri.fsPath);

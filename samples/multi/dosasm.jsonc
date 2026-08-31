@@ -15,6 +15,7 @@
         "before": [
             "mount c ${<built-in>/TASM.jsdos}",
             "mount d ${actionFolder}",
+            "mount e ${fileOSfolder}",
             "PATH %PATH%;C:\\TASM",
             "d:",
             "cd d:\\"
@@ -23,7 +24,6 @@
             "echo ${file}",
             "echo ${filename}"
         ],
-        // The commands to run the code, add a `>` before the command if you need to prevent redirect the command's output
         "run": [
             "TASM 2.asm",
             "TLINK 2.obj",
