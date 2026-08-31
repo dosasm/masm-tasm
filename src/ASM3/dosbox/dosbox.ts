@@ -16,11 +16,20 @@ const fs = vscode.workspace.fs;
 export class DOSBox {
   private _conf: Conf = new Conf("");
   paths:string[]=[];
+  private _process: cp.ChildProcess | null = null;
   constructor(
     public readonly command: string,
     public dstConfPath: vscode.Uri,
     public cwd?: string
   ) {}
+
+  /** Kill any running DOSBox process */
+  kill(): void {
+    if (this._process && !this._process.killed) {
+      this._process.kill('SIGTERM');
+    }
+    this._process = null;
+  }
 
   /** set the dosbox configuration file template
    *
@@ -55,6 +64,7 @@ export class DOSBox {
       const env={...process.env,"PATH":newPath};
       
       const p = cp.exec(command, { cwd: this.cwd,env }, (error, stdout, stderr) => {
+        this._process = null;
         if (error) {
           logger.error(JSON.stringify(error), p, this);
           vscode.window.showErrorMessage(
@@ -65,6 +75,7 @@ export class DOSBox {
           resolve({ stdout, stderr, exitCode: p.exitCode });
         }
       });
+      this._process = p;
       if (cpHandler) {
         cpHandler(p);
       }

@@ -64,8 +64,8 @@ const filelist: [string, number][] = [
 ];
 
 export const singleFileTestSuite = suite("single file mode test", function () {
-	this.timeout('60s');
-	this.slow('20s');
+	this.timeout('20s');
+	this.slow('10s');
 	for (const emu of emulator) {
 		suite(`test in ${emu}`, async function () {
 			this.beforeEach(async function () {
@@ -84,8 +84,8 @@ export const singleFileTestSuite = suite("single file mode test", function () {
 });
 
 export const jsoncModeTestSuite = suite("dosasm.jsonc mode test", function () {
-	this.timeout('60s');
-	this.slow('20s');
+	this.timeout('20s');
+	this.slow('10s');
 	for (const emu of emulator) {
 		suite(`test in ${emu}`, async function () {
 			this.beforeEach(async function () {

@@ -280,6 +280,11 @@ async function runDosbox(
         await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
     }
 
+    // Kill any previous DOSBox process before starting
+    box.kill();
+    // Small delay to ensure previous process has exited
+    await new Promise(r => setTimeout(r, 100));
+
     // Build and set autoexec
     const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context, true);
     updateDosboxConf(box, config.getEmulator());
@@ -330,8 +335,12 @@ async function runDosbox(
         hook(result);
     }
 
-    const message = await promise;
-    if (!result) throw new Error("can't get dosbox's result" + logUri.fsPath);
+    // Add timeout for the diagnose promise to prevent hanging
+    const message = await Promise.race([
+        promise,
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('Diagnose timeout')), 15000))
+    ]).catch(e => { throw new Error("can't get dosbox's result: " + e.message); });
+    if (!result) throw new Error("can't get dosbox's result (no log file)");
     return { message, result };
 }
 
@@ -368,6 +377,11 @@ async function runDosboxX(
         const bundleData = await resolveBundleData(context, null);
         await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
     }
+
+    // Kill any previous DOSBox process before starting
+    box.kill();
+    // Small delay to ensure previous process has exited
+    await new Promise(r => setTimeout(r, 100));
 
     // Build and set autoexec
     const autoexec = buildDosboxAutoexec(ctx.actionType, ctx.config, ctx, context, true);
@@ -408,8 +422,11 @@ async function runDosboxX(
     // It is not awaited here, but it is important to handle errors from the dosbox process.
     const _dosboxRunPromise = box.run(["-log-con"], cpHandler).catch(e => { throw new Error(e); });
 
-    const message = await diagPromise;
-    if (!result) throw new Error("can't get dosbox's result" + logUri.fsPath);
+    const message = await Promise.race([
+        diagPromise,
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('Diagnose timeout')), 15000))
+    ]).catch(e => { throw new Error("can't get dosbox's result: " + e.message); });
+    if (!result) throw new Error("can't get dosbox's result (no log file)");
     return { message, result };
 }
 
