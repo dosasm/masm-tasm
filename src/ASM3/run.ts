@@ -26,6 +26,7 @@ import {
     DosasmConfig, DosasmAction, ExpandVars,
     expandCommand,
     extractNetworkUrl, findBundleRefs, loadDosasmConfig, resolveBundleSource,
+    resolveOverwrite,
 } from "./dosasm-config";
 
 // ─── Types ────────────────────────────────────────────────
@@ -155,7 +156,7 @@ function getCommands(
     cfg: DosasmConfig | null
 ): string[] {
     if (cfg) {
-        const a = cfg.action;
+        const a = resolveOverwrite(cfg.action, config.getEmulator());
         return actionType === ActionType.run ? a.run
             : actionType === ActionType.debug ? a.debug
                 : a.open ?? [];
@@ -253,9 +254,9 @@ export async function runJsdos(
 
     // Load configuration
     const cfg = await loadDosasmConfig(resolved.uri);
-    const action = cfg ? cfg.action : config.resolveOverwrite(config.getAction());
+    const action = cfg ? resolveOverwrite(cfg.action, config.getEmulator()) : config.resolveOverwrite(config.getAction());
     const beforeCommands = action.before ?? [];
-    const actionIgnore = cfg ? cfg.action.ignore : undefined;
+    const actionIgnore = action.ignore;
 
     // Create empty jszip — mount commands will populate it
     const jszip = new Jszip.default();
@@ -310,7 +311,7 @@ export async function runJsdos(
 
     // ── Add action directory (dosasm.jsonc mode) ──
     if (cfg) {
-        await addFolderToJszip(jszip, cfg.actionFolder, "action/", cfg.action.ignore);
+        await addFolderToJszip(jszip, cfg.actionFolder, "action/", action.ignore);
     }
 
     // ── Build autoexec ──

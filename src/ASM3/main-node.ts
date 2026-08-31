@@ -24,7 +24,7 @@ import { activateDosbox, DOSBox } from "./dosbox/main";
 import { activateJSdos } from "./jsdos/main";
 import { CIManager } from "./jsdos";
 import { runJsdos, resolveFile, resolveBundleData, logAction, loadDosasmConfig, type DosasmConfig } from "./run";
-import { expandCommand, expandCommands, ExpandVars, findBundleRefs, getBundleUri } from "./dosasm-config";
+import { DosasmAction, expandCommand, expandCommands, ExpandVars, findBundleRefs, getBundleUri, resolveOverwrite } from "./dosasm-config";
 
 // ─── Logfile Archiving ─────────────────────────────────────────────
 
@@ -66,6 +66,7 @@ interface DosboxContext {
     assemblyToolsFolder: vscode.Uri;
     seperateSpaceFolder: vscode.Uri;
     config: DosasmConfig | null;
+    resolvedAction: DosasmAction | null;
     bundleFolderMap: Map<string, string>;
 }
 
@@ -82,7 +83,8 @@ async function makeDosboxContext(
     const timeStamp = Date.now().toString();
     const seperateSpaceFolder = uriUtils.joinPath(context.globalStorageUri, "workspace");
 
-    const copyFileAs = cfg?.action.copyFileAs;
+    const resolvedAction = cfg ? resolveOverwrite(cfg.action, config.getEmulator()) : null;
+    const copyFileAs = resolvedAction?.copyFileAs ?? undefined;
     const fileCopyUri = copyFileAs === null
         ? null
         : copyFileAs
@@ -98,6 +100,7 @@ async function makeDosboxContext(
         fileCopyUri,
         seperateSpaceFolder,
         config: cfg,
+        resolvedAction,
         bundleFolderMap: new Map(),
     };
 }
@@ -106,17 +109,17 @@ async function makeDosboxContext(
 
 /** Extract bundles referenced in jsonc to disk, returning a map of bundle name → extraction path */
 async function extractConfigBundles(
-    cfg: DosasmConfig,
+    action: DosasmAction,
     context: vscode.ExtensionContext,
     box: DOSBox
 ): Promise<Map<string, string>> {
     const bundleMap = new Map<string, string>();
     // Scan all command sections (before/run/debug/open) for bundle references
     const allCommands = [
-        ...cfg.action.before,
-        ...cfg.action.run,
-        ...cfg.action.debug,
-        ...(cfg.action.open ?? []),
+        ...action.before ?? [],
+        ...action.run,
+        ...action.debug,
+        ...(action.open ?? []),
     ];
     for (const bundleName of findBundleRefs(allCommands)) {
         const extractFolder = vscode.Uri.joinPath(context.globalStorageUri, "bundles", bundleName.replace(".jsdos", ""));
@@ -133,12 +136,11 @@ async function extractConfigBundles(
 // ─── DOSBox Autoexec Construction ────────────────────────────────
 
 /** Get the list of commands to execute */
-function getCommands(actionType: ActionType, cfg: DosasmConfig | null): string[] {
-    if (cfg) {
-        const a = cfg.action;
-        return actionType === ActionType.run ? a.run
-            : actionType === ActionType.debug ? a.debug
-                : a.open ?? [];
+function getCommands(actionType: ActionType, resolvedAction: DosasmAction | null): string[] {
+    if (resolvedAction) {
+        return actionType === ActionType.run ? resolvedAction.run
+            : actionType === ActionType.debug ? resolvedAction.debug
+                : resolvedAction.open ?? [];
     }
     const action = config.resolveOverwrite(config.getAction());
     return actionType === ActionType.run ? action.run
@@ -205,9 +207,9 @@ function buildDosboxAutoexec(
             return r;
         }
 
-        autoexec.push(...cfg.action.before.map(expandDosboxCmd));
+        autoexec.push(...(ctx.resolvedAction?.before ?? []).map(expandDosboxCmd));
 
-        const commands = getCommands(actionType, cfg);
+        const commands = getCommands(actionType, ctx.resolvedAction);
         for (const cmd of commands) {
             let r = expandDosboxCmd(cmd);
             autoexec.push(r);
@@ -303,7 +305,7 @@ async function runDosbox(
 
     // Extract bundles (jsonc mode)
     if (ctx.config && ctx.bundleFolderMap.size === 0) {
-        ctx.bundleFolderMap = await extractConfigBundles(ctx.config, context, box);
+        ctx.bundleFolderMap = await extractConfigBundles(ctx.resolvedAction!, context, box);
     }
 
     // Extract default bundle (single-file mode)
@@ -405,7 +407,7 @@ async function runDosboxX(
 
     // Extract bundles (jsonc mode)
     if (ctx.config && ctx.bundleFolderMap.size === 0) {
-        ctx.bundleFolderMap = await extractConfigBundles(ctx.config, context, box);
+        ctx.bundleFolderMap = await extractConfigBundles(ctx.resolvedAction!, context, box);
     }
 
     // Extract default bundle (single-file mode)

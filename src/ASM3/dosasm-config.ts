@@ -270,6 +270,29 @@ export async function findDosasmConfig(startUri: vscode.Uri): Promise<vscode.Uri
     return null;
 }
 
+/**
+ * Resolve overwrite entries for a DosasmAction based on the current emulator.
+ * Returns a new DosasmAction with overwrite fields applied.
+ */
+export function resolveOverwrite(action: DosasmAction, emulator: DosEmulatorType): DosasmAction {
+    if (!action.overwrite || action.overwrite.length === 0) {
+        return action;
+    }
+    for (const ow of action.overwrite) {
+        if (ow.when.emulator === emulator) {
+            return {
+                ...action,
+                before: ow.before !== undefined ? ow.before : action.before,
+                open: ow.open !== undefined ? ow.open : action.open,
+                run: ow.run !== undefined ? ow.run : action.run,
+                debug: ow.debug !== undefined ? ow.debug : action.debug,
+                copyFileAs: ow.copyFileAs !== undefined ? ow.copyFileAs : action.copyFileAs,
+            };
+        }
+    }
+    return action;
+}
+
 /** Read and parse dosasm.jsonc */
 export async function parseDosasmConfig(configUri: vscode.Uri): Promise<DosasmConfig> {
     const raw = await vscode.workspace.fs.readFile(configUri);
@@ -305,16 +328,17 @@ export async function parseDosasmConfig(configUri: vscode.Uri): Promise<DosasmCo
         action.overwrite = (s.overwrite as unknown[]).map(ow => {
             const o = ow as Record<string, unknown>;
             const when = (o.when as Record<string, unknown>) || {};
-            return {
+            const entry: NonNullable<DosasmAction["overwrite"]>[number] = {
                 when: {
                     emulator: String(when.emulator || ""),
                 },
-                before: toStringArray(o.before),
-                open: toStringArray(o.open),
-                run: toStringArray(o.run),
-                debug: toStringArray(o.debug),
-                copyFileAs: typeof o.copyFileAs === "string" ? o.copyFileAs : null,
             };
+            if ("before" in o) entry.before = toStringArray(o.before);
+            if ("open" in o) entry.open = toStringArray(o.open);
+            if ("run" in o) entry.run = toStringArray(o.run);
+            if ("debug" in o) entry.debug = toStringArray(o.debug);
+            if ("copyFileAs" in o) entry.copyFileAs = typeof o.copyFileAs === "string" ? o.copyFileAs : null;
+            return entry;
         });
     }
     logger.channel(`Loaded dosasm.jsonc from ${configUri.fsPath}`);

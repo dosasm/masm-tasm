@@ -8,7 +8,7 @@
     "action": {
         // if set as string, the current active file in the editor panel will be copied to the path specified by this string before run or debug the code
         // if set as null, the current active file in the editor panel will not be copied before run or debug the code
-        "copyFileAs":null,
+        "copyFileAs": null,
         // The commands to exec in open emulator and before `run` or `debug` the code
         // extract the jsdos and mount the jsdos zipfile folder as C:\
         // mount the folder of this action as D:\
@@ -35,6 +35,26 @@
             "TLINK /v/3 2.obj",
             "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
             "TD -cTDCONFIG.TD 2.exe"
+        ],
+        "overwrite": [
+            {
+                "when": {
+                    "emulator": "dosbox"
+                },
+                "run": [
+                    "TASM 2.asm > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 TLINK 2.obj >> ${logfile}",
+                    "IF NOT ERRORLEVEL 1 2.exe"
+                ],
+                "debug": [
+                    "TASM /zi 2.asm > ${logfile}",
+                    "type ${logfile}",
+                    "IF NOT ERRORLEVEL 1 TLINK /v/3 2.obj >> ${logfile}",
+                    "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
+                    "IF NOT ERRORLEVEL 1 TD -cTDCONFIG.TD 2.exe"
+                ]
+            }
         ]
     }
 }
