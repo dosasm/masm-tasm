@@ -337,15 +337,16 @@ async function runDosbox(
         throw new Error(e);
     });
 
-    if (ctx.actionType !== ActionType.open && useNodefsWatch) {
-        nodefs.watchFile(logUri.fsPath, () => {
-            try {
-                if (nodefs.existsSync(logUri.fsPath)) {
-                    hook(nodefs.readFileSync(logUri.fsPath, { encoding: "utf-8" }));
-                }
-            } catch (e) { console.error(e); }
-        });
-    }
+    // seems useless, almost never fired.
+    // if (ctx.actionType !== ActionType.open && useNodefsWatch) {
+    //     nodefs.watchFile(logUri.fsPath, () => {
+    //         try {
+    //             if (nodefs.existsSync(logUri.fsPath)) {
+    //                 hook(nodefs.readFileSync(logUri.fsPath, { encoding: "utf-8" }));
+    //             }
+    //         } catch (e) { console.error(e); }
+    //     });
+    // }
 
     const waitResultPromise = new Promise<string>((resolve, reject) => {
         let checkCount = 0;
@@ -364,7 +365,7 @@ async function runDosbox(
 
     let result: string | undefined = await waitResultPromise.catch(e => { return undefined; });
     if (result) {
-        hook(result);
+        hook(result+"\nD:\\>");
     }
 
     // Add timeout for the diagnose promise to prevent hanging
