@@ -75,13 +75,15 @@ export interface ExpandVars {
     /**
      * Bundle path:
      * - In jsdos mode: "." (the bundle root is the virtual filesystem root)
-     * - In dosbox mode: the actual path of the extracted folder under globalStorageUri/bundles/<assembler>
+     * - In dosbox mode: the actual path of the extracted folder under storageBase/bundles/<assembler>
+     *   (storageBase is resolved from masmtasm.ASM.storagePath, falling back to temp dir)
      */
     bundlePath: string;
     /**
      * Seperate space folder (D: drive mount target):
      * - In jsdos mode: "./code" (virtual code directory)
-     * - In dosbox mode: the actual path of the isolated workspace folder under globalStorageUri
+     * - In dosbox mode: the actual path of the isolated workspace folder under storageBase
+     *   (storageBase is resolved from masmtasm.ASM.storagePath, falling back to temp dir)
      */
     seperateSpaceFolder: string;
     /** Log file path (DOSBox only), dynamically generated */

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as os from "os";
 import { ActionProfile, Assembler, DosEmulatorType, OverWrite } from "./types";
 
 function masmConfig() {
@@ -54,6 +55,31 @@ export function getDosboxRun(): string {
 export function getDosboxConfig(emulator: DosEmulatorType): Record<string, string> | undefined {
     const key = emulator === DosEmulatorType.dosboxX ? "dosboxX.config" : "dosbox.config";
     return masmConfig().get<Record<string, string>>(key);
+}
+
+/**
+ * Get the base storage path for temporary files.
+ *
+ * Resolution order:
+ * 1. If the user setting "masmtasm.ASM.storagePath" is a non-empty string:
+ *    - If it equals "__globalStorage__", use the extension's globalStorageUri
+ *    - Otherwise, use the user-specified path directly
+ * 2. Default (empty string): use the system temp directory + "/masm-tasm"
+ */
+export function getStorageBasePath(context: vscode.ExtensionContext): vscode.Uri {
+    const configured = masmConfig().get<string>("ASM.storagePath", "");
+
+    if (configured) {
+        if (configured === "__globalStorage__") {
+            return context.globalStorageUri;
+        }
+        // User-specified path — ensure it's absolute
+        return vscode.Uri.file(configured);
+    }
+
+    // Default: use system temp directory
+    const tmpDir = os.tmpdir();
+    return vscode.Uri.file(tmpDir + "/masm-tasm");
 }
 
 /**

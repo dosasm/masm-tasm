@@ -16,6 +16,7 @@ import { Utils } from "vscode-uri";
 
 import { ActionType, DosEmulatorType, ActionProfile } from "./types";
 import * as config from "./config";
+import { getStorageBasePath } from "./config";
 import { emptyFolder, uriUtils } from "../utils/util";
 import { logger } from "../utils/logger";
 import * as statusBar from "./statusBar";
@@ -87,8 +88,9 @@ async function makeDosboxContext(
     const resolved = await resolveFile(uri);
     if (!resolved) throw new Error("no file found");
 
+    const storageBase = getStorageBasePath(context);
     const timeStamp = Date.now().toString();
-    const seperateSpaceFolder = uriUtils.joinPath(context.globalStorageUri, "workspace");
+    const seperateSpaceFolder = uriUtils.joinPath(storageBase, "workspace");
 
     const resolvedAction = cfg ? resolveOverwrite(cfg.action, config.getEmulator()) : null;
     const copyFileAs = resolvedAction?.copyFileAs ?? undefined;
@@ -108,7 +110,7 @@ async function makeDosboxContext(
         actionType,
         fileUri: resolved.uri,
         doc: resolved.doc,
-        assemblyToolsFolder: uriUtils.joinPath(context.globalStorageUri, "bundles", config.getAssembler()),
+        assemblyToolsFolder: uriUtils.joinPath(storageBase, "bundles", config.getAssembler()),
         logFileName: timeStamp.substring(timeStamp.length - 5) + ".log".toUpperCase(),
         fileCopyUri,
         seperateSpaceFolder,
@@ -136,7 +138,7 @@ async function extractConfigBundles(
         ...(action.open ?? []),
     ];
     for (const bundleName of findBundleRefs(allCommands)) {
-        const extractFolder = vscode.Uri.joinPath(context.globalStorageUri, "bundles", bundleName.replace(".jsdos", ""));
+        const extractFolder = vscode.Uri.joinPath(getStorageBasePath(context), "bundles", bundleName.replace(".jsdos", ""));
         const data = await vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, bundleName));
         await box.fromBundle(data, extractFolder, false);
         logger.channel(`Extracted bundle ${bundleName} to ${extractFolder.fsPath}`);

@@ -411,6 +411,11 @@
             "%config.emulator.dosboxX%"
           ]
         },
+        "masmtasm.ASM.storagePath": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Specify the base storage path for temporary files (workspace, bundles, configs).\n\n- Empty string (default): use the system temp directory\n- Set to a custom path to use that directory\n- Set to \`__globalStorage__\` to use the extension's global storage directory\n\nThis affects where assembler bundles are extracted, where workspace files are copied, and where DOSBox config files are generated."
+        },
         "masmtasm.ASM.savefirst": {
           "type": "boolean",
           "default": true,

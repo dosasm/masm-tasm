@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as os from 'os';
 import { localize } from './i18n';
 
 class Logger {
@@ -22,10 +23,18 @@ class Logger {
           platform === undefined && (process as { browser?: boolean }).browser
             ? "web"
             : platform + "-" + arch;
-    
+
+        const configured = vscode.workspace.getConfiguration('masmtasm').get<string>('ASM.storagePath', '');
+        const storageDesc = configured
+            ? configured === '__globalStorage__'
+                ? `globalStorage: ${context.globalStorageUri.fsPath}`
+                : `custom: ${configured}`
+            : `tempdir: ${os.tmpdir()}/masm-tasm`;
+
         logger.channel(`running at ${target}
     extensionUri: ${context.extensionUri.fsPath}
     globalStorageUri: ${context.globalStorageUri.fsPath}
+    storagePath: ${storageDesc}
     extensionMode: ${context.extensionMode}
     logUri: ${context.logUri.fsPath}
             `);
