@@ -227,7 +227,10 @@
                 }
               },
               "copyFileAs": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Controls whether the active editor file is copied before run/debug. null: do not copy, rely on mount commands. string: copy to this path relative to the action folder (jsdos) or isolated workspace (DOSBox)",
                 "default": null
               },
@@ -237,7 +240,11 @@
                 "items": {
                   "type": "string"
                 },
-                "default": ["node_modules", ".git", ".vscode"]
+                "default": [
+                  "node_modules",
+                  ".git",
+                  ".vscode"
+                ]
               },
               "overwrite": {
                 "type": "array",
@@ -250,36 +257,59 @@
                       "properties": {
                         "emulator": {
                           "type": "string",
-                          "enum": ["jsdos", "jsdos-x", "dosbox", "dosbox-x"]
+                          "enum": [
+                            "jsdos",
+                            "jsdos-x",
+                            "dosbox",
+                            "dosbox-x"
+                          ]
                         }
                       },
-                      "required": ["emulator"]
+                      "required": [
+                        "emulator"
+                      ]
                     },
                     "before": {
                       "type": "array",
-                      "items": { "type": "string" }
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "open": {
                       "type": "array",
-                      "items": { "type": "string" }
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "run": {
                       "type": "array",
-                      "items": { "type": "string" }
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "debug": {
                       "type": "array",
-                      "items": { "type": "string" }
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "copyFileAs": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
-                  "required": ["when"]
+                  "required": [
+                    "when"
+                  ]
                 }
               }
             },
-            "required": ["run", "debug"]
+            "required": [
+              "run",
+              "debug"
+            ]
           },
           "default": {
             "TASM": {
@@ -303,7 +333,9 @@
               ],
               "overwrite": [
                 {
-                  "when": { "emulator": "dosbox" },
+                  "when": {
+                    "emulator": "dosbox"
+                  },
                   "run": [
                     "TASM ${file} > ${logfile}",
                     "type ${logfile}",
@@ -340,7 +372,9 @@
               ],
               "overwrite": [
                 {
-                  "when": { "emulator": "dosbox" },
+                  "when": {
+                    "emulator": "dosbox"
+                  },
                   "run": [
                     "masm ${file}; > ${logfile}",
                     "type ${logfile}",
@@ -376,7 +410,9 @@
               ],
               "overwrite": [
                 {
-                  "when": { "emulator": "dosbox" },
+                  "when": {
+                    "emulator": "dosbox"
+                  },
                   "run": [
                     "masm ${file}; > ${logfile}",
                     "type ${logfile}",
@@ -414,7 +450,7 @@
         "masmtasm.ASM.storagePath": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Specify the base storage path for temporary files (workspace, bundles, configs).\n\n- Empty string (default): use the system temp directory\n- Set to a custom path to use that directory\n- Set to \`__globalStorage__\` to use the extension's global storage directory\n\nThis affects where assembler bundles are extracted, where workspace files are copied, and where DOSBox config files are generated."
+          "markdownDescription": "Specify the base storage path for temporary files (workspace, bundles, configs).\n\n- Empty string (default): use the system temp directory\n- Set to a custom path to use that directory\n- Set to `__globalStorage__` to use the extension's global storage directory\n\nThis affects where assembler bundles are extracted, where workspace files are copied, and where DOSBox config files are generated."
         },
         "masmtasm.ASM.savefirst": {
           "type": "boolean",
@@ -648,6 +684,7 @@
     "glob": "^13.0.6",
     "jszip": "^3.10.1",
     "mocha": "^11.8.0",
+    "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "rimraf": "^6.1.3",

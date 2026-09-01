@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { DosEmulatorType } from '../../ASM3/types';
+import * as cp from 'child_process';
 
 import * as assert from "assert";
 import { AsmResult } from "../../ASM3/main";
@@ -48,21 +49,36 @@ export const testAsmCommand = function ([file, shouldErr]: [string, number], emu
 	];
 };
 
+/** Check if a command is available on the system */
+function isCommandAvailable(cmd: string): boolean {
+	try {
+		const checkCmd = process.platform === 'win32' ? `where ${cmd}` : `command -v ${cmd}`;
+		cp.execSync(checkCmd, { stdio: 'ignore' });
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 const profileId: string[] = [
 	'MASM-v5.00',
 	'MASM-v6.11',
 	"TASM",
 ];
-const emulator: DosEmulatorType[] = [
-	DosEmulatorType.dosbox,
-	DosEmulatorType.dosboxX,
-	DosEmulatorType.jsdos,
-	DosEmulatorType.jsdosX
-];
+const emulator: DosEmulatorType[] = [];
 
 if (!process.platform) {
-	emulator.shift();
-	emulator.shift();
+	// web environment — only jsdos variants are available
+	emulator.push(DosEmulatorType.jsdos, DosEmulatorType.jsdosX);
+} else {
+	// native environment — only add dosbox/dosbox-x if installed on the system
+	if (isCommandAvailable('dosbox')) {
+		emulator.push(DosEmulatorType.dosbox);
+	}
+	if (isCommandAvailable('dosbox-x')) {
+		emulator.push(DosEmulatorType.dosboxX);
+	}
+	emulator.push(DosEmulatorType.jsdos, DosEmulatorType.jsdosX);
 }
 
 const filelist: [string, number][] = [
