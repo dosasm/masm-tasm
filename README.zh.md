@@ -46,6 +46,7 @@
 
 - [多文件项目](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)
 - [编译为com文件](https://github.com/dosasm/masm-tasm/tree/v2/samples/com-vs-exe)
+- [Turbo C 语言项目示例](https://github.com/dosasm/masm-tasm/tree/v2/samples/turboC)
 
 **模板变量：**
 - `${file}` — 汇编文件在 DOS 中的完整路径

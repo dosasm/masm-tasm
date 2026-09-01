@@ -55,6 +55,7 @@ For multi-file projects or custom build workflows, you can place a `dosasm.jsonc
 
 - [multi file project sample](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)
 - [compile to .com file](https://github.com/dosasm/masm-tasm/tree/v2/samples/com-vs-exe)
+- [Turbo C example](https://github.com/dosasm/masm-tasm/tree/v2/samples/turboC)
 
 **Template variables:**
 - `${file}` — the full path of the assembly file in DOS
