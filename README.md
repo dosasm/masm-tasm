@@ -48,34 +48,13 @@ When editing `assembly` files, right-click in the editor panel to access the fol
 - Note that this extension is not optimized for complex projects.
 
 #### Project Configuration with `dosasm.jsonc`
+
 For multi-file projects or custom build workflows, you can place a `dosasm.jsonc` file in your project directory. When you right-click an `.asm` file to run/debug, the extension searches upward from the file's directory for `dosasm.jsonc`. If found, it uses the configuration defined there instead of the default settings.
 
-Example `dosasm.jsonc` (see [multi file project sample](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)):
-```jsonc
-{
-    "action": {
-        "before": [
-            "mount c ${<built-in>/TASM.jsdos}",
-            "mount d ${actionFolder}",
-            "PATH %PATH%;C:\\TASM",
-            "d:",
-            "cd d:\\"
-        ],
-        "open": [],
-        "run": [
-            "TASM ${file}",
-            "TLINK ${filename}",
-            ">${filename}"
-        ],
-        "debug": [
-            "TASM /zi ${file}",
-            "TLINK /v/3 ${filename}.obj",
-            "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
-            "TD -cTDCONFIG.TD ${filename}.exe"
-        ]
-    }
-}
-```
+**Example** `dosasm.jsonc` (see [dosasm.jsonc v1](https://github.com/dosasm/masm-tasm/tree/v2/dev/dosasm-action/v1.md)):
+
+- [multi file project sample](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)
+- [compile to .com file](https://github.com/dosasm/masm-tasm/tree/v2/samples/com-vs-exe)
 
 **Template variables:**
 - `${file}` — the full path of the assembly file in DOS
@@ -102,32 +81,6 @@ You must install DOSBox or DOSBox-X first to use this feature.
 
 Since VS Code is primarily built with JavaScript (TypeScript), we support the WebAssembly (Wasm) version of DOSBox(-X) — namely [js-dos](https://js-dos.com/overview.html).
 The extension bundles all required js-dos files, and it uses js-dos as the default DOS emulator for Web platform support.
-
-## Compiling to `.com` Files
-You can customize the build commands by modifying the `masmtasm.ASM.actions` configuration.
-For example, to compile your code to a `.com` file, add the following configuration and set `masmtasm.ASM.assembler` to its key (`TASM-com`):
-
-```json
-"masmtasm.ASM.actions": {
-  "TASM-com": {
-    "baseBundle": "<built-in>/TASM.jsdos",
-    "before": [
-      "PATH %PATH%;C:\\TASM"
-    ],
-    "run": [
-      "TASM ${file}",
-      "TLINK /t ${filename}",
-      "${filename}"
-    ],
-    "debug": [
-      "TASM /zi ${file}",
-      "TLINK /t/v/3 ${filename}.obj",
-      "TD ${filename}.exe"
-    ]
-  }
-},
-"masmtasm.ASM.assembler": "TASM-com"
-```
 
 ## Docs & Acknowledgments & Licenses
 - Special thanks to my teacher, *Mr. Han*. Wishing 2020 and the coming 2021 to be happy and fulfilling years.

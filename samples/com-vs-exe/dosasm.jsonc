@@ -1,0 +1,26 @@
+{
+    "copyFileAs": null,
+    "action": {
+        "copyFileAs": null,
+        "before": [
+            "mount c ${<built-in>/TASM.jsdos}",
+            "mount d ${actionFolder}",
+            "PATH %PATH%;C:\\TASM",
+            "d:",
+            "cd d:\\"
+        ],
+        "open": [],
+        "run": [
+            "TASM comhello.asm",
+            "TLINK /t comhello.obj",
+            "comhello.com",
+            "pause"
+        ],
+        "debug": [
+            "TASM /zi comhello.asm",
+            "TLINK /t/v/3 comhello.obj",
+            "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
+            "TD -cTDCONFIG.TD comhello.com"
+        ]
+    }
+}

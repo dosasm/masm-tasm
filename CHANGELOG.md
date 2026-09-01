@@ -3,6 +3,10 @@
 [email](mailto:xsro@foxmail.com?subject=VSCode_Extension(xsro.masm-tasm)_report&body=hello)|[issue](https://github.com/dosasm/masm-tasm/issues)
 
 
+#### 2.2.x 发布v1格式的dosasm.jsonc 配置文件。
+
+- 多文件如何处理一直比较麻烦，为了尽可能简化配置方法，我统一了dosasm.jsonc 和插件配置中的`masmtasm.ASM.actions`配置方法。具体见[dev/dosasm-action/v1.md](dev/dosasm-action/v1.md)文档。
+
 #### 2.1.x 使用AI重构代码，实现使用dosasm.jsonc 管理项目
 
 - 修复格式化器：顶层指令（`.386`、`.model`、`.STACK`、`include` 等）不再被错误缩进

@@ -42,32 +42,10 @@
 
 对于多文件项目或自定义构建流程，你可以在项目目录中放置 `dosasm.jsonc` 文件。当你右键点击 `.asm` 文件运行/调试时，扩展会从文件所在目录向上递归查找 `dosasm.jsonc`。如果找到，则使用其中定义的配置执行，而非默认设置。
 
-示例 `dosasm.jsonc`：(参见 [multi file project sample](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)):
-```jsonc
-{
-    "action": {
-        "before": [
-            "mount c ${<built-in>/TASM.jsdos}",
-            "mount d ${actionFolder}",
-            "PATH %PATH%;C:\\TASM",
-            "d:",
-            "cd d:\\"
-        ],
-        "open": [],
-        "run": [
-            "TASM ${file}",
-            "TLINK ${filename}",
-            ">${filename}"
-        ],
-        "debug": [
-            "TASM /zi ${file}",
-            "TLINK /v/3 ${filename}.obj",
-            "copy C:\\TASM\\TDC2.TD TDCONFIG.TD",
-            "TD -cTDCONFIG.TD ${filename}.exe"
-        ]
-    }
-}
-```
+**Example 示例** `dosasm.jsonc` (see [dosasm.jsonc v1](https://github.com/dosasm/masm-tasm/tree/v2/dev/dosasm-action/v1.md)):
+
+- [多文件项目](https://github.com/dosasm/masm-tasm/tree/v2/samples/multi)
+- [编译为com文件](https://github.com/dosasm/masm-tasm/tree/v2/samples/com-vs-exe)
 
 **模板变量：**
 - `${file}` — 汇编文件在 DOS 中的完整路径
@@ -91,32 +69,6 @@
 由于 VS Code 主要基于 JavaScript（TypeScript）构建，因此我们支持 DOSBox(-X) 的 WebAssembly（Wasm）版本——即 [js-dos](https://js-dos.com/overview.html)。
 本扩展内置了运行 js-dos 所需的全部文件，并将其作为 Web 平台下的默认 DOS 模拟器。
 
-
-## 自定义 Actions
-
-可以通过修改`masmtasm.ASM.actions`设置来配置运行和调试的 DOS 命令。例如，需要编译成 COM 文件，可以添加如下设置，并将`masmtasm.ASM.assembler`的值设置为`TASM-com`
-
-```json
-"masmtasm.ASM.actions": {
-     "TASM-com": {
-      "baseBundle": "<built-in>/TASM.jsdos",
-      "before": [
-        "PATH %PATH%;C:\\TASM"
-      ],
-      "run": [
-        "TASM ${file}",
-        "TLINK /t ${filename}",
-        "${filename}"
-      ],
-      "debug": [
-        "TASM /zi ${file}",
-        "TLINK /t/v/3 ${filename}.obj",
-        "TD ${filename}.exe"
-      ]
-    }
-}
-"masmtasm.ASM.assembler":"TASM-com"
-```
 
 ## :cd:插件调用 dosbox 时会挂载哪些目录
 
