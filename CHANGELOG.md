@@ -5,7 +5,8 @@
 
 #### 2.2.x 发布v1格式的dosasm.jsonc 配置文件。
 
-- 多文件如何处理一直比较麻烦，为了尽可能简化配置方法，我统一了dosasm.jsonc 和插件配置中的`masmtasm.ASM.actions`配置方法。具体见[dev/dosasm-action/v1.md](dev/dosasm-action/v1.md)文档。
+- 2.2.0 多文件如何处理一直比较麻烦，为了尽可能简化配置方法，我统一了dosasm.jsonc 和插件配置中的`masmtasm.ASM.actions`配置方法。具体见[dev/dosasm-action/v1.md](dev/dosasm-action/v1.md)文档。
+- 2.2.1 增加 `masmtasm.ASM.storagePath` 用于配置程序在调用dosbox mount路径时放置文件的地址，可以自定义以避免默认路径存在非法字符的问题。
 
 #### 2.1.x 使用AI重构代码，实现使用dosasm.jsonc 管理项目
 
