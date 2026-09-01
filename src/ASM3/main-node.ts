@@ -123,6 +123,17 @@ async function makeDosboxContext(
 
 // ─── DOSBox Bundle Extraction ──────────────────────────────────
 
+/** Sanitize a bundle name for safe use as a directory path component. */
+function sanitizeBundleName(name: string): string {
+    // Remove .jsdos extension
+    let safe = name.replace(/\.jsdos$/, "");
+    // Strip protocol for network URLs
+    safe = safe.replace(/^https?:\/\//, "");
+    // Replace characters illegal in Windows paths
+    safe = safe.replace(/[\/:*?"<>|]/g, "_");
+    return safe;
+}
+
 /** Extract bundles referenced in jsonc to disk, returning a map of bundle name → extraction path */
 async function extractConfigBundles(
     action: DosasmAction,
@@ -138,7 +149,8 @@ async function extractConfigBundles(
         ...(action.open ?? []),
     ];
     for (const bundleName of findBundleRefs(allCommands)) {
-const extractFolder = vscode.Uri.joinPath(getStorageBasePath(context), "bundles", bundleName.replace(".jsdos", ""));
+        const safeName = sanitizeBundleName(bundleName);
+        const extractFolder = vscode.Uri.joinPath(getStorageBasePath(context), "bundles", safeName);
         const data = await resolveBundleSource(context.extensionUri, bundleName);
         await box.fromBundle(data, extractFolder, false);
         logger.channel(`Extracted bundle ${bundleName} to ${extractFolder.fsPath}`);

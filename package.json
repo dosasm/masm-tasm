@@ -31,6 +31,7 @@
   ],
   "activationEvents": [
     "onLanguage:asm-collection",
+    "workspaceContains:**/dosasm.jsonc",
     "onLanguage:tasm",
     "onLanguage:masm",
     "onCommand:masm-tasm.openDosbox",
