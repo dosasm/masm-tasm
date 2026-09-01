@@ -1,0 +1,3 @@
+*.c     eol=crlf
+*.asm   eol=crlf
+*.ASM   eol=crlf
