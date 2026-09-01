@@ -23,8 +23,12 @@ export interface DosasmAction {
     run: string[];
     debug: string[];
     /**
-     * If set to a string, the active file is copied to the specified path before running or debugging.
-     * If set to null, no file copy is performed before running or debugging.
+     * Controls whether the active file is copied before run/debug, and specifies its path under DOS.
+     * The program parses mount commands from `before` to determine the final DOS location of this file.
+     * Different emulators may behave differently at the underlying level, but the effect under DOS is similar.
+     * - `null`: Do not copy; rely on `before` mount commands to make the original file accessible
+     * - string: Copy the active file to the specified path (relative to the action directory),
+     *   and map it to a DOS drive path based on the mount commands in `before`
      */
     copyFileAs: string | null;
     /** Glob patterns for directories to skip when injecting the action folder (jsdos mode only) */

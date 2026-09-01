@@ -71,7 +71,13 @@ interface DosboxContext {
     logMountFolder: string | null;
 }
 
-/** Build a DOSBox Execution Context */
+/**
+ * Build a DOSBox Execution Context.
+ *
+ * `copyFileAs` copies the active file to a path under DOS. The program parses mount
+ * commands from `before` to determine the final DOS location. Different emulators may
+ * behave differently at the underlying level, but the effect under DOS is similar.
+ */
 async function makeDosboxContext(
     actionType: ActionType,
     uri: vscode.Uri,
@@ -86,6 +92,12 @@ async function makeDosboxContext(
 
     const resolvedAction = cfg ? resolveOverwrite(cfg.action, config.getEmulator()) : null;
     const copyFileAs = resolvedAction?.copyFileAs ?? undefined;
+    // `copyFileAs` copies the active file to a path under DOS.
+    // The program parses mount commands from `before` to determine the final DOS location.
+    // Different emulators may behave differently at the underlying level, but the effect under DOS is similar.
+    // - `null`: Do not copy; rely on mount commands to make the original file accessible
+    // - string: Copy to this path relative to ${seperateSpaceFolder}; DOS path is determined by mount d command
+    // - `undefined`: Copy with default filename (TEST.<EXT> for DOSBox)
     const fileCopyUri = copyFileAs === null
         ? null
         : copyFileAs
@@ -148,7 +160,13 @@ function getCommands(actionType: ActionType, resolvedAction: DosasmAction | null
             : action.open ?? [];
 }
 
-/** Build the DOSBox autoexec command array */
+/**
+ * Build the DOSBox autoexec command array.
+ *
+ * The program parses mount commands from `before` to determine the final DOS location
+ * of the copied file. Different emulators may behave differently at the underlying level,
+ * but the effect under DOS is similar.
+ */
 function buildDosboxAutoexec(
     actionType: ActionType,
     cfg: DosasmConfig | null,
@@ -185,7 +203,10 @@ function buildDosboxAutoexec(
                 return p ? `"${p}"` : `"${getBundleUri(context.extensionUri, name).fsPath}"`;
             });
 
-            // Then check if it's a mount command and update vars if needed
+            // Parse mount commands to determine the final DOS location of the copied file.
+            // The program automatically parses mount instructions from `before` to make the file
+            // appear at the corresponding DOS location. Different emulators may behave differently
+            // at the underlying level, but the effect under DOS is similar.
             const mountMatch = r.match(/^\s*mount\s+([a-zA-Z])\s+(.+)/i);
             if (mountMatch) {
                 const disk = mountMatch[1].toLowerCase();
@@ -204,7 +225,7 @@ function buildDosboxAutoexec(
                     ctx.logMountFolder = mountPath; // C: overrides
                 }
 
-                // Check if the file is within this mount path
+                // Check if the file is within this mount path and update DOS path accordingly
                 if (fileUri.fsPath.startsWith(mountPath)) {
                     const relativePath = path.relative(mountPath, fileUri.fsPath);
                     vars.file = disk + ":\\" + relativePath;
@@ -310,8 +331,10 @@ function updateDosboxConf(box: DOSBox, emulator: DosEmulatorType): void {
  *
  * Flow:
  * 1. Copy files to an isolated directory
+ *    - `copyFileAs` specifies the filename; the DOS path is determined by parsing mount commands from `before`
+ *    - Different emulators may behave differently at the underlying level, but the effect under DOS is similar
  * 2. Extract bundles (if referenced in jsonc)
- * 3. Build autoexec commands
+ * 3. Build autoexec commands (parsing mount commands to determine the final DOS location)
  * 4. Start the DOSBox child process and monitor the log file
  */
 async function runDosbox(
@@ -412,13 +435,15 @@ async function runDosbox(
 
 
 /**
- * Execute an assembly program in DOSBox.
+ * Execute an assembly program in DOSBox-X.
  *
  * Flow:
  * 1. Copy files to an isolated directory
+ *    - `copyFileAs` specifies the filename; the DOS path is determined by parsing mount commands from `before`
+ *    - Different emulators may behave differently at the underlying level, but the effect under DOS is similar
  * 2. Extract bundles (if referenced in jsonc)
- * 3. Build autoexec commands
- * 4. Start the DOSBox child process and monitor the log file
+ * 3. Build autoexec commands (parsing mount commands to determine the final DOS location)
+ * 4. Start the DOSBox-X child process and monitor stderr for log output
  */
 async function runDosboxX(
     context: vscode.ExtensionContext,

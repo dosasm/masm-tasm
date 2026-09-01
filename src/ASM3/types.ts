@@ -22,6 +22,7 @@ export interface OverWrite {
     open?: string[];
     run?: string[];
     debug?: string[];
+    /** Override for file copy control. Same semantics as `ActionProfile.copyFileAs` — the program parses mount commands from `before` to determine the final DOS location. */
     copyFileAs?: string | null;
 }
 
@@ -31,6 +32,14 @@ export interface ActionProfile {
     open?: string[];
     run: string[];
     debug: string[];
+    /**
+     * Controls whether the active file is copied before run/debug, and specifies its path under DOS.
+     * The program parses mount commands from `before` to determine the final DOS location of this file.
+     * Different emulators may behave differently at the underlying level, but the effect under DOS is similar.
+     * - `undefined` (absent): Copy with default filename
+     * - `null`: Do not copy; rely on mount commands to make the original file accessible
+     * - string: Copy to this path; DOS path is determined by mount commands in `before`
+     */
     copyFileAs?: string | null;
     support?: string[];
     ignore?: string[];

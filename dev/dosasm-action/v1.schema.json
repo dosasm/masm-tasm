@@ -73,7 +73,7 @@
         },
 
         "copyFileAs": {
-          "description": "Controls whether the active editor file is copied before run/debug. undefined (absent): copy with default name (test.<ext> for jsdos, TEST.<EXT> for DOSBox). null: do not copy, rely on mount commands to make the original file accessible. string: copy to this path relative to code/ (jsdos) or ${seperateSpaceFolder}/ (DOSBox).",
+          "description": "Controls whether the active editor file is copied before run/debug, and specifies its path under DOS. The program parses mount commands from 'before' to determine the final DOS location of this file. Different emulators may behave differently at the underlying level, but the effect under DOS is similar. undefined (absent): copy with default name (test.<ext> for jsdos, TEST.<EXT> for DOSBox). null: do not copy, rely on mount commands to make the original file accessible. string: copy to this path relative to code/ (jsdos) or ${seperateSpaceFolder}/ (DOSBox); DOS path is determined by the mount d command.",
           "oneOf": [
             { "type": "string", "minLength": 1 },
             { "type": "null" }

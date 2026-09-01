@@ -175,6 +175,10 @@ function getCommands(
  * - `mount d ${seperateSpaceFolder}` → create empty `d/` directory
  * - `mount e ${fileOSfolder}` → copy real OS folder into `e/`, excluding ignored
  *
+ * The program parses mount commands from `before` to determine the final DOS location
+ * of the copied file. Different emulators may behave differently at the underlying level,
+ * but the effect under DOS is similar.
+ *
  * @returns `true` if the command was handled as a mount, `false` otherwise.
  */
 async function processJsdosMount(
@@ -233,7 +237,10 @@ async function processJsdosMount(
  * Flow:
  * 1. Load configuration
  * 2. Process mount commands at JSZip level (extract bundles, create dirs, copy files)
+ *    - The program parses mount commands from `before` to determine the final DOS location of the file
  * 3. Inject the current editor file into the workspace directory
+ *    - `copyFileAs` specifies the filename; the DOS path is determined by the mount commands
+ *    - Different emulators may behave differently at the underlying level, but the effect under DOS is similar
  * 4. Build autoexec commands (non-mount commands + run/debug/open)
  * 5. Start the emulator
  * 6. Collect output for diagnostics
@@ -281,6 +288,10 @@ export async function runJsdos(
     }
 
     // ── Inject the current file into the workspace directory ──
+    // The DOS path is determined by parsing mount commands from `before`:
+    // - `workspaceDrive` is set by the mount command (e.g. `mount d ${seperateSpaceFolder}`)
+    // - `copyFileAs` specifies the filename within that drive
+    // Different emulators may behave differently at the underlying level, but the effect under DOS is similar.
     const doc = resolved.doc;
     const copyFileAs = action.copyFileAs;
     let fileInJsdos = "";

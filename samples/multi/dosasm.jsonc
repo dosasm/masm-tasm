@@ -1,10 +1,4 @@
 {
-    // The action to use in this folder
-    // if set as string, the current active file in the editor panel will be copied to
-    // the path specified by this string before run or debug the code
-    // if set as null, the current active file in the editor panel will not be copied
-    // before run or debug the code
-    "copyFileAs": null,
     "action": {
         // if set as string, the current active file in the editor panel will be copied to the path specified by this string before run or debug the code
         // if set as null, the current active file in the editor panel will not be copied before run or debug the code
