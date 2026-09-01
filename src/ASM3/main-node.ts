@@ -25,7 +25,7 @@ import { activateDosbox, DOSBox } from "./dosbox/main";
 import { activateJSdos } from "./jsdos/main";
 import { CIManager } from "./jsdos";
 import { runJsdos, resolveFile, resolveBundleData, logAction, loadDosasmConfig, type DosasmConfig } from "./run";
-import { DosasmAction, expandCommand, expandCommands, ExpandVars, findBundleRefs, getBundleUri, resolveOverwrite } from "./dosasm-config";
+import { DosasmAction, expandCommand, expandCommands, ExpandVars, findBundleRefs, getBundleUri, resolveBundleSource, resolveOverwrite } from "./dosasm-config";
 
 // ─── Logfile Archiving ─────────────────────────────────────────────
 
@@ -138,8 +138,8 @@ async function extractConfigBundles(
         ...(action.open ?? []),
     ];
     for (const bundleName of findBundleRefs(allCommands)) {
-        const extractFolder = vscode.Uri.joinPath(getStorageBasePath(context), "bundles", bundleName.replace(".jsdos", ""));
-        const data = await vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, bundleName));
+const extractFolder = vscode.Uri.joinPath(getStorageBasePath(context), "bundles", bundleName.replace(".jsdos", ""));
+        const data = await resolveBundleSource(context.extensionUri, bundleName);
         await box.fromBundle(data, extractFolder, false);
         logger.channel(`Extracted bundle ${bundleName} to ${extractFolder.fsPath}`);
         bundleMap.set(bundleName, extractFolder.fsPath);
@@ -203,6 +203,11 @@ function buildDosboxAutoexec(
             r = r.replace(/\$\{<built-in>\/([^}]+)\}/g, (_m, name: string) => {
                 const p = ctx.bundleFolderMap.get(name);
                 return p ? `"${p}"` : `"${getBundleUri(context.extensionUri, name).fsPath}"`;
+            });
+            // Replace network URLs with local extraction paths
+            r = r.replace(/\$\{(https?:\/\/[^}]+)\}/g, (_m, url: string) => {
+                const p = ctx.bundleFolderMap.get(url);
+                return p ? `"${p}"` : `"${url}"`;
             });
 
             // Parse mount commands to determine the final DOS location of the copied file.
@@ -504,6 +509,7 @@ async function runDosboxX(
 
         p.stderr?.on('data', (data) => {
             const loglines = data.toString().split("\n");
+            console.log(data);
             for (const line of loglines) {
                 if (line.trim().startsWith("LOG: DOS CON: ")) {
                     const trimed = line.replace("LOG: DOS CON: ", "") + "\n";
