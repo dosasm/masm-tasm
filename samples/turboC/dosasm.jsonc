@@ -1,0 +1,21 @@
+{
+    "action": {
+        "copyFileAs": null,
+        "before": [
+            "mount c ${https://dosasm.github.io/dosrun/bundles/TurboC.jsdos}",
+            "mount d ${actionFolder}",
+            "PATH %PATH%;C:\\TC",
+            "d:",
+            "cd d:\\"
+        ],
+        "open": [],
+        //https://github.com/dosasm/dosplay/blob/e476b1cd11ba782388f8162fa3890ba58b827df0/assembly-tool/TurboC/D/build.bat#L2
+        "run": [
+            "tcc -LC:\\tc\\ -IC:\\tc\\ text.c",
+            "tcc -Ic:\\tc\\ -Lc:\\tc\\ graphic.c c:\\tc\\graphics.lib",
+            "Text.exe"
+        ],
+        "debug": [
+        ]
+    }
+}

@@ -68,17 +68,17 @@
     "menus": {
       "editor/context": [
         {
-          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "when": "resourceExtname == .ASM || resourceExtname == .asm || resourceExtname == .c && editorFocus",
           "command": "masm-tasm.openEmulator",
           "group": "0_MASM-TASM@1"
         },
         {
-          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "when": "resourceExtname == .ASM || resourceExtname == .asm || resourceExtname == .c && editorFocus",
           "command": "masm-tasm.runASM",
           "group": "0_MASM-TASM@2"
         },
         {
-          "when": "resourceExtname == .ASM || resourceExtname == .asm && editorFocus",
+          "when": "resourceExtname == .ASM || resourceExtname == .asm || resourceExtname == .c && editorFocus",
           "command": "masm-tasm.debugASM",
           "group": "0_MASM-TASM@3"
         }
