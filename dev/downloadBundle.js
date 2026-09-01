@@ -3,7 +3,11 @@ const path = require('path');
 const pkg = require("../package.json");
 
 const actions = pkg.contributes.configuration.properties['masmtasm.ASM.actions'].default
-const assemblers = Object.keys(actions).map(key => actions[key].baseBundle.replace('<built-in>/', ""));
+const assemblers = [
+    "TASM.jsdos",
+    "MASM-v5.00.jsdos",
+    "MASM-v6.11.jsdos"
+];
 
 const srcFolder = path.resolve(__dirname,"..","..","assembly-tool","build")
 const dstFolder = path.resolve(__dirname, "..", "resources");
