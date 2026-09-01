@@ -7,7 +7,7 @@
 - :bookmark_tabs:（**语法支持**）代码高亮，大纲信息，悬浮提示，代码格式化，错误信息标注功能
 - :electric_plug:（**运行调试**）提供编辑器右键菜单选项：在汇编语言编辑器中添加了“打开 DOSBox、运行、调试”三个选项
 - :bar_chart: 提供 diagnose**错误信息标注**功能：如果汇编未通过，会根据汇编器输出标明错误信息与位置。可以在命令面板中输入`清除MASM/TASM的所有问题信息`来清除本插件输出的诊断问题信息
-- :computer: 支持包括 Web 在内的所有 VSCode 版本和平台，参见[平台支持](#平台支持)
+- :computer: 支持包括 Web 在内的所有 VSCode 版本和平台，参见[平台支持](#平台支持)。支持在[vscode.dev](https://vscode.dev/github/dosasm/dos-assembly-codes)上在线体验该插件。
 - 注：该插件为学习 DOS 下的汇编语言开发，可能并不适合复杂的多文件汇编项目
 
 ## :rocket:DEMO 示例

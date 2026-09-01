@@ -10,7 +10,7 @@ or courses like *Principles and Peripheral Technology of Microprocessor*.
 - **Status Bar**: Quick access to switch DOS emulator and assembler independently, with executable paths shown
 - **Run and Debug**: Right-click on the VS Code editor panel to run and debug your code
 - **Diagnose**: Processes the output of ASM tools and displays diagnostics in VS Code
-- Supports all platforms including **Web** — see [Platform Support](#platform-support)
+- Supports all platforms including **Web** support try me in your browser by click [vscode.dev](https://vscode.dev/github/dosasm/dos-assembly-codes).
 - Note: This extension is built for learning assembly in DOS, and it does not work with Win32 assembly
 
 ## Demo
