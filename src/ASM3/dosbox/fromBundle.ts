@@ -16,14 +16,13 @@ export async function fromBundle(
 ): Promise<string | undefined> {
   const zip = new JSZip();
   await zip.loadAsync(bundle);
-  Object.keys(zip.files).forEach(async function (filename) {
-    const e = zip.files[filename];
-    const data = await e.async("uint8array");
-    const dest = vscode.Uri.joinPath(tempFolder, filename);
+  for (const [filename, e] of Object.entries(zip.files)) {
     if (e.dir === false) {
+      const data = await e.async("uint8array");
+      const dest = vscode.Uri.joinPath(tempFolder, filename);
       await fs.writeFile(dest, data);
     }
-  });
+  }
   const filename = ".jsdos/dosbox.conf";
   if (zip.file(filename)) {
     const data = await zip.files[filename].async("string");

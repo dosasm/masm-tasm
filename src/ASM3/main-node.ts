@@ -68,6 +68,7 @@ interface DosboxContext {
     config: DosasmConfig | null;
     resolvedAction: DosasmAction | null;
     bundleFolderMap: Map<string, string>;
+    logMountFolder: string | null;
 }
 
 /** Build a DOSBox Execution Context */
@@ -95,13 +96,14 @@ async function makeDosboxContext(
         actionType,
         fileUri: resolved.uri,
         doc: resolved.doc,
-        assemblyToolsFolder: uriUtils.joinPath(context.globalStorageUri, config.getAssembler()),
+        assemblyToolsFolder: uriUtils.joinPath(context.globalStorageUri, "bundles", config.getAssembler()),
         logFileName: timeStamp.substring(timeStamp.length - 5) + ".log".toUpperCase(),
         fileCopyUri,
         seperateSpaceFolder,
         config: cfg,
         resolvedAction,
         bundleFolderMap: new Map(),
+        logMountFolder: null,
     };
 }
 
@@ -123,11 +125,9 @@ async function extractConfigBundles(
     ];
     for (const bundleName of findBundleRefs(allCommands)) {
         const extractFolder = vscode.Uri.joinPath(context.globalStorageUri, "bundles", bundleName.replace(".jsdos", ""));
-        if (!nodefs.existsSync(extractFolder.fsPath)) {
-            const data = await vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, bundleName));
-            await box.fromBundle(data, extractFolder, false);
-            logger.channel(`Extracted bundle ${bundleName} to ${extractFolder.fsPath}`);
-        }
+        const data = await vscode.workspace.fs.readFile(getBundleUri(context.extensionUri, bundleName));
+        await box.fromBundle(data, extractFolder, false);
+        logger.channel(`Extracted bundle ${bundleName} to ${extractFolder.fsPath}`);
         bundleMap.set(bundleName, extractFolder.fsPath);
     }
     return bundleMap;
@@ -196,6 +196,14 @@ function buildDosboxAutoexec(
                     mountPath = mountPath.slice(1, -1);
                 }
 
+                // Track mount folder for logfile placement
+                if (ctx.logMountFolder === null) {
+                    ctx.logMountFolder = mountPath; // first mount
+                }
+                if (disk === "c") {
+                    ctx.logMountFolder = mountPath; // C: overrides
+                }
+
                 // Check if the file is within this mount path
                 if (fileUri.fsPath.startsWith(mountPath)) {
                     const relativePath = path.relative(mountPath, fileUri.fsPath);
@@ -236,7 +244,26 @@ function buildDosboxAutoexec(
         };
 
         if (action.before) {
-            autoexec.push(...expandCommands(action.before, vars));
+            for (const cmd of action.before) {
+                let r = expandCommand(cmd, vars);
+                // Track mount folder for logfile placement
+                const mountMatch = r.match(/^\s*mount\s+([a-zA-Z])\s+(.+)/i);
+                if (mountMatch) {
+                    const disk = mountMatch[1].toLowerCase();
+                    let mountPath = mountMatch[2].trim();
+                    if ((mountPath.startsWith('"') && mountPath.endsWith('"')) ||
+                        (mountPath.startsWith("'") && mountPath.endsWith("'"))) {
+                        mountPath = mountPath.slice(1, -1);
+                    }
+                    if (ctx.logMountFolder === null) {
+                        ctx.logMountFolder = mountPath;
+                    }
+                    if (disk === "c") {
+                        ctx.logMountFolder = mountPath;
+                    }
+                }
+                autoexec.push(r);
+            }
         }
 
         const commands = getCommands(actionType, null);
@@ -309,7 +336,7 @@ async function runDosbox(
     }
 
     // Extract default bundle (single-file mode)
-    if (!ctx.config && !nodefs.existsSync(ctx.assemblyToolsFolder.fsPath)) {
+    if (!ctx.config) {
         const bundleData = await resolveBundleData(context, null);
         await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
     }
@@ -324,8 +351,12 @@ async function runDosbox(
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
-    // Start DOSBox and monitor the log file
-    const logUri = Utils.joinPath(ctx.assemblyToolsFolder, ctx.logFileName);
+    // Determine logfile folder from mount commands
+    if (ctx.logMountFolder === null) {
+        vscode.window.showErrorMessage("No mount command found in dosasm.jsonc. Cannot determine logfile location.");
+        throw new Error("No mount command found in dosasm.jsonc. Cannot determine logfile location.");
+    }
+    const logUri = Utils.joinPath(vscode.Uri.file(ctx.logMountFolder), ctx.logFileName);
     const [hook, promise] = Diag.messageCollector();
     let useNodefsWatch = true;
 
@@ -411,7 +442,7 @@ async function runDosboxX(
     }
 
     // Extract default bundle (single-file mode)
-    if (!ctx.config && !nodefs.existsSync(ctx.assemblyToolsFolder.fsPath)) {
+    if (!ctx.config) {
         const bundleData = await resolveBundleData(context, null);
         await box.fromBundle(bundleData, ctx.assemblyToolsFolder, false);
     }
@@ -426,8 +457,12 @@ async function runDosboxX(
     updateDosboxConf(box, config.getEmulator());
     box.updateAutoexec(autoexec);
 
-    // Start DOSBox and monitor the log file
-    const logUri = Utils.joinPath(ctx.assemblyToolsFolder, ctx.logFileName);
+    // Determine logfile folder from mount commands
+    if (ctx.logMountFolder === null) {
+        vscode.window.showErrorMessage("No mount command found in dosasm.jsonc. Cannot determine logfile location.");
+        throw new Error("No mount command found in dosasm.jsonc. Cannot determine logfile location.");
+    }
+    const logUri = Utils.joinPath(vscode.Uri.file(ctx.logMountFolder), ctx.logFileName);
     const [lineHook, diagPromise] = Diag.messageCollector();
     let useNodefsWatch = true;
 

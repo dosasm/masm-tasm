@@ -71,7 +71,7 @@ export interface ExpandVars {
     /**
      * Bundle path:
      * - In jsdos mode: "." (the bundle root is the virtual filesystem root)
-     * - In dosbox mode: the actual path of the extracted folder
+     * - In dosbox mode: the actual path of the extracted folder under globalStorageUri/bundles/<assembler>
      */
     bundlePath: string;
     /**
