@@ -85,6 +85,7 @@ const webExtensionConfig = {
         fallback: {
             assert: require.resolve('assert'),
             path: require.resolve('path-browserify'),
+            os: require.resolve('os-browserify/browser'),
             buffer: require.resolve('buffer/'), // 添加 buffer  polyfill
             process: require.resolve('process/browser'), // 确保 process 映射
         },
