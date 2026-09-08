@@ -89,7 +89,7 @@ The extension bundles all required js-dos files, and it uses js-dos as the defau
 - Thanks to the excellent DOS emulators: [DOSBox-x](https://dosbox-x.com/), [DOSBox](https://www.dosbox.com), [caiiiycuk](https://github.com/caiiiycuk)'s [js-dos](https://js-dos.com/), and [msdos-player](http://takeda-toshiya.my.coocan.jp/msdos)
 - Thanks to [Roncho](https://marketplace.visualstudio.com/publishers/Roncho)'s extension [Assembly (TASM)](https://marketplace.visualstudio.com/items?itemName=Roncho.assembly-8086) and [blindtiger](https://github.com/9176324)'s [masm](https://github.com/9176324/bltg-team.masm) for reference on assembly language support
 - We welcome [issues](https://github.com/dosasm/masm-tasm/issues) and pull requests to help improve this extension
-- [Acknowledgments](doc/Thanks.md)
+- [Acknowledgments](dev/doc/Thanks.md)
 - [Additional Information: Wiki](https://github.com/dosasm/masm-tasm/wiki)
 
 Enjoy! 😊
