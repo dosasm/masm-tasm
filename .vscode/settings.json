@@ -11,5 +11,8 @@
     // "editor.formatOnSave": true,
     "markdownlint.config": {
         "MD033": false
+    },
+    "json.schemaDownload.trustedDomains": {
+        "https://raw.githubusercontent.com/dosasm/masm-tasm/refs/heads/v2/dev/dosasm-action/": true
     }
 }

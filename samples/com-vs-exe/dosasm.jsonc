@@ -1,4 +1,5 @@
 {
+    "$schema": "https://raw.githubusercontent.com/dosasm/masm-tasm/refs/heads/v2/dev/dosasm-action/v1.schema.json",
     "action": {
         "copyFileAs": null,
         "before": [
