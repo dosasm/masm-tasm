@@ -14,6 +14,7 @@ const eles={
     uiMute:document.getElementById("ui-mute") as HTMLInputElement,
     canvas: document.getElementById("display") as HTMLCanvasElement,
     ciSelect: document.getElementById("ci-list") as HTMLSelectElement,
+    ciExit: document.getElementById("ci-exit") as HTMLButtonElement,
     canvasOverlay: document.getElementById("canvas-overlay") as HTMLDivElement,
 };
 
@@ -86,6 +87,10 @@ if (vapi) {
     eles.ciSelect.addEventListener("input", () => {
         eles.canvasOverlay.style.display = "";
         vapi.exec("change-viewing-id", [eles.ciSelect.selectedIndex]);
+    });
+
+    eles.ciExit.addEventListener("click", () => {
+        void vapi.exit();
     });
 
     //pause or resume the program
