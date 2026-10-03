@@ -175,6 +175,9 @@ body {
 
 /* ==================== Status Bar ==================== */
 .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 11px;
     color: var(--vscode-descriptionForeground, #888);
     padding: 4px 12px;
@@ -182,6 +185,20 @@ body {
     border-top: 1px solid var(--vscode-editorWidget-border, #3c3c3c);
     flex-shrink: 0;
     font-family: var(--vscode-editor-font-family, monospace);
+}
+
+.exit-btn {
+    margin-left: 12px;
+    padding: 3px 8px;
+    border: 1px solid var(--vscode-button-border, transparent);
+    border-radius: 2px;
+    background: var(--vscode-button-background, #0e639c);
+    color: var(--vscode-button-foreground, #fff);
+    cursor: pointer;
+}
+
+.exit-btn:hover {
+    background: var(--vscode-button-hoverBackground, #1177bb);
 }
 
 /* ==================== Test Area (legacy) ==================== */

@@ -318,7 +318,10 @@ function show_webview(cis: CIManager, context: vscode.ExtensionContext) {
         <button class="key-btn modifier" data-key="CapsLock" id="key-capslock">CapsLock</button>
         <button class="key-btn modifier" data-key="Tab" id="key-tab">Tab</button>
     </div>
-    <div id="ci-stat" class="status-bar">loading stats</div>
+    <div class="status-bar">
+        <span id="ci-stat">loading stats</span>
+        <button type="button" id="ci-exit" class="exit-btn" title="Exit the selected emulator">Exit</button>
+    </div>
     <script src="${asWeb("dist/index.js")}"></script>
 </body>
 </html>`;
