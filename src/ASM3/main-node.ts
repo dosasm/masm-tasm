@@ -93,7 +93,7 @@ async function makeDosboxContext(
     const seperateSpaceFolder = uriUtils.joinPath(storageBase, "workspace");
 
     const resolvedAction = cfg ? resolveOverwrite(cfg.action, config.getEmulator()) : null;
-    const copyFileAs = resolvedAction?.copyFileAs ?? undefined;
+    const copyFileAs = resolvedAction?.copyFileAs;
     // `copyFileAs` copies the active file to a path under DOS.
     // The program parses mount commands from `before` to determine the final DOS location.
     // Different emulators may behave differently at the underlying level, but the effect under DOS is similar.

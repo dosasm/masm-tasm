@@ -30,7 +30,7 @@ export interface DosasmAction {
      * - string: Copy the active file to the specified path (relative to the action directory),
      *   and map it to a DOS drive path based on the mount commands in `before`
      */
-    copyFileAs: string | null;
+    copyFileAs?: string | null;
     /** Glob patterns for directories to skip when injecting the action folder (jsdos mode only) */
     ignore?: string[];
     /** Conditional command overrides keyed by emulator */
@@ -323,8 +323,10 @@ export async function parseDosasmConfig(configUri: vscode.Uri): Promise<DosasmCo
         open: toStringArray(s.open),
         run: toStringArray(s.run),
         debug: toStringArray(s.debug),
-        copyFileAs: typeof s.copyFileAs === "string" ? s.copyFileAs : null,
     };
+    if ("copyFileAs" in s) {
+        action.copyFileAs = typeof s.copyFileAs === "string" ? s.copyFileAs : null;
+    }
     // Parse ignore patterns
     if (Array.isArray(s.ignore)) {
         action.ignore = s.ignore.map(String);
